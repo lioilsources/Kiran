@@ -20,7 +20,7 @@ Private Const CLASS_NAME = "FSClass"
 Private starFieldHeight As Long
 Private Const WND_STYLE = WS_EX_TOPMOST Or WS_EX_NOPARENTNOTIFY
 Private Const SIZE_UNIT As Double = 3.77926421404682E-02
-Private Const IMG_DIR As String = "C:\Users\Elektro\Desktop\ELEKTRO\BAS\Prehledy\img\"
+Private Const IMG_DIR As String = "C:\Users\geeol\Code\TyrianVB\img\"
 
 ' Font style for MakeFont()
 Public Const FONT_BOLD As Byte = 1
