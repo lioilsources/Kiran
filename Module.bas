@@ -95,7 +95,6 @@ Private fState As String
 Private lStream As Variant
 Private TimerID As LongPtr
 Private logFile As Variant
-Private formPresent As Boolean
 
 Public imgLib As New Library
 Public rocket As New Vessel
@@ -1828,10 +1827,6 @@ Public Sub OpenWindow(Optional dummy As Boolean = False)
     running = True
     exiting = False
     scoresChanged = False
-    formPresent = False
-    If Not Forms Is Nothing Then
-        If Not Forms!SplitDatabase Is Nothing Then formPresent = True
-    End If
     dc = GetDC(0)
     WND_WIDTH = GetDeviceCaps(dc, 8)    ' screen width
     WND_HEIGHT = GetDeviceCaps(dc, 10)  ' screen height
@@ -1881,7 +1876,6 @@ Public Sub OpenWindow(Optional dummy As Boolean = False)
     
     If Not test Then SaveState
     DeleteObjects
-    If formPresent Then Forms!SplitDatabase.Label.Visible = False
     running = False
     pause = False
     Logt "Exit", True
@@ -2157,10 +2151,7 @@ End Function
 
 
 Public Sub SetFormLabel(ByVal str As String)
-    If formPresent Then
-        Forms!SplitDatabase.Label.caption = str
-        Forms!SplitDatabase.rePaint
-    End If
+    ' form removed
 End Sub
 
 'End of file
