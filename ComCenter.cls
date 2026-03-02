@@ -14,8 +14,8 @@ Public nWeapons As Integer                      ' available weapons, now 4 (set 
 Public nPages As Integer
 Public pageSize As Integer
 
-Private ccBDC As Long                           ' command center background DC
-Private ccBBmp(1 To CC_COLOR_COUNT) As Long     ' command center background Bitmap
+Private ccBDC As LongPtr                        ' command center background DC
+Private ccBBmp(1 To CC_COLOR_COUNT) As LongPtr  ' command center background Bitmap
 Private scoreStrCache(1 To 10) As String        ' string score representation
 Private frontWNames As Variant
 Private sideWNames As Variant
@@ -24,17 +24,17 @@ Private backStep As Integer
 Private backStepDir As Integer
 
 
-Public Sub CreateCC(ByVal hdc As Long)
-    Dim p As Long, grad As Long, gmb As Long, dc As Long
-    Dim p1 As Long, p2 As Long, p3 As Long
-    Dim b As Long
+Public Sub CreateCC(ByVal hdc As LongPtr)
+    Dim p As LongPtr, grad As LongPtr, gmb As LongPtr, dc As LongPtr
+    Dim p1 As LongPtr, p2 As LongPtr, p3 As LongPtr
+    Dim b As LongPtr
     Dim xd As Single
     Dim yd As Single
     Dim cv As Long
     Dim clrShift As Double
     Dim clt As Long
-    Dim bmp As Long
-    Dim tdc As Long
+    Dim bmp As LongPtr
+    Dim tdc As LongPtr
     
     backIndex = 1
     backStepDir = 1
@@ -141,7 +141,7 @@ Public Sub CreateCC(ByVal hdc As Long)
 End Sub
 
 
-Public Sub PaintBack(ByVal dc As Long)
+Public Sub PaintBack(ByVal dc As LongPtr)
     SelectObject ccBDC, ccBBmp(backIndex)
     MaskBlt dc, 0, 0, SCR_WIDTH, SCR_HEIGHT, ccBDC, 0, 0, 0, 0, 0, SRCCOPY
     backStep = backStep + 1
@@ -153,7 +153,7 @@ Public Sub PaintBack(ByVal dc As Long)
 End Sub
 
 
-Public Sub Paint(ByVal dc As Long)
+Public Sub Paint(ByVal dc As LongPtr)
     Call SetTextAlign(dc, TA_LEFT)
     Call SelectObject(dc, obj.osdFont)
     Call SText(dc, 200, 164, rocket.name, 2, &HA0D0D0, &H304040)
@@ -231,14 +231,14 @@ Public Sub Paint(ByVal dc As Long)
 End Sub
 
 
-Private Sub PaintWeapon(ByVal dc As Long, ByVal n As Integer, ByVal slot As Integer)
+Private Sub PaintWeapon(ByVal dc As LongPtr, ByVal n As Integer, ByVal slot As Integer)
     If n > nWeapons Then Exit Sub
     Call DevPaint(dc, frontWNames(n - 1), 640 + (slot - 1) * 180, 200)
     Call DevPaint(dc, sideWNames(n - 1), 640 + (slot - 1) * 180, 450)
 End Sub
 
 
-Public Sub DevPaint(ByVal dc As Long, ByVal devName As String, ByVal x As Integer, ByVal y As Integer)
+Public Sub DevPaint(ByVal dc As LongPtr, ByVal devName As String, ByVal x As Integer, ByVal y As Integer)
     Dim dt As DevType
     Dim im As Image
     Set dt = GetDevType(devName)

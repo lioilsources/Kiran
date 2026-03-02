@@ -175,7 +175,7 @@ Public Type Bitmap '14 bytes
     bmWidthBytes As Long
     bmPlanes As Integer
     bmBitsPixel As Integer
-    bmBits As Long
+    bmBits As LongPtr
 End Type
 
 Public Type BITMAPCOREHEADER '12 bytes - DIB
@@ -244,14 +244,14 @@ End Type
 Public Type LOGBRUSH
     lbStyle As Long
     lbColor As Long
-    lbHatch As Long
+    lbHatch As LongPtr
 End Type
 
 Public Type msg
-    hwnd As Long
+    hwnd As LongPtr
     Message As Long
-    wParam As Long
-    lParam As Long
+    wParam As LongPtr
+    lParam As LongPtr
     time As Long
     pt As POINTAPI
 End Type
@@ -259,16 +259,16 @@ End Type
 Public Type WNDCLASSEX
     cbSize As Long
     style As Long
-    lpfnWndProc As Long
+    lpfnWndProc As LongPtr
     cbClsExtra As Long
     cbWndExtra As Long
-    hInstance As Long
-    hIcon As Long
-    hCursor As Long
-    hbrBackground As Long
+    hInstance As LongPtr
+    hIcon As LongPtr
+    hCursor As LongPtr
+    hbrBackground As LongPtr
     lpszMenuName As String
     lpszClassName As String
-    hIconSm As Long
+    hIconSm As LongPtr
 End Type
 
 Type RECT
@@ -279,7 +279,7 @@ Type RECT
 End Type
 
 Type PAINTSTRUCT
-    hdc As Long
+    hdc As LongPtr
     fErase As Long
     rePaint As RECT
     fRestore As Long
@@ -350,128 +350,128 @@ Public Const PHYSICALOFFSETY As Long = 113
 ' ----------------------------------------------------------------------------------------------------------------------
 ' ----------------------------------------------- U S E R 3 2 ----------------------------------------------------------
 ' ----------------------------------------------------------------------------------------------------------------------
-Declare Function BeginPaint Lib "user32" (ByVal hwnd As Long, lpPaint As PAINTSTRUCT) As Long
-Declare Function CloseWindow Lib "user32" (ByVal hwnd As Long) As Long
-Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, _
+Declare PtrSafe Function BeginPaint Lib "user32" (ByVal hwnd As LongPtr, lpPaint As PAINTSTRUCT) As LongPtr
+Declare PtrSafe Function CloseWindow Lib "user32" (ByVal hwnd As LongPtr) As Long
+Declare PtrSafe Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, _
                             ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, _
                             ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, _
-                            ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hwnd As Long, ByVal wMsg As Long, _
-                            ByVal wParam As Long, ByVal lParam As Long) As Long
-Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
-Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As msg) As Long
-Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hdc As Long, ByVal lpStr As String, ByVal nCount As Long, _
+                            ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, lpParam As Any) As LongPtr
+Declare PtrSafe Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hwnd As LongPtr, ByVal wMsg As Long, _
+                            ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Declare PtrSafe Function DestroyWindow Lib "user32" (ByVal hwnd As LongPtr) As Long
+Declare PtrSafe Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As msg) As LongPtr
+Declare PtrSafe Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hdc As LongPtr, ByVal lpStr As String, ByVal nCount As Long, _
                             lpRect As RECT, ByVal wFormat As Long) As Long
-Declare Function EndPaint Lib "user32" (ByVal hwnd As Long, lpPaint As PAINTSTRUCT) As Long
-Declare Function GetClientRect Lib "user32" (ByVal hwnd As Long, lpRect As RECT) As Long
-Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
-Declare Function GetMessage Lib "user32" Alias "GetMessageA" (lpMsg As msg, ByVal hwnd As Long, _
+Declare PtrSafe Function EndPaint Lib "user32" (ByVal hwnd As LongPtr, lpPaint As PAINTSTRUCT) As Long
+Declare PtrSafe Function GetClientRect Lib "user32" (ByVal hwnd As LongPtr, lpRect As RECT) As Long
+Declare PtrSafe Function GetDC Lib "user32" (ByVal hwnd As LongPtr) As LongPtr
+Declare PtrSafe Function GetMessage Lib "user32" Alias "GetMessageA" (lpMsg As msg, ByVal hwnd As LongPtr, _
                             ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long) As Long
-Declare Function GetMessageTime Lib "user32" () As Long
-Declare Function GetWindowDC Lib "user32" (ByVal hwnd As Long) As Long
-Declare Function InvalidateRect Lib "user32" (ByVal hwnd As Long, lpRect As RECT, ByVal bErase As Long) As Long
-Declare Function KillTimer Lib "user32" (ByVal hwnd As Long, ByVal nIDEvent As Long) As Long
-Declare Function LoadBitmap Lib "user32" Alias "LoadBitmapA" (ByVal hInstance As Long, ByVal lpBitmapName As String) _
-                            As Long
-Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) _
-                            As Long
-Declare Function LoadCursorFromFile Lib "user32" Alias "LoadCursorFromFileA" (ByVal lpFileName As String) As Long
-Declare Function LoadIcon Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
-Declare Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
-Declare Function RegisterClassEx Lib "user32" Alias "RegisterClassExA" (lpwcx As WNDCLASSEX) As Long
-Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, _
-                            ByVal wParam As Long, ByVal lParam As Long) As Long
-Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Declare Function SetCursorPos Lib "user32" (ByVal x As Long, ByVal y As Long) As Long
-Declare Function SetTimer Lib "user32" (ByVal hwnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, _
-                            ByVal lpTimerFunc As Long) As Long
-Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, _
+Declare PtrSafe Function GetMessageTime Lib "user32" () As Long
+Declare PtrSafe Function GetWindowDC Lib "user32" (ByVal hwnd As LongPtr) As LongPtr
+Declare PtrSafe Function InvalidateRect Lib "user32" (ByVal hwnd As LongPtr, lpRect As RECT, ByVal bErase As Long) As Long
+Declare PtrSafe Function KillTimer Lib "user32" (ByVal hwnd As LongPtr, ByVal nIDEvent As LongPtr) As Long
+Declare PtrSafe Function LoadBitmap Lib "user32" Alias "LoadBitmapA" (ByVal hInstance As LongPtr, ByVal lpBitmapName As String) _
+                            As LongPtr
+Declare PtrSafe Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As LongPtr, ByVal lpCursorName As LongPtr) _
+                            As LongPtr
+Declare PtrSafe Function LoadCursorFromFile Lib "user32" Alias "LoadCursorFromFileA" (ByVal lpFileName As String) As LongPtr
+Declare PtrSafe Function LoadIcon Lib "user32" Alias "LoadIconA" (ByVal hInstance As LongPtr, ByVal lpIconName As LongPtr) As LongPtr
+Declare PtrSafe Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
+Declare PtrSafe Function RegisterClassEx Lib "user32" Alias "RegisterClassExA" (lpwcx As WNDCLASSEX) As Long
+Declare PtrSafe Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As LongPtr, ByVal wMsg As Long, _
+                            ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Declare PtrSafe Function SetCursor Lib "user32" (ByVal hCursor As LongPtr) As LongPtr
+Declare PtrSafe Function SetCursorPos Lib "user32" (ByVal x As Long, ByVal y As Long) As Long
+Declare PtrSafe Function SetTimer Lib "user32" (ByVal hwnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As Long, _
+                            ByVal lpTimerFunc As LongPtr) As LongPtr
+Declare PtrSafe Function SetWindowPos Lib "user32" (ByVal hwnd As LongPtr, ByVal hWndInsertAfter As LongPtr, ByVal x As Long, _
                             ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
-Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
-Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
-Declare Function TranslateMessage Lib "user32" (lpMsg As msg) As Long
-Declare Function UpdateWindow Lib "user32" (ByVal hwnd As Long) As Long
+Declare PtrSafe Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
+Declare PtrSafe Function ShowWindow Lib "user32" (ByVal hwnd As LongPtr, ByVal nCmdShow As Long) As Long
+Declare PtrSafe Function TranslateMessage Lib "user32" (lpMsg As msg) As Long
+Declare PtrSafe Function UpdateWindow Lib "user32" (ByVal hwnd As LongPtr) As Long
 
 ' ----------------------------------------------------------------------------------------------------------------------
 ' ---------------------------------------------- K E R N E L 3 2 -------------------------------------------------------
 ' ----------------------------------------------------------------------------------------------------------------------
-Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (src As Any, dst As Any, ByVal cbLen As Long)
-Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As Long) As Long
-'Declare Function GetCurrentDirectory Lib "kernel32" (ByVal bufLen As Long, lpDir As String) As Long
-Declare Function GetCurrentDirectory Lib "kernel32" Alias "GetCurrentDirectoryA" (ByVal bufLen As Long, ByVal lpDir As String) As Long
-Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, _
+Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (src As Any, dst As Any, ByVal cbLen As LongPtr)
+Declare PtrSafe Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As LongPtr) As LongPtr
+'Declare PtrSafe Function GetCurrentDirectory Lib "kernel32" (ByVal bufLen As Long, lpDir As String) As Long
+Declare PtrSafe Function GetCurrentDirectory Lib "kernel32" Alias "GetCurrentDirectoryA" (ByVal bufLen As Long, ByVal lpDir As String) As Long
+Declare PtrSafe Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, _
                             ByVal nSize As Long) As Long
-Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 
 ' ----------------------------------------------------------------------------------------------------------------------
 ' -------------------------------------------------- G D I 3 2 ---------------------------------------------------------
 ' ----------------------------------------------------------------------------------------------------------------------
-Declare Function Arc Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, _
+Declare PtrSafe Function Arc Lib "gdi32" (ByVal hdc As LongPtr, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, _
                             ByVal y2 As Long, ByVal u As Double, ByVal v As Double) As Long
-Declare Function BeginPath Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, _
-                            ByVal nHeight As Long, hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, _
+Declare PtrSafe Function BeginPath Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function BitBlt Lib "gdi32" (ByVal hDestDC As LongPtr, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, _
+                            ByVal nHeight As Long, ByVal hSrcDC As LongPtr, ByVal xSrc As Long, ByVal ySrc As Long, _
                             ByVal dwROP As Long) As Long
-Declare Function CreateBrushIndirect Lib "gdi32" (lpLogBrush As LOGBRUSH) As Long
-Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal nPlanes As Long, _
-                            ByVal nBitCount As Long, lpBits As Any) As Long
-Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function CreateDC Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, ByVal lpDeviceName As String, _
-                            ByVal lpOutput As String, lpInitData As DEVMODE) As Long
-Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As LOGFONT) As Long
-Declare Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
-Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Declare Function Ellipse Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, _
+Declare PtrSafe Function CreateBrushIndirect Lib "gdi32" (lpLogBrush As LOGBRUSH) As LongPtr
+Declare PtrSafe Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal nPlanes As Long, _
+                            ByVal nBitCount As Long, lpBits As Any) As LongPtr
+Declare PtrSafe Function CreateCompatibleBitmap Lib "gdi32" (ByVal hdc As LongPtr, ByVal nWidth As Long, ByVal nHeight As Long) As LongPtr
+Declare PtrSafe Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As LongPtr) As LongPtr
+Declare PtrSafe Function CreateDC Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, ByVal lpDeviceName As String, _
+                            ByVal lpOutput As String, lpInitData As DEVMODE) As LongPtr
+Declare PtrSafe Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (lpLogFont As LOGFONT) As LongPtr
+Declare PtrSafe Function CreatePen Lib "gdi32" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As LongPtr
+Declare PtrSafe Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As LongPtr
+Declare PtrSafe Function DeleteDC Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function DeleteObject Lib "gdi32" (ByVal hObject As LongPtr) As Long
+Declare PtrSafe Function Ellipse Lib "gdi32" (ByVal hdc As LongPtr, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, _
                             ByVal y2 As Long) As Long
-Declare Function EndPath Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function EnumFontFamilies Lib "gdi32" Alias "EnumFontFamiliesA" (ByVal hdc As Long, ByVal lpszFontFamily As String, _
-                            ByVal lpEnumFontFamProc As Long, ByVal lParam As Long) As Long
-Declare Function FillPath Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function FloodFill Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal style As Long) As Long
-Declare Function GdiFlush Lib "gdi32" () As Long
-Declare Function GetDeviceCaps Lib "gdi32" (ByVal hdc As Long, ByVal nIndex As Long) As Long
-Declare Function GetPixel Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
-Declare Function GetStockObject Lib "gdi32" (ByVal fnObject As Long) As Long
-Declare Function InvertRgn Lib "gdi32" (ByVal hdc As Long, ByVal hRgn As Long) As Long
-Declare Function LineTo Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
-Declare Function MaskBlt Lib "gdi32" (ByVal hdcDest As Long, ByVal xDest As Long, ByVal yDest As Long, ByVal wdthDest As Long, _
-                            ByVal hghtDest As Long, ByVal hdcSrc As Long, ByVal xSrc As Long, ByVal ySrc As Long, _
-                            ByVal hbmMask As Long, ByVal xMask As Long, ByVal yMask As Long, ByVal dwROP As Long) As Long
-Declare Function MoveToEx Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal u As Long) As Long
-Declare Function Rectangle Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, _
+Declare PtrSafe Function EndPath Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function EnumFontFamilies Lib "gdi32" Alias "EnumFontFamiliesA" (ByVal hdc As LongPtr, ByVal lpszFontFamily As String, _
+                            ByVal lpEnumFontFamProc As LongPtr, ByVal lParam As LongPtr) As Long
+Declare PtrSafe Function FillPath Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function FloodFill Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long, ByVal style As Long) As Long
+Declare PtrSafe Function GdiFlush Lib "gdi32" () As Long
+Declare PtrSafe Function GetDeviceCaps Lib "gdi32" (ByVal hdc As LongPtr, ByVal nIndex As Long) As Long
+Declare PtrSafe Function GetPixel Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long) As Long
+Declare PtrSafe Function GetStockObject Lib "gdi32" (ByVal fnObject As Long) As LongPtr
+Declare PtrSafe Function InvertRgn Lib "gdi32" (ByVal hdc As LongPtr, ByVal hRgn As LongPtr) As Long
+Declare PtrSafe Function LineTo Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long) As Long
+Declare PtrSafe Function MaskBlt Lib "gdi32" (ByVal hdcDest As LongPtr, ByVal xDest As Long, ByVal yDest As Long, ByVal wdthDest As Long, _
+                            ByVal hghtDest As Long, ByVal hdcSrc As LongPtr, ByVal xSrc As Long, ByVal ySrc As Long, _
+                            ByVal hbmMask As LongPtr, ByVal xMask As Long, ByVal yMask As Long, ByVal dwROP As Long) As Long
+Declare PtrSafe Function MoveToEx Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long, ByVal u As LongPtr) As Long
+Declare PtrSafe Function Rectangle Lib "gdi32" (ByVal hdc As LongPtr, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, _
                             ByVal y2 As Long) As Long
-Declare Function SaveDC Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
-Declare Function SetBkColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
-Declare Function SetBkMode Lib "gdi32" (ByVal hdc As Long, ByVal nBkMode As Long) As Long
-Declare Function SetPixel Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal color As Long) As Long
-Declare Function SetPixelV Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, ByVal color As Long) As Long
-Declare Function SetTextAlign Lib "gdi32" (ByVal hdc As Long, ByVal wFlags As Long) As Long
-Declare Function SetTextColor Lib "gdi32" (ByVal hdc As Long, ByVal crColor As Long) As Long
-Declare Function SetStretchBltMode Lib "gdi32" (ByVal hdc As Long, ByVal nStretchMode As Long) As Long
-Declare Function StretchBlt Lib "gdi32" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, _
-                            ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, _
+Declare PtrSafe Function SaveDC Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function SelectObject Lib "gdi32" (ByVal hdc As LongPtr, ByVal hObject As LongPtr) As LongPtr
+Declare PtrSafe Function SetBkColor Lib "gdi32" (ByVal hdc As LongPtr, ByVal crColor As Long) As Long
+Declare PtrSafe Function SetBkMode Lib "gdi32" (ByVal hdc As LongPtr, ByVal nBkMode As Long) As Long
+Declare PtrSafe Function SetPixel Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long, ByVal color As Long) As Long
+Declare PtrSafe Function SetPixelV Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long, ByVal color As Long) As Long
+Declare PtrSafe Function SetTextAlign Lib "gdi32" (ByVal hdc As LongPtr, ByVal wFlags As Long) As Long
+Declare PtrSafe Function SetTextColor Lib "gdi32" (ByVal hdc As LongPtr, ByVal crColor As Long) As Long
+Declare PtrSafe Function SetStretchBltMode Lib "gdi32" (ByVal hdc As LongPtr, ByVal nStretchMode As Long) As Long
+Declare PtrSafe Function StretchBlt Lib "gdi32" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long, _
+                            ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As LongPtr, ByVal xSrc As Long, _
                             ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwROP As Long) _
                             As Long
-Declare Function StrokePath Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function StrokeAndFillPath Lib "gdi32" (ByVal hdc As Long) As Long
-Declare Function TextOut Lib "gdi32" Alias "TextOutA" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long, _
+Declare PtrSafe Function StrokePath Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function StrokeAndFillPath Lib "gdi32" (ByVal hdc As LongPtr) As Long
+Declare PtrSafe Function TextOut Lib "gdi32" Alias "TextOutA" (ByVal hdc As LongPtr, ByVal x As Long, ByVal y As Long, _
                             ByVal lpString As String, ByVal nCount As Long) As Long
 
 
 ' ----------------------------------------------------------------------------------------------------------------------
 ' -------------------------------------------------- O T H E R ---------------------------------------------------------
 ' ----------------------------------------------------------------------------------------------------------------------
-Declare Function DeviceCapabilities Lib "winspoll.drv" Alias "DeviceCapabilitiesA" (ByVal lpDeviceName As String, _
+Declare PtrSafe Function DeviceCapabilities Lib "winspoll.drv" Alias "DeviceCapabilitiesA" (ByVal lpDeviceName As String, _
                             ByVal lpPort As String, ByVal iIndex As Long, ByVal lpOutput As String, _
                             lpDevMode As DEVMODE) As Long
-Declare Function timeGetTime Lib "winmm" () As Long
-Declare Function timeBeginPeriod Lib "winmm" (ByVal uPeriod As Integer) As Long
-Declare Function timeEndPeriod Lib "winmm" (ByVal uPeriod As Integer) As Long
+Declare PtrSafe Function timeGetTime Lib "winmm" () As Long
+Declare PtrSafe Function timeBeginPeriod Lib "winmm" (ByVal uPeriod As Integer) As Long
+Declare PtrSafe Function timeEndPeriod Lib "winmm" (ByVal uPeriod As Integer) As Long
 
 'End of file
 
