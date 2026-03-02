@@ -1,0 +1,1 @@
+pilotName=Killer Chick;1=Hvezdic,41,74343360;2=John Malcovich,39,50818040;3=Thomas Anderson,31,28496800;4=John Wick,29,23238380;5=Killer,26,17412020;6=Killer,30,15151240;7=Scrappy Coco,26,15046480;8=Thomas Anderson,26,14222620;9=Fry,23,11975080;10=Escobar,25,10304700;

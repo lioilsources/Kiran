@@ -1,0 +1,14 @@
+2.5.2025 10:24:18    Initialized at 10:24:18
+2.5.2025 10:24:21    Paused
+2.5.2025 10:24:49    Resumed (00:29) Pause time: 00:29
+2.5.2025 10:28:20    Level 1 done in 03:29
+2.5.2025 10:31:00    Level 2 done in 02:21
+2.5.2025 10:34:03    Level 3 done in 02:44
+2.5.2025 10:36:11    Level 4 done in 01:51
+2.5.2025 10:38:27    Level 5 done in 02:00
+2.5.2025 10:39:50    Paused
+2.5.2025 10:39:52    Resumed (00:02) Pause time: 00:31
+2.5.2025 10:40:13    Level 6 done in 01:25
+2.5.2025 10:40:26    Paused
+2.5.2025 11:40:34    Resumed (1:00:07) Pause time: 1:00:38
+2.5.2025 11:41:27    Paused
