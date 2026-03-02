@@ -52,7 +52,7 @@ Public fname As String
 Public imgDir As String
 Public instantMove As Boolean
 Public pause As Boolean
-Public hwndForm As Long
+Public hwndForm As LongPtr
 Public pausedTime As Long
 Public pauseStartTime As Single
 Public running As Boolean
@@ -79,16 +79,16 @@ Private ticks As Long
 Private lastShowFPSTime As Long
 Private upadateOSD As Boolean
 Private dt As Long
-Private token As Long
-Private g As Long
-Private gm As Long
-Private hdc As Long
+Private token As LongPtr
+Private g As LongPtr
+Private gm As LongPtr
+Private hdc As LongPtr
 Private ib As GdiplusStartupInput
 Private worldMatrix As Long
 Private ltime As Long, t As Long
 Private tmp As Long
 Private grad As Variant
-Private tmpDC As Long
+Private tmpDC As LongPtr
 Private lastCredit As Long
 Private fStream As Variant
 Private fState As String
@@ -107,21 +107,21 @@ Private starField(1 To STAR_COUNT) As Image
 
 
 ' Screen buffers
-Private BDC As Long         ' main area DC
-Private bmp As Long         ' main area Bitmap
-Private odc As Long         ' right panel DC
-Private osdBmp As Long      ' right panel bitmap
-Private osdBDC As Long      ' right panel background DC
-Private osdBBmp As Long     ' right panel background bitmap
+Private BDC As LongPtr         ' main area DC
+Private bmp As LongPtr         ' main area Bitmap
+Private odc As LongPtr         ' right panel DC
+Private osdBmp As LongPtr      ' right panel bitmap
+Private osdBDC As LongPtr      ' right panel background DC
+Private osdBBmp As LongPtr     ' right panel background bitmap
 
 
 ' temporary
 Private i As Integer, d As Integer
 Private an As Single
 Private tx As Texture
-Private i1 As Long, i2 As Long
-Private tex1 As Long
-Private mat1 As Long
+Private i1 As LongPtr, i2 As LongPtr
+Private tex1 As LongPtr
+Private mat1 As LongPtr
 Private tb As Button
 Private ts As Long
 
