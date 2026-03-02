@@ -149,20 +149,20 @@ Public Declare PtrSafe Function GdipAddPathLine Lib "gdiplus" (ByVal Path As Lon
 Public Declare PtrSafe Function GdipAddPathRectangle Lib "gdiplus" (ByVal Path As LongPtr, ByVal x As Single, ByVal y As Single, _
         ByVal w As Single, ByVal h As Single) As GpStatus
 Public Declare PtrSafe Function GdipAlloc Lib "gdiplus" (ByVal size As Long) As Long
-Public Declare PtrSafe Function GdipBitmapGetPixel Lib "gdiplus" (ByVal Bitmap As LongPtrPtr, ByVal x As Long, ByVal y As Long, _
+Public Declare PtrSafe Function GdipBitmapGetPixel Lib "gdiplus" (ByVal Bitmap As LongPtr, ByVal x As Long, ByVal y As Long, _
         color As Long) As GpStatus
-Public Declare PtrSafe Function GdipBitmapSetPixel Lib "gdiplus" (ByVal Bitmap As LongPtrPtr, ByVal x As Long, ByVal y As Long, _
+Public Declare PtrSafe Function GdipBitmapSetPixel Lib "gdiplus" (ByVal Bitmap As LongPtr, ByVal x As Long, ByVal y As Long, _
         ByVal color As Long) As GpStatus
 Public Declare PtrSafe Function GdipClonePath Lib "gdiplus" (ByVal Path As LongPtr, cloned As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipClosePathFigure Lib "gdiplus" (ByVal Path As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipCreateBitmapFromFile Lib "gdiplus" (ByVal filename As String, Bitmap As LongPtr) As GpStatus 'long
 Public Declare PtrSafe Function GdipCreateBitmapFromGraphics Lib "gdiplus" (ByVal width As Long, ByVal height As Long, _
-        ByVal graphics As LongPtrPtr, Bitmap As LongPtr) As GpStatus
+        ByVal graphics As LongPtr, Bitmap As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hbm As LongPtr, ByVal hpal As LongPtr, Bitmap As LongPtr) _
         As GpStatus
-Public Declare PtrSafe Function GdipCreateFromHDC Lib "gdiplus" (ByVal hdc As LongPtrPtr, graphics As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipCreateFromHDC Lib "gdiplus" (ByVal hdc As LongPtr, graphics As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipCreateFromHWND Lib "gdiplus" (ByVal hwnd As LongPtr, graphics As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal Bitmap As LongPtrPtr, hBitmap As LongPtrPtr, _
+Public Declare PtrSafe Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal Bitmap As LongPtr, hBitmap As LongPtr, _
         ByVal background As Long) As GpStatus
 Public Declare PtrSafe Function GdipCreateMatrix Lib "gdiplus" (matrix As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipCreateMatrix2 Lib "gdiplus" (ByVal m11 As Single, ByVal m12 As Single, ByVal m21 As Single, _
@@ -173,82 +173,82 @@ Public Declare PtrSafe Function GdipCreatePathGradient Lib "gdiplus" (points As 
 Public Declare PtrSafe Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal Path As LongPtr, polyGrad As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipCreatePen1 Lib "gdiplus" (ByVal color As Long, ByVal width As Single, ByVal unit As GpUnit, _
         pen As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipCreatePen2 Lib "gdiplus" (ByVal brush As LongPtrPtr, ByVal width As Single, ByVal unit As GpUnit, _
+Public Declare PtrSafe Function GdipCreatePen2 Lib "gdiplus" (ByVal brush As LongPtr, ByVal width As Single, ByVal unit As GpUnit, _
         pen As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipCreateSolidFill Lib "gdiplus" (ByVal argb As Long, brush As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipCreateTexture Lib "gdiplus" (ByVal Image As LongPtrPtr, ByVal wrapMd As WrapMode, Texture As Long) _
+Public Declare PtrSafe Function GdipCreateTexture Lib "gdiplus" (ByVal Image As LongPtr, ByVal wrapMd As WrapMode, Texture As Long) _
         As GpStatus
-Public Declare PtrSafe Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As LongPtrPtr) As GpStatus
-Public Declare PtrSafe Function GdipDeleteMatrix Lib "gdiplus" (ByVal matrix As LongPtrPtr) As GpStatus
+Public Declare PtrSafe Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipDeleteMatrix Lib "gdiplus" (ByVal matrix As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipDeletePath Lib "gdiplus" (ByVal Path As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipDisposeImage Lib "gdiplus" (ByVal Image As LongPtrPtr) As GpStatus
-Public Declare PtrSafe Function GdipDrawArc Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal pen As LongPtrPtr, ByVal x As Single, _
+Public Declare PtrSafe Function GdipDisposeImage Lib "gdiplus" (ByVal Image As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipDrawArc Lib "gdiplus" (ByVal graphics As LongPtr, ByVal pen As LongPtr, ByVal x As Single, _
         ByVal y As Single, ByVal width As Single, ByVal height As Single, ByVal startAngle As Single, _
         ByVal sweepAngle As Single) As GpStatus
-Public Declare PtrSafe Function GdipDrawArcI Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal pen As LongPtrPtr, ByVal x As Long, _
+Public Declare PtrSafe Function GdipDrawArcI Lib "gdiplus" (ByVal graphics As LongPtr, ByVal pen As LongPtr, ByVal x As Long, _
         ByVal y As Long, ByVal width As Long, ByVal height As Long, ByVal startAngle As Long, _
         ByVal sweepAngle As Single) As GpStatus
-Public Declare PtrSafe Function GdipDrawImage Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal Image As LongPtrPtr, ByVal x As Single, _
+Public Declare PtrSafe Function GdipDrawImage Lib "gdiplus" (ByVal graphics As LongPtr, ByVal Image As LongPtr, ByVal x As Single, _
         ByVal y As Single) As GpStatus
-Public Declare PtrSafe Function GdipDrawImageI Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal Image As LongPtrPtr, ByVal x As Long, _
+Public Declare PtrSafe Function GdipDrawImageI Lib "gdiplus" (ByVal graphics As LongPtr, ByVal Image As LongPtr, ByVal x As Long, _
         ByVal y As Long) As GpStatus
-Public Declare PtrSafe Function GdipDrawLine Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal pen As LongPtrPtr, ByVal x1 As Single, _
+Public Declare PtrSafe Function GdipDrawLine Lib "gdiplus" (ByVal graphics As LongPtr, ByVal pen As LongPtr, ByVal x1 As Single, _
         ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As GpStatus
-Public Declare PtrSafe Function GdipDrawLineI Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal pen As LongPtrPtr, ByVal x1 As Long, _
+Public Declare PtrSafe Function GdipDrawLineI Lib "gdiplus" (ByVal graphics As LongPtr, ByVal pen As LongPtr, ByVal x1 As Long, _
         ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As GpStatus
-Public Declare PtrSafe Function GdipDrawRectangle Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal pen As LongPtrPtr, ByVal x As Single, _
+Public Declare PtrSafe Function GdipDrawRectangle Lib "gdiplus" (ByVal graphics As LongPtr, ByVal pen As LongPtr, ByVal x As Single, _
         ByVal y As Single, ByVal width As Single, ByVal height As Single) As GpStatus
-Public Declare PtrSafe Function GdipDrawRectangleI Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal pen As LongPtrPtr, ByVal x As Long, _
+Public Declare PtrSafe Function GdipDrawRectangleI Lib "gdiplus" (ByVal graphics As LongPtr, ByVal pen As LongPtr, ByVal x As Long, _
         ByVal y As Long, ByVal width As Long, ByVal height As Long) As GpStatus
-Public Declare PtrSafe Function GdipFillRectangle Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal brush As LongPtrPtr, ByVal x As Single, _
+Public Declare PtrSafe Function GdipFillRectangle Lib "gdiplus" (ByVal graphics As LongPtr, ByVal brush As LongPtr, ByVal x As Single, _
         ByVal y As Single, ByVal width As Single, ByVal height As Single) As GpStatus
-Public Declare PtrSafe Function GdipFillRectangleI Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal brush As LongPtrPtr, ByVal x As Long, _
+Public Declare PtrSafe Function GdipFillRectangleI Lib "gdiplus" (ByVal graphics As LongPtr, ByVal brush As LongPtr, ByVal x As Long, _
         ByVal y As Long, ByVal width As Long, ByVal height As Long) As GpStatus
-Public Declare PtrSafe Function GdipFillEllipse Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal brush As LongPtrPtr, ByVal x As Single, _
+Public Declare PtrSafe Function GdipFillEllipse Lib "gdiplus" (ByVal graphics As LongPtr, ByVal brush As LongPtr, ByVal x As Single, _
         ByVal y As Single, ByVal w As Single, ByVal h As Single) As GpStatus
-Public Declare PtrSafe Function GdipFillEllipseI Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal brush As LongPtrPtr, ByVal x As Long, _
+Public Declare PtrSafe Function GdipFillEllipseI Lib "gdiplus" (ByVal graphics As LongPtr, ByVal brush As LongPtr, ByVal x As Long, _
         ByVal y As Long, ByVal w As Long, ByVal h As Long) As GpStatus
-Public Declare PtrSafe Function GdipFlush Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal intention As FlushIntention) As GpStatus
+Public Declare PtrSafe Function GdipFlush Lib "gdiplus" (ByVal graphics As LongPtr, ByVal intention As FlushIntention) As GpStatus
 Public Declare PtrSafe Sub GdipFree Lib "gdiplus" (ByVal ptr As LongPtr)
-Public Declare PtrSafe Function GdipGetDC Lib "gdiplus" (ByVal graphics As LongPtrPtr, hdc As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal Image As LongPtrPtr, graphics As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipGraphicsClear Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal lColor As Long) As GpStatus
-Public Declare PtrSafe Function GdipGetImageFlags Lib "gdiplus" (ByVal Image As LongPtrPtr, flags As Long) As GpStatus
-Public Declare PtrSafe Function GdipGetImageHeight Lib "gdiplus" (ByVal Image As LongPtrPtr, height As Long) As GpStatus
-Public Declare PtrSafe Function GdipGetImageWidth Lib "gdiplus" (ByVal Image As LongPtrPtr, width As Long) As GpStatus
-Public Declare PtrSafe Function GdipGetTextureImage Lib "gdiplus" (ByVal brush As LongPtrPtr, Image As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipGetDC Lib "gdiplus" (ByVal graphics As LongPtr, hdc As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal Image As LongPtr, graphics As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipGraphicsClear Lib "gdiplus" (ByVal graphics As LongPtr, ByVal lColor As Long) As GpStatus
+Public Declare PtrSafe Function GdipGetImageFlags Lib "gdiplus" (ByVal Image As LongPtr, flags As Long) As GpStatus
+Public Declare PtrSafe Function GdipGetImageHeight Lib "gdiplus" (ByVal Image As LongPtr, height As Long) As GpStatus
+Public Declare PtrSafe Function GdipGetImageWidth Lib "gdiplus" (ByVal Image As LongPtr, width As Long) As GpStatus
+Public Declare PtrSafe Function GdipGetTextureImage Lib "gdiplus" (ByVal brush As LongPtr, Image As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipLoadImageFromFile Lib "gdiplus" (ByVal filename As String, Image As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal filename As String, Image As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipMultiplyMatrix Lib "gdiplus" (ByVal matrix As LongPtrPtr, ByVal matrix2 As LongPtr, _
+Public Declare PtrSafe Function GdipMultiplyMatrix Lib "gdiplus" (ByVal matrix As LongPtr, ByVal matrix2 As LongPtr, _
         ByVal order As MatrixOrder) As GpStatus
-Public Declare PtrSafe Function GdipReleaseDC Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal hdc As LongPtrPtr) As GpStatus
+Public Declare PtrSafe Function GdipReleaseDC Lib "gdiplus" (ByVal graphics As LongPtr, ByVal hdc As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipResetPath Lib "gdiplus" (ByVal Path As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipRestoreGraphics Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal state As LongPtrPtr) As GpStatus
-Public Declare PtrSafe Function GdipRotateMatrix Lib "gdiplus" (ByVal matrix As LongPtrPtr, ByVal angle As Single, _
+Public Declare PtrSafe Function GdipRestoreGraphics Lib "gdiplus" (ByVal graphics As LongPtr, ByVal state As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipRotateMatrix Lib "gdiplus" (ByVal matrix As LongPtr, ByVal angle As Single, _
         ByVal order As MatrixOrder) As GpStatus
-Public Declare PtrSafe Function GdipRotateTextureTransform Lib "gdiplus" (ByVal brush As LongPtrPtr, ByVal angle As Single, _
+Public Declare PtrSafe Function GdipRotateTextureTransform Lib "gdiplus" (ByVal brush As LongPtr, ByVal angle As Single, _
         ByVal order As MatrixOrder) As GpStatus
-Public Declare PtrSafe Function GdipSaveGraphics Lib "gdiplus" (ByVal graphics As LongPtrPtr, state As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal x As Long, _
+Public Declare PtrSafe Function GdipSaveGraphics Lib "gdiplus" (ByVal graphics As LongPtr, state As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal graphics As LongPtr, ByVal x As Long, _
         ByVal y As Long) As GpStatus
 
-Public Declare PtrSafe Function GdipSetCompositingMode Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal compMode As CompositingMode) _
+Public Declare PtrSafe Function GdipSetCompositingMode Lib "gdiplus" (ByVal graphics As LongPtr, ByVal compMode As CompositingMode) _
         As GpStatus
-Public Declare PtrSafe Function GdipSetCompositingQuality Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal compQlty As QualityMode) _
+Public Declare PtrSafe Function GdipSetCompositingQuality Lib "gdiplus" (ByVal graphics As LongPtr, ByVal compQlty As QualityMode) _
         As GpStatus
-Public Declare PtrSafe Function GdipSetPathGradientCenterColor Lib "gdiplus" (ByVal brush As LongPtrPtr, ByVal color As Long) As GpStatus
-Public Declare PtrSafe Function GdipSetPathGradientSurroundColorsWithCount Lib "gdiplus" (ByVal brush As LongPtrPtr, argb As Long, _
+Public Declare PtrSafe Function GdipSetPathGradientCenterColor Lib "gdiplus" (ByVal brush As LongPtr, ByVal color As Long) As GpStatus
+Public Declare PtrSafe Function GdipSetPathGradientSurroundColorsWithCount Lib "gdiplus" (ByVal brush As LongPtr, argb As Long, _
         cnt As Long) As GpStatus
-Public Declare PtrSafe Function GdipSetTextureTransform Lib "gdiplus" (ByVal brush As LongPtrPtr, ByVal matrix As LongPtrPtr) As GpStatus
-Public Declare PtrSafe Function GdipSetWorldTransform Lib "gdiplus" (ByVal graphics As LongPtrPtr, ByVal matrix As LongPtrPtr) As GpStatus
+Public Declare PtrSafe Function GdipSetTextureTransform Lib "gdiplus" (ByVal brush As LongPtr, ByVal matrix As LongPtr) As GpStatus
+Public Declare PtrSafe Function GdipSetWorldTransform Lib "gdiplus" (ByVal graphics As LongPtr, ByVal matrix As LongPtr) As GpStatus
 Public Declare PtrSafe Function GdipStartPathFigure Lib "gdiplus" (ByVal Path As LongPtr) As GpStatus
-Public Declare PtrSafe Function GdipTranslateMatrix Lib "gdiplus" (ByVal matrix As LongPtrPtr, ByVal dx As Single, ByVal dy As Single, _
+Public Declare PtrSafe Function GdipTranslateMatrix Lib "gdiplus" (ByVal matrix As LongPtr, ByVal dx As Single, ByVal dy As Single, _
         ByVal rder As MatrixOrder) As GpStatus
-Public Declare PtrSafe Function GdipTranslateTextureTransform Lib "gdiplus" (ByVal brush As LongPtrPtr, ByVal dx As Single, ByVal dy As Single, _
+Public Declare PtrSafe Function GdipTranslateTextureTransform Lib "gdiplus" (ByVal brush As LongPtr, ByVal dx As Single, ByVal dy As Single, _
         ByVal order As MatrixOrder) As GpStatus
 Public Declare PtrSafe Function GdiplusStartup Lib "gdiplus" (token As LongPtr, inputbuf As GdiplusStartupInput, _
         Optional ByVal outputbuf As Long = 0) As GpStatus
-Public Declare PtrSafe Sub GdiplusShutdown Lib "gdiplus" (ByVal token As LongPtrPtr)
+Public Declare PtrSafe Sub GdiplusShutdown Lib "gdiplus" (ByVal token As LongPtr)
 
 
 
