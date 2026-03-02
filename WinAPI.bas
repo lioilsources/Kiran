@@ -244,12 +244,12 @@ End Type
 Public Type LOGBRUSH
     lbStyle As Long
     lbColor As Long
-    lbHatch As Long
+    lbHatch As LongPtr
 End Type
 
 Public Type msg
     hwnd As LongPtr
-    Message As LongPtr
+    Message As Long
     wParam As LongPtr
     lParam As LongPtr
     time As Long
@@ -281,10 +281,10 @@ End Type
 Type PAINTSTRUCT
     hdc As LongPtr
     fErase As Long
-    rePaint As RECT
+    rcPaint As RECT
     fRestore As Long
     fIncUpdate As Long
-    rgbReserved As Byte
+    rgbReserved(0 To 31) As Byte
 End Type
 
 
@@ -355,8 +355,8 @@ Declare PtrSafe Function CloseWindow Lib "user32" (ByVal hwnd As LongPtr) As Lon
 Declare PtrSafe Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, _
                             ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, _
                             ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, _
-                            ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, lpParam As Any) As LongPtr
-Declare PtrSafe Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hwnd As LongPtr, ByVal wMsg As LongPtr, _
+                            ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, ByVal lpParam As LongPtr) As LongPtr
+Declare PtrSafe Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hwnd As LongPtr, ByVal wMsg As Long, _
                             ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 Declare PtrSafe Function DestroyWindow Lib "user32" (ByVal hwnd As LongPtr) As Long
 Declare PtrSafe Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As msg) As LongPtr
@@ -379,7 +379,7 @@ Declare PtrSafe Function LoadCursorFromFile Lib "user32" Alias "LoadCursorFromFi
 Declare PtrSafe Function LoadIcon Lib "user32" Alias "LoadIconA" (ByVal hInstance As LongPtr, ByVal lpIconName As LongPtr) As LongPtr
 Declare PtrSafe Sub PostQuitMessage Lib "user32" (ByVal nExitCode As Long)
 Declare PtrSafe Function RegisterClassEx Lib "user32" Alias "RegisterClassExA" (lpwcx As WNDCLASSEX) As Long
-Declare PtrSafe Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As LongPtr, ByVal wMsg As LongPtr, _
+Declare PtrSafe Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As LongPtr, ByVal wMsg As Long, _
                             ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 Declare PtrSafe Function SetCursor Lib "user32" (ByVal hCursor As LongPtr) As LongPtr
 Declare PtrSafe Function SetCursorPos Lib "user32" (ByVal x As Long, ByVal y As Long) As Long

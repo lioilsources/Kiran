@@ -74,7 +74,7 @@ Public ROMNUM As Variant
 Private startTime As Long
 Private lastElVal As Long
 Private avg As Single
-Private state As Long
+Private state As LongPtr
 Private ticks As Long
 Private lastShowFPSTime As Long
 Private upadateOSD As Boolean
@@ -186,7 +186,7 @@ End Sub
 
 Public Sub ButtonBox(ByVal dc As LongPtr, ByVal x As Long, ByVal y As Long, ByVal w As Long, ByVal h As Long, _
         ByVal color1 As Long, ByVal color2 As Long, ByVal color3 As Long)
-    Dim tc1 As Long, tc2 As Long, tc3 As Long
+    Dim tc1 As LongPtr, tc2 As LongPtr, tc3 As LongPtr
     tc1 = CreatePen(PS_SOLID, 1, color1)
     tc2 = CreateSolidBrush(color2)
     tc3 = CreatePen(PS_SOLID, 1, color3)
@@ -491,7 +491,7 @@ Public Function CopyImage(i As Image, ByVal x As Long, ByVal y As Long, ByVal c 
     
     Dim n As New Image
     If Not i Is Nothing Then
-        Dim dg As Long, br As Long
+        Dim dg As LongPtr, br As LongPtr
         Dim ln As Integer
         
         n.drawInLoop = True
@@ -850,8 +850,8 @@ Private Sub GenerateBeamGrad(dt As DevType)
     
     steps = Int(dt.seqs / 2)
     step = Round(256 / steps)
-    Dim a() As Long
-    ReDim a(0 To dt.seqs + 1) As Long
+    Dim a() As LongPtr
+    ReDim a(0 To dt.seqs + 1) As LongPtr
     For i = 0 To steps
         c = i * step
         'p = CreatePen(PS_SOLID, 1, 65536 * c + 256 * c + c)
@@ -1388,7 +1388,7 @@ End Function
 ' ----------------------------------------------------------------------------------------------------------------------
 ' ------------------------------------------[    W I N D O W   P R O C    ]---------------------------------------------
 ' ----------------------------------------------------------------------------------------------------------------------
-Private Function WindowProc(ByVal hwnd As LongPtr, ByVal uMsg As LongPtr, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Function WindowProc(ByVal hwnd As LongPtr, ByVal uMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 On Error GoTo err
     Static sta As String
     Static dev As Device
