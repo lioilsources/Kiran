@@ -232,7 +232,7 @@ Public Function CreateImage(ByVal hBitmap As LongPtr, ByVal x As Long, ByVal y A
 End Function
 
 
-Public Function CloneImage(orig As Image) As Image
+Public Function CloneImage(ByVal orig As Image) As Image
     Dim i As New Image
     i.hBitmap = orig.hBitmap
     i.hMask = orig.hMask
@@ -287,7 +287,7 @@ Public Function ApplyAlpha(ByVal color As Long, ByVal alpha As Long) As Long
 End Function
 
 
-Public Sub CreateImageMask(i As Image)
+Public Sub CreateImageMask(ByVal i As Image)
     Dim clr As Long, dc As LongPtr, b As LongPtr
     Dim hpal As LongPtr
     Dim x As Integer, y As Integer
@@ -422,7 +422,7 @@ Public Function GdipLoadImg(ByVal name As String, Optional ByVal x As Long = -1,
 End Function
 
 
-Public Sub DrawImage(ByVal dc As LongPtr, graphics As LongPtr, i As Image, Optional ByVal x As Integer = -1000, _
+Public Sub DrawImage(ByVal dc As LongPtr, ByVal graphics As LongPtr, ByVal i As Image, Optional ByVal x As Integer = -1000, _
         Optional ByVal y As Integer = -1000)
 
     If x > -1000 Then i.x = x
@@ -443,7 +443,7 @@ Public Sub DrawImage(ByVal dc As LongPtr, graphics As LongPtr, i As Image, Optio
 End Sub
 
 
-Public Sub DrawButton(ByVal dc As LongPtr, graphics As LongPtr, b As Button)
+Public Sub DrawButton(ByVal dc As LongPtr, ByVal graphics As LongPtr, ByVal b As Button)
     Static bx As Integer
     Static a As Integer
     
@@ -461,7 +461,7 @@ Public Sub DrawButton(ByVal dc As LongPtr, graphics As LongPtr, b As Button)
 End Sub
 
 
-Public Sub DrawButtonIntr(ByVal dc As LongPtr, graphics As LongPtr, b As Button, ByVal bx As Integer, ByVal by As Integer)
+Public Sub DrawButtonIntr(ByVal dc As LongPtr, ByVal graphics As LongPtr, ByVal b As Button, ByVal bx As Integer, ByVal by As Integer)
     If b.over Then
         If b.pressed Then
             Call DrawImage(dc, graphics, b.imgDown, bx, by)
@@ -489,7 +489,7 @@ Public Function CloneBitmap(ByVal bmp As LongPtr, ByVal w As Long, ByVal h As Lo
 End Function
 
 
-Public Function CopyImage(i As Image, ByVal x As Long, ByVal y As Long, ByVal c As Single, _
+Public Function CopyImage(ByVal i As Image, ByVal x As Long, ByVal y As Long, ByVal c As Single, _
         Optional ByVal ratio As Single = 1, Optional layer As Boolean = False, _
         Optional ByVal layNum As Integer = -1, Optional stretchMode As Integer = -1) As Image
     
@@ -585,7 +585,7 @@ Public Sub DrawProgressBar(ByVal grad As LongPtr, ByVal x As Single, ByVal y As 
 End Sub
 
 
-Public Sub ScribeButtonImage(b As Button, ByVal str As String, ByVal font As LongPtr)
+Public Sub ScribeButtonImage(ByVal b As Button, ByVal str As String, ByVal font As LongPtr)
     Dim dc As LongPtr
     Dim bmp As LongPtr
     dc = CreateCompatibleDC(hdc)
@@ -608,7 +608,7 @@ Public Sub ScribeButtonImage(b As Button, ByVal str As String, ByVal font As Lon
 End Sub
 
 
-Public Sub CreateButtonImages(b As Button, ByVal w As Integer, ByVal h As Integer, ByVal caption As String, ByVal font As LongPtr)
+Public Sub CreateButtonImages(ByVal b As Button, ByVal w As Integer, ByVal h As Integer, ByVal caption As String, ByVal font As LongPtr)
     Dim dc As LongPtr
     b.w = w
     b.h = h
@@ -663,7 +663,7 @@ Private Function CreateTexture(ByVal i As Image) As Texture
 End Function
 
 
-Private Sub PlaceTexture(t As Texture)
+Private Sub PlaceTexture(ByVal t As Texture)
     Dim mat As LongPtr, tex As LongPtr
     tex = t.tex
     s = GdipSaveGraphics(g, state)
@@ -845,7 +845,7 @@ Private Sub CCenterPaint(Optional dummy As Boolean = False)
 End Sub
 
 
-Private Sub GenerateBeamGrad(dt As DevType)
+Private Sub GenerateBeamGrad(ByVal dt As DevType)
     Dim steps As Long
     Dim step As Long
     Dim i As Integer
@@ -867,7 +867,7 @@ Private Sub GenerateBeamGrad(dt As DevType)
 End Sub
 
 
-Private Sub DrawBeam(d As Device, Optional ByVal fat As Boolean = False)
+Private Sub DrawBeam(ByVal d As Device, Optional ByVal fat As Boolean = False)
     SelectObject BDC, grad(d.beamActive)
     BeginPath BDC
     MoveToEx BDC, d.sx, d.sy, 0

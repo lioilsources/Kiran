@@ -171,7 +171,7 @@ Public Function HostCap(ByVal ht As HostType) As String
 End Function
 
 
-Public Sub SetType(h As Hostile, ByVal eType As HostType)
+Public Sub SetType(ByVal h As Hostile, ByVal eType As HostType)
     Static tmpImg As Image
     
     h.caption = HostCap(eType)
@@ -424,7 +424,7 @@ Public Function GetLastButton() As Button
 End Function
 
 
-Public Sub AddButton(b As Button)
+Public Sub AddButton(ByVal b As Button)
     If Not fButton Is Nothing Then
         Dim lb As Button
         Set lb = GetLastButton
@@ -648,7 +648,7 @@ Public Function CreateSector(Optional ByVal caption As String = "Sector") As Sec
 End Function
 
 
-Public Sub CreateExplosion(h As Hostile)
+Public Sub CreateExplosion(ByVal h As Hostile)
     Dim ex As New Explosion
     Dim n As Integer
     Set ex.parent = Me
@@ -667,7 +667,7 @@ Public Sub CreateExplosion(h As Hostile)
 End Sub
 
 
-Public Sub DeleteExplosion(ex As Explosion)
+Public Sub DeleteExplosion(ByVal ex As Explosion)
     If Not ex.prv Is Nothing Then Set ex.prv.nxt = ex.nxt Else Set fExp = ex.nxt
     If Not ex.nxt Is Nothing Then Set ex.nxt.prv = ex.prv Else Set lExp = ex.prv
 End Sub

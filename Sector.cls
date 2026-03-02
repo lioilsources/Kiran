@@ -101,7 +101,7 @@ Public Function GetLastStruct() As Structure
 End Function
 
 
-Public Function CreateStruct(img As Image, ByVal hpMax As Long, ByVal x As Single, ByVal y As Single, _
+Public Function CreateStruct(ByVal img As Image, ByVal hpMax As Long, ByVal x As Single, ByVal y As Single, _
         ByVal stype As StructType, Optional ByVal caption As String = "Structure") As Structure
 
     Dim s As New Structure
@@ -222,7 +222,7 @@ Public Sub Delete()
 End Sub
 
 
-Private Sub AddStructScore(s As Structure)
+Private Sub AddStructScore(ByVal s As Structure)
     s.img.drawInLoop = False
     rocket.AddCredit s.hpMax
     rocket.AddScore s.hpMax
@@ -257,7 +257,7 @@ Public Sub AddAsteroids(ByVal enTime As Long, ByVal count As Integer, ByVal x As
 End Sub
 
 
-Private Sub SetAltParams(ByVal p1 As Integer, ByVal p2 As Integer, ByVal p3 As Integer, ByVal p4 As PathType, f As Fleet)
+Private Sub SetAltParams(ByVal p1 As Integer, ByVal p2 As Integer, ByVal p3 As Integer, ByVal p4 As PathType, ByVal f As Fleet)
     f.altParam1 = p1
     f.altParam2 = p2
     f.altParam3 = p3
@@ -656,7 +656,7 @@ Public Function WeapCDFromDPS(ByVal dps As Single, ByVal hostCount As Integer) A
 End Function
 
 
-Public Function CreateDev(ByVal name As String, projImg As Image) As Device
+Public Function CreateDev(ByVal name As String, ByVal projImg As Image) As Device
     Dim d As New Device
     d.name = name
     d.displayName = name

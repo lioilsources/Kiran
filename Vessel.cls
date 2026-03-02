@@ -74,7 +74,7 @@ Public Enum Slots
 End Enum
 
 
-Public Sub Init(ByVal sw As Long, ByVal sh As Long, ByVal iname As String, obj As Objects)
+Public Sub Init(ByVal sw As Long, ByVal sh As Long, ByVal iname As String, ByVal obj As Objects)
     Set img = imgLib.GetItem(iname)
     scrW = sw
     scrH = sh
@@ -235,7 +235,7 @@ Public Function GetLastDevice() As Device
 End Function
 
 
-Public Function CreateDevice(ByVal name As String, ByVal s As Slots, projImg As Image, Optional minScale As Single = 1, _
+Public Function CreateDevice(ByVal name As String, ByVal s As Slots, ByVal projImg As Image, Optional minScale As Single = 1, _
         Optional maxScale As Single = 1) As Device
     Dim d As New Device
     d.name = name
@@ -515,7 +515,7 @@ Public Sub step()
 End Sub
 
 
-Public Function ProcessEnemies(d As Device, p As Projectile, ByVal px1 As Single, ByVal py1 As Single, _
+Public Function ProcessEnemies(ByVal d As Device, ByVal p As Projectile, ByVal px1 As Single, ByVal py1 As Single, _
             ByVal px2 As Single, ByVal py2 As Single) As Boolean
     Dim dmg As Long
     Dim delproj As Boolean
