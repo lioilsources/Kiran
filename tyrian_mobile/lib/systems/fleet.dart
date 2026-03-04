@@ -29,8 +29,12 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   double maxX = double.negativeInfinity;
   double maxY = double.negativeInfinity;
 
-  // Weapon for enemies to fire
+  // Enemy weapon (VB6 Fleet.weap / weapCharge / weapCD)
   Device? weapon;
+  int weapCharge = 0;   // frames between shots (recharge)
+  int weapCD = 0;       // current cooldown counter
+  int weapDamage = 0;   // enemy weapon damage
+  double weapScale = 0.5; // projectile scale ratio (dmg/75 clamped 0.3-0.99)
 
   // Extra path appended to each hostile's path on spawn
   PathSystem? extraPath;
@@ -139,8 +143,8 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   void onHostileKilled(Hostile h, TyrianGame gameInstance) {
     kills++;
 
-    // Add score
-    gameInstance.vessel.score += h.hpMax;
+    // Add score (VB6: score = hpMax, credit = hpMax / 10)
+    gameInstance.vessel.addScore(h.hpMax);
     gameInstance.vessel.credit += h.hpMax ~/ 10;
   }
 
@@ -181,6 +185,13 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       case CollType.bonusCredit: return 'Credits';
       case CollType.none: return '';
     }
+  }
+
+  /// VB6 Sector.AddWeapon — set enemy weapon for this fleet
+  void addWeapon(int dmg, int recharge) {
+    weapDamage = dmg;
+    weapCharge = recharge;
+    weapScale = (dmg / 75.0).clamp(0.3, 0.99);
   }
 
   /// Factory: create fleet with path

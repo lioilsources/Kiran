@@ -12,6 +12,7 @@ import '../entities/collectable.dart';
 import '../entities/structure.dart';
 import '../systems/sector.dart';
 import '../systems/fleet.dart';
+import '../entities/projectile.dart';
 import '../services/asset_library.dart';
 import '../rendering/beam_renderer.dart';
 
@@ -33,6 +34,7 @@ class TyrianGame extends FlameGame
   final List<Structure> activeStructures = [];
   final List<Collectable> activeCollectables = [];
   final List<Explosion> activeExplosions = [];
+  final List<Projectile> enemyProjectiles = [];
 
   Sector? currentSector;
   int currentSectorIndex = 0;
@@ -45,6 +47,7 @@ class TyrianGame extends FlameGame
   VoidCallback? onShowComCenter;
   VoidCallback? onSectorComplete;
   VoidCallback? onLoaded;
+  void Function(String)? onShowMessage;
 
   @override
   Color backgroundColor() => const Color(0xFF000000);
@@ -116,6 +119,10 @@ class TyrianGame extends FlameGame
       e.removeFromParent();
     }
     activeExplosions.clear();
+    for (final p in [...enemyProjectiles]) {
+      p.removeFromParent();
+    }
+    enemyProjectiles.clear();
   }
 
   @override
@@ -139,6 +146,9 @@ class TyrianGame extends FlameGame
       _osdTimer = 0;
       onOsdUpdate?.call();
     }
+
+    // Update enemy projectiles — collision with vessel
+    _updateEnemyProjectiles();
 
     // Check sector completion
     if (currentSector != null && currentSector!.isComplete) {
@@ -218,6 +228,49 @@ class TyrianGame extends FlameGame
     super.onTapDown(event);
     if (state != GameState.playing) return;
     vessel.fire = !vessel.fire; // Toggle auto-fire
+  }
+
+  void showMessage(String msg) {
+    onShowMessage?.call(msg);
+  }
+
+  void _updateEnemyProjectiles() {
+    for (int i = enemyProjectiles.length - 1; i >= 0; i--) {
+      final p = enemyProjectiles[i];
+      if (!p.active) {
+        enemyProjectiles.removeAt(i);
+        continue;
+      }
+      // Off-screen check (already handled by Projectile.update, but also remove from list)
+      if (p.position.y > config.gameHeight + 50 || p.position.y < -50) {
+        p.removeFromParent();
+        enemyProjectiles.removeAt(i);
+        continue;
+      }
+      // AABB collision with vessel
+      if (vessel.visible &&
+          p.position.x < vessel.position.x + vessel.size.x / 2 &&
+          p.position.x + p.size.x > vessel.position.x - vessel.size.x / 2 &&
+          p.position.y < vessel.position.y + vessel.size.y / 2 &&
+          p.position.y + p.size.y > vessel.position.y - vessel.size.y / 2) {
+        vessel.takeDamage(p.damage.toInt());
+        p.removeFromParent();
+        enemyProjectiles.removeAt(i);
+      }
+    }
+  }
+
+  /// Spawn an enemy projectile (called from Hostile firing logic)
+  void spawnEnemyProjectile(double x, double y, int dmg, double scale) {
+    final proj = Projectile(
+      imgName: 'bubble',
+      position: Vector2(x, y),
+      speed: 15.0, // positive = downward
+      damage: dmg.toDouble(),
+      scale: scale,
+    );
+    enemyProjectiles.add(proj);
+    world.add(proj);
   }
 
   // Spawn helpers used by Sector/Fleet

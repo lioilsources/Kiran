@@ -27,8 +27,13 @@ class _ComCenterScreenState extends State<ComCenterScreen> {
   TyrianGame get game => widget.game;
   Vessel get vessel => game.vessel;
 
-  List<DevType> get currentWeapons =>
-      _selectedCategory == 0 ? DevType.frontWeapons : DevType.sideWeapons;
+  /// Weapons filtered by score-based unlock tier (VB6 WepLevScores)
+  /// Index maps to tier: 0=starter, 1=400k, 2=4M, 3=14M
+  List<DevType> get currentWeapons {
+    final all = _selectedCategory == 0 ? DevType.frontWeapons : DevType.sideWeapons;
+    final maxIndex = vessel.nextWeaponLevel.clamp(0, all.length - 1);
+    return all.sublist(0, maxIndex + 1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +181,15 @@ class _ComCenterScreenState extends State<ComCenterScreen> {
                   style: const TextStyle(color: Colors.white70, fontSize: 10),
                 ),
             ],
+          ),
+          const SizedBox(height: 4),
+          // Generator load info (VB6 Vessel.GenInfo)
+          Text(
+            vessel.genInfo,
+            style: TextStyle(
+              color: vessel.generatorLoad > 100 ? Colors.redAccent : Colors.yellowAccent,
+              fontSize: 10,
+            ),
           ),
         ],
       ),

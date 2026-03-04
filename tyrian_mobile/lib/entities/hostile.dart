@@ -3,6 +3,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/tyrian_game.dart';
+import '../game/game_config.dart' as config;
 import '../systems/path_system.dart';
 import '../systems/fleet.dart';
 import '../systems/device.dart';
@@ -152,6 +153,24 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
       if (!trace!.advance()) {
         // Path ended
         _onPathEnd();
+      }
+    }
+
+    // Enemy weapon firing (VB6 Hostile.step weapon logic)
+    if (parentFleet != null && parentFleet!.weapCharge > 0) {
+      parentFleet!.weapCD++;
+      if (parentFleet!.weapCD >= parentFleet!.weapCharge) {
+        // Only fire when on-screen
+        final xm = position.x + size.x / 2;
+        if (y2 > 0 && xm > 0 && xm < config.gameWidth) {
+          game.spawnEnemyProjectile(
+            xm,
+            y2 + 5,
+            parentFleet!.weapDamage,
+            parentFleet!.weapScale,
+          );
+        }
+        parentFleet!.weapCD = 0;
       }
     }
 

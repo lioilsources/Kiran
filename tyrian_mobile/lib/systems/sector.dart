@@ -43,6 +43,17 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       }
     }
 
+    // Fleet acceleration: skip dead time when all active fleets cleared
+    if (fleets.any((f) => f.started)) {
+      final allStartedDead = fleets.where((f) => f.started).every((f) => !f.active);
+      if (allStartedDead) {
+        final nextUnstarted = fleets.where((f) => !f.started).toList();
+        if (nextUnstarted.isNotEmpty) {
+          elapsed = nextUnstarted.first.enterTime;
+        }
+      }
+    }
+
     // Activate structures based on enter time
     for (final s in structures) {
       if (!s.activated && elapsed >= s.enterTime) {
@@ -152,13 +163,15 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       srcX: w - 300, srcY: -45, dstX: w - 500, dstY: h + 5,
       pathType: PathType.sinus, amplitude: 20, cycles: 10,
     ));
-    s.fleets.add(Fleet.create(
+    final f4 = Fleet.create(
       id: 4, enterTime: 52, caption: 'Asteroid miner escort',
       hostType: HostType.falcon3, count: 15, bonus: CollType.bonusCredit,
       triggerSteps: 72, durationSec: 27, bonusMoney: 1000,
       srcX: 300, srcY: -45, dstX: 1100, dstY: h + 5,
       pathType: PathType.cosinus, amplitude: 250, cycles: 10, amplMultiplier: 0.9991,
-    ));
+    );
+    f4.addWeapon(10, 300);
+    s.fleets.add(f4);
     s.fleets.add(Fleet.create(
       id: 5, enterTime: 85, caption: 'Asteroid hunters',
       hostType: HostType.falcon1, count: 30, bonus: CollType.generatorUpgrade,
@@ -173,27 +186,33 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       srcX: 0, srcY: -400, dstX: w - 400, dstY: h + 5,
       pathType: PathType.sinCos, amplitude: 400, cycles: 10,
     ));
-    s.fleets.add(Fleet.create(
+    final f7 = Fleet.create(
       id: 7, enterTime: 123, caption: '',
       hostType: HostType.falcon4, count: 20, bonus: CollType.rightWepUpgrade,
       triggerSteps: 20, durationSec: 22,
       srcX: 0, srcY: -40, dstX: w - 100, dstY: h + 5,
       pathType: PathType.sinus, amplitude: 100, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    f7.addWeapon(15, 300);
+    s.fleets.add(f7);
+    final f8 = Fleet.create(
       id: 8, enterTime: 152, caption: '',
       hostType: HostType.falcon5, count: 20, bonus: CollType.frontWepUpgrade,
       triggerSteps: 25, durationSec: 20,
       srcX: w, srcY: -40, dstX: 0, dstY: h + 5,
       pathType: PathType.sinus, amplitude: 100, cycles: 12,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    f8.addWeapon(15, 275);
+    s.fleets.add(f8);
+    final f9 = Fleet.create(
       id: 9, enterTime: 177, caption: '',
       hostType: HostType.falcon6, count: 20, bonus: CollType.bonusCredit,
       triggerSteps: 25, durationSec: 24, bonusMoney: 500,
       srcX: -50, srcY: 200, dstX: w + 10, dstY: 200,
       pathType: PathType.sinus, amplitude: 100, cycles: 12,
-    ));
+    );
+    f9.addWeapon(18, 175);
+    s.fleets.add(f9);
     _addAsteroids(s, 57, 20, (w / 5).roundToDouble(), (w / 2).roundToDouble());
 
     return s;
@@ -206,55 +225,68 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     final h = config.gameHeight;
     final s = Sector(caption: 'Inner Zone', level: 2, sectorBonus: 7500);
 
-    s.fleets.add(Fleet.create(
+    final s1f0 = Fleet.create(
       id: 0, enterTime: 2, caption: '',
       hostType: HostType.falcon3, count: 30, bonus: CollType.healthUpgrade,
       triggerSteps: 12, durationSec: 27,
       srcX: w - 100, srcY: -200, dstX: 300, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 180, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s1f0.addWeapon(20, 400);
+    s.fleets.add(s1f0);
+    final s1f1 = Fleet.create(
       id: 1, enterTime: 24, caption: '',
       hostType: HostType.falcon4, count: 30, bonus: CollType.leftWepUpgrade,
       triggerSteps: 12, durationSec: 27,
       srcX: 100, srcY: -200, dstX: w - 400, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 220, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s1f1.addWeapon(20, 400);
+    s.fleets.add(s1f1);
+    final s1f2 = Fleet.create(
       id: 2, enterTime: 46, caption: '',
       hostType: HostType.falcon5, count: 30, bonus: CollType.rightWepUpgrade,
       triggerSteps: 12, durationSec: 27,
       srcX: w - 100, srcY: -200, dstX: 300, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 180, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s1f2.addWeapon(20, 350);
+    s.fleets.add(s1f2);
+    final s1f3 = Fleet.create(
       id: 3, enterTime: 68, caption: '',
       hostType: HostType.falcon6, count: 30, bonus: CollType.shieldUpgrade,
       triggerSteps: 12, durationSec: 27,
       srcX: 100, srcY: -200, dstX: w - 400, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 220, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s1f3.addWeapon(20, 350);
+    s.fleets.add(s1f3);
+    final s1f4 = Fleet.create(
       id: 4, enterTime: 90, caption: '',
       hostType: HostType.falcon4, count: 10, bonus: CollType.generatorUpgrade,
       triggerSteps: 50, durationSec: 16,
       srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5,
       pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s1f4.addWeapon(20, 350);
+    s.fleets.add(s1f4);
+    final s1f5 = Fleet.create(
       id: 5, enterTime: 94, caption: '',
       hostType: HostType.falcon4, count: 12, bonus: CollType.leftWepUpgrade,
       triggerSteps: 50, durationSec: 16,
       srcX: 300, srcY: -45, dstX: w - 100, dstY: h + 5,
       pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s1f5.addWeapon(20, 300);
+    s.fleets.add(s1f5);
+    final s1f6 = Fleet.create(
       id: 6, enterTime: 100, caption: '',
       hostType: HostType.falcon5, count: 14, bonus: CollType.rightWepUpgrade,
       triggerSteps: 50, durationSec: 16,
       srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5,
       pathType: PathType.linear,
-    ));
+    );
+    s.fleets.add(s1f6);
 
     // Boss: falconx2 with 4-segment extra path
     final bossFleet = Fleet.create(
@@ -278,6 +310,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     ep.addPath(seg4);
     ep.onExit = PathAction.stay;
     bossFleet.setExtraPath(ep);
+    bossFleet.addWeapon(30, 120);
     s.fleets.add(bossFleet);
 
     s.fleets.add(Fleet.create(
@@ -298,55 +331,69 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     final h = config.gameHeight;
     final s = Sector(caption: 'Planet Perimeter', level: 3, sectorBonus: 10000);
 
-    s.fleets.add(Fleet.create(
+    final s2f0 = Fleet.create(
       id: 0, enterTime: 2, caption: '',
       hostType: HostType.falcon3, count: 50, bonus: CollType.generatorUpgrade,
       triggerSteps: 12, durationSec: 22,
       srcX: w + 100, srcY: -200, dstX: -100, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 180, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s2f0.addWeapon(33, 450);
+    s.fleets.add(s2f0);
+    final s2f1 = Fleet.create(
       id: 1, enterTime: 18, caption: '',
       hostType: HostType.falcon3, count: 50, bonus: CollType.shieldUpgrade,
       triggerSteps: 12, durationSec: 22,
       srcX: -100, srcY: -200, dstX: w + 100, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 180, cycles: 10,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s2f1.addWeapon(33, 450);
+    s.fleets.add(s2f1);
+    final s2f2 = Fleet.create(
       id: 2, enterTime: 45, caption: '',
       hostType: HostType.falcon3, count: 30, bonus: CollType.rightWepUpgrade,
       triggerSteps: 70, durationSec: 20,
       srcX: -100, srcY: -45, dstX: w + 100, dstY: h + 5,
       pathType: PathType.cosinus, amplitude: 75, cycles: 11,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s2f2.addWeapon(33, 300);
+    s.fleets.add(s2f2);
+    final s2f3 = Fleet.create(
       id: 3, enterTime: 55, caption: '',
       hostType: HostType.falconx, count: 8, bonus: CollType.none,
       triggerSteps: 12, durationSec: 85,
       srcX: w / 2 - 10, srcY: -200, dstX: w / 2 - 10, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 300, cycles: 8,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s2f3.addWeapon(40, 350);
+    s.fleets.add(s2f3);
+    final s2f4 = Fleet.create(
       id: 4, enterTime: 70, caption: '',
       hostType: HostType.falcon4, count: 30, bonus: CollType.leftWepUpgrade,
       triggerSteps: 70, durationSec: 20,
       srcX: w + 100, srcY: -45, dstX: -100, dstY: h + 5,
       pathType: PathType.cosinus, amplitude: 75, cycles: 13,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s2f4.addWeapon(33, 250);
+    s.fleets.add(s2f4);
+    final s2f5 = Fleet.create(
       id: 5, enterTime: 75, caption: '',
       hostType: HostType.falconx, count: 8, bonus: CollType.none,
       triggerSteps: 12, durationSec: 85,
       srcX: 690, srcY: -200, dstX: w / 2 - 10, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 300, cycles: 8,
-    ));
-    s.fleets.add(Fleet.create(
+    );
+    s2f5.addWeapon(40, 350);
+    s.fleets.add(s2f5);
+    final s2f6 = Fleet.create(
       id: 6, enterTime: 120, caption: '',
       hostType: HostType.falconx, count: 20, bonus: CollType.generatorUpgrade,
       triggerSteps: 12, durationSec: 75,
       srcX: w, srcY: -200, dstX: 0, dstY: h + 200,
       pathType: PathType.sinCos, amplitude: 300, cycles: 8,
-    ));
+    );
+    s2f6.addWeapon(40, 350);
+    s.fleets.add(s2f6);
     _addAsteroids(s, 125, 20, 50, w - 50);
 
     return s;
@@ -386,13 +433,15 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     final sharedEp = ep.clone();
 
     // Swarm: 150x falcon5
-    s.fleets.add(Fleet.create(
+    final swarm = Fleet.create(
       id: 1, enterTime: 4, caption: '',
       hostType: HostType.falcon5, count: 150, bonus: CollType.healthUpgrade,
       triggerSteps: 10, durationSec: 70,
       srcX: -180, srcY: -180, dstX: w + 180, dstY: h + 180,
       pathType: PathType.sinCos, amplitude: 160, cycles: 10,
-    ));
+    );
+    swarm.addWeapon(35, 500);
+    s.fleets.add(swarm);
 
     // Individual bosses: falconx at t=5,8,11,14
     for (final entry in [
@@ -409,6 +458,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
         pathType: PathType.linear,
       );
       f.setExtraPath(sharedEp.clone());
+      f.addWeapon(40, 350);
       s.fleets.add(f);
     }
 
@@ -421,6 +471,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       pathType: PathType.linear,
     );
     f17.setExtraPath(sharedEp.clone());
+    f17.addWeapon(40, 350);
     s.fleets.add(f17);
 
     // falconx2 bosses at t=20,22,24,26,28,29,30 with bonus money
@@ -441,16 +492,20 @@ class Sector extends Component with HasGameReference<TyrianGame> {
         pathType: PathType.linear,
       );
       f.setExtraPath(sharedEp.clone());
+      f.addWeapon(40, 300);
       s.fleets.add(f);
     }
 
     // falconx3 bosses at t=31,32,33,34 with bonus money
-    for (final entry in [
-      [14, 31.0, CollType.shieldUpgrade, 3000],
-      [15, 32.0, CollType.bonusCredit, 3000],
-      [16, 33.0, CollType.shieldUpgrade, 3000],
-      [17, 34.0, CollType.bonusCredit, 3000],
-    ]) {
+    // VB6: recharge 275,275,250,250
+    final x3Recharges = [275, 275, 250, 250];
+    for (int idx = 0; idx < 4; idx++) {
+      final entry = [
+        [14, 31.0, CollType.shieldUpgrade, 3000],
+        [15, 32.0, CollType.bonusCredit, 3000],
+        [16, 33.0, CollType.shieldUpgrade, 3000],
+        [17, 34.0, CollType.bonusCredit, 3000],
+      ][idx];
       final f = Fleet.create(
         id: entry[0] as int, enterTime: entry[1] as double, caption: '',
         hostType: HostType.falconx3, count: 1, bonus: entry[2] as CollType,
@@ -459,6 +514,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
         pathType: PathType.linear,
       );
       f.setExtraPath(sharedEp.clone());
+      f.addWeapon(40, x3Recharges[idx]);
       s.fleets.add(f);
     }
 
@@ -472,54 +528,28 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     final s = Sector(caption: 'Planet Orbit', level: 5, sectorBonus: 20000);
 
     // 6 FreezeFleet fleets: fly to Y=100-600 and stop in formation
-    s.fleets.add(Fleet.create(
-      id: 0, enterTime: 2, caption: '',
-      hostType: HostType.falcon6, count: 19, bonus: CollType.generatorUpgrade,
-      triggerSteps: 25, durationSec: 12,
-      srcX: -50, srcY: 100, dstX: w - 58, dstY: 100,
-      pathType: PathType.linear,
-      defaultPathAction: PathAction.freezeFleet,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 1, enterTime: 3, caption: '',
-      hostType: HostType.falcon5, count: 19, bonus: CollType.bonusCredit,
-      triggerSteps: 25, durationSec: 12, bonusMoney: 20000,
-      srcX: w + 5, srcY: 200, dstX: 2, dstY: 200,
-      pathType: PathType.linear,
-      defaultPathAction: PathAction.freezeFleet,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 2, enterTime: 4, caption: '',
-      hostType: HostType.falcon4, count: 19, bonus: CollType.bonusCredit,
-      triggerSteps: 25, durationSec: 12, bonusMoney: 18000,
-      srcX: -50, srcY: 300, dstX: w - 58, dstY: 300,
-      pathType: PathType.linear,
-      defaultPathAction: PathAction.freezeFleet,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 3, enterTime: 5, caption: '',
-      hostType: HostType.falcon3, count: 19, bonus: CollType.bonusCredit,
-      triggerSteps: 25, durationSec: 12, bonusMoney: 16000,
-      srcX: w + 5, srcY: 400, dstX: 2, dstY: 400,
-      pathType: PathType.linear,
-      defaultPathAction: PathAction.freezeFleet,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 4, enterTime: 6, caption: '',
-      hostType: HostType.falcon2, count: 19, bonus: CollType.bonusCredit,
-      triggerSteps: 25, durationSec: 12, bonusMoney: 14000,
-      srcX: -50, srcY: 500, dstX: w - 58, dstY: 500,
-      pathType: PathType.linear,
-      defaultPathAction: PathAction.freezeFleet,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 5, enterTime: 7, caption: '',
-      hostType: HostType.falcon1, count: 19, bonus: CollType.bonusCredit,
-      triggerSteps: 25, durationSec: 12, bonusMoney: 12000,
-      srcX: w + 5, srcY: 600, dstX: 2, dstY: 600,
-      pathType: PathType.linear,
-      defaultPathAction: PathAction.freezeFleet,
-    ));
+    // VB6: dmg 15,14,13,12,11,10 recharge 300 all
+    final freezeData = [
+      [0, 2.0, HostType.falcon6, CollType.generatorUpgrade, 0, -50.0, 100.0, w - 58, 100.0, 15],
+      [1, 3.0, HostType.falcon5, CollType.bonusCredit, 20000, w + 5, 200.0, 2.0, 200.0, 14],
+      [2, 4.0, HostType.falcon4, CollType.bonusCredit, 18000, -50.0, 300.0, w - 58, 300.0, 13],
+      [3, 5.0, HostType.falcon3, CollType.bonusCredit, 16000, w + 5, 400.0, 2.0, 400.0, 12],
+      [4, 6.0, HostType.falcon2, CollType.bonusCredit, 14000, -50.0, 500.0, w - 58, 500.0, 11],
+      [5, 7.0, HostType.falcon1, CollType.bonusCredit, 12000, w + 5, 600.0, 2.0, 600.0, 10],
+    ];
+    for (final fd in freezeData) {
+      final ff = Fleet.create(
+        id: fd[0] as int, enterTime: fd[1] as double, caption: '',
+        hostType: fd[2] as HostType, count: 19, bonus: fd[3] as CollType,
+        triggerSteps: 25, durationSec: 12, bonusMoney: fd[4] as int,
+        srcX: (fd[5] as double), srcY: (fd[6] as double),
+        dstX: (fd[7] as double), dstY: (fd[8] as double),
+        pathType: PathType.linear,
+        defaultPathAction: PathAction.freezeFleet,
+      );
+      ff.addWeapon(fd[9] as int, 300);
+      s.fleets.add(ff);
+    }
 
     // ReplacePath fleets: fly to position then oscillate
     final rpFleet0 = Fleet.create(
@@ -531,16 +561,19 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       defaultPathAction: PathAction.replacePath,
     );
     _setAltParams(rpFleet0, 50, 40, 0, PathType.cosinus);
+    rpFleet0.addWeapon(50, 225);
     s.fleets.add(rpFleet0);
 
-    for (final entry in [
-      [7, 45.0, HostType.falcon6, CollType.healthUpgrade, 1, -50.0, 100.0, w - 66, 100.0, 30, 20],
-      [8, 46.0, HostType.falcon5, CollType.shieldUpgrade, 20000, w + 5, 200.0, 2.0, 200.0, 30, 20],
-      [9, 47.0, HostType.falcon4, CollType.bonusCredit, 18000, -50.0, 300.0, w - 58, 300.0, 30, 20],
-      [10, 48.0, HostType.falcon3, CollType.bonusCredit, 16000, w + 5, 400.0, 2.0, 400.0, 30, 20],
-      [11, 49.0, HostType.falcon2, CollType.bonusCredit, 14000, -50.0, 500.0, w - 58, 500.0, 30, 20],
-      [12, 50.0, HostType.falcon1, CollType.bonusCredit, 12000, w + 5, 600.0, 2.0, 600.0, 30, 20],
-    ]) {
+    // VB6: dmg 20,19,18,17,16,15 recharge 275 all
+    final rpData = [
+      [7, 45.0, HostType.falcon6, CollType.healthUpgrade, 1, -50.0, 100.0, w - 66, 100.0, 30, 20, 20],
+      [8, 46.0, HostType.falcon5, CollType.shieldUpgrade, 20000, w + 5, 200.0, 2.0, 200.0, 30, 20, 19],
+      [9, 47.0, HostType.falcon4, CollType.bonusCredit, 18000, -50.0, 300.0, w - 58, 300.0, 30, 20, 18],
+      [10, 48.0, HostType.falcon3, CollType.bonusCredit, 16000, w + 5, 400.0, 2.0, 400.0, 30, 20, 17],
+      [11, 49.0, HostType.falcon2, CollType.bonusCredit, 14000, -50.0, 500.0, w - 58, 500.0, 30, 20, 16],
+      [12, 50.0, HostType.falcon1, CollType.bonusCredit, 12000, w + 5, 600.0, 2.0, 600.0, 30, 20, 15],
+    ];
+    for (final entry in rpData) {
       final f = Fleet.create(
         id: entry[0] as int, enterTime: entry[1] as double, caption: '',
         hostType: entry[2] as HostType, count: 19, bonus: entry[3] as CollType,
@@ -552,6 +585,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
         defaultPathAction: PathAction.replacePath,
       );
       _setAltParams(f, entry[9] as int, entry[10] as int, 0, PathType.cosinus);
+      f.addWeapon(entry[11] as int, 275);
       s.fleets.add(f);
     }
 
@@ -568,57 +602,47 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     final s = Sector(caption: 'Industry Zone', level: 6, sectorBonus: 25000);
 
     // Growing spiral: 28x falconx3
-    s.fleets.add(Fleet.create(
+    final spiral = Fleet.create(
       id: 0, enterTime: 3, caption: '',
       hostType: HostType.falconx3, count: 28, bonus: CollType.frontWepUpgrade,
       triggerSteps: 100, durationSec: 35, bonusMoney: 10000,
       srcX: w / 2, srcY: -55, dstX: w / 2, dstY: h + 5,
       pathType: PathType.cosinus, amplitude: 12, cycles: 10, amplMultiplier: 1.0025,
-    ));
+    );
+    spiral.addWeapon(45, 250);
+    s.fleets.add(spiral);
 
-    // Parallel linear fleets
-    s.fleets.add(Fleet.create(
-      id: 1, enterTime: 15, caption: '',
-      hostType: HostType.falcon1, count: 16, bonus: CollType.generatorUpgrade,
-      triggerSteps: 22, durationSec: 12,
-      srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5,
-      pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 2, enterTime: 15, caption: '',
-      hostType: HostType.falcon1, count: 16, bonus: CollType.bonusCredit,
-      triggerSteps: 22, durationSec: 12,
-      srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5,
-      pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 3, enterTime: 30, caption: '',
-      hostType: HostType.falcon2, count: 18, bonus: CollType.shieldUpgrade,
-      triggerSteps: 22, durationSec: 12,
-      srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5,
-      pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 4, enterTime: 30, caption: '',
-      hostType: HostType.falcon2, count: 18, bonus: CollType.healthUpgrade,
-      triggerSteps: 22, durationSec: 12,
-      srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5,
-      pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 5, enterTime: 45, caption: '',
-      hostType: HostType.falcon3, count: 20, bonus: CollType.bonusCredit,
-      triggerSteps: 22, durationSec: 12, bonusMoney: 3000,
-      srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5,
-      pathType: PathType.linear,
-    ));
-    s.fleets.add(Fleet.create(
-      id: 6, enterTime: 45, caption: '',
-      hostType: HostType.falcon3, count: 20, bonus: CollType.bonusCredit,
-      triggerSteps: 22, durationSec: 12, bonusMoney: 5000,
-      srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5,
-      pathType: PathType.linear,
-    ));
+    // Parallel linear fleets — VB6: all addWeapon(10, 275)
+    final parallelFleets = [
+      Fleet.create(id: 1, enterTime: 15, caption: '',
+        hostType: HostType.falcon1, count: 16, bonus: CollType.generatorUpgrade,
+        triggerSteps: 22, durationSec: 12,
+        srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5, pathType: PathType.linear),
+      Fleet.create(id: 2, enterTime: 15, caption: '',
+        hostType: HostType.falcon1, count: 16, bonus: CollType.bonusCredit,
+        triggerSteps: 22, durationSec: 12,
+        srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5, pathType: PathType.linear),
+      Fleet.create(id: 3, enterTime: 30, caption: '',
+        hostType: HostType.falcon2, count: 18, bonus: CollType.shieldUpgrade,
+        triggerSteps: 22, durationSec: 12,
+        srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5, pathType: PathType.linear),
+      Fleet.create(id: 4, enterTime: 30, caption: '',
+        hostType: HostType.falcon2, count: 18, bonus: CollType.healthUpgrade,
+        triggerSteps: 22, durationSec: 12,
+        srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5, pathType: PathType.linear),
+      Fleet.create(id: 5, enterTime: 45, caption: '',
+        hostType: HostType.falcon3, count: 20, bonus: CollType.bonusCredit,
+        triggerSteps: 22, durationSec: 12, bonusMoney: 3000,
+        srcX: 200, srcY: -45, dstX: w - 200, dstY: h + 5, pathType: PathType.linear),
+      Fleet.create(id: 6, enterTime: 45, caption: '',
+        hostType: HostType.falcon3, count: 20, bonus: CollType.bonusCredit,
+        triggerSteps: 22, durationSec: 12, bonusMoney: 5000,
+        srcX: w - 200, srcY: -45, dstX: 200, dstY: h + 5, pathType: PathType.linear),
+    ];
+    for (final pf in parallelFleets) {
+      pf.addWeapon(10, 275);
+      s.fleets.add(pf);
+    }
 
     return s;
   }
@@ -628,38 +652,86 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     return _createRandom(6, game);
   }
 
-  // ---- Random Sector Generation ----
+  // ---- Random Sector Generation (VB6 Sector.SetupRandom) ----
   static Sector _createRandom(int index, TyrianGame game) {
     final rng = Random(index * 42);
-    final level = 7 + (index - 7);
+    final level = index + 1;
     final s = Sector(
       caption: 'Sector ${index + 1} — Unknown Space',
       level: level,
       sectorBonus: 500 + index * 200,
     );
 
+    // Track max DPS (VB6 rocket.lastMaxDps)
+    final dps = game.vessel.totalDps;
+    if (dps > game.vessel.lastMaxDps) {
+      game.vessel.lastMaxDps = dps;
+    }
+    final lastMaxDps = game.vessel.lastMaxDps;
+
+    // VB6 damage growth coefficient (Sector.cls:493-519)
+    double dcf = 1.0;
+    const dmgGrowLevel = 20;
+    if (level >= dmgGrowLevel) {
+      double dmgGrow = 0.25;
+      if (level >= 35) {
+        dmgGrow = 0.60;
+      } else if (level >= 30) {
+        dmgGrow = 0.45;
+      } else if (level >= 25) {
+        dmgGrow = 0.35;
+      }
+      dcf = 1 + ((level - dmgGrowLevel + 1) * dmgGrow);
+    }
+
+    // VB6 maxHostLevel: scales with player DPS (Sector.cls:528-531)
+    var maxHostLevel = (6 * (lastMaxDps / 500)).round();
+    if (maxHostLevel > level + 2) maxHostLevel = level + 1;
+    if (maxHostLevel > 10) maxHostLevel = 10;
+    if (level >= 17 && dps > 10000) maxHostLevel = 11;
+    maxHostLevel = maxHostLevel.clamp(0, HostType.values.length - 1);
+
     final numFleets = 3 + rng.nextInt(3);
     final hostTypes = HostType.values;
 
     for (int i = 0; i < numFleets; i++) {
-      // Scale difficulty with level
-      final minType = (index - 4).clamp(0, hostTypes.length - 4);
-      final maxType = (index - 1).clamp(3, hostTypes.length - 1);
-      final typeIndex = minType + rng.nextInt(maxType - minType + 1);
-      final ht = hostTypes[typeIndex.clamp(0, hostTypes.length - 1)];
+      // VB6: host type selection capped by maxHostLevel
+      final typeIndex = rng.nextInt(maxHostLevel + 1).clamp(0, hostTypes.length - 1);
+      final ht = hostTypes[typeIndex];
+      final enemyHp = Hostile.getHpMax(ht).toDouble();
 
-      final cnt = 2 + rng.nextInt(6);
-      final dur = 5.0 + rng.nextDouble() * 8.0;
-      final enter = i * 5.0 + rng.nextDouble() * 3.0;
+      // VB6 host count scaling (Sector.cls:536-551)
+      var cnt = (rng.nextInt(4) + 1) * 5; // 5-25
+      if (lastMaxDps > 0) {
+        final hpRatio = enemyHp / lastMaxDps;
+        if (hpRatio > 3) {
+          if (cnt > 5) cnt = 5;
+        } else if (hpRatio > 2) {
+          if (cnt > 10) cnt = 10;
+        } else if (hpRatio < 0.09) {
+          cnt = cnt * 2;
+        }
+      }
+
+      // VB6 duration scaling (Sector.cls:573-589)
       final pathTypes = PathType.values;
       final pt = pathTypes[rng.nextInt(pathTypes.length)];
       final amp = 60.0 + rng.nextDouble() * 200.0;
       final cyc = 1 + rng.nextInt(5);
+      var durCoef = 1.6;
+      if (pt.index > 1 && amp >= 100) durCoef += amp / 66;
+      if (durCoef > 4.7) durCoef = 4.7;
+      var dur = lastMaxDps > 0
+          ? (enemyHp / lastMaxDps) * cnt * durCoef
+          : 5.0 + rng.nextDouble() * 8.0;
+      if (dur < 3.0) dur = 3.0;
+      if (dur > 120.0) dur = 120.0;
 
+      final enter = i * 5.0 + rng.nextDouble() * 3.0;
       final bonusTypes = CollType.values;
       final bon = bonusTypes[rng.nextInt(bonusTypes.length)];
 
-      s.fleets.add(Fleet.create(
+      final fleet = Fleet.create(
         id: i,
         enterTime: enter,
         caption: '${cnt}x ${Hostile.hostCaption(ht)}',
@@ -677,7 +749,14 @@ class Sector extends Component with HasGameReference<TyrianGame> {
         bonus: bon,
         bonusMoney: 100 + rng.nextInt(500),
         showDamage: true,
-      ));
+      );
+      // VB6: damage = hostTypeIndex * 5.555 * dcf
+      // VB6: recharge = (400 - min(dps/20, 385)) * 2 + 2
+      final weapDmg = (typeIndex * 5.555 * dcf).round().clamp(5, 9999);
+      final maxFL = (dps / 20).round().clamp(0, 385);
+      final weapRecharge = ((400 - maxFL) * 2 + 2).clamp(4, 802);
+      fleet.addWeapon(weapDmg, weapRecharge);
+      s.fleets.add(fleet);
     }
 
     // Random asteroids
