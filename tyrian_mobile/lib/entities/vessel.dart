@@ -36,6 +36,12 @@ class Vessel extends PositionComponent
   Hostile? closestEnemy;
   int nextWeaponLevel = 0;
 
+  // VB6 Vessel.WepLevScores — score thresholds for weapon tier unlocks
+  static const wepLevScores = [0, 400000, 4000000, 14000000];
+
+  // DPS tracking for random sector scaling (VB6 rocket.lastMaxDps)
+  double lastMaxDps = 0;
+
   // Sprite
   Sprite? _sprite;
   bool visible = true;
@@ -242,7 +248,7 @@ class Vessel extends PositionComponent
       if (_aabbOverlap(px1, py1, px2, py2,
           s.position.x, s.position.y, s.x2, s.y2)) {
         s.takeDamage(d.damage, game);
-        score += d.damage;
+        addScore(d.damage);
         credit += d.damage;
         return true;
       }
@@ -323,6 +329,43 @@ class Vessel extends PositionComponent
       return false;
     });
     guidedWeapon = devices.any((d) => d.guide > 0);
+  }
+
+  /// VB6 Vessel.AddScore — add score and check weapon unlock thresholds
+  void addScore(int s) {
+    score += s;
+    if (nextWeaponLevel < wepLevScores.length &&
+        score > wepLevScores[nextWeaponLevel]) {
+      nextWeaponLevel++;
+      const roman = ['', 'I', 'II', 'III', 'IV'];
+      game.showMessage('Weapon level ${roman[nextWeaponLevel]} unlocked');
+    }
+  }
+
+  /// VB6 Vessel.GeneratorLoad — power consumption as % of generation
+  double get generatorLoad {
+    if (genPower <= 0) return 999;
+    double pps = 0;
+    for (final d in devices) {
+      if (d.cooldown > 0 && d.pwrNeed > 0) {
+        pps += d.pwrNeed / d.cooldown;
+      }
+    }
+    final genPerSec = genPower * config.originalFps;
+    return genPerSec > 0 ? pps / genPerSec * 100 : 999;
+  }
+
+  /// VB6 Vessel.GenInfo — generator status string for ComCenter
+  String get genInfo {
+    final load = generatorLoad.round();
+    var info = 'Cap ${genMax.toInt()} | Load $load%';
+    for (final d in devices) {
+      if (d.pwrNeed > genMax) {
+        info += ' | ${d.name} off';
+      }
+    }
+    if (load > 100) info += ' | low';
+    return info;
   }
 
   /// Total DPS across all weapons
