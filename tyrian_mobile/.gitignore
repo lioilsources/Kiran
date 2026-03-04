@@ -1,0 +1,39 @@
+# OS/editor
+.DS_Store
+*.swp
+*.swo
+*.iml
+.idea/
+.vscode/
+
+# Dart/Flutter generated
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+pubspec.lock
+
+# Build artifacts
+build/
+**/build/
+
+# iOS generated
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/ephemeral/
+ios/Pods/
+ios/.symlinks/
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+ios/Runner.xcworkspace/
+
+# Android generated
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/local.properties
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
