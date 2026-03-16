@@ -370,6 +370,7 @@ class Vessel extends PositionComponent
     }
     hp -= amount;
     dmgTaken = 4; // Flash frames
+    game.shaderPipeline.triggerAberration();
 
     if (hp <= 0) {
       hp = 0;
@@ -478,12 +479,6 @@ class Vessel extends PositionComponent
     if (!visible) return;
 
     final paint = playerIndex == 1 ? _p2Paint : null;
-    final bounds = Rect.fromLTWH(0, 0, size.x, size.y);
-
-    if (dmgTaken > 0) {
-      // Save layer so srcATop only affects sprite pixels, not the full rect
-      canvas.saveLayer(bounds, Paint());
-    }
 
     if (_sprite != null) {
       _sprite!.render(canvas, size: size, overridePaint: paint);
@@ -496,16 +491,6 @@ class Vessel extends PositionComponent
         ..lineTo(size.x, size.y)
         ..close();
       canvas.drawPath(path, p);
-    }
-
-    if (dmgTaken > 0) {
-      canvas.drawRect(
-        bounds,
-        Paint()
-          ..color = Color.fromARGB(100, 255, 0, 0)
-          ..blendMode = BlendMode.srcATop,
-      );
-      canvas.restore();
     }
   }
 

@@ -20,6 +20,8 @@ import '../entities/projectile.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../rendering/beam_renderer.dart';
+import '../rendering/shader_pipeline.dart';
+import '../services/skin_registry.dart';
 import '../ui/float_text.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
@@ -37,6 +39,7 @@ class TyrianGame extends FlameGame
   late Vessel vessel;
   Vessel? vessel2; // null = solo mode
   late BeamRenderer beamRenderer;
+  late ShaderPipeline shaderPipeline;
 
   bool get isCoop => vessel2 != null;
 
@@ -111,6 +114,14 @@ class TyrianGame extends FlameGame
     await vessel.init();
     world.add(vessel);
 
+    // Shader pipeline
+    shaderPipeline = ShaderPipeline();
+    final skinId = AssetLibrary.instance.skinId;
+    final skinInfo = kSkins.firstWhere((s) => s.id == skinId,
+        orElse: () => kSkins.first);
+    shaderPipeline.configure(skinInfo.shaderConfig);
+    camera.postProcess = shaderPipeline.build();
+
     // Start in comCenter state
     state = GameState.comCenter;
     vessel.visible = false;
@@ -123,6 +134,12 @@ class TyrianGame extends FlameGame
     vessel.refreshSprite();
     vessel2?.refreshSprite();
     parallaxBg.loadLayers();
+
+    // Reconfigure shaders for new skin
+    final skinId = AssetLibrary.instance.skinId;
+    final skinInfo = kSkins.firstWhere((s) => s.id == skinId,
+        orElse: () => kSkins.first);
+    shaderPipeline.configure(skinInfo.shaderConfig);
   }
 
   void startGame() {
@@ -220,6 +237,16 @@ class TyrianGame extends FlameGame
 
     // Update enemy projectiles — collision with vessel
     _updateEnemyProjectiles();
+
+    // Feed damage flash into shader pipeline (after projectile collision)
+    double maxFlash = 0;
+    for (final v in allVessels) {
+      if (v.dmgTaken > 0) {
+        final flash = v.dmgTaken / 4.0; // 4 = max dmgTaken frames
+        if (flash > maxFlash) maxFlash = flash;
+      }
+    }
+    shaderPipeline.setDamageFlash(maxFlash);
 
     // Check sector completion
     if (currentSector != null && currentSector!.isComplete) {
