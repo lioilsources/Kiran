@@ -63,6 +63,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  shaders:
+    - shaders/vignette_color.frag
+    - shaders/bloom_threshold.frag
+    - shaders/bloom_blur.frag
+    - shaders/bloom_composite.frag
+    - shaders/crt.frag
+    - shaders/chromatic_aberration.frag
+
   assets:
     - assets/skins/default/sprites/
     - assets/skins/default/ui/

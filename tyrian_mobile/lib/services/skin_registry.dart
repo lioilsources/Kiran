@@ -1,3 +1,5 @@
+import '../rendering/shader_config.dart';
+
 /// Defines available skins and their asset paths.
 class SkinInfo {
   final String id;
@@ -6,6 +8,9 @@ class SkinInfo {
 
   String get previewPath => 'skins/$id/ui/preview.png';
   String spritePath(String name) => 'skins/$id/sprites/$name.png';
+
+  ShaderConfig get shaderConfig =>
+      ShaderConfig.defaults[id] ?? const ShaderConfig();
 }
 
 const kSkins = [
