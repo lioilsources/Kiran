@@ -36,59 +36,58 @@ class BloomPass extends PostProcess {
       return;
     }
 
-    final rect = Rect.fromLTWH(0, 0, size.x, size.y);
     final scene = rasterizeSubtree();
+    final w = scene.width.toDouble();
+    final h = scene.height.toDouble();
+    final imgSize = Size(w, h);
 
     // 1. Threshold — extract bright pixels
     _thresholdShader.setFloatUniforms((s) {
-      s.setSize(Size(size.x, size.y));
+      s.setSize(imgSize);
       s.setFloat(threshold);
     });
     _thresholdShader.setImageSampler(0, scene);
-    final thresholdImg = _renderShaderToImage(size, _thresholdShader);
+    final thresholdImg = _renderShaderToImage(w, h, _thresholdShader);
 
     // 2. Horizontal blur
     _blurShader.setFloatUniforms((s) {
-      s.setSize(Size(size.x, size.y));
+      s.setSize(imgSize);
       s.setFloat(1.0); // uDirection.x
       s.setFloat(0.0); // uDirection.y
     });
     _blurShader.setImageSampler(0, thresholdImg);
-    final hBlurImg = _renderShaderToImage(size, _blurShader);
-    thresholdImg.dispose();
+    final hBlurImg = _renderShaderToImage(w, h, _blurShader);
 
     // 3. Vertical blur
     _blurShader.setFloatUniforms((s) {
-      s.setSize(Size(size.x, size.y));
+      s.setSize(imgSize);
       s.setFloat(0.0); // uDirection.x
       s.setFloat(1.0); // uDirection.y
     });
     _blurShader.setImageSampler(0, hBlurImg);
-    final vBlurImg = _renderShaderToImage(size, _blurShader);
-    hBlurImg.dispose();
+    final vBlurImg = _renderShaderToImage(w, h, _blurShader);
 
     // 4. Composite — original scene + blurred bloom
     _compositeShader.setFloatUniforms((s) {
-      s.setSize(Size(size.x, size.y));
+      s.setSize(imgSize);
       s.setFloat(strength);
     });
     _compositeShader.setImageSampler(0, scene);
     _compositeShader.setImageSampler(1, vBlurImg);
-    canvas.drawRect(rect, Paint()..shader = _compositeShader);
-
-    scene.dispose();
-    vBlurImg.dispose();
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.x, size.y),
+      Paint()..shader = _compositeShader,
+    );
   }
 
-  ui.Image _renderShaderToImage(Vector2 size, ui.FragmentShader shader) {
+  /// Render a shader into an offscreen image at pixel dimensions [w] x [h].
+  ui.Image _renderShaderToImage(
+      double w, double h, ui.FragmentShader shader) {
     final recorder = ui.PictureRecorder();
     final c = Canvas(recorder);
-    c.drawRect(
-      Rect.fromLTWH(0, 0, size.x, size.y),
-      Paint()..shader = shader,
-    );
+    c.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..shader = shader);
     final picture = recorder.endRecording();
-    final image = picture.toImageSync(size.x.ceil(), size.y.ceil());
+    final image = picture.toImageSync(w.ceil(), h.ceil());
     picture.dispose();
     return image;
   }

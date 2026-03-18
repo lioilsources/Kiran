@@ -57,6 +57,10 @@ class PathSystem {
     double amplMultiplier = 1.0,
   }) {
     if (steps <= 0) return;
+    print('[PATH] generate ${type.name} steps=$steps '
+        'from=(${sx.toStringAsFixed(0)}, ${sy.toStringAsFixed(0)}) '
+        'to=(${dx.toStringAsFixed(0)}, ${dy.toStringAsFixed(0)}) '
+        'ampl=$amplitude cycles=$cycles amplMul=$amplMultiplier');
 
     final length = sqrt((dx - sx) * (dx - sx) + (dy - sy) * (dy - sy));
     final angStep =

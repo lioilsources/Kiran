@@ -8,8 +8,8 @@ uniform sampler2D uBloom;  // sampler 1: blurred bright pixels
 out vec4 fragColor;
 
 void main() {
-  vec2 fc = FlutterFragCoord();
-  vec4 scene = texture(uScene, fc);
-  vec4 bloom = texture(uBloom, fc);
+  vec2 uv = FlutterFragCoord() / uSize;
+  vec4 scene = texture(uScene, uv);
+  vec4 bloom = texture(uBloom, uv);
   fragColor = scene + bloom * uStrength;
 }

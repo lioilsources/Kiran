@@ -15,7 +15,7 @@ out vec4 fragColor;
 void main() {
   vec2 fc = FlutterFragCoord();
   vec2 uv = fc / uSize;
-  vec4 color = texture(uTexture, fc);
+  vec4 color = texture(uTexture, uv);
 
   // Saturation adjustment
   float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
