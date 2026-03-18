@@ -43,6 +43,5 @@ class ChromaticAberrationPass extends PostProcess {
       Rect.fromLTWH(0, 0, size.x, size.y),
       Paint()..shader = _shader,
     );
-    image.dispose();
   }
 }

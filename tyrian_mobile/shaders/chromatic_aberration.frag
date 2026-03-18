@@ -7,20 +7,19 @@ uniform sampler2D uTexture;
 out vec4 fragColor;
 
 void main() {
-  vec2 fc = FlutterFragCoord();
+  vec2 uv = FlutterFragCoord() / uSize;
 
   if (uIntensity < 0.001) {
-    fragColor = texture(uTexture, fc);
+    fragColor = texture(uTexture, uv);
     return;
   }
 
-  vec2 uv = fc / uSize;
-  vec2 offset = (uv - 0.5) * uIntensity * 8.0;  // pixel offset from center
+  vec2 offset = (uv - 0.5) * uIntensity * 0.02;  // normalized offset from center
 
-  float r = texture(uTexture, fc + offset).r;
-  float g = texture(uTexture, fc).g;
-  float b = texture(uTexture, fc - offset).b;
-  float a = texture(uTexture, fc).a;
+  float r = texture(uTexture, uv + offset).r;
+  float g = texture(uTexture, uv).g;
+  float b = texture(uTexture, uv - offset).b;
+  float a = texture(uTexture, uv).a;
 
   fragColor = vec4(r, g, b, a);
 }

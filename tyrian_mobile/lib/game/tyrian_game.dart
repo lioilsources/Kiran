@@ -114,6 +114,11 @@ class TyrianGame extends FlameGame
     await vessel.init();
     world.add(vessel);
 
+    // Debug: screen/viewport info
+    print('[LAYOUT] FlameGame.size: ${size.x} x ${size.y}');
+    print('[LAYOUT] gameWidth: ${config.gameWidth}, gameHeight: ${config.gameHeight}');
+    print('[LAYOUT] viewport resolution: ${config.gameWidth} x ${config.gameHeight}');
+
     // Shader pipeline
     shaderPipeline = ShaderPipeline();
     final skinId = AssetLibrary.instance.skinId;
@@ -178,6 +183,11 @@ class TyrianGame extends FlameGame
 
   void _clearActiveObjects() {
     for (final f in [...activeFleets]) {
+      // Remove hostiles first — they're world children, not fleet children
+      for (final h in [...f.hostiles]) {
+        h.removeFromParent();
+      }
+      f.hostiles.clear();
       f.removeFromParent();
     }
     activeFleets.clear();
@@ -197,6 +207,15 @@ class TyrianGame extends FlameGame
       p.removeFromParent();
     }
     enemyProjectiles.clear();
+    // Clear player projectiles (world children via devices)
+    for (final v in allVessels) {
+      for (final d in v.devices) {
+        for (final p in [...d.projectiles]) {
+          p.removeFromParent();
+        }
+        d.clearProjectiles();
+      }
+    }
   }
 
   @override

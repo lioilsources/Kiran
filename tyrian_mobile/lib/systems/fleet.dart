@@ -154,6 +154,16 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     h.parentFleet = this;
     hostiles.add(h);
     game.world.add(h);
+
+    // Debug: log fleet spawn info
+    if (_spawned == 0) {
+      final first = clonedPath.nodes.first;
+      final last = clonedPath.nodes.last;
+      print('[FLEET] "$caption" id=$id type=${hostType.name} count=$count '
+          'pathType=${path.nodes.length} nodes '
+          'start=(${first.x.toStringAsFixed(0)}, ${first.y.toStringAsFixed(0)}) '
+          'end=(${last.x.toStringAsFixed(0)}, ${last.y.toStringAsFixed(0)})');
+    }
   }
 
   void _updateBounds() {

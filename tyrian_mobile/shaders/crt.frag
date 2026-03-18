@@ -23,10 +23,10 @@ void main() {
     return;
   }
 
-  vec4 color = texture(uTexture, distorted * uSize);
+  vec4 color = texture(uTexture, distorted);
 
   // Scanlines
-  float scanline = sin(distorted.y * uSize.y * 3.14159) * 0.5 + 0.5;
+  float scanline = sin(distorted.y * uSize.y * 3.14159265) * 0.5 + 0.5;
   scanline = mix(1.0, scanline, uScanlineIntensity);
   color.rgb *= scanline;
 
