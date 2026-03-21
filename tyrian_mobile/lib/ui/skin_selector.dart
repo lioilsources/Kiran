@@ -106,12 +106,14 @@ class _SkinSelectorState extends State<SkinSelector> {
   }
 
   void _scrollToFocus() {
-    final ctx = _cardKeys[_focusIndex].currentContext;
-    if (ctx == null) return;
-    Scrollable.ensureVisible(ctx,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final ctx = _cardKeys[_focusIndex].currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(ctx,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut);
+    });
   }
 
   void _pollGamepad() async {

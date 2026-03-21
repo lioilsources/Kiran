@@ -83,6 +83,11 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   @override
   Future<void> onLoad() async {
+    _refreshSprite();
+    add(RectangleHitbox());
+  }
+
+  void _refreshSprite() {
     final spriteName = _spriteNameForType(hostType);
     _sprite = AssetLibrary.instance.getSprite(spriteName);
     if (_sprite != null) {
@@ -90,8 +95,9 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     } else {
       size = Vector2(40, 40); // Placeholder
     }
-    add(RectangleHitbox());
   }
+
+  void refreshSprite() => _refreshSprite();
 
   static String _spriteNameForType(HostType type) {
     switch (type) {
@@ -243,26 +249,12 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
     final bounds = Rect.fromLTWH(0, 0, size.x, size.y);
 
-    if (hit > 0) {
-      canvas.saveLayer(bounds, Paint());
-    }
-
     if (_sprite != null) {
       _sprite!.render(canvas, size: size);
     } else {
       // Placeholder red square
       final paint = Paint()..color = const Color(0xFFFF0000);
       canvas.drawRect(bounds, paint);
-    }
-
-    if (hit > 0) {
-      canvas.drawRect(
-        bounds,
-        Paint()
-          ..color = const Color(0x80FFFFFF)
-          ..blendMode = BlendMode.srcATop,
-      );
-      canvas.restore();
     }
 
     // HP bar (if damaged)

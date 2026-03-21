@@ -34,6 +34,10 @@ class Projectile extends PositionComponent with HasGameReference {
 
   @override
   Future<void> onLoad() async {
+    refreshSprite();
+  }
+
+  void refreshSprite() {
     _sprite = AssetLibrary.instance.getSprite(imgName);
     if (_sprite != null) {
       size = _sprite!.srcSize * projScale;
@@ -80,9 +84,7 @@ class Projectile extends PositionComponent with HasGameReference {
     damage = dmg;
     projScale = scale;
     active = true;
-    if (_sprite != null) {
-      size = _sprite!.srcSize * projScale;
-    }
+    refreshSprite();
   }
 
   void deactivate() {

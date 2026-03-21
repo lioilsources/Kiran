@@ -24,9 +24,12 @@ void main() {
   // Color tint
   color.rgb *= vec3(uTintR, uTintG, uTintB);
 
-  // Vignette darkening
+  // Vignette darkening — aspect-corrected ellipse
   vec2 center = uv - 0.5;
-  float dist = length(center) * 2.0;
+  float aspect = uSize.x / uSize.y;
+  // Stretch shorter axis so vignette follows screen edges, not a circle
+  vec2 scaled = center * vec2(min(aspect, 1.0), min(1.0 / aspect, 1.0));
+  float dist = length(scaled) * 2.0;
   float vignette = smoothstep(uVignetteRadius, uVignetteRadius + uVignetteSoft, dist);
   color.rgb *= 1.0 - vignette;
 

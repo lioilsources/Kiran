@@ -92,6 +92,7 @@ class TyrianGame extends FlameGame
   VoidCallback? onShowComCenter;
   VoidCallback? onSectorComplete;
   VoidCallback? onLoaded;
+  VoidCallback? onPauseToggle;
 
   @override
   Color backgroundColor() => const Color(0xFF000000);
@@ -159,11 +160,31 @@ class TyrianGame extends FlameGame
     onLoaded?.call();
   }
 
-  /// Re-fetch sprites on all persistent entities after a skin change.
+  /// Re-fetch sprites on all entities after a skin change.
   void refreshSprites() {
     vessel.refreshSprite();
     vessel2?.refreshSprite();
     parallaxBg.loadLayers();
+
+    // Refresh all live entities
+    for (final f in activeFleets) {
+      for (final h in f.hostiles) {
+        h.refreshSprite();
+      }
+    }
+    for (final s in activeStructures) {
+      s.refreshSprite();
+    }
+    for (final v in allVessels) {
+      for (final d in v.devices) {
+        for (final p in d.projectiles) {
+          p.refreshSprite();
+        }
+      }
+    }
+    for (final p in enemyProjectiles) {
+      p.refreshSprite();
+    }
 
     // Reconfigure shaders for new skin
     final skinId = AssetLibrary.instance.skinId;
@@ -286,14 +307,15 @@ class TyrianGame extends FlameGame
     _updateEnemyProjectiles();
 
     // Feed damage flash into shader pipeline (after projectile collision)
-    double maxFlash = 0;
-    for (final v in allVessels) {
-      if (v.dmgTaken > 0) {
-        final flash = v.dmgTaken / 4.0; // 4 = max dmgTaken frames
-        if (flash > maxFlash) maxFlash = flash;
-      }
-    }
-    shaderPipeline.setDamageFlash(maxFlash);
+    // TODO: disabled — causes perf issues
+    // double maxFlash = 0;
+    // for (final v in allVessels) {
+    //   if (v.dmgTaken > 0) {
+    //     final flash = v.dmgTaken / 4.0; // 4 = max dmgTaken frames
+    //     if (flash > maxFlash) maxFlash = flash;
+    //   }
+    // }
+    // shaderPipeline.setDamageFlash(maxFlash);
 
     // Check sector completion
     if (currentSector != null && currentSector!.isComplete) {
@@ -373,6 +395,7 @@ class TyrianGame extends FlameGame
     } else if (state == GameState.paused) {
       state = GameState.playing;
     }
+    onPauseToggle?.call();
   }
 
   void triggerGameOver() {
