@@ -56,6 +56,11 @@ class Structure extends PositionComponent
 
   @override
   Future<void> onLoad() async {
+    refreshSprite();
+    add(RectangleHitbox());
+  }
+
+  void refreshSprite() {
     if (_imgName != null) {
       _sprite = AssetLibrary.instance.getSprite(_imgName);
     }
@@ -64,7 +69,6 @@ class Structure extends PositionComponent
     } else {
       size = Vector2(50, 50);
     }
-    add(RectangleHitbox());
   }
 
   @override
@@ -144,25 +148,11 @@ class Structure extends PositionComponent
 
     final bounds = Rect.fromLTWH(0, 0, size.x, size.y);
 
-    if (hit > 0) {
-      canvas.saveLayer(bounds, Paint());
-    }
-
     if (_sprite != null) {
       _sprite!.render(canvas, size: size);
     } else {
       final paint = Paint()..color = const Color(0xFF888888);
       canvas.drawOval(bounds, paint);
-    }
-
-    if (hit > 0) {
-      canvas.drawRect(
-        bounds,
-        Paint()
-          ..color = const Color(0x80FFFFFF)
-          ..blendMode = BlendMode.srcATop,
-      );
-      canvas.restore();
     }
   }
 }

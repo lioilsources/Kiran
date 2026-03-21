@@ -43,7 +43,7 @@ class _ComCenterScreenState extends State<ComCenterScreen> {
   Timer? _pollTimer;
   bool _prevUp = false, _prevDown = false;
   bool _prevLeft = false, _prevRight = false;
-  bool _prevConfirm = false, _prevStart = false;
+  bool _prevConfirm = false, _prevStart = false, _prevBack = false;
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -75,17 +75,18 @@ class _ComCenterScreenState extends State<ComCenterScreen> {
     final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
     final confirm = gp.buttonA || gp.buttonX;
     final start = gp.start;
+    final back = gp.buttonB;
 
     if (up && !_prevUp) _moveWeapon(-1);
     if (down && !_prevDown) _moveWeapon(1);
     if (left && !_prevLeft) _switchCategory(-1);
     if (right && !_prevRight) _switchCategory(1);
     if (confirm && !_prevConfirm) _confirmAction();
-    if (start && !_prevStart) widget.onStart();
+    if ((start && !_prevStart) || (back && !_prevBack)) widget.onStart();
 
     _prevUp = up; _prevDown = down;
     _prevLeft = left; _prevRight = right;
-    _prevConfirm = confirm; _prevStart = start;
+    _prevConfirm = confirm; _prevStart = start; _prevBack = back;
   }
 
   void _moveWeapon(int delta) {

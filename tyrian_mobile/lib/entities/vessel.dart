@@ -371,7 +371,7 @@ class Vessel extends PositionComponent
     }
     hp -= amount;
     dmgTaken = 4; // Flash frames
-    game.shaderPipeline.triggerAberration();
+    // game.shaderPipeline.triggerAberration(); // TODO: perf issue
 
     if (hp <= 0) {
       hp = 0;

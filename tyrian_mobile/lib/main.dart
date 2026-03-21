@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -6,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'game/platform_config.dart';
+import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
+import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
 import 'ui/osd_panel.dart';
 import 'ui/high_scores.dart';
@@ -22,7 +24,7 @@ import 'net/protocol.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (isDesktop) {
+  if (platform.isDesktop) {
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Tyrian');
     await windowManager.setFullScreen(true);
@@ -68,6 +70,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   bool _showComCenter = false;
   bool _showHighScores = false;
   List<HighScoreEntry> _highScores = [];
+
+  // Pause skin selector
+  bool _showPauseSkinSelector = false;
 
   // Scanning state
   bool _scanning = false;
@@ -131,6 +136,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
     _game.onShowComCenter = () {
       setState(() => _showComCenter = true);
+    };
+
+    _game.onPauseToggle = () {
+      if (mounted) setState(() {});
     };
 
     _game.onGameOver = () async {
@@ -287,23 +296,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('No games found', style: TextStyle(color: Colors.cyanAccent)),
-        content: const Text(
-          'Start a new game (others can join later)\nor enter the host\'s IP to connect.',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () { Navigator.pop(ctx); _startAsAutoHost(); },
-            child: const Text('START SOLO', style: TextStyle(color: Colors.cyanAccent)),
-          ),
-          TextButton(
-            onPressed: () { Navigator.pop(ctx); _showManualIpDialog(); },
-            child: const Text('ENTER IP', style: TextStyle(color: Colors.orangeAccent)),
-          ),
-        ],
+      builder: (ctx) => _NoHostDialog(
+        onSolo: () { Navigator.pop(ctx); _startAsAutoHost(); },
+        onManualIp: () { Navigator.pop(ctx); _showManualIpDialog(); },
       ),
     );
   }
@@ -478,46 +473,24 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               OsdPanel(game: _game, onMuteToggle: () => setState(() {})),
 
             // Pause overlay
-            if (_game.state == GameState.paused)
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.cyanAccent.withAlpha(100)),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'PAUSED',
-                        style: TextStyle(
-                          color: Colors.cyanAccent,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          _game.togglePause();
-                          if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
-                            _game.coopHost!.sendEvent(EventType.resumed);
-                          }
-                          setState(() {});
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.cyanAccent,
-                          foregroundColor: Colors.black,
-                        ),
-                        child: const Text('RESUME'),
-                      ),
-                    ],
-                  ),
-                ),
+            if (_game.state == GameState.paused && !_showPauseSkinSelector)
+              _PauseOverlay(
+                onResume: () {
+                  _game.togglePause();
+                  if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
+                    _game.coopHost!.sendEvent(EventType.resumed);
+                  }
+                  setState(() {});
+                },
+                onSkin: () => setState(() => _showPauseSkinSelector = true),
               ),
+
+            // Skin selector during pause
+            if (_game.state == GameState.paused && _showPauseSkinSelector)
+              SkinSelector(onPlay: () {
+                _game.refreshSprites();
+                setState(() => _showPauseSkinSelector = false);
+              }),
 
             // ComCenter (host/solo only — P2 never sees this)
             if (_showComCenter)
@@ -539,50 +512,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
             // Game Over
             if (_game.state == GameState.gameOver && !_showHighScores)
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.withAlpha(150)),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'GAME OVER',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Credits: ${_game.vessel.credit}',
-                        style: const TextStyle(color: Colors.greenAccent, fontSize: 18),
-                      ),
-                      if (_game.isCoop && _game.vessel2 != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          'P2: ${_game.vessel2!.credit}',
-                          style: const TextStyle(color: Color(0xFF00FF80), fontSize: 16),
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => setState(() => _showHighScores = true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.cyanAccent,
-                          foregroundColor: Colors.black,
-                        ),
-                        child: const Text('VIEW SCORES'),
-                      ),
-                    ],
-                  ),
-                ),
+              _GameOverOverlay(
+                credit: _game.vessel.credit,
+                credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
+                onViewScores: () => setState(() => _showHighScores = true),
               ),
           ],
         ],
@@ -637,6 +570,411 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               style: TextStyle(color: Colors.white54, fontSize: 13),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Pause menu with keyboard/gamepad navigation.
+class _PauseOverlay extends StatefulWidget {
+  final VoidCallback onResume;
+  final VoidCallback onSkin;
+
+  const _PauseOverlay({required this.onResume, required this.onSkin});
+
+  @override
+  State<_PauseOverlay> createState() => _PauseOverlayState();
+}
+
+class _PauseOverlayState extends State<_PauseOverlay> {
+  int _focused = 0; // 0 = RESUME, 1 = SKIN
+  final _focusNode = FocusNode();
+
+  // Gamepad
+  final GamepadInput _gamepad = GamepadInput();
+  Timer? _pollTimer;
+  bool _prevUp = false, _prevDown = false, _prevConfirm = false;
+  bool _prevBack = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (platform.isDesktop) {
+      _pollTimer = Timer.periodic(
+        const Duration(milliseconds: 16),
+        (_) => _pollGamepad(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _pollGamepad() async {
+    await _gamepad.poll();
+    if (!mounted) return;
+    final gp = _gamepad.primary;
+
+    final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
+    final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
+    final confirm = gp.buttonA || gp.buttonX;
+    final back = gp.buttonB;
+
+    if (up && !_prevUp) setState(() => _focused = 0);
+    if (down && !_prevDown) setState(() => _focused = 1);
+    if (confirm && !_prevConfirm) _activate();
+    if (back && !_prevBack) widget.onResume();
+
+    _prevUp = up;
+    _prevDown = down;
+    _prevConfirm = confirm;
+    _prevBack = back;
+  }
+
+  void _activate() {
+    if (_focused == 0) {
+      widget.onResume();
+    } else {
+      widget.onSkin();
+    }
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
+      setState(() => _focused = 0);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.keyS) {
+      setState(() => _focused = 1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
+      _activate();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.escape) {
+      widget.onResume();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: _handleKey,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.cyanAccent.withAlpha(100)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'PAUSED',
+                style: TextStyle(
+                  color: Colors.cyanAccent,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildButton('RESUME', 0, Colors.cyanAccent, Colors.black),
+              const SizedBox(height: 8),
+              _buildButton('SKIN', 1, Colors.white24, Colors.cyanAccent),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton(String label, int index, Color bg, Color fg) {
+    final isFocused = _focused == index;
+    return ElevatedButton(
+      onPressed: () {
+        setState(() => _focused = index);
+        _activate();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bg,
+        foregroundColor: fg,
+        side: isFocused ? const BorderSide(color: Colors.cyanAccent, width: 2) : null,
+      ),
+      child: Text(label),
+    );
+  }
+}
+
+/// "No host found" dialog with gamepad/keyboard navigation.
+class _NoHostDialog extends StatefulWidget {
+  final VoidCallback onSolo;
+  final VoidCallback onManualIp;
+
+  const _NoHostDialog({required this.onSolo, required this.onManualIp});
+
+  @override
+  State<_NoHostDialog> createState() => _NoHostDialogState();
+}
+
+class _NoHostDialogState extends State<_NoHostDialog> {
+  int _focused = 0; // 0 = SOLO, 1 = ENTER IP
+  final _focusNode = FocusNode();
+  final GamepadInput _gamepad = GamepadInput();
+  Timer? _pollTimer;
+  bool _prevUp = false, _prevDown = false, _prevConfirm = false;
+  bool _prevBack = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (platform.isDesktop) {
+      _pollTimer = Timer.periodic(
+        const Duration(milliseconds: 16),
+        (_) => _pollGamepad(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _pollGamepad() async {
+    await _gamepad.poll();
+    if (!mounted) return;
+    final gp = _gamepad.primary;
+
+    final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
+    final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
+    final confirm = gp.buttonA || gp.buttonX;
+    final back = gp.buttonB;
+
+    if (up && !_prevUp) setState(() => _focused = 0);
+    if (down && !_prevDown) setState(() => _focused = 1);
+    if (confirm && !_prevConfirm) _activate();
+    if (back && !_prevBack) widget.onSolo();
+
+    _prevUp = up;
+    _prevDown = down;
+    _prevConfirm = confirm;
+    _prevBack = back;
+  }
+
+  void _activate() {
+    if (_focused == 0) {
+      widget.onSolo();
+    } else {
+      widget.onManualIp();
+    }
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
+      setState(() => _focused = 0);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.keyS) {
+      setState(() => _focused = 1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
+      _activate();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.escape) {
+      widget.onSolo();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: _handleKey,
+      child: AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text('No games found',
+            style: TextStyle(color: Colors.cyanAccent)),
+        content: const Text(
+          'Start a new game (others can join later)\nor enter the host\'s IP to connect.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() => _focused = 0);
+              widget.onSolo();
+            },
+            style: TextButton.styleFrom(
+              side: _focused == 0
+                  ? const BorderSide(color: Colors.cyanAccent, width: 2)
+                  : null,
+            ),
+            child: const Text('START SOLO',
+                style: TextStyle(color: Colors.cyanAccent)),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() => _focused = 1);
+              widget.onManualIp();
+            },
+            style: TextButton.styleFrom(
+              side: _focused == 1
+                  ? const BorderSide(color: Colors.orangeAccent, width: 2)
+                  : null,
+            ),
+            child: const Text('ENTER IP',
+                style: TextStyle(color: Colors.orangeAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Game over panel with gamepad/keyboard navigation.
+class _GameOverOverlay extends StatefulWidget {
+  final int credit;
+  final int? credit2;
+  final VoidCallback onViewScores;
+
+  const _GameOverOverlay({
+    required this.credit,
+    this.credit2,
+    required this.onViewScores,
+  });
+
+  @override
+  State<_GameOverOverlay> createState() => _GameOverOverlayState();
+}
+
+class _GameOverOverlayState extends State<_GameOverOverlay> {
+  final _focusNode = FocusNode();
+  final GamepadInput _gamepad = GamepadInput();
+  Timer? _pollTimer;
+  bool _prevConfirm = false, _prevBack = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (platform.isDesktop) {
+      _pollTimer = Timer.periodic(
+        const Duration(milliseconds: 16),
+        (_) => _pollGamepad(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _pollGamepad() async {
+    await _gamepad.poll();
+    if (!mounted) return;
+    final gp = _gamepad.primary;
+
+    final confirm = gp.buttonA || gp.buttonX;
+    final back = gp.buttonB;
+
+    if ((confirm && !_prevConfirm) || (back && !_prevBack)) {
+      widget.onViewScores();
+    }
+
+    _prevConfirm = confirm;
+    _prevBack = back;
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.space ||
+        key == LogicalKeyboardKey.escape) {
+      widget.onViewScores();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: _handleKey,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.red.withAlpha(150)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'GAME OVER',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 4,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Credits: ${widget.credit}',
+                style: const TextStyle(color: Colors.greenAccent, fontSize: 18),
+              ),
+              if (widget.credit2 != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  'P2: ${widget.credit2}',
+                  style: const TextStyle(color: Color(0xFF00FF80), fontSize: 16),
+                ),
+              ],
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: widget.onViewScores,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.cyanAccent,
+                  foregroundColor: Colors.black,
+                ),
+                child: const Text('VIEW SCORES'),
+              ),
+            ],
+          ),
         ),
       ),
     );
