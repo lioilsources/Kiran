@@ -72,6 +72,8 @@ flutter:
     - shaders/bloom_composite.frag
     - shaders/crt.frag
     - shaders/chromatic_aberration.frag
+    - shaders/dissolve.frag
+    - shaders/pixel_explosion.frag
 
   assets:
     - assets/skins/default/sprites/
