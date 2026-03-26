@@ -8,6 +8,13 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'skin_registry.dart';
 
+/// Voronoi fragment metadata for a single piece of a shattered sprite.
+class FragmentInfo {
+  final String name;
+  final double seedX, seedY; // position within original sprite coords
+  FragmentInfo(this.name, this.seedX, this.seedY);
+}
+
 /// Replaces Library.cls — loads and caches all game sprites.
 /// BMP+mask system is eliminated; all assets are PNG with alpha channel.
 class AssetLibrary {
@@ -24,6 +31,11 @@ class AssetLibrary {
   final Map<String, Rect> _atlasRects = {};
   ui.Image? get atlasImage => _atlasImage;
 
+  /// Voronoi fragment metadata per sprite name.
+  /// Key = sprite name (e.g. "falcon1"), Value = list of FragmentInfo.
+  final Map<String, List<FragmentInfo>> _fragments = {};
+  Map<String, List<FragmentInfo>> get fragments => _fragments;
+
   bool _loaded = false;
   String _skinId = 'default';
 
@@ -36,6 +48,7 @@ class AssetLibrary {
     _bgLayers.clear();
     _atlasImage = null;
     _atlasRects.clear();
+    _fragments.clear();
     _loaded = false;
     _placeholder = null;
     // Clear Flame's image cache so it reloads from the new paths
@@ -159,6 +172,7 @@ class AssetLibrary {
       _atlasRects.clear();
       _images.clear();
       _sprites.clear();
+      _fragments.clear();
 
       for (final entry in frames.entries) {
         final name = entry.key;
@@ -179,6 +193,24 @@ class AssetLibrary {
         sprite.paint.filterQuality = FilterQuality.none;
         _sprites[name] = sprite;
       }
+
+      // Parse Voronoi fragment metadata (optional section)
+      if (json.containsKey('fragments')) {
+        final frags = json['fragments'] as Map<String, dynamic>;
+        for (final entry in frags.entries) {
+          final name = entry.key;
+          final data = entry.value as Map<String, dynamic>;
+          final pieces = (data['pieces'] as List).cast<Map<String, dynamic>>();
+          _fragments[name] = pieces
+              .map((p) => FragmentInfo(
+                    p['name'] as String,
+                    (p['seedX'] as num).toDouble(),
+                    (p['seedY'] as num).toDouble(),
+                  ))
+              .toList();
+        }
+      }
+
       return true;
     } catch (e) {
       print('Atlas load failed: $e');

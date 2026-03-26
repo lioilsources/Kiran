@@ -13,6 +13,9 @@ import 'dart:math';
 
 import 'package:image/image.dart' as img;
 
+/// Default number of Voronoi seed points per fragmentable sprite.
+const int kDefaultFragmentCount = 6;
+
 /// 1 px padding between sprites to prevent texture bleeding.
 const int kPadding = 1;
 
@@ -34,6 +37,154 @@ class _PlacedSprite {
   final String name;
   final int x, y, w, h;
   _PlacedSprite(this.name, this.x, this.y, this.w, this.h);
+}
+
+/// Returns true if the sprite name is fragmentable (enemies + structures).
+bool _isFragmentable(String name) {
+  final lower = name.toLowerCase();
+  return lower.startsWith('falcon') ||
+      lower.startsWith('falconx') ||
+      lower.startsWith('bouncer') ||
+      lower.startsWith('asteroid');
+}
+
+/// For each non-transparent pixel, find the nearest seed (by squared distance).
+int _assignCell(int px, int py, List<Point<double>> seeds) {
+  int nearest = 0;
+  double minDist = double.infinity;
+  for (int i = 0; i < seeds.length; i++) {
+    final dx = px - seeds[i].x;
+    final dy = py - seeds[i].y;
+    final d = dx * dx + dy * dy;
+    if (d < minDist) {
+      minDist = d;
+      nearest = i;
+    }
+  }
+  return nearest;
+}
+
+/// Returns true if the pixel at (x, y) in [image] is non-transparent (alpha > 0).
+bool _isOpaque(img.Image image, int x, int y) {
+  return image.getPixel(x, y).a > 0;
+}
+
+/// Generate Voronoi seed points biased toward center. Seeds that land on fully
+/// transparent pixels are regenerated. Returns [count] valid seeds.
+List<Point<double>> _generateSeeds(
+  img.Image image,
+  Random rng, {
+  int count = kDefaultFragmentCount,
+}) {
+  final w = image.width.toDouble();
+  final h = image.height.toDouble();
+  final seeds = <Point<double>>[];
+
+  int attempts = 0;
+  while (seeds.length < count && attempts < count * 20) {
+    attempts++;
+    // Bias toward center: average two uniform samples
+    final rx = (rng.nextDouble() + rng.nextDouble()) / 2.0;
+    final ry = (rng.nextDouble() + rng.nextDouble()) / 2.0;
+    final sx = rx * w;
+    final sy = ry * h;
+    final px = sx.floor().clamp(0, image.width - 1);
+    final py = sy.floor().clamp(0, image.height - 1);
+    if (_isOpaque(image, px, py)) {
+      seeds.add(Point<double>(sx, sy));
+    }
+  }
+
+  // Fallback: if we couldn't find enough opaque pixels, place remaining seeds
+  // uniformly (even if on transparent pixels).
+  while (seeds.length < count) {
+    seeds.add(Point<double>(rng.nextDouble() * w, rng.nextDouble() * h));
+  }
+
+  return seeds;
+}
+
+/// Generate Voronoi fragments for a single sprite image.
+/// Returns a list of fragment _SpriteEntry plus metadata.
+({List<_SpriteEntry> entries, Map<String, dynamic> meta}) _generateFragments(
+  String spriteName,
+  img.Image image,
+) {
+  final rng = Random(spriteName.hashCode);
+  final seeds = _generateSeeds(image, rng);
+  final numCells = seeds.length;
+
+  // Check if sprite has any non-transparent pixels at all
+  bool hasOpaquePixel = false;
+  for (int y = 0; y < image.height && !hasOpaquePixel; y++) {
+    for (int x = 0; x < image.width && !hasOpaquePixel; x++) {
+      if (_isOpaque(image, x, y)) hasOpaquePixel = true;
+    }
+  }
+  if (!hasOpaquePixel) {
+    return (entries: <_SpriteEntry>[], meta: <String, dynamic>{});
+  }
+
+  // Assign every non-transparent pixel to the nearest seed cell.
+  // Store per-cell pixel lists and compute bounding boxes.
+  final cellPixels = List<List<Point<int>>>.generate(numCells, (_) => []);
+  final cellMinX = List<int>.filled(numCells, image.width);
+  final cellMinY = List<int>.filled(numCells, image.height);
+  final cellMaxX = List<int>.filled(numCells, -1);
+  final cellMaxY = List<int>.filled(numCells, -1);
+
+  for (int y = 0; y < image.height; y++) {
+    for (int x = 0; x < image.width; x++) {
+      if (!_isOpaque(image, x, y)) continue;
+      final cell = _assignCell(x, y, seeds);
+      cellPixels[cell].add(Point<int>(x, y));
+      if (x < cellMinX[cell]) cellMinX[cell] = x;
+      if (y < cellMinY[cell]) cellMinY[cell] = y;
+      if (x > cellMaxX[cell]) cellMaxX[cell] = x;
+      if (y > cellMaxY[cell]) cellMaxY[cell] = y;
+    }
+  }
+
+  // Extract fragment images
+  final entries = <_SpriteEntry>[];
+  final pieces = <Map<String, dynamic>>[];
+  final seedsList = <List<double>>[];
+
+  for (int i = 0; i < numCells; i++) {
+    if (cellPixels[i].isEmpty) continue; // skip empty cells
+
+    final fragW = cellMaxX[i] - cellMinX[i] + 1;
+    final fragH = cellMaxY[i] - cellMinY[i] + 1;
+    final fragImg = img.Image(width: fragW, height: fragH, numChannels: 4);
+
+    for (final pt in cellPixels[i]) {
+      fragImg.setPixel(
+        pt.x - cellMinX[i],
+        pt.y - cellMinY[i],
+        image.getPixel(pt.x, pt.y),
+      );
+    }
+
+    final fragName = '${spriteName}_frag_$i';
+    entries.add(_SpriteEntry(fragName, fragImg));
+    pieces.add({
+      'name': fragName,
+      'seedX': double.parse(seeds[i].x.toStringAsFixed(1)),
+      'seedY': double.parse(seeds[i].y.toStringAsFixed(1)),
+    });
+    seedsList.add([
+      double.parse(seeds[i].x.toStringAsFixed(1)),
+      double.parse(seeds[i].y.toStringAsFixed(1)),
+    ]);
+  }
+
+  final meta = <String, dynamic>{
+    'count': pieces.length,
+    'seeds': seedsList,
+    'pieces': pieces,
+  };
+
+  return (entries: entries, meta: meta);
 }
 
 /// Try to shelf-pack sprites into an atlas of the given dimensions.
@@ -117,6 +268,25 @@ Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
     return false;
   }
 
+  // Generate Voronoi fragments for fragmentable sprites (enemies + structures)
+  final fragmentsMeta = <String, dynamic>{};
+  final fragmentEntries = <_SpriteEntry>[];
+  for (final sprite in List<_SpriteEntry>.from(sprites)) {
+    if (!_isFragmentable(sprite.name)) continue;
+    final result = _generateFragments(sprite.name, sprite.image);
+    if (result.entries.isNotEmpty) {
+      fragmentEntries.addAll(result.entries);
+      fragmentsMeta[sprite.name] = result.meta;
+    }
+  }
+  if (fragmentEntries.isNotEmpty) {
+    sprites.addAll(fragmentEntries);
+    print(
+      '  [$skinId] Generated ${fragmentEntries.length} Voronoi fragments '
+      'for ${fragmentsMeta.length} sprites.',
+    );
+  }
+
   // Sort by height (tallest first) for better shelf packing
   sprites.sort((a, b) => b.image.height.compareTo(a.image.height));
 
@@ -195,10 +365,11 @@ Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
       'h': p.h,
     };
   }
-  final jsonData = {
+  final jsonData = <String, dynamic>{
     'width': atlasW,
     'height': atlasH,
     'frames': frames,
+    if (fragmentsMeta.isNotEmpty) 'fragments': fragmentsMeta,
   };
   final atlasJson = File('${skinDir.path}${Platform.pathSeparator}atlas.json');
   atlasJson.writeAsStringSync(

@@ -51,6 +51,7 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   Sprite? _sprite;
   Sprite? get sprite => _sprite;
+  String get spriteName => _spriteNameForType(hostType);
 
   Hostile({
     required this.caption,

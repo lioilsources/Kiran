@@ -8,6 +8,7 @@ import '../systems/device.dart';
 import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
 import '../game/platform_config.dart' as platform;
+import '../rendering/dissolve_effect.dart';
 import 'hostile.dart';
 
 /// Ported from Vessel.cls — the player's ship.
@@ -43,6 +44,9 @@ class Vessel extends PositionComponent
   // DPS tracking for random sector scaling (VB6 rocket.lastMaxDps)
   double lastMaxDps = 0;
 
+  // Dissolve shader effect (visual damage at low HP)
+  final DissolveEffect dissolveEffect = DissolveEffect();
+
   // Sprite / animation
   Sprite? _sprite;
   List<Sprite> _frames = [];
@@ -56,6 +60,7 @@ class Vessel extends PositionComponent
 
   Future<void> init() async {
     _loadFrames();
+    await dissolveEffect.load();
 
     // Default weapon: Bubble Gun
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
@@ -477,8 +482,27 @@ class Vessel extends PositionComponent
   void render(Canvas canvas) {
     if (!visible) return;
 
+    // Drive dissolve amount from HP ratio (kicks in below 30%)
+    final hpRatio = hp / hpMax;
+    if (hpRatio < 0.3) {
+      // Map 0.3→0 HP to 0→0.6 dissolve (never fully dissolve — that's death)
+      dissolveEffect.amount = (1.0 - hpRatio / 0.3) * 0.6;
+    } else {
+      dissolveEffect.amount = 0;
+    }
+
     final paint = playerIndex == 1 ? _p2Paint : null;
 
+    if (dissolveEffect.amount > 0.001) {
+      dissolveEffect.renderWith(canvas, size.x, size.y, (c) {
+        _renderSprite(c, paint);
+      });
+    } else {
+      _renderSprite(canvas, paint);
+    }
+  }
+
+  void _renderSprite(Canvas canvas, Paint? paint) {
     if (_sprite != null) {
       _sprite!.render(canvas, size: size, overridePaint: paint);
     } else {

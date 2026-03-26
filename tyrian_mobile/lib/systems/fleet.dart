@@ -8,6 +8,7 @@ import '../entities/collectable.dart';
 import '../entities/vessel.dart';
 import '../systems/path_system.dart';
 import '../systems/device.dart';
+import '../rendering/pixel_explosion_overlay.dart';
 
 /// Ported from Fleet.cls — a wave/group of enemies.
 class Fleet extends Component with HasGameReference<TyrianGame> {
@@ -121,7 +122,25 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
             h.lastHitY,
             h.size.x,
             h.size.y,
+            h.spriteName,
           );
+
+          // Boss-tier hostiles get a pixel explosion shader effect
+          if (_isBossTier(h.hostType)) {
+            final snapshot = captureSprite(h.sprite!, h.size.x, h.size.y);
+            // Hit point in UV space (relative to sprite bounds)
+            final hitUvX = ((h.lastHitX - h.position.x) / h.size.x).clamp(0.0, 1.0);
+            final hitUvY = ((h.lastHitY - h.position.y) / h.size.y).clamp(0.0, 1.0);
+            game.world.add(PixelExplosionOverlay(
+              snapshot: snapshot,
+              position: h.position.clone(),
+              size: h.size.clone(),
+              hitUvX: hitUvX,
+              hitUvY: hitUvY,
+              duration: 1.0,
+              spread: 2.5,
+            ));
+          }
         }
         h.removeFromParent();
         return true;
@@ -293,4 +312,9 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       defaultPathAction: defaultPathAction,
     );
   }
+
+  static bool _isBossTier(HostType type) =>
+      type == HostType.falconxb ||
+      type == HostType.falconxt ||
+      type == HostType.bouncer;
 }
