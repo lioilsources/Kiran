@@ -1,5 +1,3 @@
-import 'dart:ui' show Rect, Paint, Color;
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../systems/device.dart';
@@ -31,13 +29,13 @@ class Projectile extends PositionComponent with HasGameReference {
         super(position: position);
 
   Sprite? _sprite;
+  Sprite? get sprite => _sprite;
 
   @override
   Future<void> onLoad() async {
     _loadSprite();
     // Center horizontally on spawn position (once)
     position.x -= size.x / 2;
-    add(RectangleHitbox());
   }
 
   /// Load sprite and update size — no side effects on position or hitbox.
@@ -68,20 +66,9 @@ class Projectile extends PositionComponent with HasGameReference {
     }
   }
 
+  // Rendering is handled by ProjectileBatchRenderer — this is intentionally empty.
   @override
-  void render(canvas) {
-    if (!active) return;
-    if (_sprite != null) {
-      _sprite!.render(canvas, size: size);
-    } else {
-      // Placeholder: small colored rect
-      final paint = Paint()..color = const Color(0xFFFFFF00);
-      canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.x, size.y),
-        paint,
-      );
-    }
-  }
+  void render(canvas) {}
 
   void activate(double x, double y, double spd, double dmg, double scale) {
     speed = spd;

@@ -1,4 +1,3 @@
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
@@ -23,7 +22,7 @@ enum CollType {
 
 /// Ported from Collectable.cls — pickup items/bonuses.
 class Collectable extends PositionComponent
-    with HasGameReference<TyrianGame>, CollisionCallbacks {
+    with HasGameReference<TyrianGame> {
   String caption;
   CollType cType;
   int value;
@@ -39,11 +38,6 @@ class Collectable extends PositionComponent
           position: position ?? Vector2.zero(),
           size: Vector2(config.iconWidth, config.iconHeight),
         );
-
-  @override
-  Future<void> onLoad() async {
-    add(RectangleHitbox());
-  }
 
   @override
   void update(double dt) {

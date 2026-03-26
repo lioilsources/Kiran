@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
@@ -10,11 +9,10 @@ import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
 import '../game/platform_config.dart' as platform;
 import 'hostile.dart';
-import 'collectable.dart';
 
 /// Ported from Vessel.cls — the player's ship.
 class Vessel extends PositionComponent
-    with HasGameReference<TyrianGame>, CollisionCallbacks {
+    with HasGameReference<TyrianGame> {
   String pilotName = 'Pilot';
   int playerIndex; // 0=P1, 1=P2
 
@@ -58,8 +56,6 @@ class Vessel extends PositionComponent
 
   Future<void> init() async {
     _loadFrames();
-
-    add(RectangleHitbox());
 
     // Default weapon: Bubble Gun
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
@@ -316,6 +312,8 @@ class Vessel extends PositionComponent
         if (h.isDead) continue;
         if (_aabbOverlap(px1, py1, px2, py2,
             h.position.x, h.position.y, h.x2, h.y2)) {
+          h.lastHitX = projectile.position.x + projectile.size.x / 2;
+          h.lastHitY = projectile.position.y + projectile.size.y / 2;
           h.takeDamage(d.damage, game, attacker: this);
           if (h.isDead) {
             fleet.onHostileKilled(h, game, attacker: this);
@@ -495,11 +493,4 @@ class Vessel extends PositionComponent
     }
   }
 
-  @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollision(intersectionPoints, other);
-    if (other is Collectable) {
-      other.applyEffect(this, game);
-    }
-  }
 }

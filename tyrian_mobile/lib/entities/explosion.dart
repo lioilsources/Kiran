@@ -3,53 +3,99 @@ import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 
-/// Ported from Explosion.cls — animated explosion effect.
-/// Original used 4 sprite variations x 15 pre-scaled frames.
-/// Here we use a scaling animation with colored circles.
-class Explosion extends PositionComponent with HasGameReference<TyrianGame> {
+/// Data for a single explosion instance (plain data, no Component).
+class ExplosionData {
+  double x = 0;
+  double y = 0;
   int step = 0;
-  final int maxSteps = config.explosionSteps;
-  final int explosionSize;
+  int maxSteps = config.explosionSteps;
+  int explosionSize = 0;
+  bool active = false;
 
-  // Explosion colors cycle
+  void reset(double px, double py, int size) {
+    x = px;
+    y = py;
+    step = 0;
+    explosionSize = size;
+    maxSteps = config.explosionSteps;
+    active = true;
+  }
+}
+
+/// Centralized renderer for all explosions. Replaces N Explosion PositionComponents
+/// with a single Component that manages a pre-allocated pool.
+class ExplosionRenderer extends Component with HasGameReference<TyrianGame> {
+  static const int poolSize = 30;
+
   static const _colors = [
-    Color(0xFFFFFF00), // Yellow
-    Color(0xFFFF8800), // Orange
-    Color(0xFFFF4400), // Red-orange
-    Color(0xFFFF0000), // Red
-    Color(0xFFCC0000), // Dark red
+    Color(0xFFFFFF00),
+    Color(0xFFFF8800),
+    Color(0xFFFF4400),
+    Color(0xFFFF0000),
+    Color(0xFFCC0000),
   ];
 
-  Explosion({
-    required Vector2 position,
-    int size = 2,
-  })  : explosionSize = size,
-        super(position: position, anchor: Anchor.center);
+  final List<ExplosionData> _pool =
+      List.generate(poolSize, (_) => ExplosionData());
+
+  // Reusable Paint objects to avoid allocation
+  final Paint _paint = Paint();
+  final Paint _corePaint = Paint();
+
+  int get activeCount {
+    int c = 0;
+    for (final e in _pool) {
+      if (e.active) c++;
+    }
+    return c;
+  }
+
+  /// Acquire an explosion from the pool. Returns null if pool exhausted.
+  ExplosionData? acquire(double x, double y, int size) {
+    for (final e in _pool) {
+      if (!e.active) {
+        e.reset(x, y, size);
+        return e;
+      }
+    }
+    return null; // Pool exhausted — skip this explosion
+  }
 
   @override
   void update(double dt) {
-    step++;
-    if (step >= maxSteps) {
-      game.removeExplosion(this);
-      removeFromParent();
+    for (final e in _pool) {
+      if (!e.active) continue;
+      e.step++;
+      if (e.step >= e.maxSteps) {
+        e.active = false;
+      }
     }
   }
 
   @override
   void render(Canvas canvas) {
-    final progress = step / maxSteps;
-    final radius = (explosionSize + 1) * 8.0 * progress;
-    final alpha = ((1.0 - progress) * 255).round().clamp(0, 255);
-    final colorIndex = (progress * (_colors.length - 1)).floor();
-    final color = _colors[colorIndex].withAlpha(alpha);
+    for (final e in _pool) {
+      if (!e.active) continue;
 
-    final paint = Paint()..color = color;
-    canvas.drawCircle(Offset.zero, radius, paint);
+      final progress = e.step / e.maxSteps;
+      final radius = (e.explosionSize + 1) * 8.0 * progress;
+      final alpha = ((1.0 - progress) * 255).round().clamp(0, 255);
+      final colorIndex = (progress * (_colors.length - 1)).floor();
 
-    // Inner bright core
-    if (progress < 0.5) {
-      final corePaint = Paint()..color = Colors.white.withAlpha(alpha);
-      canvas.drawCircle(Offset.zero, radius * 0.3, corePaint);
+      _paint.color = _colors[colorIndex].withAlpha(alpha);
+      canvas.drawCircle(Offset(e.x, e.y), radius, _paint);
+
+      if (progress < 0.5) {
+        _corePaint.color = Colors.white.withAlpha(alpha);
+        canvas.drawCircle(Offset(e.x, e.y), radius * 0.3, _corePaint);
+      }
+    }
+  }
+
+  /// Deactivate all explosions (used on sector clear).
+  void clearAll() {
+    for (final e in _pool) {
+      e.active = false;
     }
   }
 }

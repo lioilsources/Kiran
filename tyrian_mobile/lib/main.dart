@@ -450,6 +450,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 onViewScores: () => setState(() => _showHighScores = true),
               ),
           ],
+
+          // FPS overlay (visible during gameplay)
+          if (_game.isLoaded && _screen == _ScreenState.game)
+            _FpsOverlay(game: _game),
         ],
       ),
     );
@@ -479,6 +483,59 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               style: TextStyle(color: Colors.white54, fontSize: 13),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Lightweight FPS + entity count overlay (Flutter widget, outside game render).
+class _FpsOverlay extends StatefulWidget {
+  final TyrianGame game;
+  const _FpsOverlay({required this.game});
+  @override
+  State<_FpsOverlay> createState() => _FpsOverlayState();
+}
+
+class _FpsOverlayState extends State<_FpsOverlay> {
+  Timer? _timer;
+  int _lastFrameCount = 0;
+  String _text = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _lastFrameCount = widget.game.frameCount;
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      final current = widget.game.frameCount;
+      final fps = current - _lastFrameCount;
+      _lastFrameCount = current;
+      final g = widget.game;
+      setState(() {
+        _text = '${fps}fps | H:${g.hostileCount} P:${g.projectileCount} E:${g.explosionCount}';
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 4,
+      bottom: 4,
+      child: IgnorePointer(
+        child: Text(
+          _text,
+          style: const TextStyle(
+            color: Color(0x99FFFFFF),
+            fontSize: 10,
+            fontFamily: 'monospace',
+          ),
         ),
       ),
     );
