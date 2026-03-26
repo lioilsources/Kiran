@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:ui' as ui;
+
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'skin_registry.dart';
 
@@ -17,6 +20,10 @@ class AssetLibrary {
   final List<ui.Image> _bgLayers = [];
   List<ui.Image> get bgLayers => _bgLayers;
 
+  ui.Image? _atlasImage;
+  final Map<String, Rect> _atlasRects = {};
+  ui.Image? get atlasImage => _atlasImage;
+
   bool _loaded = false;
   String _skinId = 'default';
 
@@ -27,6 +34,8 @@ class AssetLibrary {
     _sprites.clear();
     _images.clear();
     _bgLayers.clear();
+    _atlasImage = null;
+    _atlasRects.clear();
     _loaded = false;
     _placeholder = null;
     // Clear Flame's image cache so it reloads from the new paths
@@ -57,6 +66,29 @@ class AssetLibrary {
     // We override the prefix so it loads from assets/ directly.
     Flame.images.prefix = 'assets/';
 
+    // Try atlas-based loading first
+    final atlasLoaded = await _tryLoadAtlas();
+    if (atlasLoaded) {
+      // Build vessel frames from atlas sprites
+      _vesselFrames.clear();
+      for (int i = 0; i < 4; i++) {
+        final s = _sprites['vessel_$i'];
+        if (s != null) _vesselFrames.add(s);
+      }
+
+      // Background layers are NOT in the atlas — load separately
+      _bgLayers.clear();
+      for (int i = 0; i < 4; i++) {
+        final img =
+            await _tryLoadImage('skins/$_skinId/backgrounds/layer_$i.png');
+        if (img != null) _bgLayers.add(img);
+      }
+
+      _loaded = true;
+      return;
+    }
+
+    // Fallback: individual PNG loading (existing code)
     String p(String name) => 'skins/$_skinId/sprites/$name.png';
 
     // Player — animated vessel frames (fall back to single vessel.png)
@@ -107,6 +139,51 @@ class AssetLibrary {
     }
 
     _loaded = true;
+  }
+
+  /// Try to load a pre-built texture atlas for the current skin.
+  /// Returns true if the atlas was loaded successfully, false otherwise.
+  Future<bool> _tryLoadAtlas() async {
+    try {
+      // Load atlas image
+      final img = await _tryLoadImage('skins/$_skinId/atlas.png');
+      if (img == null) return false;
+
+      // Load atlas JSON
+      final jsonStr =
+          await rootBundle.loadString('assets/skins/$_skinId/atlas.json');
+      final json = jsonDecode(jsonStr) as Map<String, dynamic>;
+      final frames = json['frames'] as Map<String, dynamic>;
+
+      _atlasImage = img;
+      _atlasRects.clear();
+      _images.clear();
+      _sprites.clear();
+
+      for (final entry in frames.entries) {
+        final name = entry.key;
+        final f = entry.value as Map<String, dynamic>;
+        final rect = Rect.fromLTWH(
+          (f['x'] as num).toDouble(),
+          (f['y'] as num).toDouble(),
+          (f['w'] as num).toDouble(),
+          (f['h'] as num).toDouble(),
+        );
+        _atlasRects[name] = rect;
+        _images[name] = img;
+        final sprite = Sprite(
+          img,
+          srcPosition: Vector2(rect.left, rect.top),
+          srcSize: Vector2(rect.width, rect.height),
+        );
+        sprite.paint.filterQuality = FilterQuality.none;
+        _sprites[name] = sprite;
+      }
+      return true;
+    } catch (e) {
+      print('Atlas load failed: $e');
+      return false;
+    }
   }
 
   Future<void> _load(String name, String path) async {

@@ -1,4 +1,3 @@
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
@@ -15,7 +14,7 @@ enum StructType { basic, asteroid }
 
 /// Ported from Structure.cls — obstacles/asteroids.
 class Structure extends PositionComponent
-    with HasGameReference<TyrianGame>, CollisionCallbacks {
+    with HasGameReference<TyrianGame> {
   static int _nextId = 0;
   late final int id = _nextId++;
 
@@ -36,6 +35,7 @@ class Structure extends PositionComponent
   double get y2 => position.y + size.y;
 
   Sprite? _sprite;
+  Sprite? get sprite => _sprite;
   final String? _imgName;
   String get imgName => _imgName ?? '';
 
@@ -57,7 +57,6 @@ class Structure extends PositionComponent
   @override
   Future<void> onLoad() async {
     refreshSprite();
-    add(RectangleHitbox());
   }
 
   void refreshSprite() {
@@ -147,17 +146,7 @@ class Structure extends PositionComponent
     removeFromParent();
   }
 
+  // Rendering is handled by StructureBatchRenderer — this is intentionally empty.
   @override
-  void render(Canvas canvas) {
-    if (isDead) return;
-
-    final bounds = Rect.fromLTWH(0, 0, size.x, size.y);
-
-    if (_sprite != null) {
-      _sprite!.render(canvas, size: size);
-    } else {
-      final paint = Paint()..color = const Color(0xFF888888);
-      canvas.drawOval(bounds, paint);
-    }
-  }
+  void render(Canvas canvas) {}
 }

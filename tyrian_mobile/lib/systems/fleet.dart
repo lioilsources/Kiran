@@ -108,11 +108,21 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     // Clean up dead hostiles
     hostiles.removeWhere((h) {
       if (h.isDead) {
-        game.addExplosion(
-          h.position.x + h.size.x / 2,
-          h.position.y + h.size.y / 2,
-          2,
-        );
+        final cx = h.position.x + h.size.x / 2;
+        final cy = h.position.y + h.size.y / 2;
+        game.addExplosion(cx, cy, 2);
+        // Spawn sprite shatter shards
+        if (h.sprite != null) {
+          game.shardPool.spawn(
+            h.sprite!,
+            cx,
+            cy,
+            h.lastHitX,
+            h.lastHitY,
+            h.size.x,
+            h.size.y,
+          );
+        }
         h.removeFromParent();
         return true;
       }

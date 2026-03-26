@@ -4,7 +4,15 @@
       "Bash(find /c/Users/geeol/Code/TyrianMobile/TyrianVB/tyrian_mobile/macos -type f -name *.swift -o -name *.h -o -name *.m)",
       "WebFetch(domain:pub.dev)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(grep -r gamepad --include=*.dart lib/)",
+      "Bash(xargs grep:*)",
+      "Bash(flutter build:*)",
+      "Bash(find /c/Users/geeol/Code/TyrianMobile/TyrianVB/tyrian_mobile/lib -type f -name *skin* -o -name *asset* -o -name *sprite*)",
+      "Bash(wc -l /c/Users/geeol/Code/TyrianMobile/TyrianVB/tyrian_mobile/lib/**/*.dart)",
+      "Bash(flutter analyze:*)",
+      "Bash(dart analyze:*)",
+      "Bash(find /c/Users/geeol/AppData/Local/Pub/Cache -path */flame*/sprite_batch.dart)"
     ]
   }
 }

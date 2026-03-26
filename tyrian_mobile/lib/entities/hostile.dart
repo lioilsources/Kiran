@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/tyrian_game.dart';
@@ -37,6 +36,8 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   int shield = 0;
   int shieldMax = 0;
   int hit = 0; // Flash counter
+  double lastHitX = 0;
+  double lastHitY = 0;
   int collisionDmg;
   PathSystem? trace;
   Device? weapon;
@@ -49,6 +50,7 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   Vector2 get hostCenter => Vector2(position.x + size.x / 2, position.y + size.y / 2);
 
   Sprite? _sprite;
+  Sprite? get sprite => _sprite;
 
   Hostile({
     required this.caption,
@@ -84,7 +86,6 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   @override
   Future<void> onLoad() async {
     _refreshSprite();
-    add(RectangleHitbox());
   }
 
   void _refreshSprite() {
@@ -249,49 +250,7 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     if (hp <= 0) hp = 0;
   }
 
+  // Rendering is handled by HostileBatchRenderer — this is intentionally empty.
   @override
-  void render(Canvas canvas) {
-    if (isDead) return;
-
-    final bounds = Rect.fromLTWH(0, 0, size.x, size.y);
-
-    if (_sprite != null) {
-      _sprite!.render(canvas, size: size);
-    } else {
-      // Placeholder red square
-      final paint = Paint()..color = const Color(0xFFFF0000);
-      canvas.drawRect(bounds, paint);
-    }
-
-    // HP bar (if damaged)
-    if (hp < hpMax) {
-      _drawHpBar(canvas);
-    }
-  }
-
-  void _drawHpBar(Canvas canvas) {
-    const barHeight = 3.0;
-    const barOffset = 4.0;
-    final barWidth = size.x;
-    final hpRatio = hp / hpMax;
-
-    // Background
-    final bgPaint = Paint()..color = const Color(0x80000000);
-    canvas.drawRect(
-      Rect.fromLTWH(0, -barOffset - barHeight, barWidth, barHeight),
-      bgPaint,
-    );
-
-    // HP fill
-    final color = hpRatio > 0.5
-        ? const Color(0xFF00FF00)
-        : hpRatio > 0.25
-            ? const Color(0xFFFFFF00)
-            : const Color(0xFFFF0000);
-    final hpPaint = Paint()..color = color;
-    canvas.drawRect(
-      Rect.fromLTWH(0, -barOffset - barHeight, barWidth * hpRatio, barHeight),
-      hpPaint,
-    );
-  }
+  void render(Canvas canvas) {}
 }

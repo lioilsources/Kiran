@@ -24,6 +24,8 @@ import '../systems/dev_type.dart';
 import '../entities/projectile.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
+import '../rendering/batch_renderer.dart';
+import '../entities/shard.dart';
 import '../rendering/beam_renderer.dart';
 import '../rendering/shader_pipeline.dart';
 import '../services/skin_registry.dart';
@@ -36,7 +38,7 @@ enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
 
 class TyrianGame extends FlameGame
-    with DragCallbacks, TapCallbacks, HasCollisionDetection, KeyboardEvents {
+    with DragCallbacks, TapCallbacks, KeyboardEvents {
   TyrianGame();
 
   final KeyboardInput keyboardInput = KeyboardInput();
@@ -67,9 +69,9 @@ class TyrianGame extends FlameGame
       ];
 
   // Client-side entity cache for snapshot rendering
-  final Map<int, Hostile> _clientHostiles = {};
-  final Map<int, Structure> _clientStructures = {};
-  final List<Projectile> _clientPlayerProjectiles = [];
+  final Map<int, Hostile> clientHostiles = {};
+  final Map<int, Structure> clientStructures = {};
+  final List<Projectile> clientPlayerProjectiles = [];
 
   GameState state = GameState.comCenter;
   bool isLoaded = false;
@@ -78,13 +80,37 @@ class TyrianGame extends FlameGame
   final List<Fleet> activeFleets = [];
   final List<Structure> activeStructures = [];
   final List<Collectable> activeCollectables = [];
-  final List<Explosion> activeExplosions = [];
+  final ShardPool shardPool = ShardPool();
+  late ExplosionRenderer explosionRenderer;
   final List<Projectile> enemyProjectiles = [];
 
   Sector? currentSector;
   int currentSectorIndex = 0;
   double elapsed = 0;
   double _osdTimer = 0;
+
+  // FPS counter support
+  int frameCount = 0;
+
+  int get hostileCount {
+    int count = 0;
+    for (final f in activeFleets) {
+      count += f.hostiles.length;
+    }
+    return count;
+  }
+
+  int get projectileCount {
+    int count = enemyProjectiles.length;
+    for (final v in allVessels) {
+      for (final d in v.devices) {
+        count += d.projectiles.length;
+      }
+    }
+    return count;
+  }
+
+  int get explosionCount => explosionRenderer.activeCount;
 
   // Callbacks for Flutter overlay UI
   VoidCallback? onOsdUpdate;
@@ -134,8 +160,18 @@ class TyrianGame extends FlameGame
     parallaxBg.loadLayers();
     world.add(parallaxBg);
 
+    // Batch renderers — draw entities via canvas.drawAtlas() instead of
+    // individual sprite.render() calls. Order = visual layering.
+    world.add(StructureBatchRenderer());
+    world.add(HostileBatchRenderer());
+    world.add(ProjectileBatchRenderer());
+    world.add(ShardBatchRenderer());
+
     beamRenderer = BeamRenderer();
     world.add(beamRenderer);
+
+    explosionRenderer = ExplosionRenderer();
+    world.add(explosionRenderer);
 
     vessel = Vessel();
     await vessel.init();
@@ -246,10 +282,8 @@ class TyrianGame extends FlameGame
       c.removeFromParent();
     }
     activeCollectables.clear();
-    for (final e in [...activeExplosions]) {
-      e.removeFromParent();
-    }
-    activeExplosions.clear();
+    explosionRenderer.clearAll();
+    shardPool.clearAll();
     for (final p in [...enemyProjectiles]) {
       p.removeFromParent();
     }
@@ -267,6 +301,7 @@ class TyrianGame extends FlameGame
 
   @override
   void update(double dt) {
+    frameCount++;
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
       final snap = coopClient?.latestSnapshot;
@@ -291,6 +326,7 @@ class TyrianGame extends FlameGame
 
     super.update(dt);
     elapsed += dt;
+    shardPool.update(dt);
 
     // Update beam renderer with vessel data
     beamRenderer.vessel = vessel;
@@ -306,6 +342,9 @@ class TyrianGame extends FlameGame
 
     // Update enemy projectiles — collision with vessel
     _updateEnemyProjectiles();
+
+    // Collectable pickup — manual AABB (replaces Flame CollisionCallbacks)
+    _checkCollectablePickup();
 
     // Feed damage flash into shader pipeline (after projectile collision)
     double maxFlash = 0;
@@ -649,6 +688,23 @@ class TyrianGame extends FlameGame
     }
   }
 
+  void _checkCollectablePickup() {
+    for (int i = activeCollectables.length - 1; i >= 0; i--) {
+      final c = activeCollectables[i];
+      for (final v in allVessels) {
+        if (!v.visible) continue;
+        // Simple AABB overlap
+        if (c.position.x < v.position.x + v.size.x / 2 &&
+            c.position.x + c.size.x > v.position.x - v.size.x / 2 &&
+            c.position.y < v.position.y + v.size.y / 2 &&
+            c.position.y + c.size.y > v.position.y - v.size.y / 2) {
+          c.applyEffect(v, this);
+          break; // applyEffect calls removeCollectable, which removes from list
+        }
+      }
+    }
+  }
+
   /// Spawn an enemy projectile (called from Hostile firing logic)
   void spawnEnemyProjectile(double x, double y, int dmg, double scale) {
     final proj = Projectile(
@@ -664,12 +720,7 @@ class TyrianGame extends FlameGame
 
   // Spawn helpers used by Sector/Fleet
   void addExplosion(double x, double y, int size) {
-    final exp = Explosion(
-      position: Vector2(x, y),
-      size: size,
-    );
-    activeExplosions.add(exp);
-    world.add(exp);
+    explosionRenderer.acquire(x, y, size);
   }
 
   void addCollectable(Collectable c) {
@@ -680,10 +731,6 @@ class TyrianGame extends FlameGame
   void removeCollectable(Collectable c) {
     activeCollectables.remove(c);
     c.removeFromParent();
-  }
-
-  void removeExplosion(Explosion e) {
-    activeExplosions.remove(e);
   }
 
   // ==== Co-op setup ====
@@ -958,7 +1005,7 @@ class TyrianGame extends FlameGame
       final key = hs.fleetId * 1000 + hs.hostileId;
       seenKeys.add(key);
 
-      var hostile = _clientHostiles[key];
+      var hostile = clientHostiles[key];
       if (hostile == null) {
         // Create new hostile for rendering
         hostile = Hostile(
@@ -968,7 +1015,7 @@ class TyrianGame extends FlameGame
           hp: hs.hp,
           hpMax: hs.hp,
         );
-        _clientHostiles[key] = hostile;
+        clientHostiles[key] = hostile;
         world.add(hostile);
       }
       hostile.position.setValues(hs.x, hs.y);
@@ -977,9 +1024,9 @@ class TyrianGame extends FlameGame
     }
 
     // Remove hostiles no longer in snapshot
-    final toRemove = _clientHostiles.keys.where((k) => !seenKeys.contains(k)).toList();
+    final toRemove = clientHostiles.keys.where((k) => !seenKeys.contains(k)).toList();
     for (final k in toRemove) {
-      final h = _clientHostiles.remove(k);
+      final h = clientHostiles.remove(k);
       h?.removeFromParent();
     }
 
@@ -987,7 +1034,7 @@ class TyrianGame extends FlameGame
     final seenStructIds = <int>{};
     for (final ss in snap.structures) {
       seenStructIds.add(ss.id);
-      var structure = _clientStructures[ss.id];
+      var structure = clientStructures[ss.id];
       if (structure == null) {
         structure = Structure(
           caption: '',
@@ -996,16 +1043,16 @@ class TyrianGame extends FlameGame
           hpMax: ss.hp,
           imgName: ss.imgName,
         );
-        _clientStructures[ss.id] = structure;
+        clientStructures[ss.id] = structure;
         world.add(structure);
       }
       structure.position.setValues(ss.x, ss.y);
       structure.hp = ss.hp;
       structure.hit = ss.hit;
     }
-    final structToRemove = _clientStructures.keys.where((k) => !seenStructIds.contains(k)).toList();
+    final structToRemove = clientStructures.keys.where((k) => !seenStructIds.contains(k)).toList();
     for (final k in structToRemove) {
-      final s = _clientStructures.remove(k);
+      final s = clientStructures.remove(k);
       s?.removeFromParent();
     }
 
@@ -1027,10 +1074,10 @@ class TyrianGame extends FlameGame
     }
 
     // Player projectiles
-    for (final p in _clientPlayerProjectiles) {
+    for (final p in clientPlayerProjectiles) {
       p.removeFromParent();
     }
-    _clientPlayerProjectiles.clear();
+    clientPlayerProjectiles.clear();
     for (final ps in snap.playerProjectiles) {
       final proj = Projectile(
         imgName: 'bubble',
@@ -1039,7 +1086,7 @@ class TyrianGame extends FlameGame
         damage: 0,
       );
       proj.size = Vector2(ps.sizeX, ps.sizeY);
-      _clientPlayerProjectiles.add(proj);
+      clientPlayerProjectiles.add(proj);
       world.add(proj);
     }
 
@@ -1087,17 +1134,17 @@ class TyrianGame extends FlameGame
     }
 
     // Clean up client-side entities
-    for (final h in _clientHostiles.values) {
+    for (final h in clientHostiles.values) {
       h.removeFromParent();
     }
-    _clientHostiles.clear();
-    for (final s in _clientStructures.values) {
+    clientHostiles.clear();
+    for (final s in clientStructures.values) {
       s.removeFromParent();
     }
-    _clientStructures.clear();
-    for (final p in _clientPlayerProjectiles) {
+    clientStructures.clear();
+    for (final p in clientPlayerProjectiles) {
       p.removeFromParent();
     }
-    _clientPlayerProjectiles.clear();
+    clientPlayerProjectiles.clear();
   }
 }

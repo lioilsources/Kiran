@@ -77,54 +77,80 @@ flutter:
     - assets/skins/default/sprites/
     - assets/skins/default/ui/
     - assets/skins/default/sfx/
+    - assets/skins/default/atlas.png
+    - assets/skins/default/atlas.json
     - assets/skins/geometry_wars/sprites/
     - assets/skins/geometry_wars/ui/
     - assets/skins/geometry_wars/sfx/
     - assets/skins/geometry_wars/backgrounds/
+    - assets/skins/geometry_wars/atlas.png
+    - assets/skins/geometry_wars/atlas.json
     - assets/skins/space_invaders/sprites/
     - assets/skins/space_invaders/ui/
     - assets/skins/space_invaders/sfx/
     - assets/skins/space_invaders/backgrounds/
+    - assets/skins/space_invaders/atlas.png
+    - assets/skins/space_invaders/atlas.json
     - assets/skins/galaga/sprites/
     - assets/skins/galaga/ui/
     - assets/skins/galaga/sfx/
     - assets/skins/galaga/backgrounds/
+    - assets/skins/galaga/atlas.png
+    - assets/skins/galaga/atlas.json
     - assets/skins/asteroids/sprites/
     - assets/skins/asteroids/ui/
     - assets/skins/asteroids/sfx/
     - assets/skins/asteroids/backgrounds/
+    - assets/skins/asteroids/atlas.png
+    - assets/skins/asteroids/atlas.json
     - assets/skins/ikaruga/sprites/
     - assets/skins/ikaruga/ui/
     - assets/skins/ikaruga/sfx/
     - assets/skins/ikaruga/backgrounds/
+    - assets/skins/ikaruga/atlas.png
+    - assets/skins/ikaruga/atlas.json
     - assets/skins/nuclear_throne/sprites/
     - assets/skins/nuclear_throne/ui/
     - assets/skins/nuclear_throne/sfx/
     - assets/skins/nuclear_throne/backgrounds/
+    - assets/skins/nuclear_throne/atlas.png
+    - assets/skins/nuclear_throne/atlas.json
     - assets/skins/luftrausers/sprites/
     - assets/skins/luftrausers/ui/
     - assets/skins/luftrausers/sfx/
     - assets/skins/luftrausers/backgrounds/
+    - assets/skins/luftrausers/atlas.png
+    - assets/skins/luftrausers/atlas.json
     - assets/skins/nex_machina/sprites/
     - assets/skins/nex_machina/ui/
     - assets/skins/nex_machina/sfx/
     - assets/skins/nex_machina/backgrounds/
+    - assets/skins/nex_machina/atlas.png
+    - assets/skins/nex_machina/atlas.json
     - assets/skins/tyrian_dos/sprites/
     - assets/skins/tyrian_dos/ui/
     - assets/skins/tyrian_dos/sfx/
     - assets/skins/tyrian_dos/backgrounds/
+    - assets/skins/tyrian_dos/atlas.png
+    - assets/skins/tyrian_dos/atlas.json
     - assets/skins/gradius_v/sprites/
     - assets/skins/gradius_v/ui/
     - assets/skins/gradius_v/sfx/
     - assets/skins/gradius_v/backgrounds/
+    - assets/skins/gradius_v/atlas.png
+    - assets/skins/gradius_v/atlas.json
     - assets/skins/rtype/sprites/
     - assets/skins/rtype/ui/
     - assets/skins/rtype/sfx/
     - assets/skins/rtype/backgrounds/
+    - assets/skins/rtype/atlas.png
+    - assets/skins/rtype/atlas.json
     - assets/skins/blazing_lazers/sprites/
     - assets/skins/blazing_lazers/ui/
     - assets/skins/blazing_lazers/sfx/
     - assets/skins/blazing_lazers/backgrounds/
+    - assets/skins/blazing_lazers/atlas.png
+    - assets/skins/blazing_lazers/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
