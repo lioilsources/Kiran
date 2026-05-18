@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"tyrian-pipeline/internal/generator"
-	"tyrian-pipeline/internal/grokimage"
+	"tyrian-pipeline/internal/imagegen"
 	"tyrian-pipeline/internal/skin"
 )
 
@@ -23,7 +23,7 @@ type Stats struct {
 
 // Orchestrator coordinates parallel asset generation with rate limiting.
 type Orchestrator struct {
-	client     grokimage.ImageGenerator
+	client     imagegen.ImageGenerator
 	outDir     string
 	workers    int
 	n          int // variations per asset
@@ -44,7 +44,7 @@ func WithDryRun(d bool) OrchestratorOption    { return func(o *Orchestrator) { o
 func WithAssetType(t string) OrchestratorOption { return func(o *Orchestrator) { o.assetType = t } }
 
 // NewOrchestrator creates a configured Orchestrator.
-func NewOrchestrator(client grokimage.ImageGenerator, outDir string, opts ...OrchestratorOption) *Orchestrator {
+func NewOrchestrator(client imagegen.ImageGenerator, outDir string, opts ...OrchestratorOption) *Orchestrator {
 	o := &Orchestrator{
 		client:     client,
 		outDir:     outDir,
@@ -176,7 +176,7 @@ func (o *Orchestrator) generateAsset(ctx context.Context, s skin.SkinDef, spec g
 	}
 	aspectRatio := spec.AspectRatio
 
-	resp, err := o.client.Generate(ctx, grokimage.GenerateRequest{
+	resp, err := o.client.Generate(ctx, imagegen.GenerateRequest{
 		Model:          o.model,
 		Prompt:         prompt,
 		N:              o.n,

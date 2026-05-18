@@ -3,59 +3,28 @@ package grokimage
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 	"time"
+
+	"tyrian-pipeline/internal/imagegen"
 )
 
 const defaultAPIURL = "https://api.x.ai/v1/images/generations"
 
-// ImageGenerator is the interface for image generation backends.
-type ImageGenerator interface {
-	Generate(ctx context.Context, req GenerateRequest) (*GenerateResponse, error)
-}
-
-// GenerateRequest is the API request body.
-type GenerateRequest struct {
-	Model          string `json:"model"`
-	Prompt         string `json:"prompt"`
-	N              int    `json:"n"`
-	AspectRatio    string `json:"aspect_ratio,omitempty"`
-	Resolution     string `json:"resolution,omitempty"`
-	ResponseFormat string `json:"response_format"`
-}
-
-// GenerateResponse holds the API response.
-type GenerateResponse struct {
-	Data []ImageData `json:"data"`
-}
-
-// ImageData represents a single generated image.
-type ImageData struct {
-	B64JSON       string `json:"b64_json"`
-	RevisedPrompt string `json:"revised_prompt"`
-	URL           string `json:"url"`
-}
-
-// Bytes decodes the base64 image data.
-func (d ImageData) Bytes() ([]byte, error) {
-	return base64.StdEncoding.DecodeString(d.B64JSON)
-}
-
-// APIError represents an error response from the API.
-type APIError struct {
-	StatusCode int
-	Message    string
-	Retryable  bool
-}
-
-func (e *APIError) Error() string {
-	return fmt.Sprintf("API error %d: %s", e.StatusCode, e.Message)
-}
+// The image generation contract lives in the backend-neutral imagegen
+// package. These aliases keep grokimage.* references working for callers
+// and tests while the concrete types are shared across backends.
+type (
+	ImageGenerator   = imagegen.ImageGenerator
+	GenerateRequest  = imagegen.GenerateRequest
+	GenerateResponse = imagegen.GenerateResponse
+	ImageData        = imagegen.ImageData
+	APIError         = imagegen.APIError
+)
 
 // Client implements ImageGenerator using the xAI Grok Image API.
 type Client struct {

@@ -10,21 +10,21 @@ import (
 
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
-Single spacecraft viewed from directly above (top-down), centered on transparent background.
+Single spacecraft viewed from directly above (top-down), centered on a flat, uniform solid-color background.
 Pixel art style, {{.SpriteSize}}px sprite sheet with {{.FrameCount}} animation frames in a horizontal row.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Clean silhouette, no background elements, no text, no UI.
-Transparent background (PNG).`,
+The background must be a single flat solid color, no gradient, no scene, clearly distinct from the sprite.`,
 
-	"explosion": `Explosion animation sprite sheet, 8 frames horizontal row on transparent background.
+	"explosion": `Explosion animation sprite sheet, 8 frames horizontal row on a flat, uniform solid-color background.
 Style: {{.StyleKeywords}}. {{.ExplosionStyle}}
 Starts small bright flash, expands outward, fades to particles/smoke.
-Each frame {{.SpriteSize}}px wide. No text, no UI, transparent PNG.`,
+Each frame {{.SpriteSize}}px wide. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
-	"bullet": `Game projectile sprite on transparent background.
+	"bullet": `Game projectile sprite on a flat, uniform solid-color background.
 {{.BulletDirective}}
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Single projectile, centered, facing upward. No text, no UI, transparent PNG.`,
+Single projectile, centered, facing upward. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"background": `Seamless tileable space background, vertical scrolling game.
 Layer: {{.LayerDesc}}.
@@ -33,20 +33,20 @@ Must tile seamlessly vertically. No ships, no UI, purely atmospheric.
 Wide landscape format 1024x2048px.`,
 
 	"hud_icon": `Game HUD icon: {{.IconType}}. Style: {{.StyleKeywords}}.
-Pixel art, 32x32 pixels, transparent background.
+Pixel art, 32x32 pixels, on a flat, uniform solid-color background.
 Clear readable shape at small size. Color: {{.PaletteDescription}}.
-No text, centered, transparent PNG.`,
+No text, centered. Single flat solid-color background, no gradient, no scene.`,
 
 	"enemy": `{{.ArtDirective}}
 Top-down enemy spacecraft, {{.EnemyDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Menacing hostile design, facing downward. Single sprite, centered on transparent background.
-{{.SpriteSize}}px sprite. No text, no UI, transparent PNG.`,
+Menacing hostile design, facing downward. Single sprite, centered on a flat, uniform solid-color background.
+{{.SpriteSize}}px sprite. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"structure": `Top-down space obstacle/debris: {{.StructureDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Irregular natural shape, no propulsion or weapons visible.
-{{.SpriteSize}}px sprite, centered on transparent background. No text, no UI, transparent PNG.`,
+{{.SpriteSize}}px sprite, centered on a flat, uniform solid-color background. No text, no UI, no gradient, no scene.`,
 
 	"preview": `Game skin preview image showing the overall visual theme.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.

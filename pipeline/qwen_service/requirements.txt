@@ -1,0 +1,19 @@
+# Qwen-Image microservice — pinned for reproducibility.
+#
+# Intended to run inside an NVIDIA NGC PyTorch container on DGX Spark
+# (ARM64 + CUDA), which already provides a CUDA-matched torch build.
+# torch is therefore NOT pinned here — use the container's torch and only
+# install the libraries below on top of it. If you build a venv outside
+# the NGC container, install the appropriate aarch64 CUDA torch wheel
+# first, then `pip install -r requirements.txt`.
+diffusers==0.32.2
+transformers==4.49.0
+accelerate==1.4.0
+safetensors==0.5.3
+optimum-quanto==0.2.6
+sentencepiece==0.2.0
+peft==0.14.0
+fastapi==0.115.8
+uvicorn==0.34.0
+pydantic==2.10.6
+pillow==11.1.0
