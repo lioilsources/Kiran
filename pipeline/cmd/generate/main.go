@@ -13,7 +13,9 @@ import (
 
 	"tyrian-pipeline/internal/generator"
 	"tyrian-pipeline/internal/grokimage"
+	"tyrian-pipeline/internal/imagegen"
 	"tyrian-pipeline/internal/pipeline"
+	"tyrian-pipeline/internal/qwenimage"
 	"tyrian-pipeline/internal/sfxgen"
 	"tyrian-pipeline/internal/skin"
 )
@@ -24,7 +26,9 @@ func main() {
 	skinID := flag.String("skin", "", "Skin ID to generate (empty = all skins)")
 	outDir := flag.String("out", "output/assets/skins", "Output directory")
 	workers := flag.Int("workers", 3, "Number of concurrent workers")
-	model := flag.String("model", "grok-imagine-image", "Image generation model")
+	backend := flag.String("backend", "grok", "Image backend: grok or qwen")
+	model := flag.String("model", "grok-imagine-image", "Image generation model (grok backend)")
+	steps := flag.Int("steps", 8, "Diffusion steps (qwen backend; 8 suits the lightning LoRA)")
 	dryRun := flag.Bool("dry-run", false, "Print prompts without calling API")
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
@@ -38,11 +42,11 @@ func main() {
 		return
 	}
 
-	// Validate API key (unless dry run)
-	apiKey := os.Getenv("XAI_API_KEY")
-	if apiKey == "" && !*dryRun {
-		fmt.Fprintln(os.Stderr, "Error: XAI_API_KEY environment variable is required (or use -dry-run)")
-		os.Exit(1)
+	// Model label recorded in the manifest. The -model default is a Grok
+	// name, so substitute a sensible label for the qwen backend.
+	modelName := *model
+	if *backend == "qwen" && modelName == "grok-imagine-image" {
+		modelName = "qwen-image"
 	}
 
 	// Resolve skins to process
@@ -58,10 +62,28 @@ func main() {
 		skins = skin.AllSkins()
 	}
 
-	// Create client
-	var client grokimage.ImageGenerator
+	// Create client for the selected backend
+	var client imagegen.ImageGenerator
 	if !*dryRun {
-		client = grokimage.NewClient(apiKey)
+		switch *backend {
+		case "grok":
+			apiKey := os.Getenv("XAI_API_KEY")
+			if apiKey == "" {
+				fmt.Fprintln(os.Stderr, "Error: XAI_API_KEY environment variable is required for -backend=grok (or use -dry-run)")
+				os.Exit(1)
+			}
+			client = grokimage.NewClient(apiKey)
+		case "qwen":
+			baseURL := os.Getenv("QWEN_API_URL")
+			if baseURL == "" {
+				fmt.Fprintln(os.Stderr, "Error: QWEN_API_URL environment variable is required for -backend=qwen (or use -dry-run)")
+				os.Exit(1)
+			}
+			client = qwenimage.NewClient(baseURL, os.Getenv("QWEN_API_TOKEN"), qwenimage.WithSteps(*steps))
+		default:
+			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, qwen)\n", *backend)
+			os.Exit(1)
+		}
 	}
 
 	// Setup context with interrupt handling
@@ -72,7 +94,7 @@ func main() {
 	orch := pipeline.NewOrchestrator(client, *outDir,
 		pipeline.WithWorkers(*workers),
 		pipeline.WithN(*n),
-		pipeline.WithModel(*model),
+		pipeline.WithModel(modelName),
 		pipeline.WithResolution(*resolution),
 		pipeline.WithDryRun(*dryRun),
 		pipeline.WithAssetType(*assetType),
@@ -112,7 +134,7 @@ func main() {
 					}
 				}
 			}
-			if err := skin.GenerateManifest(skinDir, s, *model, *n, inputs); err != nil {
+			if err := skin.GenerateManifest(skinDir, s, modelName, *n, inputs); err != nil {
 				fmt.Fprintf(os.Stderr, "Warning: manifest generation failed for %s: %v\n", s.ID, err)
 			}
 		}
