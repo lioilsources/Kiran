@@ -124,7 +124,10 @@ func TestRun_SyntheticSkin(t *testing.T) {
 
 	// Verify output files exist
 	expectedFiles := []string{
-		"sprites/vessel.png",      // ship_frames → vessel
+		"sprites/vessel_0.png",    // ship_frames → animated vessel frames
+		"sprites/vessel_1.png",
+		"sprites/vessel_2.png",
+		"sprites/vessel_3.png",
 		"sprites/explosion1.png",  // explosion v1
 		"sprites/explosion2.png",  // explosion v2
 		"sprites/explosion3.png",  // explosion v3
