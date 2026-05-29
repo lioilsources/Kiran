@@ -69,6 +69,39 @@ class Device {
     this.maxProjScale = 1.0,
   });
 
+  /// Serialize mutable state for save persistence. Immutable traits (guide,
+  /// beam, seqs, imgName, scaleProjectile, …) are recovered from the DevType
+  /// looked up by [name] on restore.
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'slot': slot.index,
+        'level': level,
+        'damage': damage,
+        'pwrNeed': pwrNeed,
+        'cooldown': cooldown,
+        'price': price,
+        'displayName': displayName,
+        'pwrGen': pwrGen,
+      };
+
+  /// Restore a Device from saved JSON. Starts from the matching DevType
+  /// template (immutable traits) and overwrites the upgraded/mutable fields.
+  /// Does NOT replay upgrade() — generator genMax is persisted on the Vessel,
+  /// so replaying would double-apply it.
+  factory Device.fromJson(Map<String, dynamic> json) {
+    final slot = WeaponSlot.values[json['slot'] as int];
+    final type = DevType.byName(json['name'] as String) ?? DevType.bubbleGun;
+    final device = Device.fromType(type, slot);
+    device.level = json['level'] as int;
+    device.damage = json['damage'] as int;
+    device.pwrNeed = (json['pwrNeed'] as num).toDouble();
+    device.cooldown = (json['cooldown'] as num).toDouble();
+    device.price = json['price'] as int;
+    device.displayName = json['displayName'] as String? ?? device.name;
+    device.pwrGen = (json['pwrGen'] as num).toDouble();
+    return device;
+  }
+
   /// Create a Device from a DevType template
   factory Device.fromType(DevType type, WeaponSlot slot) {
     return Device(

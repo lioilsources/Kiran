@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -81,9 +79,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   // Client waiting overlay (P2 waiting for host to start)
   bool _clientWaiting = false;
 
-  // Device name — loaded async, applied when game is ready
-  String _pilotName = 'Pilot';
-
   @override
   void initState() {
     super.initState();
@@ -91,42 +86,18 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game = TyrianGame();
     _setupGameCallbacks();
     _loadHighScores();
-    _loadDeviceName();
     SoundService.instance.init();
     SoundService.instance.loadSkin('default');
   }
 
-  Future<void> _loadDeviceName() async {
-    try {
-      final info = DeviceInfoPlugin();
-      String name;
-      if (Platform.isIOS) {
-        final ios = await info.iosInfo;
-        name = ios.name;
-      } else if (Platform.isAndroid) {
-        final android = await info.androidInfo;
-        name = android.model;
-      } else if (Platform.isMacOS) {
-        final mac = await info.macOsInfo;
-        name = mac.computerName;
-      } else if (Platform.isWindows) {
-        final win = await info.windowsInfo;
-        name = win.computerName;
-      } else {
-        return;
-      }
-      if (name.isNotEmpty) {
-        _pilotName = name;
-        if (_game.isLoaded) {
-          _game.vessel.pilotName = name;
-        }
-      }
-    } catch (_) {}
-  }
-
   void _setupGameCallbacks() {
-    _game.onLoaded = () {
-      _game.vessel.pilotName = _pilotName;
+    _game.onLoaded = () async {
+      // Resume saved progress if present; otherwise start a fresh run, which
+      // assigns a generated Ubuntu-style codename (player can rename later).
+      final resumed = await _game.loadProgress();
+      if (!resumed) {
+        _game.vessel.newGame();
+      }
       if (mounted) setState(() {});
     };
 
@@ -166,6 +137,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           if (_game.coopRole != CoopRole.client) {
             _game.advanceToNextSector();
             _game.openComCenter();
+            _game.saveProgress(); // persist advanced sector + current loadout
           } else {
             // P2: show waiting overlay while host shops
             setState(() => _clientWaiting = true);
@@ -346,6 +318,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void _returnToMainMenu() async {
     _disposeAutoHost();
     await _game.disposeCoop();
+    // Run ended — discard saved progress so the next launch starts fresh
+    // (newGame() also assigns a new generated codename).
+    await SaveService.clearGameState();
     _game.vessel.newGame();
     _game.currentSectorIndex = 0;
     _game.state = GameState.comCenter;
@@ -376,6 +351,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   /// ComCenter START button handler (host/solo)
   void _onComCenterStart() {
+    _game.saveProgress(); // persist final loadout before the mission
     setState(() => _showComCenter = false);
     if (_game.currentSector == null) {
       _game.startGame();

@@ -66,6 +66,15 @@ class DevType {
     smallLaser,
   ];
 
+  /// Look up a DevType by its [name] across front, side and generator lists.
+  /// Returns null if no match (used by save/restore).
+  static DevType? byName(String name) {
+    for (final t in [...frontWeapons, ...sideWeapons, ...generators]) {
+      if (t.name == name) return t;
+    }
+    return null;
+  }
+
   // ---- Front Weapons (VB6 ComCenter.GetDevType values) ----
 
   static const bubbleGun = DevType(
