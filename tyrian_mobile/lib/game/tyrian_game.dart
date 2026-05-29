@@ -33,6 +33,7 @@ import '../ui/float_text.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
+import '../services/save_service.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -396,6 +397,43 @@ class TyrianGame extends FlameGame
   void advanceToNextSector() {
     currentSectorIndex++;
     loadSector(currentSectorIndex);
+  }
+
+  /// Easter-egg sector jump from the ComCenter. Rebuilds the target sector so
+  /// the next "start mission" plays it. Indices beyond the defined sectors
+  /// generate random sectors (handled by Sector.create).
+  void jumpToSector(int index) {
+    if (index < 0) return;
+    loadSector(index);
+  }
+
+  /// Persist the player's between-sector progress (credits, weapons, stats,
+  /// pilot name, current sector). Fire-and-forget from the ComCenter.
+  Future<void> saveProgress() async {
+    if (coopRole == CoopRole.client) return; // client mirrors host, never owns state
+    final m = vessel.toSaveMap();
+    await SaveService.saveGameState(
+      pilotName: m['pilotName'] as String,
+      credit: m['credit'] as int,
+      score: m['score'] as int,
+      hp: m['hp'] as int,
+      hpMax: m['hpMax'] as int,
+      shield: (m['shield'] as num).toDouble(),
+      shieldMax: (m['shieldMax'] as num).toDouble(),
+      genMax: (m['genMax'] as num).toDouble(),
+      genPower: (m['genPower'] as num).toDouble(),
+      level: currentSectorIndex,
+      weapons: List<Map<String, dynamic>>.from(m['weapons'] as List),
+    );
+  }
+
+  /// Restore saved progress at startup. Returns true if a saved game was loaded.
+  Future<bool> loadProgress() async {
+    final state = await SaveService.loadGameState();
+    if (state == null) return false;
+    vessel.loadFromSave(state);
+    currentSectorIndex = (state['level'] as num?)?.toInt() ?? 0;
+    return true;
   }
 
   /// Reset all game state for a fresh new game.

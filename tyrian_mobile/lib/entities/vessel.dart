@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 import '../services/sound_service.dart';
+import '../services/pilot_name_generator.dart';
 import '../systems/device.dart';
 import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
@@ -147,12 +148,66 @@ class Vessel extends PositionComponent
     genMax = 100;
     genPower = 4;
     lvlNum = 1;
+    // Fresh run gets a new Ubuntu-style codename (player can rename in ComCenter)
+    pilotName = PilotNameGenerator.randomCodename();
     for (final d in devices) {
       d.clearProjectiles();
     }
     devices.clear();
     guidedWeapon = false;
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    resetVessel();
+  }
+
+  /// Serialize progress for save persistence (consumed by SaveService).
+  Map<String, dynamic> toSaveMap() => {
+        'pilotName': pilotName,
+        'credit': credit,
+        'score': score,
+        'hp': hp,
+        'hpMax': hpMax,
+        'shield': shield,
+        'shieldMax': shieldMax,
+        'genMax': genMax,
+        'genPower': genPower,
+        'weapons': devices.map((d) => d.toJson()).toList(),
+      };
+
+  /// Restore progress from a saved state map. Rebuilds the device list directly
+  /// (no upgrade() replay — genMax is restored as-is to avoid double-applying).
+  void loadFromSave(Map<String, dynamic> state) {
+    pilotName = state['pilotName'] as String? ?? pilotName;
+    credit = (state['credit'] as num?)?.toInt() ?? 0;
+    score = (state['score'] as num?)?.toInt() ?? 0;
+    hpMax = (state['hpMax'] as num?)?.toInt() ?? hpMax;
+    hp = (state['hp'] as num?)?.toInt() ?? hpMax;
+    shieldMax = (state['shieldMax'] as num?)?.toDouble() ?? shieldMax;
+    shield = (state['shield'] as num?)?.toDouble() ?? shieldMax;
+    genMax = (state['genMax'] as num?)?.toDouble() ?? genMax;
+    genPower = (state['genPower'] as num?)?.toDouble() ?? genPower;
+    // Weapon unlock tier is score-derived (VB6 WepLevScores) — recompute so it
+    // stays correct even though SaveService doesn't persist it directly.
+    nextWeaponLevel = 0;
+    while (nextWeaponLevel < wepLevScores.length &&
+        score > wepLevScores[nextWeaponLevel]) {
+      nextWeaponLevel++;
+    }
+
+    for (final d in devices) {
+      d.clearProjectiles();
+    }
+    devices.clear();
+    final weapons = (state['weapons'] as List?) ?? const [];
+    for (final w in weapons) {
+      final device = Device.fromJson(Map<String, dynamic>.from(w as Map));
+      device.parentVessel = this;
+      devices.add(device);
+    }
+    // Always guarantee a front weapon so the player can start.
+    if (getDevice(WeaponSlot.frontGun) == null) {
+      equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    }
+    guidedWeapon = devices.any((d) => d.guide > 0);
     resetVessel();
   }
 

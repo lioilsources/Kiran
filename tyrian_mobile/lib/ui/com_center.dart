@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flame/components.dart' show Sprite;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../game/tyrian_game.dart';
@@ -8,6 +9,7 @@ import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
 import '../services/save_service.dart';
+import '../services/asset_library.dart';
 import 'high_scores.dart';
 
 /// Ported from ComCenter.cls — the shop/equipment screen.
@@ -42,6 +44,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   // High scores
   List<HighScoreEntry> _highScores = [];
+  bool _showScores = false;
+
+  // Pilot name field (persistent controller so the cursor doesn't reset)
+  late final TextEditingController _pilotController;
+
+  // Easter-egg cheats panel (toggled by long-pressing the title)
+  bool _cheatsEnabled = false;
 
   // Animated background
   late AnimationController _bgAnim;
@@ -80,6 +89,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   @override
   void initState() {
     super.initState();
+    _pilotController = TextEditingController(text: vessel.pilotName);
     _loadScores();
     _bgAnim = AnimationController(
       vsync: this,
@@ -109,6 +119,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     _bgAnim.dispose();
     _pollTimer?.cancel();
     _focusNode.dispose();
+    _pilotController.dispose();
     super.dispose();
   }
 
@@ -228,6 +239,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     vessel.credit -= weapon.price;
     vessel.equipWeapon(weapon, slot);
     setState(() {});
+    game.saveProgress();
   }
 
   /// Buy a side weapon directly into a specific slot (used by →L / →R tap buttons).
@@ -236,16 +248,19 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     vessel.credit -= weapon.price;
     vessel.equipWeapon(weapon, slot);
     setState(() => _targetSideSlot = slot);
+    game.saveProgress();
   }
 
   void _upgradeWeapon(DevType weapon) {
     final device = vessel.devices.firstWhere((d) => d.name == weapon.name);
+    if (device.level >= Device.maxLevel) return;
     final cost = device.price;
     if (vessel.credit < cost) return;
 
     vessel.credit -= cost;
     device.upgrade();
     setState(() {});
+    game.saveProgress();
   }
 
   void _sellWeapon(DevType weapon) {
@@ -253,6 +268,50 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     vessel.credit += device.price;
     vessel.removeWeapon(device.slot);
     setState(() {});
+    game.saveProgress();
+  }
+
+  /// Slot-based upgrade — reliable even when the same side weapon occupies both
+  /// left and right slots (name-based lookup would only hit the first one).
+  void _upgradeSlot(WeaponSlot slot) {
+    final device = vessel.getDevice(slot);
+    if (device == null || device.level >= Device.maxLevel) return;
+    final cost = device.price;
+    if (vessel.credit < cost) return;
+    vessel.credit -= cost;
+    device.upgrade();
+    setState(() {});
+    game.saveProgress();
+  }
+
+  /// Slot-based sell — operates on the exact slot, not the first name match.
+  void _sellSlot(WeaponSlot slot) {
+    if (slot == WeaponSlot.generator) return; // generator cannot be sold
+    final device = vessel.getDevice(slot);
+    if (device == null) return;
+    vessel.credit += device.price;
+    vessel.removeWeapon(slot);
+    setState(() {});
+    game.saveProgress();
+  }
+
+  // ── Easter-egg cheats ──
+
+  void _cheatMaxCredits() {
+    vessel.credit = 999999999;
+    // Unlock all weapon tiers so everything is buyable/upgradable.
+    vessel.nextWeaponLevel = DevType.frontWeapons.length - 1;
+    setState(() {});
+    game.showMessage('CHEAT: credits maxed, all weapons unlocked');
+    game.saveProgress();
+  }
+
+  void _cheatJumpSector(int delta) {
+    final target = game.currentSectorIndex + delta;
+    if (target < 0) return;
+    game.jumpToSector(target);
+    setState(() {});
+    game.saveProgress();
   }
 
   // ── Build ──
@@ -270,6 +329,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Column(
               children: [
                 _buildHeader(),
+                if (_cheatsEnabled) _buildCheatBar(),
                 // Compact stats strip
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
@@ -285,7 +345,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                         ],
                       ),
                       const SizedBox(height: 6),
-                      _buildStatValues(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _buildShipPreview(),
+                          const SizedBox(width: 12),
+                          Expanded(child: _buildStatValues()),
+                        ],
+                      ),
                       const SizedBox(height: 6),
                       _buildSlotList(),
                     ],
@@ -299,7 +366,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(12),
-                    child: _buildActiveSection(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildActiveSection(),
+                        const SizedBox(height: 16),
+                        _buildScoresPanel(),
+                      ],
+                    ),
                   ),
                 ),
                 _buildBottomBar(),
@@ -383,13 +457,21 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       ),
       child: Row(
         children: [
-          const Text(
-            'COMMAND CENTER',
-            style: TextStyle(
-              color: Colors.cyanAccent,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 3,
+          // Long-press the title to toggle the hidden cheats panel (easter egg).
+          GestureDetector(
+            onLongPress: () {
+              setState(() => _cheatsEnabled = !_cheatsEnabled);
+              game.showMessage(
+                  _cheatsEnabled ? 'Cheats enabled' : 'Cheats disabled');
+            },
+            child: const Text(
+              'COMMAND CENTER',
+              style: TextStyle(
+                color: Colors.cyanAccent,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 3,
+              ),
             ),
           ),
           const Spacer(),
@@ -421,24 +503,100 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   Widget _buildShipPreview() {
-    return Center(
-      child: Container(
-        width: 120,
-        height: 80,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.cyanAccent.withAlpha(40)),
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.black26,
-        ),
-        child: Center(
-          child: Text(
-            'Lv ${game.currentSectorIndex + 1}',
-            style: const TextStyle(
-              color: Colors.cyanAccent,
-              fontSize: 22,
+    final sprite = AssetLibrary.instance.vesselFrames.isNotEmpty
+        ? AssetLibrary.instance.vesselFrames.first
+        : AssetLibrary.instance.getSprite('vessel');
+    return Container(
+      width: 72,
+      height: 56,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.cyanAccent.withAlpha(40)),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.black26,
+      ),
+      padding: const EdgeInsets.all(4),
+      child: sprite != null
+          ? CustomPaint(painter: _ShipPreviewPainter(sprite))
+          : Center(
+              child: Text(
+                'Lv ${game.currentSectorIndex + 1}',
+                style: const TextStyle(
+                  color: Colors.cyanAccent,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildCheatBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      color: Colors.deepPurple.withAlpha(70),
+      child: Row(
+        children: [
+          const Text(
+            'CHEATS',
+            style: TextStyle(
+              color: Colors.purpleAccent,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
+              letterSpacing: 1,
             ),
           ),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: _cheatMaxCredits,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withAlpha(60),
+                borderRadius: BorderRadius.circular(3),
+              ),
+              child: const Text(
+                'MAX CREDITS',
+                style: TextStyle(
+                    color: Colors.greenAccent,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const Spacer(),
+          // Sector jump stepper
+          _cheatStepButton('◀', () => _cheatJumpSector(-1)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Lv ${game.currentSectorIndex + 1}',
+              style: const TextStyle(
+                  color: Colors.cyanAccent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          _cheatStepButton('▶', () => _cheatJumpSector(1)),
+        ],
+      ),
+    );
+  }
+
+  Widget _cheatStepButton(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.blue.withAlpha(60),
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+              color: Colors.lightBlueAccent,
+              fontSize: 12,
+              fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -446,7 +604,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   Widget _buildPilotName() {
     return TextField(
-      controller: TextEditingController(text: vessel.pilotName),
+      controller: _pilotController,
       style: const TextStyle(color: Colors.white, fontSize: 13),
       decoration: const InputDecoration(
         labelText: 'Pilot',
@@ -460,7 +618,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           borderSide: BorderSide(color: Colors.cyanAccent),
         ),
       ),
-      onChanged: (v) => vessel.pilotName = v,
+      onChanged: (v) {
+        vessel.pilotName = v;
+        game.saveProgress();
+      },
     );
   }
 
@@ -534,13 +695,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           ),
           if (device != null && slot != WeaponSlot.generator) ...[
             GestureDetector(
-              onTap: () => _upgradeWeapon(DevType.frontWeapons.firstWhere(
-                (w) => w.name == device.name,
-                orElse: () => DevType.sideWeapons.firstWhere(
-                  (w) => w.name == device.name,
-                  orElse: () => DevType.generatorBasic,
-                ),
-              )),
+              onTap: device.level >= Device.maxLevel
+                  ? null
+                  : () => _upgradeSlot(slot),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 margin: const EdgeInsets.only(right: 4),
@@ -555,16 +712,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
             ),
             GestureDetector(
-              onTap: () {
-                final wType = DevType.frontWeapons.cast<DevType?>().firstWhere(
-                  (w) => w?.name == device.name,
-                  orElse: () => DevType.sideWeapons.cast<DevType?>().firstWhere(
-                    (w) => w?.name == device.name,
-                    orElse: () => null,
-                  ),
-                );
-                if (wType != null) _sellWeapon(wType);
-              },
+              onTap: () => _sellSlot(slot),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 decoration: BoxDecoration(
@@ -580,7 +728,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           ],
           if (device != null && slot == WeaponSlot.generator)
             GestureDetector(
-              onTap: () => _upgradeWeapon(DevType.generatorBasic),
+              onTap: device.level >= Device.maxLevel
+                  ? null
+                  : () => _upgradeSlot(slot),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 decoration: BoxDecoration(
@@ -608,21 +758,43 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
+  /// Collapsible TOP SCORES section shown below the weapon grid (VBA Top-10 panel).
+  Widget _buildScoresPanel() {
+    if (_highScores.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(height: 1, color: Colors.white12),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => setState(() => _showScores = !_showScores),
+          child: Row(
+            children: [
+              Text(
+                _showScores ? '▼ TOP SCORES' : '▶ TOP SCORES',
+                style: const TextStyle(
+                  color: Colors.cyanAccent,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (_showScores) ...[
+          const SizedBox(height: 6),
+          _buildScoreTable(),
+        ],
+      ],
+    );
+  }
+
   Widget _buildScoreTable() {
     if (_highScores.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'TOP SCORES',
-          style: TextStyle(
-            color: Colors.cyanAccent,
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
-          ),
-        ),
-        const SizedBox(height: 4),
         for (int i = 0; i < _highScores.length && i < 10; i++)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 1),
@@ -668,34 +840,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
-  // ── Weapon section (front or side) ──
-
-  Widget _buildWeaponSection(String title, List<DevType> weapons, bool isSide) {
-    final isFocused = _showingSide == isSide && !_showingGen;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            color: isFocused ? Colors.cyanAccent : Colors.white38,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (int i = 0; i < weapons.length; i++)
-              _buildWeaponCard(weapons[i], i, isSide),
-          ],
-        ),
-      ],
-    );
-  }
+  // ── Weapon card ──
 
   Widget _buildWeaponCard(DevType weapon, int index, bool isSide) {
     final isSelected = _showingSide == isSide && !_showingGen && _selectedWeaponIndex == index;
@@ -1149,4 +1294,34 @@ class _GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GridPainter old) => old.phase != phase;
+}
+
+// Renders the current skin's vessel sprite into the ComCenter ship preview box.
+class _ShipPreviewPainter extends CustomPainter {
+  final Sprite sprite;
+  _ShipPreviewPainter(this.sprite);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final src = Rect.fromLTWH(
+      sprite.srcPosition.x,
+      sprite.srcPosition.y,
+      sprite.srcSize.x,
+      sprite.srcSize.y,
+    );
+    // Fit the sprite into the box preserving aspect ratio.
+    final scale = (size.width / src.width).clamp(0.0, size.height / src.height);
+    final w = src.width * scale;
+    final h = src.height * scale;
+    final dst = Rect.fromLTWH(
+      (size.width - w) / 2,
+      (size.height - h) / 2,
+      w,
+      h,
+    );
+    canvas.drawImageRect(sprite.image, src, dst, Paint()..filterQuality = FilterQuality.none);
+  }
+
+  @override
+  bool shouldRepaint(_ShipPreviewPainter old) => old.sprite != sprite;
 }
