@@ -96,6 +96,7 @@ jobs:
             -configuration Release \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
             CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
             DEVELOPMENT_TEAM=$TEAM_ID \
             PROVISIONING_PROFILE=$PROFILE_UUID
 
