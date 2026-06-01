@@ -67,6 +67,7 @@ func TestGenerateSuccess(t *testing.T) {
 	)
 	resp, err := c.Generate(context.Background(), imagegen.GenerateRequest{
 		Prompt:      "space ship",
+		Model:       "flux-1-dev",
 		N:           1,
 		AspectRatio: "1:1",
 		Resolution:  "1k",
@@ -83,6 +84,64 @@ func TestGenerateSuccess(t *testing.T) {
 	}
 	if string(b) != "img-" {
 		t.Errorf("image data: got %q, want %q", string(b), "img-")
+	}
+}
+
+func TestGenerateModelForwarded(t *testing.T) {
+	var gotModel string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodPost && r.URL.Path == generatePath:
+			var body map[string]any
+			json.NewDecoder(r.Body).Decode(&body)
+			if m, ok := body["model"].(string); ok {
+				gotModel = m
+			}
+			w.WriteHeader(http.StatusAccepted)
+			json.NewEncoder(w).Encode(map[string]string{"id": "j1"})
+		case r.Method == http.MethodGet && r.URL.Path == jobsPath+"j1":
+			json.NewEncoder(w).Encode(jobStatus{Status: "done", ResultURL: "/r/j1", Count: 1})
+		case r.Method == http.MethodGet && r.URL.Path == "/r/j1":
+			w.Write([]byte("px"))
+		}
+	}))
+	defer srv.Close()
+
+	c := NewClient("", "", WithBaseURL(srv.URL), WithPollDelay(0), WithMaxRetries(0))
+	_, err := c.Generate(context.Background(), imagegen.GenerateRequest{
+		Prompt: "test", Model: "flux-1-dev", N: 1,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if gotModel != "flux-1-dev" {
+		t.Errorf("model forwarded: got %q, want %q", gotModel, "flux-1-dev")
+	}
+}
+
+func TestGenerateEmptyModelOmitted(t *testing.T) {
+	var bodyFields map[string]any
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodPost:
+			json.NewDecoder(r.Body).Decode(&bodyFields)
+			w.WriteHeader(http.StatusAccepted)
+			json.NewEncoder(w).Encode(map[string]string{"id": "j1"})
+		case r.Method == http.MethodGet && r.URL.Path == jobsPath+"j1":
+			json.NewEncoder(w).Encode(jobStatus{Status: "done", ResultURL: "/r/j1", Count: 1})
+		case r.Method == http.MethodGet && r.URL.Path == "/r/j1":
+			w.Write([]byte("px"))
+		}
+	}))
+	defer srv.Close()
+
+	c := NewClient("", "", WithBaseURL(srv.URL), WithPollDelay(0), WithMaxRetries(0))
+	_, err := c.Generate(context.Background(), imagegen.GenerateRequest{Prompt: "test", N: 1})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, present := bodyFields["model"]; present {
+		t.Error("model field should be omitted when empty")
 	}
 }
 
