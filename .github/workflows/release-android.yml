@@ -49,7 +49,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo -n "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > tyrian_mobile/android/app/release.keystore
+          echo -n "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode --ignore-garbage > tyrian_mobile/android/app/release.keystore
           printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=release.keystore\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > tyrian_mobile/android/key.properties
 
       - name: Build release AAB
