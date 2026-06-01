@@ -47,6 +47,8 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Kiran does not use the microphone. This permission is required by the audio framework.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Tyrian uses local network for co-op multiplayer</string>
 	<key>NSBonjourServices</key>
