@@ -35,6 +35,7 @@ func main() {
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
 	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
+	ol1nJobTimeout := flag.Duration("ol1n-job-timeout", 15*time.Minute, "Max time to wait for a single ol1n/AiStack image job (includes queue wait + generation)")
 	flag.Parse()
 
 	// SFX generation mode
@@ -50,7 +51,7 @@ func main() {
 		modelName = "qwen-image"
 	}
 	if *backend == "ol1n" && modelName == "grok-imagine-image" {
-		modelName = "flux-ol1n"
+		modelName = "flux-1-dev"
 	}
 
 	// Resolve skins to process
@@ -91,7 +92,7 @@ func main() {
 				fmt.Fprintln(os.Stderr, "Error: CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required for -backend=ol1n (or use -dry-run)")
 				os.Exit(1)
 			}
-			client = ol1nimage.NewClient(cfID, cfSecret)
+			client = ol1nimage.NewClient(cfID, cfSecret, ol1nimage.WithJobTimeout(*ol1nJobTimeout))
 		default:
 			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, qwen, ol1n)\n", *backend)
 			os.Exit(1)

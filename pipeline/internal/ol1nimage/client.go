@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -25,7 +26,7 @@ const (
 	generatePath      = "/v1/images/generations"
 	jobsPath          = "/v1/images/jobs/"
 	defaultPollDelay  = 2 * time.Second
-	defaultJobTimeout = 5 * time.Minute
+	defaultJobTimeout = 15 * time.Minute
 )
 
 // Client implements imagegen.ImageGenerator against the AiStack image API.
@@ -103,7 +104,7 @@ func (c *Client) Generate(ctx context.Context, req imagegen.GenerateRequest) (*i
 		n = 1
 	}
 
-	jobID, err := c.submitWithRetry(ctx, req.Prompt, n, sizeFromAspect(req.AspectRatio, req.Resolution))
+	jobID, err := c.submitWithRetry(ctx, req.Prompt, req.Model, n, sizeFromAspect(req.AspectRatio, req.Resolution))
 	if err != nil {
 		return nil, err
 	}
@@ -125,12 +126,16 @@ func (c *Client) Generate(ctx context.Context, req imagegen.GenerateRequest) (*i
 }
 
 // submitWithRetry POSTs the generation request and returns the job ID.
-func (c *Client) submitWithRetry(ctx context.Context, prompt string, n int, size string) (string, error) {
-	body, _ := json.Marshal(map[string]any{
+func (c *Client) submitWithRetry(ctx context.Context, prompt, model string, n int, size string) (string, error) {
+	reqBody := map[string]any{
 		"prompt": prompt,
 		"n":      n,
 		"size":   size,
-	})
+	}
+	if model != "" {
+		reqBody["model"] = model
+	}
+	body, _ := json.Marshal(reqBody)
 
 	var lastErr error
 	for attempt := range c.maxRetries + 1 {
@@ -201,16 +206,25 @@ func (c *Client) doSubmit(ctx context.Context, body []byte) (string, error) {
 
 // jobStatus is the polling response from GET /v1/images/jobs/{id}.
 type jobStatus struct {
-	Status    string `json:"status"`
-	ResultURL string `json:"result_url"`
-	Count     int    `json:"count"`
-	Error     string `json:"error"`
+	Status        string `json:"status"`
+	ResultURL     string `json:"result_url"`
+	Count         int    `json:"count"`
+	Error         string `json:"error"`
+	QueuePosition int    `json:"queue_position"`
+	Step          int    `json:"step"`
+	Total         int    `json:"total"`
 }
 
 // pollUntilDone polls the job endpoint until the job is done or fails.
+// Prints status changes to stderr so long-running jobs are visible in the CLI.
 func (c *Client) pollUntilDone(ctx context.Context, jobID string) (resultURL string, count int, err error) {
 	deadline := time.Now().Add(c.jobTimeout)
 	url := c.baseURL + jobsPath + jobID
+	short := jobID
+	if len(short) > 8 {
+		short = short[:8]
+	}
+	lastStatus := ""
 
 	for {
 		select {
@@ -254,8 +268,17 @@ func (c *Client) pollUntilDone(ctx context.Context, jobID string) (resultURL str
 			return js.ResultURL, js.Count, nil
 		case "error":
 			return "", 0, fmt.Errorf("job %s failed: %s", jobID, js.Error)
+		case "queued":
+			if js.Status != lastStatus {
+				fmt.Fprintf(os.Stderr, "  [ol1n] job %s: queued (pos %d)\n", short, js.QueuePosition)
+				lastStatus = js.Status
+			}
+		case "running":
+			if js.Status != lastStatus {
+				fmt.Fprintf(os.Stderr, "  [ol1n] job %s: running (%d/%d steps)\n", short, js.Step, js.Total)
+				lastStatus = js.Status
+			}
 		}
-		// queued / running — keep polling
 	}
 }
 
