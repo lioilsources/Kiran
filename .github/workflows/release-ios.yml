@@ -85,7 +85,6 @@ jobs:
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=$TEAM_ID \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             PROVISIONING_PROFILE=$PROFILE_UUID
 
       - name: Export IPA
