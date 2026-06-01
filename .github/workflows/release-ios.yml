@@ -81,6 +81,10 @@ jobs:
           echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_ENV
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
+      - name: Inject profile name into project
+        run: |
+          sed -i '' "s/\"CI_PROFILE_NAME\"/\"$PROFILE_NAME\"/g" tyrian_mobile/ios/Runner.xcodeproj/project.pbxproj
+
       - name: Build Flutter iOS (no codesign)
         working-directory: tyrian_mobile
         run: flutter build ios --release --no-codesign
@@ -95,10 +99,7 @@ jobs:
             -scheme Runner \
             -configuration Release \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            DEVELOPMENT_TEAM=$TEAM_ID \
-            PROVISIONING_PROFILE=$PROFILE_UUID
+            DEVELOPMENT_TEAM=$TEAM_ID
 
       - name: Export IPA
         env:
