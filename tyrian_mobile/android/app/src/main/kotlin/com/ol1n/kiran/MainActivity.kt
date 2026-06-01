@@ -1,4 +1,4 @@
-package com.tyrianvb.tyrian_mobile
+package com.ol1n.kiran
 
 import io.flutter.embedding.android.FlutterActivity
 
