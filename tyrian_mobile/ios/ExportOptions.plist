@@ -9,6 +9,11 @@
     <key>compileBitcode</key>
     <false/>
     <key>signingStyle</key>
-    <string>automatic</string>
+    <string>manual</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.ol1n.kiran</key>
+        <string>REPLACE_WITH_YOUR_ADHOC_PROFILE_NAME</string>
+    </dict>
 </dict>
 </plist>
