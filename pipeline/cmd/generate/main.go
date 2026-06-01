@@ -14,6 +14,7 @@ import (
 	"tyrian-pipeline/internal/generator"
 	"tyrian-pipeline/internal/grokimage"
 	"tyrian-pipeline/internal/imagegen"
+	"tyrian-pipeline/internal/ol1nimage"
 	"tyrian-pipeline/internal/pipeline"
 	"tyrian-pipeline/internal/qwenimage"
 	"tyrian-pipeline/internal/sfxgen"
@@ -26,7 +27,7 @@ func main() {
 	skinID := flag.String("skin", "", "Skin ID to generate (empty = all skins)")
 	outDir := flag.String("out", "output/assets/skins", "Output directory")
 	workers := flag.Int("workers", 3, "Number of concurrent workers")
-	backend := flag.String("backend", "grok", "Image backend: grok or qwen")
+	backend := flag.String("backend", "grok", "Image backend: grok, qwen, or ol1n")
 	model := flag.String("model", "grok-imagine-image", "Image generation model (grok backend)")
 	steps := flag.Int("steps", 8, "Diffusion steps (qwen backend; 8 suits the lightning LoRA)")
 	dryRun := flag.Bool("dry-run", false, "Print prompts without calling API")
@@ -43,10 +44,13 @@ func main() {
 	}
 
 	// Model label recorded in the manifest. The -model default is a Grok
-	// name, so substitute a sensible label for the qwen backend.
+	// name, so substitute a sensible label for non-grok backends.
 	modelName := *model
 	if *backend == "qwen" && modelName == "grok-imagine-image" {
 		modelName = "qwen-image"
+	}
+	if *backend == "ol1n" && modelName == "grok-imagine-image" {
+		modelName = "flux-ol1n"
 	}
 
 	// Resolve skins to process
@@ -80,8 +84,16 @@ func main() {
 				os.Exit(1)
 			}
 			client = qwenimage.NewClient(baseURL, os.Getenv("QWEN_API_TOKEN"), qwenimage.WithSteps(*steps))
+		case "ol1n":
+			cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
+			cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
+			if cfID == "" || cfSecret == "" {
+				fmt.Fprintln(os.Stderr, "Error: CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required for -backend=ol1n (or use -dry-run)")
+				os.Exit(1)
+			}
+			client = ol1nimage.NewClient(cfID, cfSecret)
 		default:
-			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, qwen)\n", *backend)
+			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, qwen, ol1n)\n", *backend)
 			os.Exit(1)
 		}
 	}
