@@ -77,6 +77,6 @@ jobs:
         with:
           appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-          testers: ${{ secrets.FIREBASE_TESTERS }}
+          groups: Alfa
           releaseNotes: "Kiran ${{ github.ref_name }} (build ${{ github.run_number }})"
           file: tyrian_mobile/build/app/outputs/flutter-apk/app-release.apk
