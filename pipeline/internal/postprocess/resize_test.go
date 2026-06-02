@@ -80,3 +80,53 @@ func TestResize_AlreadySmall(t *testing.T) {
 		t.Error("expected same image when already smaller than target")
 	}
 }
+
+func TestTrim_CropsTransparentPadding(t *testing.T) {
+	// 10×10 canvas, opaque content only in the 2..4 (x) / 3..6 (y) region.
+	src := image.NewNRGBA(image.Rect(0, 0, 10, 10))
+	for y := 3; y <= 6; y++ {
+		for x := 2; x <= 4; x++ {
+			src.SetNRGBA(x, y, color.NRGBA{255, 0, 0, 255})
+		}
+	}
+
+	out := Trim(src)
+	if out.Bounds().Dx() != 3 || out.Bounds().Dy() != 4 {
+		t.Fatalf("expected 3×4 after trim, got %d×%d",
+			out.Bounds().Dx(), out.Bounds().Dy())
+	}
+	if c := out.NRGBAAt(0, 0); c.R != 255 || c.A != 255 {
+		t.Errorf("top-left of trimmed image = %+v, want opaque red", c)
+	}
+}
+
+func TestTrim_FullyTransparentUnchanged(t *testing.T) {
+	src := image.NewNRGBA(image.Rect(0, 0, 5, 5))
+	out := Trim(src)
+	if out != src {
+		t.Error("expected same image when fully transparent")
+	}
+}
+
+func TestFitInside_PreservesAspectAndFits(t *testing.T) {
+	// Square 100×100 content fit into a 57×42 reference box → height-constrained
+	// to 42, width scaled to 42 (≤ 57).
+	src := image.NewNRGBA(image.Rect(0, 0, 100, 100))
+	for y := 0; y < 100; y++ {
+		for x := 0; x < 100; x++ {
+			src.SetNRGBA(x, y, color.NRGBA{0, 128, 255, 255})
+		}
+	}
+
+	out := FitInside(src, 57, 42)
+	if out.Bounds().Dy() != 42 {
+		t.Errorf("expected height 42, got %d", out.Bounds().Dy())
+	}
+	if out.Bounds().Dx() != 42 {
+		t.Errorf("expected width 42 (aspect-preserved), got %d", out.Bounds().Dx())
+	}
+	if out.Bounds().Dx() > 57 || out.Bounds().Dy() > 42 {
+		t.Errorf("result %d×%d exceeds reference box 57×42",
+			out.Bounds().Dx(), out.Bounds().Dy())
+	}
+}
