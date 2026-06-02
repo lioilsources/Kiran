@@ -175,7 +175,12 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string) erro
 }
 
 func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	for v := 1; v <= 4; v++ {
+	available := asset.Variations
+	if available < 1 {
+		available = 1
+	}
+	for frame := 1; frame <= 4; frame++ {
+		v := ((frame - 1) % available) + 1
 		srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, v)
 		img, err := loadJPEG(srcPath)
 		if err != nil {
@@ -183,9 +188,9 @@ func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) erro
 		}
 
 		rgba := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
-		out := normalizeSprite(rgba, fmt.Sprintf("explosion%d", v), cfg.TargetSize)
+		out := normalizeSprite(rgba, fmt.Sprintf("explosion%d", frame), cfg.TargetSize)
 
-		outPath := filepath.Join(outDir, fmt.Sprintf("explosion%d.png", v))
+		outPath := filepath.Join(outDir, fmt.Sprintf("explosion%d.png", frame))
 		if err := savePNG(outPath, out); err != nil {
 			return err
 		}
