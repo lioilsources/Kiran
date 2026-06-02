@@ -13,10 +13,8 @@ import (
 
 	"tyrian-pipeline/internal/generator"
 	"tyrian-pipeline/internal/grokimage"
-	"tyrian-pipeline/internal/imagegen"
 	"tyrian-pipeline/internal/ol1nimage"
 	"tyrian-pipeline/internal/pipeline"
-	"tyrian-pipeline/internal/qwenimage"
 	"tyrian-pipeline/internal/sfxgen"
 	"tyrian-pipeline/internal/skin"
 )
@@ -27,15 +25,14 @@ func main() {
 	skinID := flag.String("skin", "", "Skin ID to generate (empty = all skins)")
 	outDir := flag.String("out", "output/assets/skins", "Output directory")
 	workers := flag.Int("workers", 3, "Number of concurrent workers")
-	backend := flag.String("backend", "grok", "Image backend: grok, qwen, or ol1n")
-	model := flag.String("model", "grok-imagine-image", "Image generation model (grok backend)")
-	steps := flag.Int("steps", 8, "Diffusion steps (qwen backend; 8 suits the lightning LoRA)")
+	backend := flag.String("backend", "grok", "Image backend: grok or ol1n")
+	model := flag.String("model", "", "Image generation model (default: grok-imagine-image for grok, flux-1-dev for ol1n)")
 	dryRun := flag.Bool("dry-run", false, "Print prompts without calling API")
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
 	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
-	ol1nJobTimeout := flag.Duration("ol1n-job-timeout", 15*time.Minute, "Max time to wait for a single ol1n/AiStack image job (includes queue wait + generation)")
+	ol1nJobTimeout := flag.Duration("ol1n-job-timeout", 15*time.Minute, "Max time to wait for a single ol1n/AiStack image job")
 	flag.Parse()
 
 	// SFX generation mode
@@ -44,14 +41,14 @@ func main() {
 		return
 	}
 
-	// Model label recorded in the manifest. The -model default is a Grok
-	// name, so substitute a sensible label for non-grok backends.
+	// Resolve model label default per backend
 	modelName := *model
-	if *backend == "qwen" && modelName == "grok-imagine-image" {
-		modelName = "qwen-image"
-	}
-	if *backend == "ol1n" && modelName == "grok-imagine-image" {
-		modelName = "flux-1-dev"
+	if modelName == "" {
+		if *backend == "ol1n" {
+			modelName = "flux-1-dev"
+		} else {
+			modelName = "grok-imagine-image"
+		}
 	}
 
 	// Resolve skins to process
@@ -68,7 +65,7 @@ func main() {
 	}
 
 	// Create client for the selected backend
-	var client imagegen.ImageGenerator
+	var client grokimage.ImageGenerator
 	if !*dryRun {
 		switch *backend {
 		case "grok":
@@ -78,13 +75,6 @@ func main() {
 				os.Exit(1)
 			}
 			client = grokimage.NewClient(apiKey)
-		case "qwen":
-			baseURL := os.Getenv("QWEN_API_URL")
-			if baseURL == "" {
-				fmt.Fprintln(os.Stderr, "Error: QWEN_API_URL environment variable is required for -backend=qwen (or use -dry-run)")
-				os.Exit(1)
-			}
-			client = qwenimage.NewClient(baseURL, os.Getenv("QWEN_API_TOKEN"), qwenimage.WithSteps(*steps))
 		case "ol1n":
 			cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
 			cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
@@ -94,7 +84,7 @@ func main() {
 			}
 			client = ol1nimage.NewClient(cfID, cfSecret, ol1nimage.WithJobTimeout(*ol1nJobTimeout))
 		default:
-			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, qwen, ol1n)\n", *backend)
+			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, ol1n)\n", *backend)
 			os.Exit(1)
 		}
 	}

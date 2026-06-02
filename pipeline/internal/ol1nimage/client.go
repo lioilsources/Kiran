@@ -1,10 +1,10 @@
-// Package ol1nimage is an imagegen.ImageGenerator backed by the self-hosted
+// Package ol1nimage is a grokimage.ImageGenerator backed by the self-hosted
 // AiStack image API at https://llm.ol1n.com, accessed via Cloudflare Access.
 //
 // The API is async: POST /v1/images/generations returns 202 + a job ID;
 // the client polls GET /v1/images/jobs/{id} until the job reaches a
 // terminal state, then downloads each result image as raw PNG bytes and
-// re-encodes them as base64 to satisfy the imagegen.GenerateResponse contract.
+// re-encodes them as base64 to satisfy the GenerateResponse contract.
 package ol1nimage
 
 import (
@@ -18,26 +18,28 @@ import (
 	"strings"
 	"time"
 
-	"tyrian-pipeline/internal/imagegen"
+	"tyrian-pipeline/internal/grokimage"
 )
 
 const (
-	defaultBaseURL    = "https://llm.ol1n.com"
-	generatePath      = "/v1/images/generations"
-	jobsPath          = "/v1/images/jobs/"
-	defaultPollDelay  = 2 * time.Second
+	defaultBaseURL   = "https://llm.ol1n.com"
+	generatePath     = "/v1/images/generations"
+	jobsPath         = "/v1/images/jobs/"
+	defaultPollDelay = 2 * time.Second
+	// defaultJobTimeout accounts for single-GPU queue depth: with 3 workers each
+	// submitting ~2-min jobs, the 3rd job waits ~4 min before starting.
 	defaultJobTimeout = 15 * time.Minute
 )
 
-// Client implements imagegen.ImageGenerator against the AiStack image API.
+// Client implements grokimage.ImageGenerator against the AiStack image API.
 type Client struct {
-	baseURL     string
-	cfClientID  string
-	cfSecret    string
-	httpClient  *http.Client
-	maxRetries  int
-	pollDelay   time.Duration
-	jobTimeout  time.Duration
+	baseURL    string
+	cfClientID string
+	cfSecret   string
+	httpClient *http.Client
+	maxRetries int
+	pollDelay  time.Duration
+	jobTimeout time.Duration
 }
 
 // ClientOption configures the Client.
@@ -87,7 +89,6 @@ func NewClient(cfClientID, cfSecret string, opts ...ClientOption) *Client {
 	return c
 }
 
-// cfHeaders returns the Cloudflare Access service-token headers.
 func (c *Client) cfHeaders() map[string]string {
 	return map[string]string{
 		"Content-Type":            "application/json",
@@ -98,7 +99,7 @@ func (c *Client) cfHeaders() map[string]string {
 
 // Generate submits a generation job, polls until completion, downloads all
 // result images and returns them as base64-encoded PNG in GenerateResponse.
-func (c *Client) Generate(ctx context.Context, req imagegen.GenerateRequest) (*imagegen.GenerateResponse, error) {
+func (c *Client) Generate(ctx context.Context, req grokimage.GenerateRequest) (*grokimage.GenerateResponse, error) {
 	n := req.N
 	if n <= 0 {
 		n = 1
@@ -114,18 +115,17 @@ func (c *Client) Generate(ctx context.Context, req imagegen.GenerateRequest) (*i
 		return nil, err
 	}
 
-	resp := &imagegen.GenerateResponse{Data: make([]imagegen.ImageData, count)}
+	resp := &grokimage.GenerateResponse{Data: make([]grokimage.ImageData, count)}
 	for i := range count {
 		b64, err := c.downloadImage(ctx, resultURL, i)
 		if err != nil {
 			return nil, fmt.Errorf("download image %d: %w", i, err)
 		}
-		resp.Data[i] = imagegen.ImageData{B64JSON: b64}
+		resp.Data[i] = grokimage.ImageData{B64JSON: b64}
 	}
 	return resp, nil
 }
 
-// submitWithRetry POSTs the generation request and returns the job ID.
 func (c *Client) submitWithRetry(ctx context.Context, prompt, model string, n int, size string) (string, error) {
 	reqBody := map[string]any{
 		"prompt": prompt,
@@ -152,7 +152,7 @@ func (c *Client) submitWithRetry(ctx context.Context, prompt, model string, n in
 			return jobID, nil
 		}
 
-		apiErr, ok := err.(*imagegen.APIError)
+		apiErr, ok := err.(*grokimage.APIError)
 		if !ok {
 			lastErr = err
 			continue
@@ -185,7 +185,7 @@ func (c *Client) doSubmit(ctx context.Context, body []byte) (string, error) {
 	respBody, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return "", &imagegen.APIError{
+		return "", &grokimage.APIError{
 			StatusCode: resp.StatusCode,
 			Message:    string(respBody),
 			Retryable:  resp.StatusCode >= 500,
@@ -204,7 +204,6 @@ func (c *Client) doSubmit(ctx context.Context, body []byte) (string, error) {
 	return payload.ID, nil
 }
 
-// jobStatus is the polling response from GET /v1/images/jobs/{id}.
 type jobStatus struct {
 	Status        string `json:"status"`
 	ResultURL     string `json:"result_url"`
@@ -216,7 +215,7 @@ type jobStatus struct {
 }
 
 // pollUntilDone polls the job endpoint until the job is done or fails.
-// Prints status changes to stderr so long-running jobs are visible in the CLI.
+// Prints status transitions to stderr so long-running jobs are visible.
 func (c *Client) pollUntilDone(ctx context.Context, jobID string) (resultURL string, count int, err error) {
 	deadline := time.Now().Add(c.jobTimeout)
 	url := c.baseURL + jobsPath + jobID
@@ -243,7 +242,7 @@ func (c *Client) pollUntilDone(ctx context.Context, jobID string) (resultURL str
 		}
 		resp, err := c.httpClient.Do(req)
 		if err != nil {
-			continue // transient network error — keep polling
+			continue
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
@@ -252,7 +251,7 @@ func (c *Client) pollUntilDone(ctx context.Context, jobID string) (resultURL str
 			return "", 0, fmt.Errorf("job %s expired or not found", jobID)
 		}
 		if resp.StatusCode != http.StatusOK {
-			continue // transient — keep polling
+			continue
 		}
 
 		var js jobStatus
@@ -282,7 +281,6 @@ func (c *Client) pollUntilDone(ctx context.Context, jobID string) (resultURL str
 	}
 }
 
-// downloadImage fetches one result image (by index) and returns it as base64.
 func (c *Client) downloadImage(ctx context.Context, resultURL string, index int) (string, error) {
 	url := c.baseURL + resultURL
 	if index > 0 {
@@ -303,7 +301,7 @@ func (c *Client) downloadImage(ctx context.Context, resultURL string, index int)
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return "", &imagegen.APIError{
+		return "", &grokimage.APIError{
 			StatusCode: resp.StatusCode,
 			Message:    string(body),
 			Retryable:  false,
@@ -317,8 +315,8 @@ func (c *Client) downloadImage(ctx context.Context, resultURL string, index int)
 	return base64.StdEncoding.EncodeToString(data), nil
 }
 
-// sizeFromAspect maps backend-neutral aspect ratio + resolution hints to the
-// "WxH" size string the AiStack image API expects.
+// sizeFromAspect maps aspect ratio + resolution hints to the "WxH" string
+// the AiStack image API expects.
 func sizeFromAspect(aspectRatio, resolution string) string {
 	switch aspectRatio {
 	case "1:2":
@@ -331,7 +329,7 @@ func sizeFromAspect(aspectRatio, resolution string) string {
 			return "2048x1024"
 		}
 		return "1024x512"
-	default: // "1:1" or unspecified
+	default:
 		if resolution == "2k" {
 			return "2048x2048"
 		}
