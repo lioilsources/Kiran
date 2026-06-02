@@ -56,11 +56,27 @@ jobs:
         working-directory: tyrian_mobile
         run: flutter build appbundle --release
 
+      - name: Build release APK
+        working-directory: tyrian_mobile
+        run: flutter build apk --release
+
       - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: tyrian_mobile/build/app/outputs/bundle/release/app-release.aab
+          files: |
+            tyrian_mobile/build/app/outputs/bundle/release/app-release.aab
+            tyrian_mobile/build/app/outputs/flutter-apk/app-release.apk
           name: Kiran ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           draft: false
           prerelease: true
+
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          groups: testers
+          releaseNotes: "Kiran ${{ github.ref_name }} (build ${{ github.run_number }})"
+          file: tyrian_mobile/build/app/outputs/flutter-apk/app-release.apk
