@@ -124,10 +124,22 @@ func processNamedAsset(cfg Config, asset skin.ManifestAsset, outDir, gameName st
 	}
 
 	rgba := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
-	resized := Resize(rgba, cfg.TargetSize)
+	out := normalizeSprite(rgba, gameName, cfg.TargetSize)
 
 	outPath := filepath.Join(outDir, gameName+".png")
-	return savePNG(outPath, resized)
+	return savePNG(outPath, out)
+}
+
+// normalizeSprite produces the final sprite bitmap. For game sprites with a
+// canonical reference size it trims the transparent padding and fits the artwork
+// into that reference box, so every skin renders at the same in-game scale.
+// Assets without a reference (UI icons, previews) fall back to a plain
+// max-dimension downscale.
+func normalizeSprite(rgba *image.NRGBA, gameName string, targetSize int) *image.NRGBA {
+	if refW, refH, ok := ReferenceSize(gameName); ok {
+		return FitInside(Trim(rgba), refW, refH)
+	}
+	return Resize(rgba, targetSize)
 }
 
 func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string) error {
@@ -152,10 +164,10 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string) erro
 		}
 
 		rgba := RemoveBackground(cropped, cfg.BgThreshold, cfg.BgMargin)
-		resized := Resize(rgba, cfg.TargetSize)
+		out := normalizeSprite(rgba, "vessel", cfg.TargetSize)
 
 		outPath := filepath.Join(outDir, fmt.Sprintf("vessel_%d.png", f))
-		if err := savePNG(outPath, resized); err != nil {
+		if err := savePNG(outPath, out); err != nil {
 			return err
 		}
 	}
@@ -171,10 +183,10 @@ func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) erro
 		}
 
 		rgba := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
-		resized := Resize(rgba, cfg.TargetSize)
+		out := normalizeSprite(rgba, fmt.Sprintf("explosion%d", v), cfg.TargetSize)
 
 		outPath := filepath.Join(outDir, fmt.Sprintf("explosion%d.png", v))
-		if err := savePNG(outPath, resized); err != nil {
+		if err := savePNG(outPath, out); err != nil {
 			return err
 		}
 	}
