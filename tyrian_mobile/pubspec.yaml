@@ -153,6 +153,12 @@ flutter:
     - assets/skins/blazing_lazers/backgrounds/
     - assets/skins/blazing_lazers/atlas.png
     - assets/skins/blazing_lazers/atlas.json
+    - assets/skins/river_raid/sprites/
+    - assets/skins/river_raid/ui/
+    - assets/skins/river_raid/sfx/
+    - assets/skins/river_raid/backgrounds/
+    - assets/skins/river_raid/atlas.png
+    - assets/skins/river_raid/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

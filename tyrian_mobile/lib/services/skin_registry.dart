@@ -26,5 +26,6 @@ const kSkins = [
   SkinInfo('luftrausers', 'Luftrausers (2014)'),
   SkinInfo('nuclear_throne', 'Nuclear Throne (2015)'),
   SkinInfo('nex_machina', 'Nex Machina (2017)'),
+  SkinInfo('river_raid', 'River Raid (1982)'),
   SkinInfo('default', 'Kiran (2026)'),
 ];
