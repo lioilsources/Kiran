@@ -10,6 +10,7 @@ import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
 import '../game/platform_config.dart' as platform;
 import '../rendering/dissolve_effect.dart';
+import '../rendering/entity_glow.dart';
 import 'hostile.dart';
 
 /// Ported from Vessel.cls — the player's ship.
@@ -567,6 +568,13 @@ class Vessel extends PositionComponent
   @override
   void render(Canvas canvas) {
     if (!visible) return;
+
+    drawEntityGlow(
+      canvas,
+      Offset(size.x / 2, size.y / 2),
+      size.x * 0.55,
+      config.vesselGlowColor,
+    );
 
     // Drive dissolve amount from HP ratio (kicks in below 30%)
     final hpRatio = hp / hpMax;

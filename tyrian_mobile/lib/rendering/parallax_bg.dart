@@ -48,11 +48,14 @@ class ParallaxBackground extends Component {
     }
   }
 
+  // 0x99 alpha = 60% opacity (background dimmed 40% for entity visibility)
+  static final _bgPaint = ui.Paint()..color = const ui.Color(0x99FFFFFF);
+
   void _drawLayer(ui.Canvas canvas, ui.Image img, double scale, double y) {
     canvas.save();
     canvas.translate(0, y);
     canvas.scale(scale);
-    canvas.drawImage(img, ui.Offset.zero, ui.Paint());
+    canvas.drawImage(img, ui.Offset.zero, _bgPaint);
     canvas.restore();
   }
 }

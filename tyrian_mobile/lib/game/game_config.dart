@@ -2,6 +2,8 @@
 /// Frame-based values are converted to time-based where needed.
 library;
 
+import 'dart:ui' show Color;
+
 const double frameDelay = 25.0; // ms per frame at original 40fps
 const double originalFps = 1000.0 / frameDelay; // 40 fps
 const int starCount = 1000;
@@ -56,3 +58,13 @@ const double upgPwrNeedMultiplier = 1.2;
 const double upgCooldownDivisor = 1.02;
 const double upgPwrGenMultiplier = 1.255;
 const double upgGenMaxMultiplier = 1.2;
+
+// Entity glow halo colors — color-coded by danger tier
+// Full alpha: BlurStyle.outer spreads the color outward; alpha = peak glow intensity.
+const Color vesselGlowColor    = Color(0xFF00FFEE); // cyan
+const Color hostileGlowL1      = Color(0xFF44FF44); // green  (collision dmg 1–2)
+const Color hostileGlowL2      = Color(0xFFFFEE00); // yellow (collision dmg 3–6)
+const Color hostileGlowL3      = Color(0xFFFF8800); // orange (collision dmg 7–12)
+const Color hostileGlowL4      = Color(0xFFFF2200); // red    (collision dmg 13–18)
+const Color hostileGlowBoss    = Color(0xFFFF00CC); // magenta (collision dmg 19+)
+const Color structureGlowColor = Color(0xCCAAAAAA); // light gray
