@@ -99,6 +99,12 @@ func dimensions(aspectRatio, resolution string) (int, int) {
 			return 2048, 1024
 		}
 		return 1024, 512
+	case "4:1":
+		// Horizontal 4-frame sprite sheets: 4 square cells side by side.
+		if resolution == "2k" {
+			return 4096, 1024
+		}
+		return 2048, 512
 	default: // "1:1" or unspecified
 		if resolution == "2k" {
 			return 2048, 2048

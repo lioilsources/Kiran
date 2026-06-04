@@ -10,10 +10,12 @@ import (
 
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
-Single spacecraft viewed from directly above (top-down), centered on a flat, uniform solid-color background.
-Pixel art style, {{.SpriteSize}}px sprite sheet with {{.FrameCount}} animation frames in a horizontal row.
+A single player spacecraft viewed from directly above (top-down), nose pointing up.
+Sprite sheet of 4 animation frames laid out in one horizontal row of equal square cells; across the frames the ship banks from a hard left tilt, through level, to a hard right tilt.
+The SAME ship in every frame, drawn large and highly detailed, filling its square cell edge-to-edge with only a few pixels of margin — never small or distant.
+Roughly square overall proportions per frame.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Clean silhouette, no background elements, no text, no UI.
+Clean silhouette, sharp readable details, no background elements, no text, no UI.
 The background must be a single flat solid color, no gradient, no scene, clearly distinct from the sprite.`,
 
 	"explosion": `Explosion animation sprite sheet, 8 frames horizontal row on a flat, uniform solid-color background.
@@ -40,13 +42,13 @@ No text, centered. Single flat solid-color background, no gradient, no scene.`,
 	"enemy": `{{.ArtDirective}}
 Top-down enemy spacecraft, {{.EnemyDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Menacing hostile design, facing downward. Single sprite, centered on a flat, uniform solid-color background.
-{{.SpriteSize}}px sprite. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
+Menacing hostile design, facing downward. A single craft drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
+Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"structure": `Top-down space obstacle/debris: {{.StructureDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Irregular natural shape, no propulsion or weapons visible.
-{{.SpriteSize}}px sprite, centered on a flat, uniform solid-color background. No text, no UI, no gradient, no scene.`,
+Drawn large and detailed, centered and filling the frame edge-to-edge with only a few pixels of margin. No text, no UI, no gradient, no scene.`,
 
 	"preview": `Game skin preview image showing the overall visual theme.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.

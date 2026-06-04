@@ -130,3 +130,65 @@ func TestFitInside_PreservesAspectAndFits(t *testing.T) {
 			out.Bounds().Dx(), out.Bounds().Dy())
 	}
 }
+
+func TestFitCanvas_ExactReferenceAndCentered(t *testing.T) {
+	// A narrow 10×100 strip must come out exactly 57×42 (not 4×42), centered.
+	src := image.NewNRGBA(image.Rect(0, 0, 10, 100))
+	for y := 0; y < 100; y++ {
+		for x := 0; x < 10; x++ {
+			src.SetNRGBA(x, y, color.NRGBA{0, 128, 255, 255})
+		}
+	}
+
+	out := FitCanvas(src, 57, 42)
+	if out.Bounds().Dx() != 57 || out.Bounds().Dy() != 42 {
+		t.Fatalf("expected exact 57×42 canvas, got %d×%d",
+			out.Bounds().Dx(), out.Bounds().Dy())
+	}
+	// Aspect-preserved content is 4×42 centered → opaque around the middle,
+	// fully transparent at the far-left edge.
+	if c := out.NRGBAAt(0, 21); c.A != 0 {
+		t.Errorf("expected transparent left padding, got alpha %d", c.A)
+	}
+	if c := out.NRGBAAt(28, 21); c.A == 0 {
+		t.Errorf("expected opaque content at center, got transparent")
+	}
+}
+
+func TestFitFramesToCanvas_SharedScaleAndUniformCanvas(t *testing.T) {
+	// Two frames of different content widths must share one scale and land on the
+	// same 57×42 canvas — the wider frame fits exactly, the narrower stays
+	// proportionally smaller (no per-frame upscaling that would pulse the sprite).
+	wide := image.NewNRGBA(image.Rect(0, 0, 84, 42)) // 2:1, width-constrained
+	for y := 0; y < 42; y++ {
+		for x := 0; x < 84; x++ {
+			wide.SetNRGBA(x, y, color.NRGBA{255, 0, 0, 255})
+		}
+	}
+	narrow := image.NewNRGBA(image.Rect(0, 0, 42, 42)) // square, same scale → 28×28
+	for y := 0; y < 42; y++ {
+		for x := 0; x < 42; x++ {
+			narrow.SetNRGBA(x, y, color.NRGBA{0, 255, 0, 255})
+		}
+	}
+
+	out := FitFramesToCanvas([]*image.NRGBA{wide, narrow}, 57, 42)
+	if len(out) != 2 {
+		t.Fatalf("expected 2 frames, got %d", len(out))
+	}
+	for i, f := range out {
+		if f.Bounds().Dx() != 57 || f.Bounds().Dy() != 42 {
+			t.Errorf("frame %d: expected 57×42 canvas, got %d×%d",
+				i, f.Bounds().Dx(), f.Bounds().Dy())
+		}
+	}
+	// Shared scale = min(57/84, 42/42) = 0.6786. Wide → 57×28, narrow → 28×28.
+	// Verify the narrow frame's content is the smaller 28-wide block, centered:
+	// transparent at the far edge, opaque at center.
+	if c := out[1].NRGBAAt(1, 21); c.A != 0 {
+		t.Errorf("narrow frame should have transparent side padding, got alpha %d", c.A)
+	}
+	if c := out[1].NRGBAAt(28, 21); c.A == 0 {
+		t.Errorf("narrow frame should be opaque at center")
+	}
+}

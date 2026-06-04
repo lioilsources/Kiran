@@ -22,18 +22,22 @@ var bulletSpecs = []struct{ name, directive string }{
 	{"starg", "Star-shaped projectile, spinning multi-pointed star with energy glow"},
 }
 
+// enemySpecs describe each enemy by silhouette and theme only. Absolute size and
+// proportion words (small, narrow, wide, bulky, large, oversized) are deliberately
+// avoided: every enemy is normalized to a uniform square reference footprint in
+// postprocess, so non-square art would just get letterboxed and render small.
 var enemySpecs = []struct{ name, directive string }{
-	{"falcon", "standard fighter, medium size, angular wings"},
-	{"falcon1", "light scout, small and fast, swept-back wings"},
-	{"falcon2", "armored interceptor, heavier build, reinforced hull plates"},
-	{"falcon3", "bomber variant, wide body, visible weapon pods"},
-	{"falcon4", "stealth fighter, sleek and narrow, dark paneling"},
-	{"falcon5", "assault craft, bulky frame, twin engine pods"},
+	{"falcon", "standard fighter, angular wings"},
+	{"falcon1", "scout fighter, swept-back wings"},
+	{"falcon2", "armored interceptor, reinforced hull plates"},
+	{"falcon3", "bomber variant, visible weapon pods"},
+	{"falcon4", "stealth fighter, dark angular paneling"},
+	{"falcon5", "assault craft, twin engine pods"},
 	{"falcon6", "elite fighter, ornate markings, advanced design"},
 	{"falconx", "experimental prototype, unusual geometry, glowing accents"},
 	{"falconx2", "experimental mark III, tri-wing layout, plasma conduits"},
-	{"falconx3", "experimental mark IV, heavily armed, oversized cannons"},
-	{"falconxb", "experimental boss, large imposing frame, command vessel"},
+	{"falconx3", "experimental mark IV, heavily armed, prominent cannons"},
+	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
 	{"bouncer", "agile drone, spherical body, unpredictable movement design"},
 }
@@ -59,12 +63,14 @@ var backgroundLayers = []struct {
 func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 	specs := make([]AssetSpec, 0, 32)
 
-	// Ship frames
+	// Ship frames: 4 banking poses in a horizontal row. A 4:1 sheet gives each
+	// of the 4 frames a square cell, so the ship is drawn at full size per frame
+	// instead of being squeezed into a narrow slice of a 1:1 canvas.
 	specs = append(specs, AssetSpec{
 		Name:        "ship_frames",
 		AssetType:   "ship",
 		OutputDir:   "sprites",
-		AspectRatio: "1:1",
+		AspectRatio: "4:1",
 		Resolution:  "1k",
 	})
 
