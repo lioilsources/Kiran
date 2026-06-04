@@ -329,6 +329,12 @@ func sizeFromAspect(aspectRatio, resolution string) string {
 			return "2048x1024"
 		}
 		return "1024x512"
+	case "4:1":
+		// Horizontal 4-frame sprite sheets: 4 square cells side by side.
+		if resolution == "2k" {
+			return "4096x1024"
+		}
+		return "2048x512"
 	default:
 		if resolution == "2k" {
 			return "2048x2048"

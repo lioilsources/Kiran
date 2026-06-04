@@ -137,7 +137,7 @@ func processNamedAsset(cfg Config, asset skin.ManifestAsset, outDir, gameName st
 // max-dimension downscale.
 func normalizeSprite(rgba *image.NRGBA, gameName string, targetSize int) *image.NRGBA {
 	if refW, refH, ok := ReferenceSize(gameName); ok {
-		return FitInside(Trim(rgba), refW, refH)
+		return FitCanvas(Trim(rgba), refW, refH)
 	}
 	return Resize(rgba, targetSize)
 }
@@ -149,11 +149,12 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string) erro
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	// Extract each frame from the horizontal sprite sheet (4 frames side-by-side)
+	// Extract each frame from the horizontal sprite sheet (4 frames side-by-side).
 	bounds := img.Bounds()
 	numFrames := 4
 	frameW := bounds.Dx() / numFrames
 
+	frames := make([]*image.NRGBA, numFrames)
 	for f := 0; f < numFrames; f++ {
 		x0 := bounds.Min.X + f*frameW
 		cropped := image.NewNRGBA(image.Rect(0, 0, frameW, bounds.Dy()))
@@ -162,10 +163,16 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string) erro
 				cropped.Set(x-x0, y-bounds.Min.Y, img.At(x, y))
 			}
 		}
+		frames[f] = RemoveBackground(cropped, cfg.BgThreshold, cfg.BgMargin)
+	}
 
-		rgba := RemoveBackground(cropped, cfg.BgThreshold, cfg.BgMargin)
-		out := normalizeSprite(rgba, "vessel", cfg.TargetSize)
-
+	// Normalize all frames together so the banking animation keeps a steady size
+	// and footprint, then write each to its own exact reference-sized canvas.
+	refW, refH, ok := ReferenceSize("vessel")
+	if !ok {
+		refW, refH = frameW, bounds.Dy()
+	}
+	for f, out := range FitFramesToCanvas(frames, refW, refH) {
 		outPath := filepath.Join(outDir, fmt.Sprintf("vessel_%d.png", f))
 		if err := savePNG(outPath, out); err != nil {
 			return err

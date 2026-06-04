@@ -16,8 +16,8 @@ func TestBuildPromptShip(t *testing.T) {
 	if !strings.Contains(prompt, "top-down") {
 		t.Error("ship prompt should contain 'top-down'")
 	}
-	if !strings.Contains(prompt, "16px") {
-		t.Error("ship prompt should contain sprite size '16px'")
+	if !strings.Contains(prompt, "filling its square cell") {
+		t.Error("ship prompt should instruct each frame to fill its cell")
 	}
 	if !strings.Contains(prompt, "4 animation frames") {
 		t.Error("ship prompt should contain frame count")
@@ -113,8 +113,8 @@ func TestBuildPromptStructure(t *testing.T) {
 	if !strings.Contains(prompt, "rocky asteroid") {
 		t.Error("structure prompt should contain directive from ExtraVars")
 	}
-	if !strings.Contains(prompt, "16px") {
-		t.Error("structure prompt should contain sprite size")
+	if !strings.Contains(prompt, "filling the frame") {
+		t.Error("structure prompt should instruct the sprite to fill the frame")
 	}
 }
 

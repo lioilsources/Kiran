@@ -124,6 +124,91 @@ func FitInside(src *image.NRGBA, refW, refH int) *image.NRGBA {
 	return resizeNRGBAExact(src, dstW, dstH)
 }
 
+// PadTo centers src on a transparent canvasW×canvasH canvas. If src already
+// matches the canvas it is returned unchanged. src is expected to be no larger
+// than the canvas (callers fit first); any overhang is clipped.
+func PadTo(src *image.NRGBA, canvasW, canvasH int) *image.NRGBA {
+	b := src.Bounds()
+	sw, sh := b.Dx(), b.Dy()
+	if sw == canvasW && sh == canvasH {
+		return src
+	}
+	dst := image.NewNRGBA(image.Rect(0, 0, canvasW, canvasH))
+	offX := (canvasW - sw) / 2
+	offY := (canvasH - sh) / 2
+	for y := 0; y < sh; y++ {
+		dy := offY + y
+		if dy < 0 || dy >= canvasH {
+			continue
+		}
+		for x := 0; x < sw; x++ {
+			dx := offX + x
+			if dx < 0 || dx >= canvasW {
+				continue
+			}
+			dst.SetNRGBA(dx, dy, src.NRGBAAt(b.Min.X+x, b.Min.Y+y))
+		}
+	}
+	return dst
+}
+
+// FitCanvas scales src to fit within refW×refH (aspect-preserving) and then
+// centers it on an exact refW×refH transparent canvas. Unlike FitInside, the
+// result is always exactly refW×refH, so every skin's sprite shares the same
+// atlas footprint and the game's single global spriteScale renders all skins at
+// the same in-game size — no per-skin scale factor required.
+func FitCanvas(src *image.NRGBA, refW, refH int) *image.NRGBA {
+	return PadTo(FitInside(src, refW, refH), refW, refH)
+}
+
+// FitFramesToCanvas normalizes a set of animation frames to a single shared scale
+// and a common refW×refH canvas. The scale is chosen so the largest frame fits
+// inside the reference box; every frame then uses that same scale, so the subject
+// keeps a steady on-screen size across the animation instead of pulsing or being
+// stretched frame-to-frame. Each frame is trimmed, scaled, and centered on its
+// own exact refW×refH canvas.
+func FitFramesToCanvas(frames []*image.NRGBA, refW, refH int) []*image.NRGBA {
+	if len(frames) == 0 || refW <= 0 || refH <= 0 {
+		return frames
+	}
+
+	trimmed := make([]*image.NRGBA, len(frames))
+	maxW, maxH := 1, 1
+	for i, f := range frames {
+		t := Trim(f)
+		trimmed[i] = t
+		if w := t.Bounds().Dx(); w > maxW {
+			maxW = w
+		}
+		if h := t.Bounds().Dy(); h > maxH {
+			maxH = h
+		}
+	}
+
+	scale := math.Min(float64(refW)/float64(maxW), float64(refH)/float64(maxH))
+
+	out := make([]*image.NRGBA, len(frames))
+	for i, t := range trimmed {
+		b := t.Bounds()
+		dw := int(math.Round(float64(b.Dx()) * scale))
+		dh := int(math.Round(float64(b.Dy()) * scale))
+		if dw < 1 {
+			dw = 1
+		}
+		if dh < 1 {
+			dh = 1
+		}
+		if dw > refW {
+			dw = refW
+		}
+		if dh > refH {
+			dh = refH
+		}
+		out[i] = PadTo(resizeNRGBAExact(t, dw, dh), refW, refH)
+	}
+	return out
+}
+
 // resizeNRGBAExact scales an NRGBA image to exactly dstW×dstH using area-average,
 // reading straight (non-premultiplied) components so alpha edges stay clean.
 func resizeNRGBAExact(src *image.NRGBA, dstW, dstH int) *image.NRGBA {
