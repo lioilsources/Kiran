@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"tyrian-pipeline/internal/comfyuiimage"
 	"tyrian-pipeline/internal/generator"
 	"tyrian-pipeline/internal/grokimage"
 	"tyrian-pipeline/internal/ol1nimage"
@@ -25,14 +26,15 @@ func main() {
 	skinID := flag.String("skin", "", "Skin ID to generate (empty = all skins)")
 	outDir := flag.String("out", "output/assets/skins", "Output directory")
 	workers := flag.Int("workers", 3, "Number of concurrent workers")
-	backend := flag.String("backend", "grok", "Image backend: grok or ol1n")
-	model := flag.String("model", "", "Image generation model (default: grok-imagine-image for grok, flux-1-dev for ol1n)")
+	backend := flag.String("backend", "grok", "Image backend: grok, ol1n, or comfyui")
+	model := flag.String("model", "", "Image generation model (default: grok-imagine-image for grok, flux-1-dev for ol1n/comfyui)")
 	dryRun := flag.Bool("dry-run", false, "Print prompts without calling API")
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
 	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
 	ol1nJobTimeout := flag.Duration("ol1n-job-timeout", 15*time.Minute, "Max time to wait for a single ol1n/AiStack image job")
+	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI image job")
 	flag.Parse()
 
 	// SFX generation mode
@@ -44,7 +46,7 @@ func main() {
 	// Resolve model label default per backend
 	modelName := *model
 	if modelName == "" {
-		if *backend == "ol1n" {
+		if *backend == "ol1n" || *backend == "comfyui" {
 			modelName = "flux-1-dev"
 		} else {
 			modelName = "grok-imagine-image"
@@ -83,8 +85,18 @@ func main() {
 				os.Exit(1)
 			}
 			client = ol1nimage.NewClient(cfID, cfSecret, ol1nimage.WithJobTimeout(*ol1nJobTimeout))
+		case "comfyui":
+			comfyURL := os.Getenv("COMFYUI_API_URL")
+			if comfyURL == "" {
+				fmt.Fprintln(os.Stderr, "Error: COMFYUI_API_URL is required for -backend=comfyui (or use -dry-run)")
+				os.Exit(1)
+			}
+			// CF Access credentials are optional — only sent if both are set.
+			cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
+			cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
+			client = comfyuiimage.NewClient(comfyURL, cfID, cfSecret, comfyuiimage.WithJobTimeout(*comfyJobTimeout))
 		default:
-			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, ol1n)\n", *backend)
+			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, ol1n, comfyui)\n", *backend)
 			os.Exit(1)
 		}
 	}
