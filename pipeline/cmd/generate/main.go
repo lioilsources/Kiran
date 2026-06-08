@@ -35,6 +35,8 @@ func main() {
 	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
 	ol1nJobTimeout := flag.Duration("ol1n-job-timeout", 15*time.Minute, "Max time to wait for a single ol1n/AiStack image job")
 	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI image job")
+	comfyWorkflow := flag.String("comfyui-workflow", "flux", "ComfyUI workflow: flux or pony")
+	comfyCheckpoint := flag.String("comfyui-checkpoint", "", "Override checkpoint name in ComfyUI workflow node 4")
 	flag.Parse()
 
 	// SFX generation mode
@@ -94,7 +96,15 @@ func main() {
 			// CF Access credentials are optional — only sent if both are set.
 			cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
 			cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
-			client = comfyuiimage.NewClient(comfyURL, cfID, cfSecret, comfyuiimage.WithJobTimeout(*comfyJobTimeout))
+			comfyOpts := []comfyuiimage.ClientOption{comfyuiimage.WithJobTimeout(*comfyJobTimeout)}
+			switch *comfyWorkflow {
+			case "pony":
+				comfyOpts = append(comfyOpts, comfyuiimage.WithWorkflow(comfyuiimage.PonyWorkflow()))
+			}
+			if *comfyCheckpoint != "" {
+				comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(*comfyCheckpoint))
+			}
+			client = comfyuiimage.NewClient(comfyURL, cfID, cfSecret, comfyOpts...)
 		default:
 			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, ol1n, comfyui)\n", *backend)
 			os.Exit(1)
@@ -105,6 +115,12 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	// Resolve prompt style from comfyui workflow flag
+	promptStyle := ""
+	if *backend == "comfyui" && *comfyWorkflow == "pony" {
+		promptStyle = "pony"
+	}
+
 	// Create orchestrator
 	orch := pipeline.NewOrchestrator(client, *outDir,
 		pipeline.WithWorkers(*workers),
@@ -113,6 +129,7 @@ func main() {
 		pipeline.WithResolution(*resolution),
 		pipeline.WithDryRun(*dryRun),
 		pipeline.WithAssetType(*assetType),
+		pipeline.WithPromptStyle(promptStyle),
 	)
 
 	start := time.Now()

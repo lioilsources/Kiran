@@ -23,25 +23,27 @@ type Stats struct {
 
 // Orchestrator coordinates parallel asset generation with rate limiting.
 type Orchestrator struct {
-	client     imagegen.ImageGenerator
-	outDir     string
-	workers    int
-	n          int // variations per asset
-	model      string
-	resolution string
-	dryRun     bool
-	assetType  string // filter: empty = all
+	client      imagegen.ImageGenerator
+	outDir      string
+	workers     int
+	n           int // variations per asset
+	model       string
+	resolution  string
+	dryRun      bool
+	assetType   string // filter: empty = all
+	promptStyle string // "pony" selects Pony SDXL templates; "" uses Flux default
 }
 
 // OrchestratorOption configures the Orchestrator.
 type OrchestratorOption func(*Orchestrator)
 
-func WithWorkers(n int) OrchestratorOption    { return func(o *Orchestrator) { o.workers = n } }
-func WithN(n int) OrchestratorOption          { return func(o *Orchestrator) { o.n = n } }
-func WithModel(m string) OrchestratorOption   { return func(o *Orchestrator) { o.model = m } }
+func WithWorkers(n int) OrchestratorOption       { return func(o *Orchestrator) { o.workers = n } }
+func WithN(n int) OrchestratorOption             { return func(o *Orchestrator) { o.n = n } }
+func WithModel(m string) OrchestratorOption      { return func(o *Orchestrator) { o.model = m } }
 func WithResolution(r string) OrchestratorOption { return func(o *Orchestrator) { o.resolution = r } }
-func WithDryRun(d bool) OrchestratorOption    { return func(o *Orchestrator) { o.dryRun = d } }
-func WithAssetType(t string) OrchestratorOption { return func(o *Orchestrator) { o.assetType = t } }
+func WithDryRun(d bool) OrchestratorOption       { return func(o *Orchestrator) { o.dryRun = d } }
+func WithAssetType(t string) OrchestratorOption  { return func(o *Orchestrator) { o.assetType = t } }
+func WithPromptStyle(s string) OrchestratorOption { return func(o *Orchestrator) { o.promptStyle = s } }
 
 // NewOrchestrator creates a configured Orchestrator.
 func NewOrchestrator(client imagegen.ImageGenerator, outDir string, opts ...OrchestratorOption) *Orchestrator {
@@ -149,7 +151,7 @@ func (o *Orchestrator) dryRunSpecs(s skin.SkinDef, specs []generator.AssetSpec, 
 	fmt.Printf("Assets: %d specs, %d variations each\n\n", len(specs), o.n)
 
 	for i, spec := range specs {
-		prompt, err := generator.BuildPrompt(spec.AssetType, s, spec.ExtraVars)
+		prompt, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, o.promptStyle)
 		if err != nil {
 			fmt.Printf("[%d] %s/%s — ERROR: %v\n", i+1, spec.OutputDir, spec.Name, err)
 			continue
@@ -164,7 +166,7 @@ func (o *Orchestrator) dryRunSpecs(s skin.SkinDef, specs []generator.AssetSpec, 
 }
 
 func (o *Orchestrator) generateAsset(ctx context.Context, s skin.SkinDef, spec generator.AssetSpec, skinDir string) error {
-	prompt, err := generator.BuildPrompt(spec.AssetType, s, spec.ExtraVars)
+	prompt, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, o.promptStyle)
 	if err != nil {
 		return fmt.Errorf("build prompt: %w", err)
 	}

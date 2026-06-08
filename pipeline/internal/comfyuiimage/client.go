@@ -50,6 +50,13 @@ const (
 //go:embed workflows/flux_sprite.json
 var defaultWorkflow []byte
 
+//go:embed workflows/pony_sprite.json
+var ponyWorkflow []byte
+
+// PonyWorkflow returns the embedded Pony SDXL workflow graph (EmptyLatentImage,
+// cfg=6, dpmpp_2m/karras, with quality negative prompt).
+func PonyWorkflow() []byte { return ponyWorkflow }
+
 // NodeRoles maps logical roles to node IDs in the workflow graph. The defaults
 // match the embedded workflow; override with WithNodeRoles after re-exporting a
 // workflow whose node IDs differ.
@@ -77,6 +84,7 @@ type Client struct {
 	jobTimeout   time.Duration
 	workflowJSON []byte
 	roles        NodeRoles
+	checkpoint   string // optional: overrides node "4" ckpt_name
 }
 
 // ClientOption configures the Client.
@@ -115,6 +123,12 @@ func WithWorkflow(graph []byte) ClientOption {
 // WithNodeRoles overrides the node-ID mapping used for injection.
 func WithNodeRoles(r NodeRoles) ClientOption {
 	return func(c *Client) { c.roles = r }
+}
+
+// WithCheckpoint overrides the checkpoint name in node "4" of the workflow,
+// useful when the desired model differs from the one baked into the JSON.
+func WithCheckpoint(name string) ClientOption {
+	return func(c *Client) { c.checkpoint = name }
 }
 
 // NewClient creates a client for a ComfyUI server. cfClientID and cfSecret are
@@ -209,6 +223,11 @@ func (c *Client) buildWorkflow(prompt string, w, h, batch int) (map[string]any, 
 	}
 	if err := setNodeInput(graph, c.roles.Sampler, "seed", randSeed()); err != nil {
 		return nil, err
+	}
+	if c.checkpoint != "" {
+		if err := setNodeInput(graph, "4", "ckpt_name", c.checkpoint); err != nil {
+			return nil, err
+		}
 	}
 	return graph, nil
 }
