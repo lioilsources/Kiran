@@ -33,7 +33,7 @@
   "7": {
     "class_type": "CLIPTextEncode",
     "_meta": { "title": "Negative Prompt" },
-    "inputs": { "text": "score_4, score_5, score_6, bad quality, worst quality, low quality, jpeg artifacts, blurry, ugly", "clip": ["4", 1] }
+    "inputs": { "text": "score_4, score_5, score_6, worst quality, low quality, bad quality, jpeg artifacts, blurry, ugly, photo, photorealistic, realistic, 3d render, text, watermark, signature, logo, 1girl, 1boy, human, person, face, portrait, anthro, pony, furry", "clip": ["4", 1] }
   },
   "8": {
     "class_type": "VAEDecode",
