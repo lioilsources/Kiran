@@ -58,47 +58,57 @@ Atmospheric, eye-catching thumbnail for a selection screen. No text overlay.`,
 
 var compiledTemplates = make(map[string]*template.Template)
 
-// ponyPromptTemplates mirrors promptTemplates but prepends Pony SDXL quality tags
-// and uses a more tag-oriented structure that matches Pony's training distribution.
+// ponyQuality is the Pony Diffusion V6 XL conditioning prefix. Pony is a
+// Danbooru/e621 tag-trained SDXL model: it responds to comma-separated tags, the
+// full score ladder, and — most importantly — source_/rating_ steering tags.
+// Without a source_ tag Pony falls back to its dominant prior (anime characters),
+// which is why plain descriptive prompts produced character-like junk. We target
+// a stylized anime/cartoon look on purpose, leaning into Pony's strength.
+const ponyQuality = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, source_anime, rating_safe, anime style, cel shaded, vibrant"
+
+// ponyPromptTemplates mirrors promptTemplates but is rewritten tag-first for Pony
+// SDXL: full score ladder + source_anime/rating_safe steering, comma-separated
+// tags instead of prose, so Pony actually parses the intent. The per-skin
+// {{.StyleKeywords}}/{{.PaletteDescription}} values are kept as theme/color tags.
 var ponyPromptTemplates = map[string]string{
-	"ship": `score_9, score_8_up, score_7_up, {{.ArtDirective}}
-top-down view, player spaceship, nose pointing up, sprite sheet, 4 frames horizontal row, banking animation left to right.
-Same ship in every frame, large, highly detailed, fills cell edge-to-edge.
-Style tags: {{.StyleKeywords}}. Colors: {{.PaletteDescription}}.
-Clean silhouette, sharp details, solid flat background, no text, no UI.`,
+	"ship": ponyQuality + `, {{.ArtDirective}}
+top-down view, player spaceship, vehicle, nose pointing up, sprite sheet, 4 frames in one horizontal row, banking left to right, same ship in every frame,
+detailed mecha design, sharp clean lineart, large, centered, fills each cell,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid color background, no text, no UI, no humans, no characters`,
 
-	"explosion": `score_9, score_8_up, score_7_up, explosion animation, sprite sheet, 8 frames horizontal row, flat solid background.
-Style tags: {{.StyleKeywords}}. {{.ExplosionStyle}}
-Small bright flash expanding outward, fades to particles and smoke. No text, no UI. Flat solid background.`,
+	"explosion": ponyQuality + `, anime style explosion effect, sprite sheet, 8 frames in one horizontal row, flat solid background,
+{{.StyleKeywords}}, {{.ExplosionStyle}},
+bright flash expanding outward to particles and smoke, dynamic energetic, no text, no UI`,
 
-	"bullet": `score_9, score_8_up, score_7_up, game projectile sprite, flat solid background.
-{{.BulletDirective}}
-Style tags: {{.StyleKeywords}}. Colors: {{.PaletteDescription}}.
-Single projectile, centered, facing up. No text, no UI. Flat solid background.`,
+	"bullet": ponyQuality + `, anime style game projectile, glowing energy bolt,
+{{.BulletDirective}},
+{{.StyleKeywords}}, {{.PaletteDescription}},
+single projectile, centered, pointing up, flat solid background, no text, no UI`,
 
-	"background": `score_9, score_8_up, score_7_up, seamless tileable space background, vertical scrolling game.
-Layer: {{.LayerDesc}}.
-Style tags: {{.StyleKeywords}}. Mood: {{.BackgroundMood}}.
-Tiles seamlessly vertically. No ships, no UI, purely atmospheric. Wide landscape format.`,
+	"background": ponyQuality + `, anime style space background, vertical scrolling shooter background, seamless vertical tile,
+{{.LayerDesc}},
+{{.StyleKeywords}}, {{.BackgroundMood}},
+atmospheric, no ships, no characters, no UI, wide landscape format`,
 
-	"hud_icon": `score_9, score_8_up, score_7_up, game HUD icon, {{.IconType}}, flat solid background.
-Style tags: {{.StyleKeywords}}.
-Pixel art, 32x32 pixels, clear readable shape at small size. Colors: {{.PaletteDescription}}.
-Centered, no text. Flat solid background.`,
+	"hud_icon": ponyQuality + `, anime style game HUD icon, {{.IconType}}, simple bold readable shape,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+small icon, centered, flat solid background, no text`,
 
-	"enemy": `score_9, score_8_up, score_7_up, {{.ArtDirective}}
-top-down view, enemy spacecraft, {{.EnemyDirective}}, facing downward.
-Style tags: {{.StyleKeywords}}. Colors: {{.PaletteDescription}}.
-Menacing design, large, highly detailed, centered, fills frame edge-to-edge. No text, no UI. Flat solid background.`,
+	"enemy": ponyQuality + `, {{.ArtDirective}}
+top-down view, enemy spaceship, vehicle, {{.EnemyDirective}}, facing downward,
+menacing mecha design, detailed, sharp clean lineart, large, centered, fills frame,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid background, no text, no UI, no humans, no characters`,
 
-	"structure": `score_9, score_8_up, score_7_up, top-down space obstacle, {{.StructureDirective}}.
-Style tags: {{.StyleKeywords}}. Colors: {{.PaletteDescription}}.
-Irregular shape, no propulsion or weapons. Large, detailed, centered, fills frame edge-to-edge. No text, no UI, no gradient.`,
+	"structure": ponyQuality + `, anime style top-down space obstacle, {{.StructureDirective}},
+irregular natural shape, no propulsion, no weapons, detailed, centered, fills frame,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid background, no text, no UI`,
 
-	"preview": `score_9, score_8_up, score_7_up, game skin preview, overall visual theme.
-Style tags: {{.StyleKeywords}}. Colors: {{.PaletteDescription}}.
-Representative scene with spacecraft, stars, projectiles in this art style.
-Atmospheric, eye-catching thumbnail for a skin selection screen. No text overlay.`,
+	"preview": ponyQuality + `, anime style game skin key visual, splash art,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+spaceship, stars, projectiles, dynamic action scene, eye-catching thumbnail, no text overlay`,
 }
 
 var compiledPonyTemplates = make(map[string]*template.Template)
