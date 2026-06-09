@@ -10,8 +10,8 @@ import (
 
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
-A single player spacecraft viewed from directly above (top-down), nose pointing up.
-Sprite sheet of 4 animation frames laid out in one horizontal row of equal square cells; across the frames the ship banks from a hard left tilt, through level, to a hard right tilt.
+A single player spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points to the top edge of the image. No foreshortening, no 3D angle, no diagonal viewpoint.
+Sprite sheet of 4 animation frames laid out in one horizontal row of equal square cells; across the frames the ship banks from a hard left tilt, through level, to a hard right tilt. In all frames the fuselage axis stays vertical (nose up, engines down); only the wing roll changes.
 The SAME ship in every frame, drawn large and highly detailed, filling its square cell edge-to-edge with only a few pixels of margin — never small or distant.
 Roughly square overall proportions per frame.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
@@ -40,9 +40,10 @@ Clear readable shape at small size. Color: {{.PaletteDescription}}.
 No text, centered. Single flat solid-color background, no gradient, no scene.`,
 
 	"enemy": `{{.ArtDirective}}
-Top-down enemy spacecraft, {{.EnemyDirective}}.
+Enemy spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points to the BOTTOM edge of the image (descending toward the player). No foreshortening, no 3D angle, no diagonal viewpoint.
+{{.EnemyDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Menacing hostile design, facing downward. A single craft drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
+Menacing hostile design. A single craft drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
 Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"structure": `Top-down space obstacle/debris: {{.StructureDirective}}.
@@ -72,7 +73,7 @@ const ponyQuality = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, so
 // {{.StyleKeywords}}/{{.PaletteDescription}} values are kept as theme/color tags.
 var ponyPromptTemplates = map[string]string{
 	"ship": ponyQuality + `, {{.ArtDirective}}
-top-down view, player spaceship, vehicle, nose pointing up, sprite sheet, 4 frames in one horizontal row, banking left to right, same ship in every frame,
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, player spaceship, vehicle, nose pointing up toward top edge, fuselage vertical, sprite sheet, 4 frames in one horizontal row, banking left to right, same ship in every frame,
 detailed mecha design, sharp clean lineart, large, centered, fills each cell,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid color background, no text, no UI, no humans, no characters`,
@@ -96,7 +97,7 @@ atmospheric, no ships, no characters, no UI, wide landscape format`,
 small icon, centered, flat solid background, no text`,
 
 	"enemy": ponyQuality + `, {{.ArtDirective}}
-top-down view, enemy spaceship, vehicle, {{.EnemyDirective}}, facing downward,
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, enemy spaceship, vehicle, {{.EnemyDirective}}, nose pointing down toward bottom edge, fuselage vertical,
 menacing mecha design, detailed, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid background, no text, no UI, no humans, no characters`,

@@ -19,7 +19,7 @@ package postprocess
 // tyrian_mobile/lib/game/game_config.dart: the game divides spriteScale by the
 // same factor, so the on-screen size is identical while the texture carries
 // factor² more texels. 1 reproduces the original (committed-atlas) behaviour.
-const SupersampleFactor = 1
+const SupersampleFactor = 4
 
 var referenceSizes = map[string][2]int{
 	// Player

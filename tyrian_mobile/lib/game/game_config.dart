@@ -46,7 +46,7 @@ const String stateFileName = 'state.json';
 //   cd pipeline && go run ./cmd/postprocess
 //   cd tyrian_mobile && dart run tool/pack_atlas.dart
 // See SUPERSAMPLE_EXPERIMENT.md at the repo root.
-const double spriteSupersample = 1.0;
+const double spriteSupersample = 4.0;
 
 // Sprite scale factor to match original VBA proportions (VBA SIZE_UNIT ~0.0378).
 // Divided by spriteSupersample so supersampled atlases keep the same in-game size.

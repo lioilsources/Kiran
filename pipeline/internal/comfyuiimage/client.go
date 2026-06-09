@@ -58,19 +58,36 @@ var ponyWorkflow []byte
 func PonyWorkflow() []byte { return ponyWorkflow }
 
 // NodeRoles maps logical roles to node IDs in the workflow graph. The defaults
-// match the embedded workflow; override with WithNodeRoles after re-exporting a
+// match the embedded flux workflow; override with WithNodeRoles after re-exporting a
 // workflow whose node IDs differ.
 type NodeRoles struct {
 	PositivePrompt string // CLIPTextEncode node whose inputs.text is the prompt
 	Latent         string // Empty*LatentImage node carrying width/height/batch_size
 	Sampler        string // KSampler node carrying the seed
+	CheckpointNode string // loader node to override when WithCheckpoint is used
+	CheckpointKey  string // input key on that node (e.g. "unet_name" or "ckpt_name")
 }
 
+// defaultNodeRoles matches the embedded flux_sprite.json (UNETLoader architecture).
 var defaultNodeRoles = NodeRoles{
+	PositivePrompt: "4",
+	Latent:         "6",
+	Sampler:        "8",
+	CheckpointNode: "1",
+	CheckpointKey:  "unet_name",
+}
+
+// ponyNodeRoles matches pony_sprite.json (CheckpointLoaderSimple architecture).
+var ponyNodeRoles = NodeRoles{
 	PositivePrompt: "6",
 	Latent:         "5",
 	Sampler:        "3",
+	CheckpointNode: "4",
+	CheckpointKey:  "ckpt_name",
 }
+
+// PonyNodeRoles returns the NodeRoles for the embedded pony_sprite.json workflow.
+func PonyNodeRoles() NodeRoles { return ponyNodeRoles }
 
 // Client implements imagegen.ImageGenerator against a ComfyUI server.
 type Client struct {
@@ -84,7 +101,7 @@ type Client struct {
 	jobTimeout   time.Duration
 	workflowJSON []byte
 	roles        NodeRoles
-	checkpoint   string // optional: overrides node "4" ckpt_name
+	checkpoint   string // optional: overrides the checkpoint loader node named in roles
 }
 
 // ClientOption configures the Client.
@@ -125,8 +142,10 @@ func WithNodeRoles(r NodeRoles) ClientOption {
 	return func(c *Client) { c.roles = r }
 }
 
-// WithCheckpoint overrides the checkpoint name in node "4" of the workflow,
-// useful when the desired model differs from the one baked into the JSON.
+// WithCheckpoint overrides the model name in the loader node identified by
+// NodeRoles.CheckpointNode / NodeRoles.CheckpointKey. For the default flux
+// workflow that is UNETLoader node "1" / "unet_name"; for pony it is
+// CheckpointLoaderSimple node "4" / "ckpt_name".
 func WithCheckpoint(name string) ClientOption {
 	return func(c *Client) { c.checkpoint = name }
 }
@@ -225,7 +244,7 @@ func (c *Client) buildWorkflow(prompt string, w, h, batch int) (map[string]any, 
 		return nil, err
 	}
 	if c.checkpoint != "" {
-		if err := setNodeInput(graph, "4", "ckpt_name", c.checkpoint); err != nil {
+		if err := setNodeInput(graph, c.roles.CheckpointNode, c.roles.CheckpointKey, c.checkpoint); err != nil {
 			return nil, err
 		}
 	}
