@@ -14,47 +14,47 @@ package postprocess
 // falcon1-6 share the base falcon size; falconx2/3 share the falconx size.
 var referenceSizes = map[string][2]int{
 	// Player
-	"vessel": {57, 42},
+	"vessel": {114, 84},
 
 	// Enemies
-	"falcon":   {34, 34},
-	"falcon1":  {34, 34},
-	"falcon2":  {34, 34},
-	"falcon3":  {34, 34},
-	"falcon4":  {34, 34},
-	"falcon5":  {34, 34},
-	"falcon6":  {34, 34},
-	"falconx":  {51, 51},
-	"falconx2": {51, 51},
-	"falconx3": {51, 51},
-	"falconxb": {61, 61},
-	"falconxt": {67, 67},
-	"bouncer":  {64, 71},
+	"falcon":   {68, 68},
+	"falcon1":  {68, 68},
+	"falcon2":  {68, 68},
+	"falcon3":  {68, 68},
+	"falcon4":  {68, 68},
+	"falcon5":  {68, 68},
+	"falcon6":  {68, 68},
+	"falconx":  {102, 102},
+	"falconx2": {102, 102},
+	"falconx3": {102, 102},
+	"falconxb": {122, 122},
+	"falconxt": {134, 134},
+	"bouncer":  {128, 142},
 
 	// Boss
-	"rododendron": {128, 128},
+	"rododendron": {256, 256},
 
 	// Structures / asteroids
-	"asteroid":  {42, 40},
-	"asteroid1": {44, 83},
-	"asteroid2": {52, 75},
-	"asteroid3": {37, 25},
+	"asteroid":  {84, 80},
+	"asteroid1": {88, 166},
+	"asteroid2": {104, 150},
+	"asteroid3": {74, 50},
 
 	// Projectiles
-	"vulcan":  {5, 12},
-	"blaster": {42, 12},
-	"laser":   {20, 20},
-	"bubble":  {30, 29},
+	"vulcan":  {10, 24},
+	"blaster": {84, 24},
+	"laser":   {40, 40},
+	"bubble":  {60, 58},
 
 	// Background stars
-	"star":  {15, 15},
-	"starg": {12, 12},
+	"star":  {30, 30},
+	"starg": {24, 24},
 
 	// Explosions (all four frames share the original size)
-	"explosion1": {90, 90},
-	"explosion2": {90, 90},
-	"explosion3": {90, 90},
-	"explosion4": {90, 90},
+	"explosion1": {180, 180},
+	"explosion2": {180, 180},
+	"explosion3": {180, 180},
+	"explosion4": {180, 180},
 }
 
 // ReferenceSize returns the canonical (width, height) for a game sprite name and

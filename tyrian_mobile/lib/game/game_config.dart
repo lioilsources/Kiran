@@ -37,7 +37,9 @@ const int mbRight = 4;
 const String stateFileName = 'state.json';
 
 // Sprite scale factor to match original VBA proportions (VBA SIZE_UNIT ~0.0378)
-const double spriteScale = 0.74;
+// Sprites are stored at 2× the original VBA pixel dimensions for atlas quality;
+// this factor is halved accordingly so on-screen size is unchanged.
+const double spriteScale = 0.37;
 
 // Collectable icon size
 const double iconWidth = 70.0;
