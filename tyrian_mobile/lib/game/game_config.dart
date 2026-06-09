@@ -2,7 +2,7 @@
 /// Frame-based values are converted to time-based where needed.
 library;
 
-import 'dart:ui' show Color;
+import 'dart:ui' show Color, FilterQuality;
 
 const double frameDelay = 25.0; // ms per frame at original 40fps
 const double originalFps = 1000.0 / frameDelay; // 40 fps
@@ -36,10 +36,27 @@ const int mbRight = 4;
 // File names
 const String stateFileName = 'state.json';
 
-// Sprite scale factor to match original VBA proportions (VBA SIZE_UNIT ~0.0378)
-// Sprites are stored at 2× the original VBA pixel dimensions for atlas quality;
-// this factor is halved accordingly so on-screen size is unchanged.
-const double spriteScale = 0.37;
+// Sprite supersampling factor. Atlas sprites are generated at this multiple of
+// their original (VB6) reference resolution; spriteScale is divided by the same
+// factor so the on-screen size is unchanged but the texture carries N× detail.
+// 1.0 reproduces the original behaviour exactly (and matches the atlases
+// currently committed). To run the detail experiment, set this to e.g. 3.0 AND
+// set SupersampleFactor in pipeline/internal/postprocess/reference_sizes.go to
+// the SAME value, then regenerate:
+//   cd pipeline && go run ./cmd/postprocess
+//   cd tyrian_mobile && dart run tool/pack_atlas.dart
+// See SUPERSAMPLE_EXPERIMENT.md at the repo root.
+const double spriteSupersample = 1.0;
+
+// Sprite scale factor to match original VBA proportions (VBA SIZE_UNIT ~0.0378).
+// Divided by spriteSupersample so supersampled atlases keep the same in-game size.
+const double spriteScale = 0.74 / spriteSupersample;
+
+// Texture filtering for gameplay sprite batches. Set per-skin at load time
+// (AssetLibrary): smooth (medium) filtering only helps when sprites are
+// supersampled and the skin is not pixel-art; otherwise nearest-neighbour is
+// kept so retro skins stay crisp and factor-1.0 behaviour is unchanged.
+FilterQuality spriteFilterQuality = FilterQuality.none;
 
 // Collectable icon size
 const double iconWidth = 70.0;

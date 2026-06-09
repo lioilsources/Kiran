@@ -12,6 +12,15 @@ package postprocess
 // projectile, star, enemy, boss — renders at the same huge size.
 //
 // falcon1-6 share the base falcon size; falconx2/3 share the falconx size.
+
+// SupersampleFactor multiplies every reference size so generated atlases retain
+// more of the detail from the 1024² source images instead of being crushed to
+// the tiny original sizes. It MUST equal spriteSupersample in
+// tyrian_mobile/lib/game/game_config.dart: the game divides spriteScale by the
+// same factor, so the on-screen size is identical while the texture carries
+// factor² more texels. 1 reproduces the original (committed-atlas) behaviour.
+const SupersampleFactor = 1
+
 var referenceSizes = map[string][2]int{
 	// Player
 	"vessel": {114, 84},
@@ -62,7 +71,7 @@ var referenceSizes = map[string][2]int{
 // backgrounds) should keep their plain max-dimension downscale.
 func ReferenceSize(gameName string) (int, int, bool) {
 	if s, ok := referenceSizes[gameName]; ok {
-		return s[0], s[1], true
+		return s[0] * SupersampleFactor, s[1] * SupersampleFactor, true
 	}
 	return 0, 0, false
 }

@@ -6,6 +6,7 @@ import 'package:flame/flame.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+import '../game/game_config.dart' as config;
 import 'skin_registry.dart';
 
 /// Voronoi fragment metadata for a single piece of a shattered sprite.
@@ -74,6 +75,18 @@ class AssetLibrary {
 
   Future<void> loadAll() async {
     if (_loaded) return;
+
+    // Pick texture filtering for this skin. Smooth (medium) filtering only helps
+    // when sprites are supersampled (high-res atlas downsampled on screen) and
+    // the skin isn't pixel-art; otherwise keep nearest-neighbour.
+    final skin = kSkins.firstWhere(
+      (s) => s.id == _skinId,
+      orElse: () => const SkinInfo('default', 'default', pixelArt: true),
+    );
+    config.spriteFilterQuality =
+        (!skin.pixelArt && config.spriteSupersample > 1.0)
+            ? FilterQuality.medium
+            : FilterQuality.none;
 
     // Flame expects images under assets/images/ by default.
     // We override the prefix so it loads from assets/ directly.
@@ -190,7 +203,7 @@ class AssetLibrary {
           srcPosition: Vector2(rect.left, rect.top),
           srcSize: Vector2(rect.width, rect.height),
         );
-        sprite.paint.filterQuality = FilterQuality.none;
+        sprite.paint.filterQuality = config.spriteFilterQuality;
         _sprites[name] = sprite;
       }
 
@@ -223,7 +236,7 @@ class AssetLibrary {
       final image = await Flame.images.load(path);
       _images[name] = image;
       final sprite = Sprite(image);
-      sprite.paint.filterQuality = FilterQuality.none;
+      sprite.paint.filterQuality = config.spriteFilterQuality;
       _sprites[name] = sprite;
     } catch (e) {
       print('Asset load failed [$name]: $e');
@@ -236,7 +249,7 @@ class AssetLibrary {
       final image = await Flame.images.load(path);
       _images[name] = image;
       final sprite = Sprite(image);
-      sprite.paint.filterQuality = FilterQuality.none;
+      sprite.paint.filterQuality = config.spriteFilterQuality;
       _sprites[name] = sprite;
       return true;
     } catch (_) {

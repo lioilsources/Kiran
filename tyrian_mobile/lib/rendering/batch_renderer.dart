@@ -17,6 +17,11 @@ import 'entity_glow.dart';
 /// render() is a no-op. This renderer reads positions from the game's active
 /// entity lists and draws everything in bulk.
 
+/// Shared paint for all gameplay sprite batches. Its [Paint.filterQuality]
+/// follows the active skin via [config.spriteFilterQuality], refreshed on each
+/// access so a skin switch takes effect immediately.
+final Paint _spriteBatchPaint = Paint();
+
 // ---------------------------------------------------------------------------
 // Internal: per-image atlas batch
 // ---------------------------------------------------------------------------
@@ -90,7 +95,7 @@ class _AtlasBatch {
 class HostileBatchRenderer extends Component
     with HasGameReference<TyrianGame> {
   final Map<ui.Image, _AtlasBatch> _batches = {};
-  final Paint _paint = Paint()..filterQuality = FilterQuality.none;
+  Paint get _paint => _spriteBatchPaint..filterQuality = config.spriteFilterQuality;
   final Paint _hpBgPaint = Paint()..color = const Color(0x80000000);
 
   static const _hitColor = Color(0xFFFF8888);
@@ -217,7 +222,7 @@ class HostileBatchRenderer extends Component
 class ProjectileBatchRenderer extends Component
     with HasGameReference<TyrianGame> {
   final Map<ui.Image, _AtlasBatch> _batches = {};
-  final Paint _paint = Paint()..filterQuality = FilterQuality.none;
+  Paint get _paint => _spriteBatchPaint..filterQuality = config.spriteFilterQuality;
 
   @override
   void render(Canvas canvas) {
@@ -272,7 +277,7 @@ class ProjectileBatchRenderer extends Component
 class StructureBatchRenderer extends Component
     with HasGameReference<TyrianGame> {
   final Map<ui.Image, _AtlasBatch> _batches = {};
-  final Paint _paint = Paint()..filterQuality = FilterQuality.none;
+  Paint get _paint => _spriteBatchPaint..filterQuality = config.spriteFilterQuality;
 
   @override
   void render(Canvas canvas) {
@@ -333,7 +338,7 @@ class StructureBatchRenderer extends Component
 class ShardBatchRenderer extends Component
     with HasGameReference<TyrianGame> {
   final Map<ui.Image, _AtlasBatch> _batches = {};
-  final Paint _paint = Paint()..filterQuality = FilterQuality.none;
+  Paint get _paint => _spriteBatchPaint..filterQuality = config.spriteFilterQuality;
 
   @override
   void render(Canvas canvas) {
