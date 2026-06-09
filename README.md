@@ -44,6 +44,59 @@ flutter run -d android
 flutter run -d macos
 ```
 
+## Asset Pipeline
+
+Regenerate sprites, backgrounds, and SFX for a skin, then rebuild the texture atlas.
+
+### 1. Generate images (Flux via ol1n / ComfyUI backend)
+
+```bash
+cd pipeline
+
+# All assets for one skin
+go run ./cmd/generate -skin asteroids -backend ol1n
+
+# ComfyUI variant
+go run ./cmd/generate -skin asteroids -backend comfyui -comfyui-workflow flux
+
+# Only backgrounds
+go run ./cmd/generate -skin asteroids -backend ol1n -asset-type background
+
+# Dry-run (print prompts, no API calls)
+go run ./cmd/generate -skin asteroids -backend ol1n -dry-run
+```
+
+Key flags: `-n 4` (variations per asset), `-workers 3`, `-resolution 1k|2k`
+
+Available skin IDs: `space_invaders`, `galaga`, `asteroids`, `geometry_wars`, `ikaruga`, `nuclear_throne`, `luftrausers`, `nex_machina`, `tyrian_dos`, `gradius_v`, `rtype`, `river_raid`, `blazing_lazers`
+
+### 2. Postprocess (pick variation, resize, bg removal → game assets)
+
+```bash
+go run ./cmd/postprocess -skin asteroids
+# output goes to ../tyrian_mobile/assets/skins/asteroids/
+
+# Pick a different variation
+go run ./cmd/postprocess -skin asteroids -variation 2
+
+# Tune bg removal
+go run ./cmd/postprocess -skin asteroids -threshold 30 -margin 15 -size 128
+```
+
+### 3. Rebuild texture atlas
+
+```bash
+cd ../tyrian_mobile
+dart run tool/pack_atlas.dart
+```
+
+### SFX generation (ElevenLabs)
+
+```bash
+cd pipeline
+go run ./cmd/generate -skin asteroids -sfx
+```
+
 ## Documentation
 
 - [CHANGELOG.md](CHANGELOG.md) — development history
