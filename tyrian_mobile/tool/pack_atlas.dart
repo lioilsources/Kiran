@@ -22,8 +22,11 @@ const int kPadding = 1;
 /// Minimum atlas dimension (power of 2).
 const int kMinSize = 512;
 
-/// Maximum atlas dimension (power of 2).
-const int kMaxSize = 1024;
+/// Maximum atlas dimension (power of 2). Raised to 2048 so supersampled skins
+/// (see spriteSupersample / SupersampleFactor) still fit. The final atlas is
+/// trimmed to the next power of 2 of the actually-used area, so non-supersampled
+/// skins remain small (e.g. 512).
+const int kMaxSize = 2048;
 
 /// A loaded sprite ready for packing.
 class _SpriteEntry {

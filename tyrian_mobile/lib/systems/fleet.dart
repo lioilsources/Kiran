@@ -172,6 +172,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     if (extraPath != null) {
       clonedPath.addPath(extraPath!);
     }
+    final firstNode = clonedPath.current;
     final h = Hostile(
       caption: Hostile.hostCaption(hostType),
       id: _spawned,
@@ -179,6 +180,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       hp: hpMax,
       hpMax: hpMax,
       trace: clonedPath,
+      position: firstNode != null ? Vector2(firstNode.x, firstNode.y) : null,
     );
     h.parentFleet = this;
     hostiles.add(h);

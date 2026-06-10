@@ -174,7 +174,7 @@ var Registry = map[string]SkinDef{
 		ExplosionStyle:     "dense voxel particle shower, bright neon cubes scattering, electric blue and magenta with bloom trails",
 		BulletDirective:    "bright neon blue energy cube projectile, small glowing voxel with intense bloom trail, 3x5 pixels",
 		SpriteSize:         32,
-		FrameCount:         4,
+		FrameCount:         6,
 		PostProcess:        EffectBloom,
 		GoogleFont:         "Exo 2",
 		SfxStyle:           "Dense electronic, bass-heavy impacts, neon synth, Housemarque arcade intensity",

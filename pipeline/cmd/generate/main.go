@@ -99,7 +99,10 @@ func main() {
 			comfyOpts := []comfyuiimage.ClientOption{comfyuiimage.WithJobTimeout(*comfyJobTimeout)}
 			switch *comfyWorkflow {
 			case "pony":
-				comfyOpts = append(comfyOpts, comfyuiimage.WithWorkflow(comfyuiimage.PonyWorkflow()))
+				comfyOpts = append(comfyOpts,
+					comfyuiimage.WithWorkflow(comfyuiimage.PonyWorkflow()),
+					comfyuiimage.WithNodeRoles(comfyuiimage.PonyNodeRoles()),
+				)
 			}
 			if *comfyCheckpoint != "" {
 				comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(*comfyCheckpoint))

@@ -70,6 +70,7 @@ class Vessel extends PositionComponent
 
     // Default weapon: Bubble Gun
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
   }
 
   void _loadFrames() {
@@ -157,6 +158,7 @@ class Vessel extends PositionComponent
     devices.clear();
     guidedWeapon = false;
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
     resetVessel();
   }
 
@@ -204,9 +206,12 @@ class Vessel extends PositionComponent
       device.parentVessel = this;
       devices.add(device);
     }
-    // Always guarantee a front weapon so the player can start.
+    // Always guarantee a front weapon and generator so the player can start.
     if (getDevice(WeaponSlot.frontGun) == null) {
       equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    }
+    if (getDevice(WeaponSlot.generator) == null) {
+      equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
     }
     guidedWeapon = devices.any((d) => d.guide > 0);
     resetVessel();
