@@ -15,13 +15,13 @@ void drawEntityGlow(Canvas canvas, Offset center, double radius, Color color) {
   final b = color.blue;
   final shader = RadialGradient(
     colors: [
-      Color.fromARGB(0,   r, g, b),   // transparent at center
-      Color.fromARGB(0,   r, g, b),   // transparent inside sprite
-      Color.fromARGB(210, r, g, b),   // bright glow peak at sprite edge
-      Color.fromARGB(70,  r, g, b),   // softer outer halo
-      Color.fromARGB(0,   r, g, b),   // fade to transparent
+      Color.fromARGB(0,   r, g, b),  // transparent at center
+      Color.fromARGB(0,   r, g, b),  // transparent inside sprite
+      Color.fromARGB(120, r, g, b),  // soft glow peak
+      Color.fromARGB(28,  r, g, b),  // wide outer halo
+      Color.fromARGB(0,   r, g, b),  // fade to transparent
     ],
-    stops: const [0.0, 0.48, 0.62, 0.80, 1.0],
+    stops: const [0.0, 0.45, 0.60, 0.88, 1.0],
   ).createShader(rect);
 
   canvas.drawCircle(center, outerR, Paint()..shader = shader);

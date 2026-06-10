@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"fmt"
+
 	"tyrian-pipeline/internal/skin"
 )
 
@@ -63,14 +65,13 @@ var backgroundLayers = []struct {
 func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 	specs := make([]AssetSpec, 0, 32)
 
-	// Ship frames: 4 banking poses in a horizontal row. A 4:1 sheet gives each
-	// of the 4 frames a square cell, so the ship is drawn at full size per frame
-	// instead of being squeezed into a narrow slice of a 1:1 canvas.
+	// Ship frames: N banking poses in a horizontal row. The aspect ratio matches
+	// FrameCount so each cell is square and the ship fills it at full size.
 	specs = append(specs, AssetSpec{
 		Name:        "ship_frames",
 		AssetType:   "ship",
 		OutputDir:   "sprites",
-		AspectRatio: "4:1",
+		AspectRatio: fmt.Sprintf("%d:1", s.FrameCount),
 		Resolution:  "1k",
 	})
 
@@ -136,6 +137,8 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		{"icon_life", "extra life heart or ship silhouette"},
 		{"icon_bomb", "bomb or special weapon explosive"},
 		{"icon_shield", "shield or protective barrier"},
+		{"icon_credit", "coin or credit currency symbol, money bonus"},
+		{"icon_gen", "energy generator or power core, lightning bolt or reactor symbol"},
 	} {
 		specs = append(specs, AssetSpec{
 			Name:        icon.name,

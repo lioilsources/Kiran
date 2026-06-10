@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import '../game/game_config.dart' as config;
 import 'skin_registry.dart';
@@ -32,6 +32,8 @@ class AssetLibrary {
   final Map<String, Rect> _atlasRects = {};
   ui.Image? get atlasImage => _atlasImage;
 
+  final Map<String, Sprite> _icons = {};
+
   /// Voronoi fragment metadata per sprite name.
   /// Key = sprite name (e.g. "falcon1"), Value = list of FragmentInfo.
   final Map<String, List<FragmentInfo>> _fragments = {};
@@ -39,6 +41,7 @@ class AssetLibrary {
 
   bool _loaded = false;
   String _skinId = 'default';
+  AssetManifest? _manifest;
 
   String get skinId => _skinId;
 
@@ -47,11 +50,13 @@ class AssetLibrary {
     _sprites.clear();
     _images.clear();
     _bgLayers.clear();
+    _icons.clear();
     _atlasImage = null;
     _atlasRects.clear();
     _fragments.clear();
     _loaded = false;
     _placeholder = null;
+    _manifest = null;
     // Clear Flame's image cache so it reloads from the new paths
     Flame.images.clearCache();
     _skinId = skinId;
@@ -110,6 +115,7 @@ class AssetLibrary {
         if (img != null) _bgLayers.add(img);
       }
 
+      await _loadIcons();
       _loaded = true;
       return;
     }
@@ -164,7 +170,24 @@ class AssetLibrary {
       if (img != null) _bgLayers.add(img);
     }
 
+    await _loadIcons();
     _loaded = true;
+  }
+
+  Future<void> _loadIcons() async {
+    _icons.clear();
+    for (final name in ['icon_life', 'icon_bomb', 'icon_shield', 'icon_credit', 'icon_gen']) {
+      final path = 'skins/$_skinId/ui/$name.png';
+      if (!await _assetExists(path)) continue;
+      try {
+        final image = await Flame.images.load(path);
+        final sprite = Sprite(image);
+        sprite.paint.filterQuality = config.spriteFilterQuality;
+        _icons[name] = sprite;
+      } catch (_) {
+        // ignore
+      }
+    }
   }
 
   /// Try to load a pre-built texture atlas for the current skin.
@@ -257,8 +280,17 @@ class AssetLibrary {
     }
   }
 
-  /// Load a raw ui.Image, returning null on failure (silent).
+  /// Returns true if the asset at [path] (relative to assets/) is in the bundle.
+  /// Caches the manifest across calls within the same loadAll() invocation.
+  Future<bool> _assetExists(String path) async {
+    _manifest ??= await AssetManifest.loadFromAssetBundle(rootBundle);
+    return _manifest!.getAssetVariants('assets/$path') != null;
+  }
+
+  /// Load a raw ui.Image, returning null if missing or on any error.
+  /// Checks the AssetManifest first to avoid Flutter logging a platform error.
   Future<ui.Image?> _tryLoadImage(String path) async {
+    if (!await _assetExists(path)) return null;
     try {
       return await Flame.images.load(path);
     } catch (_) {
@@ -267,6 +299,8 @@ class AssetLibrary {
   }
 
   Sprite? getSprite(String name) => _sprites[name];
+
+  Sprite? getIcon(String name) => _icons[name];
 
   /// Animated vessel frames (empty if skin uses single vessel.png).
   List<Sprite> get vesselFrames => _vesselFrames;

@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -69,8 +70,8 @@ func Run(cfg Config) error {
 			}
 
 		case asset.Name == "ship_frames":
-			// Special: sprite sheet with N frames side-by-side → extract first frame as vessel.png
-			if err := processShipFrames(cfg, asset, spritesDir); err != nil {
+			// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
+			if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
 				return fmt.Errorf("process ship_frames: %w", err)
 			}
 
@@ -142,16 +143,23 @@ func normalizeSprite(rgba *image.NRGBA, gameName string, targetSize int) *image.
 	return Resize(rgba, targetSize)
 }
 
-func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string) error {
+func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, frameCount int) error {
 	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	// Extract each frame from the horizontal sprite sheet (4 frames side-by-side).
+	// Use the skin's declared FrameCount; fall back to aspect-ratio detection so
+	// skins that don't set it explicitly still work.
 	bounds := img.Bounds()
-	numFrames := 4
+	numFrames := frameCount
+	if numFrames < 1 {
+		numFrames = int(math.Round(float64(bounds.Dx()) / float64(bounds.Dy())))
+		if numFrames < 1 {
+			numFrames = 1
+		}
+	}
 	frameW := bounds.Dx() / numFrames
 
 	frames := make([]*image.NRGBA, numFrames)

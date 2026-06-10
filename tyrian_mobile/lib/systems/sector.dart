@@ -61,6 +61,9 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     for (final s in structures) {
       if (!s.activated && elapsed >= s.enterTime) {
         s.activated = true;
+        if (s.trace?.current != null) {
+          s.position.setValues(s.trace!.current!.x, s.trace!.current!.y);
+        }
         game.activeStructures.add(s);
         game.world.add(s);
       }

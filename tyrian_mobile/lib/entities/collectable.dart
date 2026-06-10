@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../systems/path_system.dart';
 import '../systems/dev_type.dart';
@@ -27,6 +28,7 @@ class Collectable extends PositionComponent
   CollType cType;
   int value;
   PathSystem? trace;
+  Sprite? _sprite;
 
   Collectable({
     required this.caption,
@@ -38,6 +40,11 @@ class Collectable extends PositionComponent
           position: position ?? Vector2.zero(),
           size: Vector2(config.iconWidth, config.iconHeight),
         );
+
+  @override
+  Future<void> onLoad() async {
+    _sprite = AssetLibrary.instance.getIcon(_iconNameForType());
+  }
 
   @override
   void update(double dt) {
@@ -115,9 +122,13 @@ class Collectable extends PositionComponent
 
   @override
   void render(Canvas canvas) {
-    // Colored icon based on type
-    final color = _colorForType();
-    final paint = Paint()..color = color;
+    if (_sprite != null) {
+      _sprite!.render(canvas, size: size);
+      return;
+    }
+
+    // Fallback: colored rect with letter (skins without icon assets)
+    final paint = Paint()..color = _colorForType();
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(0, 0, size.x, size.y),
@@ -125,8 +136,6 @@ class Collectable extends PositionComponent
       ),
       paint,
     );
-
-    // Icon letter
     final textPainter = TextPainter(
       text: TextSpan(
         text: _labelForType(),
@@ -146,6 +155,19 @@ class Collectable extends PositionComponent
         (size.y - textPainter.height) / 2,
       ),
     );
+  }
+
+  String _iconNameForType() {
+    switch (cType) {
+      case CollType.healthUpgrade: return 'icon_life';
+      case CollType.shieldUpgrade: return 'icon_shield';
+      case CollType.frontWepUpgrade:
+      case CollType.leftWepUpgrade:
+      case CollType.rightWepUpgrade: return 'icon_bomb';
+      case CollType.generatorUpgrade: return 'icon_gen';
+      case CollType.bonusCredit: return 'icon_credit';
+      default: return '';
+    }
   }
 
   Color _colorForType() {

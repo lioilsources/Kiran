@@ -1,3 +1,4 @@
+import 'dart:math' show pi;
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -120,14 +121,15 @@ class HostileBatchRenderer extends Component
       _addHostile(h);
     }
 
-    // Glow pass (under sprites)
+    // Glow pass (under sprites). Guard size > 0: hostile may be in fleet.hostiles
+    // before onLoad() sets the sprite+size, which would draw glow at (0,0).
     for (final fleet in game.activeFleets) {
       for (final h in fleet.hostiles) {
-        if (!h.isDead) _drawHostileGlow(canvas, h);
+        if (!h.isDead && h.size.x > 0) _drawHostileGlow(canvas, h);
       }
     }
     for (final h in game.clientHostiles.values) {
-      if (!h.isDead) _drawHostileGlow(canvas, h);
+      if (!h.isDead && h.size.x > 0) _drawHostileGlow(canvas, h);
     }
 
     // Draw all batches
@@ -151,12 +153,13 @@ class HostileBatchRenderer extends Component
 
     final image = sprite.image;
     final batch = _batches.putIfAbsent(image, () => _AtlasBatch(image));
-    batch.add(
+    // Generator produces sprites nose-up; rotate 180° so enemies face the player.
+    batch.addRotated(
       sprite.src,
-      h.position.x,
-      h.position.y,
+      h.position.x + h.size.x / 2,
+      h.position.y + h.size.y / 2,
       h.size.x / sprite.srcSize.x,
-      h.size.y / sprite.srcSize.y,
+      pi,
       h.hit > 0 ? _hitColor : _normalColor,
     );
   }
@@ -293,12 +296,13 @@ class StructureBatchRenderer extends Component
       _addStructure(s);
     }
 
-    // Glow pass (under sprites)
+    // Glow pass (under sprites). Guard size > 0: structure may be in activeStructures
+    // before onLoad() sets the sprite+size.
     for (final s in game.activeStructures) {
-      if (!s.isDead) _drawStructureGlow(canvas, s);
+      if (!s.isDead && s.size.x > 0) _drawStructureGlow(canvas, s);
     }
     for (final s in game.clientStructures.values) {
-      if (!s.isDead) _drawStructureGlow(canvas, s);
+      if (!s.isDead && s.size.x > 0) _drawStructureGlow(canvas, s);
     }
 
     for (final b in _batches.values) {

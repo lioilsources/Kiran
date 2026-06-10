@@ -10,10 +10,10 @@ import (
 
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
-A single player spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points to the top edge of the image. No foreshortening, no 3D angle, no diagonal viewpoint.
-Sprite sheet of 4 animation frames laid out in one horizontal row of equal square cells; across the frames the ship banks from a hard left tilt, through level, to a hard right tilt. In all frames the fuselage axis stays vertical (nose up, engines down); only the wing roll changes.
+A single player spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points straight to the TOP edge of the image in EVERY frame. No foreshortening, no 3D angle, no diagonal viewpoint.
+Sprite sheet of EXACTLY 4 frames — no more, no fewer — laid out in one horizontal row of equal square cells. The total canvas is exactly 4 times as wide as it is tall.
+The ship silhouette and shape are IDENTICAL across all 4 frames. The fuselage axis is always vertical (nose at top, engines at bottom) in every single frame without exception. Only the lighting, glow, or subtle color tint shifts between frames to suggest a gentle banking motion — no rotation, no shape change, no nose deviation.
 The SAME ship in every frame, drawn large and highly detailed, filling its square cell edge-to-edge with only a few pixels of margin — never small or distant.
-Roughly square overall proportions per frame.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Clean silhouette, sharp readable details, no background elements, no text, no UI.
 The background must be a single flat solid color, no gradient, no scene, clearly distinct from the sprite.`,
@@ -26,7 +26,8 @@ Each frame {{.SpriteSize}}px wide. No text, no UI. Single flat solid-color backg
 	"bullet": `Game projectile sprite on a flat, uniform solid-color background.
 {{.BulletDirective}}
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Single projectile, centered, facing upward. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
+Single projectile, centered, pointing STRAIGHT UP — perfectly vertical, zero diagonal, zero rotation, zero isometric angle. The projectile axis is exactly parallel to the vertical edge of the image.
+No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"background": `Seamless tileable space background, vertical scrolling game.
 Layer: {{.LayerDesc}}.
@@ -73,7 +74,7 @@ const ponyQuality = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, so
 // {{.StyleKeywords}}/{{.PaletteDescription}} values are kept as theme/color tags.
 var ponyPromptTemplates = map[string]string{
 	"ship": ponyQuality + `, {{.ArtDirective}}
-overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, player spaceship, vehicle, nose pointing up toward top edge, fuselage vertical, sprite sheet, 4 frames in one horizontal row, banking left to right, same ship in every frame,
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, player spaceship, vehicle, nose pointing straight up in every frame, fuselage always vertical, sprite sheet, exactly 4 frames in one horizontal row 4:1 aspect ratio, identical silhouette in all frames, only lighting and glow changes between frames,
 detailed mecha design, sharp clean lineart, large, centered, fills each cell,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid color background, no text, no UI, no humans, no characters`,
@@ -85,7 +86,7 @@ bright flash expanding outward to particles and smoke, dynamic energetic, no tex
 	"bullet": ponyQuality + `, anime style game projectile, glowing energy bolt,
 {{.BulletDirective}},
 {{.StyleKeywords}}, {{.PaletteDescription}},
-single projectile, centered, pointing up, flat solid background, no text, no UI`,
+single projectile, centered, perfectly vertical, pointing straight up, no diagonal, no rotation, no isometric, flat solid background, no text, no UI`,
 
 	"background": ponyQuality + `, anime style space background, vertical scrolling shooter background, seamless vertical tile,
 {{.LayerDesc}},
