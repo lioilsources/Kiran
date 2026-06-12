@@ -102,7 +102,7 @@ class AssetLibrary {
     if (atlasLoaded) {
       // Build vessel frames from atlas sprites
       _vesselFrames.clear();
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 6; i++) {
         final s = _sprites['vessel_$i'];
         if (s != null) _vesselFrames.add(s);
       }
@@ -125,7 +125,7 @@ class AssetLibrary {
 
     // Player — animated vessel frames (fall back to single vessel.png)
     _vesselFrames.clear();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
       final loaded = await _tryLoad('vessel_$i', p('vessel_$i'));
       if (loaded) _vesselFrames.add(_sprites['vessel_$i']!);
     }

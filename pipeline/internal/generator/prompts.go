@@ -32,8 +32,8 @@ func stripHexCodes(s string) string {
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
 A single player spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points straight to the TOP edge of the image in EVERY frame. No foreshortening, no 3D angle, no diagonal viewpoint.
-Sprite sheet of EXACTLY 4 frames — no more, no fewer — laid out in one horizontal row of equal square cells. The total canvas is exactly 4 times as wide as it is tall.
-The ship silhouette and shape are IDENTICAL across all 4 frames. The fuselage axis is always vertical (nose at top, engines at bottom) in every single frame without exception. Only the lighting, glow, or subtle color tint shifts between frames to suggest a gentle banking motion — no rotation, no shape change, no nose deviation.
+Sprite sheet of EXACTLY {{.FrameCount}} frames — no more, no fewer — laid out in one horizontal row of equal square cells. The total canvas is exactly {{.FrameCount}} times as wide as it is tall.
+The ship silhouette and shape are IDENTICAL across all {{.FrameCount}} frames. The fuselage axis is always vertical (nose at top, engines at bottom) in every single frame without exception. Only the lighting, glow, or subtle color tint shifts between frames to suggest a gentle banking motion — no rotation, no shape change, no nose deviation.
 The SAME ship in every frame, drawn large and highly detailed, filling its square cell edge-to-edge with only a few pixels of margin — never small or distant.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Clean silhouette, sharp readable details, no background elements, no text, no UI.
