@@ -3,10 +3,31 @@ package generator
 import (
 	"bytes"
 	"fmt"
+	"regexp"
+	"strings"
 	"text/template"
 
 	"tyrian-pipeline/internal/skin"
 )
+
+var hexCodeRe = regexp.MustCompile(`#[0-9A-Fa-f]{6}`)
+
+// stripHexCodes removes CSS hex colour codes from s and cleans up leftover
+// double-commas or extra spaces so Pony's tag parser isn't confused.
+func stripHexCodes(s string) string {
+	s = hexCodeRe.ReplaceAllString(s, "")
+	// collapse multiple spaces
+	for strings.Contains(s, "  ") {
+		s = strings.ReplaceAll(s, "  ", " ")
+	}
+	// collapse ", ," and " ," artifacts
+	for strings.Contains(s, ", ,") {
+		s = strings.ReplaceAll(s, ", ,", ",")
+	}
+	s = strings.ReplaceAll(s, " ,", ",")
+	s = strings.Trim(s, " ,")
+	return s
+}
 
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
@@ -66,47 +87,52 @@ var compiledTemplates = make(map[string]*template.Template)
 // Without a source_ tag Pony falls back to its dominant prior (anime characters),
 // which is why plain descriptive prompts produced character-like junk. We target
 // a stylized anime/cartoon look on purpose, leaning into Pony's strength.
-const ponyQuality = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, source_anime, rating_safe, anime style, cel shaded, vibrant"
+const ponyQuality = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, source_anime, rating_safe, 2d vector art, cartoon style, cel shaded, flat shading, bold clean outlines, stylized 2d asset, vibrant colors"
 
 // ponyPromptTemplates mirrors promptTemplates but is rewritten tag-first for Pony
 // SDXL: full score ladder + source_anime/rating_safe steering, comma-separated
 // tags instead of prose, so Pony actually parses the intent. The per-skin
 // {{.StyleKeywords}}/{{.PaletteDescription}} values are kept as theme/color tags.
 var ponyPromptTemplates = map[string]string{
-	"ship": ponyQuality + `, {{.ArtDirective}}
-overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, player spaceship, vehicle, nose pointing straight up in every frame, fuselage always vertical, sprite sheet, exactly 4 frames in one horizontal row 4:1 aspect ratio, identical silhouette in all frames, only lighting and glow changes between frames,
+	"ship": ponyQuality + `, player spaceship, vehicle,
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, nose pointing straight up in every frame, fuselage always vertical,
+sprite sheet, exactly 4 frames in one horizontal row 4:1 aspect ratio, identical silhouette in all frames, only lighting and glow changes between frames,
 detailed mecha design, sharp clean lineart, large, centered, fills each cell,
 {{.StyleKeywords}}, {{.PaletteDescription}},
-flat solid color background, no text, no UI, no humans, no characters`,
+flat solid color background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
 
 	"explosion": ponyQuality + `, anime style explosion effect, sprite sheet, 8 frames in one horizontal row, flat solid background,
-{{.StyleKeywords}}, {{.ExplosionStyle}},
-bright flash expanding outward to particles and smoke, dynamic energetic, no text, no UI`,
-
-	"bullet": ponyQuality + `, anime style game projectile, glowing energy bolt,
-{{.BulletDirective}},
 {{.StyleKeywords}}, {{.PaletteDescription}},
-single projectile, centered, perfectly vertical, pointing straight up, no diagonal, no rotation, no isometric, flat solid background, no text, no UI`,
+classic 2d anime explosion, smoke puffs, expanding energy shockwave, cel-shaded fire fx,
+bright flash expanding outward to particles and smoke, dynamic energetic, no text, no UI, no voxel, no 3d render`,
 
-	"background": ponyQuality + `, anime style space background, vertical scrolling shooter background, seamless vertical tile,
+	"bullet": ponyQuality + `, anime style game projectile,
+glowing energy beam, flat 2d vector pulse, core glow,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+single projectile, centered, perfectly vertical, pointing straight up, no diagonal, no rotation, no isometric,
+flat solid background, no text, no UI, no voxel, no 3d render`,
+
+	"background": ponyQuality + `, anime style space background, vertical scrolling shooter background, seamless vertical loop,
+tall composition, vertical scrolling background,
 {{.LayerDesc}},
 {{.StyleKeywords}}, {{.BackgroundMood}},
-atmospheric, no ships, no characters, no UI, wide landscape format`,
+atmospheric, no ships, no characters, no UI`,
 
 	"hud_icon": ponyQuality + `, anime style game HUD icon, {{.IconType}}, simple bold readable shape,
+flat icon design, minimalistic vector graphic, game UI asset,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 small icon, centered, flat solid background, no text`,
 
-	"enemy": ponyQuality + `, {{.ArtDirective}}
-overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, enemy spaceship, vehicle, {{.EnemyDirective}}, nose pointing down toward bottom edge, fuselage vertical,
+	"enemy": ponyQuality + `, enemy spaceship, vehicle, {{.EnemyDirective}},
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, nose pointing down toward bottom edge, fuselage vertical,
 menacing mecha design, detailed, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
-flat solid background, no text, no UI, no humans, no characters`,
+flat solid background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
 
 	"structure": ponyQuality + `, anime style top-down space obstacle, {{.StructureDirective}},
 irregular natural shape, no propulsion, no weapons, detailed, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
-flat solid background, no text, no UI`,
+flat solid background, no text, no UI, no 3d render, no voxel`,
 
 	"preview": ponyQuality + `, anime style game skin key visual, splash art,
 {{.StyleKeywords}}, {{.PaletteDescription}},
@@ -144,10 +170,23 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		return "", fmt.Errorf("unknown asset type %q", assetType)
 	}
 
+	styleKeywords := s.StyleKeywords
+	palette := s.PaletteDescription
+	if workflow == "pony" {
+		if s.PonyStyleKeywords != "" {
+			styleKeywords = s.PonyStyleKeywords
+		}
+		if s.PonyPaletteDescription != "" {
+			palette = s.PonyPaletteDescription
+		} else {
+			palette = stripHexCodes(palette)
+		}
+	}
+
 	data := map[string]interface{}{
 		"ArtDirective":       s.ArtDirective,
-		"StyleKeywords":      s.StyleKeywords,
-		"PaletteDescription": s.PaletteDescription,
+		"StyleKeywords":      styleKeywords,
+		"PaletteDescription": palette,
 		"BackgroundMood":     s.BackgroundMood,
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,

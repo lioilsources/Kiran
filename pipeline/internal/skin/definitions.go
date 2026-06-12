@@ -38,6 +38,11 @@ type SkinDef struct {
 	// Audio
 	SfxStyle string // audio style keywords for SFX prompt construction
 
+	// Pony SDXL overrides — empty means derive from base fields above.
+	// Use these when base fields contain 3D/voxel/HEX references that confuse Pony's tag parser.
+	PonyStyleKeywords      string
+	PonyPaletteDescription string
+
 	// Unlock
 	UnlockedByDefault bool
 	UnlockDesc        string
@@ -178,6 +183,8 @@ var Registry = map[string]SkinDef{
 		PostProcess:        EffectBloom,
 		GoogleFont:         "Exo 2",
 		SfxStyle:           "Dense electronic, bass-heavy impacts, neon synth, Housemarque arcade intensity",
+		PonyStyleKeywords:      "vivid saturated neon, HDR bloom glow, intense neon arcade, vibrant cel-shaded",
+		PonyPaletteDescription: "electric blue, hot magenta, neon green, bright orange on deep black",
 		UnlockedByDefault:  false,
 		UnlockDesc:         "Score 500,000 points",
 	},
