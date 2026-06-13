@@ -1,8 +1,6 @@
 package generator
 
 import (
-	"fmt"
-
 	"tyrian-pipeline/internal/skin"
 )
 
@@ -65,13 +63,14 @@ var backgroundLayers = []struct {
 func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 	specs := make([]AssetSpec, 0, 32)
 
-	// Ship frames: N banking poses in a horizontal row. The aspect ratio matches
-	// FrameCount so each cell is square and the ship fills it at full size.
+	// Ship: ONE craft on a square canvas. The N animation frames are synthesized
+	// in postprocess by glow modulation — generating multi-frame strips in one
+	// image is unreliable (models can't count cells or keep silhouettes identical).
 	specs = append(specs, AssetSpec{
 		Name:        "ship_frames",
 		AssetType:   "ship",
 		OutputDir:   "sprites",
-		AspectRatio: fmt.Sprintf("%d:1", s.FrameCount),
+		AspectRatio: "1:1",
 		Resolution:  "1k",
 	})
 

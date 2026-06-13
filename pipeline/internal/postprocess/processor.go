@@ -150,35 +150,35 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	// Use the skin's declared FrameCount; fall back to aspect-ratio detection so
-	// skins that don't set it explicitly still work.
+	// The source is a single square ship image; the animation frames are
+	// synthesized below. Legacy multi-frame strips (wide images from the old
+	// one-shot workflow) are handled by taking their first cell as the source.
 	bounds := img.Bounds()
-	numFrames := frameCount
-	if numFrames < 1 {
-		numFrames = int(math.Round(float64(bounds.Dx()) / float64(bounds.Dy())))
-		if numFrames < 1 {
-			numFrames = 1
-		}
-	}
-	frameW := bounds.Dx() / numFrames
-
-	frames := make([]*image.NRGBA, numFrames)
-	for f := 0; f < numFrames; f++ {
-		x0 := bounds.Min.X + f*frameW
-		cropped := image.NewNRGBA(image.Rect(0, 0, frameW, bounds.Dy()))
+	if bounds.Dx() >= 2*bounds.Dy() {
+		cells := int(math.Round(float64(bounds.Dx()) / float64(bounds.Dy())))
+		cellW := bounds.Dx() / cells
+		cropped := image.NewNRGBA(image.Rect(0, 0, cellW, bounds.Dy()))
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			for x := x0; x < x0+frameW; x++ {
-				cropped.Set(x-x0, y-bounds.Min.Y, img.At(x, y))
+			for x := bounds.Min.X; x < bounds.Min.X+cellW; x++ {
+				cropped.Set(x-bounds.Min.X, y-bounds.Min.Y, img.At(x, y))
 			}
 		}
-		frames[f] = RemoveBackground(cropped, cfg.BgThreshold, cfg.BgMargin)
+		img = cropped
 	}
 
-	// Normalize all frames together so the banking animation keeps a steady size
-	// and footprint, then write each to its own exact reference-sized canvas.
+	numFrames := frameCount
+	if numFrames < 1 {
+		numFrames = 6
+	}
+
+	ship := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
+	frames := SynthesizeGlowFrames(ship, numFrames, shipGlowMinGain, shipGlowMaxGain, shipGlowLumGamma)
+
+	// Normalize all frames together so the animation keeps a steady size and
+	// footprint, then write each to its own exact reference-sized canvas.
 	refW, refH, ok := ReferenceSize("vessel")
 	if !ok {
-		refW, refH = frameW, bounds.Dy()
+		refW, refH = img.Bounds().Dx(), img.Bounds().Dy()
 	}
 	for f, out := range FitFramesToCanvas(frames, refW, refH) {
 		outPath := filepath.Join(outDir, fmt.Sprintf("vessel_%d.png", f))

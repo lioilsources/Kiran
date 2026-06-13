@@ -16,11 +16,14 @@ func TestBuildPromptShip(t *testing.T) {
 	if !strings.Contains(prompt, "top-down") {
 		t.Error("ship prompt should contain 'top-down'")
 	}
-	if !strings.Contains(prompt, "filling its square cell") {
-		t.Error("ship prompt should instruct each frame to fill its cell")
+	if !strings.Contains(prompt, "ONE ship only") {
+		t.Error("ship prompt should ask for a single ship")
 	}
-	if !strings.Contains(prompt, "4 animation frames") {
-		t.Error("ship prompt should contain frame count")
+	if !strings.Contains(prompt, "flat solid color") {
+		t.Error("ship prompt should require a flat solid background")
+	}
+	if strings.Contains(prompt, "Sprite sheet") || strings.Contains(prompt, "frames") {
+		t.Error("ship prompt must not ask for a multi-frame sprite sheet")
 	}
 	if !strings.Contains(prompt, "8-bit pixel art") {
 		t.Error("ship prompt should contain style keywords")
@@ -89,14 +92,14 @@ func TestBuildPromptEnemy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if !strings.Contains(prompt, "enemy spacecraft") {
-		t.Error("enemy prompt should contain 'enemy spacecraft'")
+	if !strings.Contains(prompt, "Enemy spacecraft") {
+		t.Error("enemy prompt should contain 'Enemy spacecraft'")
 	}
 	if !strings.Contains(prompt, "standard fighter") {
 		t.Error("enemy prompt should contain directive from ExtraVars")
 	}
-	if !strings.Contains(prompt, "facing downward") {
-		t.Error("enemy prompt should specify facing downward")
+	if !strings.Contains(prompt, "BOTTOM edge") {
+		t.Error("enemy prompt should specify nose toward the bottom edge")
 	}
 }
 

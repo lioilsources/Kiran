@@ -31,12 +31,10 @@ func stripHexCodes(s string) string {
 
 var promptTemplates = map[string]string{
 	"ship": `{{.ArtDirective}}
-A single player spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points straight to the TOP edge of the image in EVERY frame. No foreshortening, no 3D angle, no diagonal viewpoint.
-Sprite sheet of EXACTLY {{.FrameCount}} frames — no more, no fewer — laid out in one horizontal row of equal square cells. The total canvas is exactly {{.FrameCount}} times as wide as it is tall.
-The ship silhouette and shape are IDENTICAL across all {{.FrameCount}} frames. The fuselage axis is always vertical (nose at top, engines at bottom) in every single frame without exception. Only the lighting, glow, or subtle color tint shifts between frames to suggest a gentle banking motion — no rotation, no shape change, no nose deviation.
-The SAME ship in every frame, drawn large and highly detailed, filling its square cell edge-to-edge with only a few pixels of margin — never small or distant.
+A single player spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down at the hull; the nose points straight to the TOP edge of the image. No foreshortening, no 3D angle, no diagonal viewpoint.
+ONE ship only, drawn large and highly detailed, centered, filling the frame edge-to-edge with only a few pixels of margin — never small or distant. Bright engine/thruster glow visible at the rear (bottom).
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Clean silhouette, sharp readable details, no background elements, no text, no UI.
+Roughly square overall proportions. Clean silhouette, sharp readable details, no background elements, no text, no UI.
 The background must be a single flat solid color, no gradient, no scene, clearly distinct from the sprite.`,
 
 	"explosion": `Explosion animation sprite sheet, 8 frames horizontal row on a flat, uniform solid-color background.
@@ -95,9 +93,8 @@ const ponyQuality = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, so
 // {{.StyleKeywords}}/{{.PaletteDescription}} values are kept as theme/color tags.
 var ponyPromptTemplates = map[string]string{
 	"ship": ponyQuality + `, player spaceship, vehicle,
-overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, nose pointing straight up in every frame, fuselage always vertical,
-sprite sheet, exactly 4 frames in one horizontal row 4:1 aspect ratio, identical silhouette in all frames, only lighting and glow changes between frames,
-detailed mecha design, sharp clean lineart, large, centered, fills each cell,
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, solo, single ship, nose pointing straight up, fuselage vertical, glowing engine thrusters at bottom,
+detailed mecha design, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid color background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
 

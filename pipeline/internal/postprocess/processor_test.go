@@ -66,8 +66,9 @@ func TestRun_SyntheticSkin(t *testing.T) {
 		Version: "1.0.0",
 		Model:   "test",
 		Skin: skin.ManifestSkin{
-			ID:   "test_skin",
-			Name: "Test Skin",
+			ID:         "test_skin",
+			Name:       "Test Skin",
+			FrameCount: 4,
 		},
 		Assets: []skin.ManifestAsset{
 			{Name: "ship_frames", Type: "ship", Dir: "sprites", Variations: 4},

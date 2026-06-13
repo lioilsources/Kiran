@@ -496,26 +496,11 @@ func dimensions(aspectRatio, resolution string) (int, int) {
 			return 2048, 1024
 		}
 		return 1024, 512
-	case "3:1":
-		if resolution == "2k" {
-			return 3072, 1024
-		}
-		return 1536, 512
 	case "4:1":
 		if resolution == "2k" {
 			return 4096, 1024
 		}
 		return 2048, 512
-	case "5:1":
-		if resolution == "2k" {
-			return 5120, 1024
-		}
-		return 2560, 512
-	case "6:1":
-		if resolution == "2k" {
-			return 6144, 1024
-		}
-		return 3072, 512
 	default: // "1:1" or unspecified
 		if resolution == "2k" {
 			return 2048, 2048
