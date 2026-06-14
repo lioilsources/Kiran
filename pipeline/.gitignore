@@ -1,3 +1,5 @@
 /generate
+/tune
 .env
 output/
+tuned_images/

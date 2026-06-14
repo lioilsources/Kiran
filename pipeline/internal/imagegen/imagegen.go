@@ -19,10 +19,13 @@ type ImageGenerator interface {
 type GenerateRequest struct {
 	Model          string `json:"model"`
 	Prompt         string `json:"prompt"`
+	NegativePrompt string `json:"negative_prompt,omitempty"`
 	N              int    `json:"n"`
 	AspectRatio    string `json:"aspect_ratio,omitempty"`
 	Resolution     string `json:"resolution,omitempty"`
 	ResponseFormat string `json:"response_format"`
+	Seed           int64  `json:"seed,omitempty"`
+	FilenamePrefix string `json:"filename_prefix,omitempty"` // injected into SaveImage node
 }
 
 // GenerateResponse holds generated images.

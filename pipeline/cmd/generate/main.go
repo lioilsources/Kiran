@@ -13,8 +13,7 @@ import (
 
 	"tyrian-pipeline/internal/comfyuiimage"
 	"tyrian-pipeline/internal/generator"
-	"tyrian-pipeline/internal/grokimage"
-	"tyrian-pipeline/internal/ol1nimage"
+	"tyrian-pipeline/internal/imagegen"
 	"tyrian-pipeline/internal/pipeline"
 	"tyrian-pipeline/internal/sfxgen"
 	"tyrian-pipeline/internal/skin"
@@ -26,36 +25,23 @@ func main() {
 	skinID := flag.String("skin", "", "Skin ID to generate (empty = all skins)")
 	outDir := flag.String("out", "output/assets/skins", "Output directory")
 	workers := flag.Int("workers", 3, "Number of concurrent workers")
-	backend := flag.String("backend", "grok", "Image backend: grok, ol1n, or comfyui")
-	model := flag.String("model", "", "Image generation model (default: grok-imagine-image for grok, flux-1-dev for ol1n/comfyui)")
+	model := flag.String("model", "flux-1-dev", "ComfyUI checkpoint name")
 	dryRun := flag.Bool("dry-run", false, "Print prompts without calling API")
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
 	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
-	ol1nJobTimeout := flag.Duration("ol1n-job-timeout", 15*time.Minute, "Max time to wait for a single ol1n/AiStack image job")
-	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI image job")
+	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI job")
 	comfyWorkflow := flag.String("comfyui-workflow", "flux", "ComfyUI workflow: flux or pony")
 	comfyCheckpoint := flag.String("comfyui-checkpoint", "", "Override checkpoint name in ComfyUI workflow node 4")
+	tunedDir := flag.String("tuned-dir", "", "Directory of tuned prompt sidecars (e.g. tuned); empty = use templates only")
 	flag.Parse()
 
-	// SFX generation mode
 	if *sfxMode {
 		runSfxGeneration(*skinID, *outDir, *dryRun)
 		return
 	}
 
-	// Resolve model label default per backend
-	modelName := *model
-	if modelName == "" {
-		if *backend == "ol1n" || *backend == "comfyui" {
-			modelName = "flux-1-dev"
-		} else {
-			modelName = "grok-imagine-image"
-		}
-	}
-
-	// Resolve skins to process
 	var skins []skin.SkinDef
 	if *skinID != "" {
 		s, ok := skin.GetSkin(*skinID)
@@ -68,71 +54,45 @@ func main() {
 		skins = skin.AllSkins()
 	}
 
-	// Create client for the selected backend
-	var client grokimage.ImageGenerator
+	var client imagegen.ImageGenerator
 	if !*dryRun {
-		switch *backend {
-		case "grok":
-			apiKey := os.Getenv("XAI_API_KEY")
-			if apiKey == "" {
-				fmt.Fprintln(os.Stderr, "Error: XAI_API_KEY environment variable is required for -backend=grok (or use -dry-run)")
-				os.Exit(1)
-			}
-			client = grokimage.NewClient(apiKey)
-		case "ol1n":
-			cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
-			cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
-			if cfID == "" || cfSecret == "" {
-				fmt.Fprintln(os.Stderr, "Error: CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET are required for -backend=ol1n (or use -dry-run)")
-				os.Exit(1)
-			}
-			client = ol1nimage.NewClient(cfID, cfSecret, ol1nimage.WithJobTimeout(*ol1nJobTimeout))
-		case "comfyui":
-			comfyURL := os.Getenv("COMFYUI_API_URL")
-			if comfyURL == "" {
-				fmt.Fprintln(os.Stderr, "Error: COMFYUI_API_URL is required for -backend=comfyui (or use -dry-run)")
-				os.Exit(1)
-			}
-			// CF Access credentials are optional — only sent if both are set.
-			cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
-			cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
-			comfyOpts := []comfyuiimage.ClientOption{comfyuiimage.WithJobTimeout(*comfyJobTimeout)}
-			switch *comfyWorkflow {
-			case "pony":
-				comfyOpts = append(comfyOpts,
-					comfyuiimage.WithWorkflow(comfyuiimage.PonyWorkflow()),
-					comfyuiimage.WithNodeRoles(comfyuiimage.PonyNodeRoles()),
-				)
-			}
-			if *comfyCheckpoint != "" {
-				comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(*comfyCheckpoint))
-			}
-			client = comfyuiimage.NewClient(comfyURL, cfID, cfSecret, comfyOpts...)
-		default:
-			fmt.Fprintf(os.Stderr, "Error: unknown backend %q (valid: grok, ol1n, comfyui)\n", *backend)
+		comfyURL := os.Getenv("COMFYUI_API_URL")
+		if comfyURL == "" {
+			fmt.Fprintln(os.Stderr, "Error: COMFYUI_API_URL is required (or use -dry-run)")
 			os.Exit(1)
 		}
+		cfID := os.Getenv("CF_ACCESS_CLIENT_ID")
+		cfSecret := os.Getenv("CF_ACCESS_CLIENT_SECRET")
+		comfyOpts := []comfyuiimage.ClientOption{comfyuiimage.WithJobTimeout(*comfyJobTimeout)}
+		if *comfyWorkflow == "pony" {
+			comfyOpts = append(comfyOpts,
+				comfyuiimage.WithWorkflow(comfyuiimage.PonyWorkflow()),
+				comfyuiimage.WithNodeRoles(comfyuiimage.PonyNodeRoles()),
+			)
+		}
+		if *comfyCheckpoint != "" {
+			comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(*comfyCheckpoint))
+		}
+		client = comfyuiimage.NewClient(comfyURL, cfID, cfSecret, comfyOpts...)
 	}
 
-	// Setup context with interrupt handling
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
-
-	// Resolve prompt style from comfyui workflow flag
 	promptStyle := ""
-	if *backend == "comfyui" && *comfyWorkflow == "pony" {
+	if *comfyWorkflow == "pony" {
 		promptStyle = "pony"
 	}
 
-	// Create orchestrator
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
 	orch := pipeline.NewOrchestrator(client, *outDir,
 		pipeline.WithWorkers(*workers),
 		pipeline.WithN(*n),
-		pipeline.WithModel(modelName),
+		pipeline.WithModel(*model),
 		pipeline.WithResolution(*resolution),
 		pipeline.WithDryRun(*dryRun),
 		pipeline.WithAssetType(*assetType),
 		pipeline.WithPromptStyle(promptStyle),
+		pipeline.WithTunedDir(*tunedDir),
 	)
 
 	start := time.Now()
@@ -146,7 +106,6 @@ func main() {
 		totalSkipped += stats.Skipped
 		totalFailed += stats.Failed
 
-		// Generate manifest (skip in dry-run)
 		if !*dryRun {
 			skinDir := filepath.Join(*outDir, s.ID)
 			specs := generator.AssetsForSkin(s)
@@ -157,7 +116,6 @@ func main() {
 					AspectRatio: sp.AspectRatio, Resolution: sp.Resolution,
 				}
 			}
-			// Add SFX entries if sfx/ dir has files
 			sfxDir := filepath.Join(skinDir, "sfx")
 			if entries, err := os.ReadDir(sfxDir); err == nil {
 				for _, e := range entries {
@@ -169,7 +127,7 @@ func main() {
 					}
 				}
 			}
-			if err := skin.GenerateManifest(skinDir, s, modelName, *n, inputs); err != nil {
+			if err := skin.GenerateManifest(skinDir, s, *model, *n, inputs); err != nil {
 				fmt.Fprintf(os.Stderr, "Warning: manifest generation failed for %s: %v\n", s.ID, err)
 			}
 		}
@@ -181,8 +139,6 @@ func main() {
 	fmt.Printf("Elapsed: %s\n", elapsed.Round(time.Millisecond))
 }
 
-// loadEnvFile reads KEY=VALUE pairs from a file into os env.
-// Skips missing file, comments, and empty lines. Does not override existing env vars.
 func loadEnvFile(path string) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -211,7 +167,7 @@ func loadEnvFile(path string) {
 func runSfxGeneration(skinID, outDir string, dryRun bool) {
 	apiKey := os.Getenv("ELEVENLABS_API_KEY")
 	if apiKey == "" && !dryRun {
-		fmt.Fprintln(os.Stderr, "Error: ELEVENLABS_API_KEY environment variable is required for SFX generation (or use -dry-run)")
+		fmt.Fprintln(os.Stderr, "Error: ELEVENLABS_API_KEY is required for SFX generation (or use -dry-run)")
 		os.Exit(1)
 	}
 
@@ -254,8 +210,6 @@ func runSfxGeneration(skinID, outDir string, dryRun bool) {
 
 		for _, spec := range sfxgen.SfxSpecs {
 			outPath := filepath.Join(sfxDir, spec.Name+".mp3")
-
-			// Resume: skip if exists
 			if _, err := os.Stat(outPath); err == nil {
 				fmt.Printf("  [skip] %s (exists)\n", spec.Name)
 				skipped++
@@ -263,14 +217,12 @@ func runSfxGeneration(skinID, outDir string, dryRun bool) {
 			}
 
 			prompt := sfxgen.BuildSfxPrompt(s.SfxStyle, spec)
-
 			if dryRun {
 				fmt.Printf("  [dry] %s: %s\n", spec.Name, prompt)
 				continue
 			}
 
 			fmt.Printf("  [gen] %s ...", spec.Name)
-
 			data, err := client.Generate(ctx, sfxgen.GenerateRequest{
 				Text:            prompt,
 				DurationSeconds: spec.Duration,
@@ -280,16 +232,13 @@ func runSfxGeneration(skinID, outDir string, dryRun bool) {
 				fmt.Printf(" FAILED: %v\n", err)
 				continue
 			}
-
 			if err := os.WriteFile(outPath, data, 0644); err != nil {
 				fmt.Printf(" WRITE ERROR: %v\n", err)
 				continue
 			}
-
 			fmt.Printf(" OK (%d bytes)\n", len(data))
 			generated++
 
-			// Rate limit: 1 request per 2 seconds
 			select {
 			case <-ctx.Done():
 				fmt.Println("\nInterrupted")

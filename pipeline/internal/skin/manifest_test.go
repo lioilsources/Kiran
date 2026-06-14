@@ -53,7 +53,7 @@ func TestGenerateManifest(t *testing.T) {
 		// Preview
 		{Name: "preview", AssetType: "preview", OutputDir: "ui", AspectRatio: "1:1", Resolution: "1k"},
 	}
-	err := GenerateManifest(skinDir, s, "grok-imagine-image", 4, inputs)
+	err := GenerateManifest(skinDir, s, "flux-1-dev", 4, inputs)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -72,8 +72,8 @@ func TestGenerateManifest(t *testing.T) {
 	if m.Version != "1.0.0" {
 		t.Errorf("expected version 1.0.0, got %s", m.Version)
 	}
-	if m.Model != "grok-imagine-image" {
-		t.Errorf("expected model grok-imagine-image, got %s", m.Model)
+	if m.Model != "flux-1-dev" {
+		t.Errorf("expected model flux-1-dev, got %s", m.Model)
 	}
 	if m.Skin.ID != "space_invaders" {
 		t.Errorf("expected skin ID space_invaders, got %s", m.Skin.ID)

@@ -10,6 +10,7 @@ import (
 
 	"tyrian-pipeline/internal/generator"
 	"tyrian-pipeline/internal/imagegen"
+	"tyrian-pipeline/internal/prompttune"
 	"tyrian-pipeline/internal/skin"
 )
 
@@ -32,18 +33,20 @@ type Orchestrator struct {
 	dryRun      bool
 	assetType   string // filter: empty = all
 	promptStyle string // "pony" selects Pony SDXL templates; "" uses Flux default
+	tunedDir    string // if set, load tuned prompts from pipeline/tuned/<skin>/<workflow>/
 }
 
 // OrchestratorOption configures the Orchestrator.
 type OrchestratorOption func(*Orchestrator)
 
-func WithWorkers(n int) OrchestratorOption       { return func(o *Orchestrator) { o.workers = n } }
-func WithN(n int) OrchestratorOption             { return func(o *Orchestrator) { o.n = n } }
-func WithModel(m string) OrchestratorOption      { return func(o *Orchestrator) { o.model = m } }
-func WithResolution(r string) OrchestratorOption { return func(o *Orchestrator) { o.resolution = r } }
-func WithDryRun(d bool) OrchestratorOption       { return func(o *Orchestrator) { o.dryRun = d } }
-func WithAssetType(t string) OrchestratorOption  { return func(o *Orchestrator) { o.assetType = t } }
+func WithWorkers(n int) OrchestratorOption        { return func(o *Orchestrator) { o.workers = n } }
+func WithN(n int) OrchestratorOption              { return func(o *Orchestrator) { o.n = n } }
+func WithModel(m string) OrchestratorOption       { return func(o *Orchestrator) { o.model = m } }
+func WithResolution(r string) OrchestratorOption  { return func(o *Orchestrator) { o.resolution = r } }
+func WithDryRun(d bool) OrchestratorOption        { return func(o *Orchestrator) { o.dryRun = d } }
+func WithAssetType(t string) OrchestratorOption   { return func(o *Orchestrator) { o.assetType = t } }
 func WithPromptStyle(s string) OrchestratorOption { return func(o *Orchestrator) { o.promptStyle = s } }
+func WithTunedDir(d string) OrchestratorOption    { return func(o *Orchestrator) { o.tunedDir = d } }
 
 // NewOrchestrator creates a configured Orchestrator.
 func NewOrchestrator(client imagegen.ImageGenerator, outDir string, opts ...OrchestratorOption) *Orchestrator {
@@ -52,7 +55,7 @@ func NewOrchestrator(client imagegen.ImageGenerator, outDir string, opts ...Orch
 		outDir:     outDir,
 		workers:    3,
 		n:          4,
-		model:      "grok-imagine-image",
+		model:      "flux-1-dev",
 		resolution: "1k",
 	}
 	for _, opt := range opts {
@@ -166,26 +169,41 @@ func (o *Orchestrator) dryRunSpecs(s skin.SkinDef, specs []generator.AssetSpec, 
 }
 
 func (o *Orchestrator) generateAsset(ctx context.Context, s skin.SkinDef, spec generator.AssetSpec, skinDir string) error {
-	prompt, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, o.promptStyle)
-	if err != nil {
-		return fmt.Errorf("build prompt: %w", err)
-	}
-
-	// Use spec-specific resolution/ratio, falling back to orchestrator defaults
 	resolution := spec.Resolution
 	if resolution == "" {
 		resolution = o.resolution
 	}
 	aspectRatio := spec.AspectRatio
 
-	resp, err := o.client.Generate(ctx, imagegen.GenerateRequest{
+	req := imagegen.GenerateRequest{
 		Model:          o.model,
-		Prompt:         prompt,
 		N:              o.n,
 		AspectRatio:    aspectRatio,
 		Resolution:     resolution,
 		ResponseFormat: "b64_json",
-	})
+		FilenamePrefix: s.ID + "_" + spec.Name,
+	}
+
+	// Use tuned prompt if available for this (skin, workflow, asset).
+	if o.tunedDir != "" {
+		if entry, ok := prompttune.LoadEntry(o.tunedDir, s.ID, o.promptStyle, spec.Name); ok {
+			req.Prompt = entry.Positive
+			req.NegativePrompt = entry.Negative
+			req.Seed = entry.Seed
+			fmt.Printf("  [tuned] %s (score=%.1f, iter=%d)\n", spec.Name, entry.Score, entry.Iters)
+		}
+	}
+
+	// Fall back to template-rendered prompt.
+	if req.Prompt == "" {
+		prompt, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, o.promptStyle)
+		if err != nil {
+			return fmt.Errorf("build prompt: %w", err)
+		}
+		req.Prompt = prompt
+	}
+
+	resp, err := o.client.Generate(ctx, req)
 	if err != nil {
 		return err
 	}

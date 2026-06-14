@@ -289,7 +289,7 @@ func TestDimensions(t *testing.T) {
 
 func TestDefaultWorkflowParsesAndHasRoleNodes(t *testing.T) {
 	c := NewClient("http://x", "", "")
-	graph, err := c.buildWorkflow("hello", 1024, 1024, 2)
+	graph, err := c.buildWorkflow("hello", "", "", 1024, 1024, 2, 0)
 	if err != nil {
 		t.Fatalf("buildWorkflow failed: %v", err)
 	}

@@ -1,0 +1,8 @@
+skin_id: luftrausers
+workflow: flux
+asset_name: ship_frames
+positive: A sepia monochrome WWII propaganda-style warship rendered as a bold, high-contrast silhouette with thick ink outlines, fully occupying every pixel of the frame on a perfectly flat, solid cream-colored background resembling aged parchment (#F5E6C8), strictly adhering to a 90-degree orthographic top-down viewpoint with zero tilt or perspective distortion, nose aligned exactly with the top edge of the image, centrally positioned and flush against all four borders, containing absolutely no additional elements such as text, UI components, watermarks, or decorative flourishes
+seed: 2433120589334059897
+score: 8
+iters: 4
+updated_at: "2026-06-14T07:29:49Z"

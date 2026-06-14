@@ -7,29 +7,29 @@ import (
 	"path/filepath"
 	"testing"
 
-	"tyrian-pipeline/internal/grokimage"
+	"tyrian-pipeline/internal/imagegen"
 	"tyrian-pipeline/internal/skin"
 )
 
-// mockGenerator implements grokimage.ImageGenerator for testing.
+// mockGenerator implements imagegen.ImageGenerator for testing.
 type mockGenerator struct {
 	calls    int
 	failNext bool
 }
 
-func (m *mockGenerator) Generate(ctx context.Context, req grokimage.GenerateRequest) (*grokimage.GenerateResponse, error) {
+func (m *mockGenerator) Generate(ctx context.Context, req imagegen.GenerateRequest) (*imagegen.GenerateResponse, error) {
 	m.calls++
 	if m.failNext {
 		m.failNext = false
-		return nil, &grokimage.APIError{StatusCode: 500, Message: "mock error", Retryable: false}
+		return nil, &imagegen.APIError{StatusCode: 500, Message: "mock error", Retryable: false}
 	}
 
 	fakeJPG := base64.StdEncoding.EncodeToString([]byte("fake-jpg-content"))
-	data := make([]grokimage.ImageData, req.N)
+	data := make([]imagegen.ImageData, req.N)
 	for i := range data {
-		data[i] = grokimage.ImageData{B64JSON: fakeJPG, RevisedPrompt: "revised"}
+		data[i] = imagegen.ImageData{B64JSON: fakeJPG, RevisedPrompt: "revised"}
 	}
-	return &grokimage.GenerateResponse{Data: data}, nil
+	return &imagegen.GenerateResponse{Data: data}, nil
 }
 
 func TestOrchestratorDryRun(t *testing.T) {

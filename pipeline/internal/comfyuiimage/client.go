@@ -62,8 +62,10 @@ func PonyWorkflow() []byte { return ponyWorkflow }
 // workflow whose node IDs differ.
 type NodeRoles struct {
 	PositivePrompt string // CLIPTextEncode node whose inputs.text is the prompt
+	NegativePrompt string // CLIPTextEncode node for the negative prompt (empty = not injected)
 	Latent         string // Empty*LatentImage node carrying width/height/batch_size
 	Sampler        string // KSampler node carrying the seed
+	SaveImage      string // SaveImage node whose inputs.filename_prefix is set
 	CheckpointNode string // loader node to override when WithCheckpoint is used
 	CheckpointKey  string // input key on that node (e.g. "unet_name" or "ckpt_name")
 }
@@ -73,6 +75,7 @@ var defaultNodeRoles = NodeRoles{
 	PositivePrompt: "4",
 	Latent:         "6",
 	Sampler:        "8",
+	SaveImage:      "10",
 	CheckpointNode: "1",
 	CheckpointKey:  "unet_name",
 }
@@ -80,8 +83,10 @@ var defaultNodeRoles = NodeRoles{
 // ponyNodeRoles matches pony_sprite.json (CheckpointLoaderSimple architecture).
 var ponyNodeRoles = NodeRoles{
 	PositivePrompt: "6",
+	NegativePrompt: "7",
 	Latent:         "5",
 	Sampler:        "3",
+	SaveImage:      "9",
 	CheckpointNode: "4",
 	CheckpointKey:  "ckpt_name",
 }
@@ -193,7 +198,7 @@ func (c *Client) Generate(ctx context.Context, req imagegen.GenerateRequest) (*i
 	}
 
 	w, h := dimensions(req.AspectRatio, req.Resolution)
-	graph, err := c.buildWorkflow(req.Prompt, w, h, n)
+	graph, err := c.buildWorkflow(req.Prompt, req.NegativePrompt, req.FilenamePrefix, w, h, n, req.Seed)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +227,8 @@ func (c *Client) Generate(ctx context.Context, req imagegen.GenerateRequest) (*i
 // buildWorkflow parses a fresh copy of the workflow graph (so concurrent workers
 // never share mutable state) and injects the prompt, dimensions, batch size and a
 // random seed into the role-mapped nodes.
-func (c *Client) buildWorkflow(prompt string, w, h, batch int) (map[string]any, error) {
+// seed=0 generates a fresh random seed.
+func (c *Client) buildWorkflow(prompt, negativePrompt, filenamePrefix string, w, h, batch int, seed int64) (map[string]any, error) {
 	var graph map[string]any
 	if err := json.Unmarshal(c.workflowJSON, &graph); err != nil {
 		return nil, fmt.Errorf("parse workflow: %w", err)
@@ -230,6 +236,16 @@ func (c *Client) buildWorkflow(prompt string, w, h, batch int) (map[string]any, 
 
 	if err := setNodeInput(graph, c.roles.PositivePrompt, "text", prompt); err != nil {
 		return nil, err
+	}
+	if negativePrompt != "" && c.roles.NegativePrompt != "" {
+		if err := setNodeInput(graph, c.roles.NegativePrompt, "text", negativePrompt); err != nil {
+			return nil, err
+		}
+	}
+	if filenamePrefix != "" && c.roles.SaveImage != "" {
+		if err := setNodeInput(graph, c.roles.SaveImage, "filename_prefix", filenamePrefix); err != nil {
+			return nil, err
+		}
 	}
 	if err := setNodeInput(graph, c.roles.Latent, "width", w); err != nil {
 		return nil, err
@@ -240,7 +256,10 @@ func (c *Client) buildWorkflow(prompt string, w, h, batch int) (map[string]any, 
 	if err := setNodeInput(graph, c.roles.Latent, "batch_size", batch); err != nil {
 		return nil, err
 	}
-	if err := setNodeInput(graph, c.roles.Sampler, "seed", randSeed()); err != nil {
+	if seed == 0 {
+		seed = randSeed()
+	}
+	if err := setNodeInput(graph, c.roles.Sampler, "seed", seed); err != nil {
 		return nil, err
 	}
 	if c.checkpoint != "" {
