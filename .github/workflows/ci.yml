@@ -92,13 +92,13 @@ jobs:
         working-directory: tyrian_mobile
         run: flutter pub get
 
-      - name: Build iOS (simulator, no signing)
+      - name: Build iOS (no signing)
         working-directory: tyrian_mobile
-        run: flutter build ios --debug --simulator --no-codesign
+        run: flutter build ios --debug --no-codesign
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-debug-simulator-${{ github.sha }}
-          path: tyrian_mobile/build/ios/iphonesimulator/Runner.app
+          name: ios-debug-${{ github.sha }}
+          path: tyrian_mobile/build/ios/iphoneos/Runner.app
           retention-days: 7
