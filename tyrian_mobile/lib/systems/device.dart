@@ -257,6 +257,11 @@ class Device {
 
     if (pwrGen > 0 && parentVessel != null) {
       pwrGen *= config.upgPwrGenMultiplier;
+      // VB6 Device.Upgrade: vessel.genPower tracks the generator's new pwrGen so
+      // both recharge rate (RechargeGenerator) and GeneratorLoad reflect the
+      // upgrade. Without this, the shop upgrade only raised genMax and the load
+      // of currently-assigned weapons never dropped.
+      parentVessel!.genPower = pwrGen;
       parentVessel!.genMax *= config.upgGenMaxMultiplier;
     }
   }
