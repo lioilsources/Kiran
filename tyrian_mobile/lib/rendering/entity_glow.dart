@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/painting.dart';
 
 // Draws a radial glow ring around a sprite: transparent inside, peak glow at
@@ -10,9 +9,9 @@ import 'package:flutter/painting.dart';
 void drawEntityGlow(Canvas canvas, Offset center, double radius, Color color) {
   final outerR = radius * 1.8;
   final rect = Rect.fromCircle(center: center, radius: outerR);
-  final r = color.red;
-  final g = color.green;
-  final b = color.blue;
+  final r = (color.r * 255.0).round().clamp(0, 255);
+  final g = (color.g * 255.0).round().clamp(0, 255);
+  final b = (color.b * 255.0).round().clamp(0, 255);
   final shader = RadialGradient(
     colors: [
       Color.fromARGB(0,   r, g, b),  // transparent at center

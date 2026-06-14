@@ -8,7 +8,6 @@ import '../services/pilot_name_generator.dart';
 import '../systems/device.dart';
 import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
-import '../game/platform_config.dart' as platform;
 import '../rendering/dissolve_effect.dart';
 import '../rendering/entity_glow.dart';
 import 'hostile.dart';

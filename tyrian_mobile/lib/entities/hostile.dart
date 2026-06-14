@@ -7,7 +7,6 @@ import '../systems/path_system.dart';
 import '../systems/fleet.dart';
 import '../systems/device.dart';
 import '../services/asset_library.dart';
-import '../game/platform_config.dart' as platform;
 import 'vessel.dart';
 
 /// Host types from VBA Objects.cls HostType enum

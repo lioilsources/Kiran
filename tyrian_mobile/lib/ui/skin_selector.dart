@@ -22,7 +22,6 @@ class SkinSelector extends StatefulWidget {
 }
 
 class _SkinSelectorState extends State<SkinSelector> {
-  String _selectedId = 'default';
   int _focusIndex = 0;
   Map<String, ui.Image> _previews = {};
   bool _loading = true;
@@ -65,7 +64,6 @@ class _SkinSelectorState extends State<SkinSelector> {
     if (mounted) {
       final idx = kSkins.indexWhere((s) => s.id == saved);
       setState(() {
-        _selectedId = saved;
         _focusIndex = idx >= 0 ? idx : 0;
         _previews = previews;
         _loading = false;
@@ -78,7 +76,6 @@ class _SkinSelectorState extends State<SkinSelector> {
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
-    _selectedId = id;
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     widget.onPlay();
@@ -99,7 +96,6 @@ class _SkinSelectorState extends State<SkinSelector> {
     if (newIndex != _focusIndex) {
       setState(() {
         _focusIndex = newIndex;
-        _selectedId = kSkins[_focusIndex].id;
       });
       _scrollToFocus();
     }
@@ -234,7 +230,6 @@ class _SkinSelectorState extends State<SkinSelector> {
       onTap: () {
         setState(() {
           _focusIndex = index;
-          _selectedId = skin.id;
         });
         _selectAndPlay(skin.id);
       },

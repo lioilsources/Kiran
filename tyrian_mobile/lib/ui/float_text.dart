@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
-import '../game/platform_config.dart' as platform;
 
 /// Ported from FloatText.cls — floating text that drifts upward and fades.
 /// Used for "Complete", "Game Over", weapon unlock messages, etc.

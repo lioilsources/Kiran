@@ -2,7 +2,6 @@ import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../systems/device.dart';
 import '../services/asset_library.dart';
-import '../game/platform_config.dart' as platform;
 
 /// Ported from Projectile.cls — a bullet/missile in flight.
 /// Uses object pooling: deactivated projectiles are returned to Device._pool.

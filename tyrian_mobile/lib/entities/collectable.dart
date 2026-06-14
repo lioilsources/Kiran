@@ -6,7 +6,6 @@ import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../systems/path_system.dart';
 import '../systems/dev_type.dart';
-import '../game/platform_config.dart' as platform;
 import 'vessel.dart';
 
 /// Collectable types from VBA CollType enum
