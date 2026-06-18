@@ -1,4 +1,4 @@
-import 'dart:math' show pi;
+import 'dart:math' show pi, max;
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -42,17 +42,16 @@ class _AtlasBatch {
 
   void add(ui.Rect src, double x, double y, double scaleX, double scaleY,
       [ui.Color? color]) {
-    // RSTransform: scos, ssin, tx, ty
-    // No rotation, scale only:  scos = scaleX, ssin = 0
-    // tx/ty offset the *anchor* — we want top-left placement, so tx = x, ty = y
-    // drawAtlas anchors around the center of the source rect, so we compensate:
-    //   tx = x + anchorX * scaleX,  ty = y + anchorY * scaleY
-    // with anchorX = src.width/2, anchorY = src.height/2
+    // RSTransform: scos, ssin, tx, ty. No rotation, uniform scale (scos = scaleX,
+    // ssin = 0). drawAtlas maps the source rect's *top-left* to (tx, ty) — it does
+    // NOT anchor at the center — so for top-left placement tx = x, ty = y with no
+    // half-size compensation. (The previous +src.width/2 shift pushed every sprite
+    // down-right by half its size, off its hitbox; the glow then looked off-center.)
     transforms.add(ui.RSTransform(
       scaleX,
       0,
-      x + src.width / 2 * scaleX,
-      y + src.height / 2 * scaleY,
+      x,
+      y,
     ));
     sources.add(src);
     colors.add(color ?? _white);
@@ -311,10 +310,13 @@ class StructureBatchRenderer extends Component
   }
 
   void _drawStructureGlow(Canvas canvas, Structure s) {
+    // Radius from the larger half-extent so the glow ring envelops tall/wide
+    // asteroids too. Using width only left tall sprites (e.g. 352x664) with a
+    // small glow stuck in the middle while the shape poked out top and bottom.
     drawEntityGlow(
       canvas,
       Offset(s.position.x + s.size.x / 2, s.position.y + s.size.y / 2),
-      s.size.x * 0.55,
+      max(s.size.x, s.size.y) * 0.55,
       config.structureGlowColor,
     );
   }
