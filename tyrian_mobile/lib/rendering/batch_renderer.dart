@@ -1,4 +1,4 @@
-import 'dart:math' show pi, max;
+import 'dart:math' show pi;
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -9,8 +9,6 @@ import '../entities/hostile.dart';
 import '../entities/projectile.dart';
 import '../entities/structure.dart';
 import '../systems/fleet.dart';
-import 'entity_glow.dart';
-
 /// Renders all entities of a given type in batched draw calls using
 /// [Canvas.drawAtlas]. Each unique source [ui.Image] becomes one draw call.
 ///
@@ -120,17 +118,6 @@ class HostileBatchRenderer extends Component
       _addHostile(h);
     }
 
-    // Glow pass (under sprites). Guard size > 0: hostile may be in fleet.hostiles
-    // before onLoad() sets the sprite+size, which would draw glow at (0,0).
-    for (final fleet in game.activeFleets) {
-      for (final h in fleet.hostiles) {
-        if (!h.isDead && h.size.x > 0) _drawHostileGlow(canvas, h);
-      }
-    }
-    for (final h in game.clientHostiles.values) {
-      if (!h.isDead && h.size.x > 0) _drawHostileGlow(canvas, h);
-    }
-
     // Draw all batches
     for (final b in _batches.values) {
       b.render(canvas, _paint);
@@ -170,24 +157,6 @@ class HostileBatchRenderer extends Component
         _drawHpBar(canvas, h);
       }
     }
-  }
-
-  void _drawHostileGlow(Canvas canvas, Hostile h) {
-    drawEntityGlow(
-      canvas,
-      Offset(h.position.x + h.size.x / 2, h.position.y + h.size.y / 2),
-      h.size.x * 0.55,
-      _hostileGlowColor(h),
-    );
-  }
-
-  static ui.Color _hostileGlowColor(Hostile h) {
-    final dmg = Hostile.getCollisionDmg(h.hostType);
-    if (dmg >= 19) return config.hostileGlowBoss;
-    if (dmg >= 13) return config.hostileGlowL4;
-    if (dmg >= 7)  return config.hostileGlowL3;
-    if (dmg >= 3)  return config.hostileGlowL2;
-    return config.hostileGlowL1;
   }
 
   void _drawHpBar(Canvas canvas, Hostile h) {
@@ -295,30 +264,9 @@ class StructureBatchRenderer extends Component
       _addStructure(s);
     }
 
-    // Glow pass (under sprites). Guard size > 0: structure may be in activeStructures
-    // before onLoad() sets the sprite+size.
-    for (final s in game.activeStructures) {
-      if (!s.isDead && s.size.x > 0) _drawStructureGlow(canvas, s);
-    }
-    for (final s in game.clientStructures.values) {
-      if (!s.isDead && s.size.x > 0) _drawStructureGlow(canvas, s);
-    }
-
     for (final b in _batches.values) {
       b.render(canvas, _paint);
     }
-  }
-
-  void _drawStructureGlow(Canvas canvas, Structure s) {
-    // Radius from the larger half-extent so the glow ring envelops tall/wide
-    // asteroids too. Using width only left tall sprites (e.g. 352x664) with a
-    // small glow stuck in the middle while the shape poked out top and bottom.
-    drawEntityGlow(
-      canvas,
-      Offset(s.position.x + s.size.x / 2, s.position.y + s.size.y / 2),
-      max(s.size.x, s.size.y) * 0.55,
-      config.structureGlowColor,
-    );
   }
 
   void _addStructure(Structure s) {
