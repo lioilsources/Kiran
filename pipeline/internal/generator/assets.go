@@ -158,5 +158,27 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		Resolution:  "1k",
 	})
 
+	// ComCenter UI assets — skin-themed background and interactive panel sprites
+	specs = append(specs, AssetSpec{
+		Name:        "comcenter_bg",
+		AssetType:   "comcenter_bg",
+		OutputDir:   "ui",
+		AspectRatio: "1:2",
+		Resolution:  "2k",
+	})
+	for _, uiSpec := range []struct{ name, assetType, aspect string }{
+		{"ui_card_bg",    "ui_opaque", "1:1"},
+		{"ui_button",     "ui_opaque", "4:1"},
+		{"ui_tab_active", "ui_opaque", "4:1"},
+	} {
+		specs = append(specs, AssetSpec{
+			Name:        uiSpec.name,
+			AssetType:   uiSpec.assetType,
+			OutputDir:   "ui",
+			AspectRatio: uiSpec.aspect,
+			Resolution:  "1k",
+		})
+	}
+
 	return specs
 }

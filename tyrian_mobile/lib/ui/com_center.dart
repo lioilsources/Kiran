@@ -11,6 +11,8 @@ import '../input/gamepad_input.dart';
 import '../services/save_service.dart';
 import '../services/asset_library.dart';
 import 'high_scores.dart';
+import 'ui_theme.dart';
+import 'skin_painter.dart';
 
 /// Ported from ComCenter.cls — the shop/equipment screen.
 /// Aligned with original VBA layout: ship stats + scores left, weapon cards right.
@@ -56,6 +58,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   late AnimationController _bgAnim;
   int _bgPhase = 0;
 
+  // Per-skin visual theme
+  late UiTheme _theme;
+
   // Gamepad polling
   final GamepadInput _gamepad = GamepadInput();
   Timer? _pollTimer;
@@ -90,6 +95,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   void initState() {
     super.initState();
     _pilotController = TextEditingController(text: vessel.pilotName);
+    _theme = UiTheme.forSkin(AssetLibrary.instance.skinId);
     _loadScores();
     _bgAnim = AnimationController(
       vsync: this,
@@ -342,7 +348,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       onKeyEvent: _handleKeyEvent,
       child: Stack(
         children: [
-          _AnimatedBackground(phase: _bgPhase),
+          _SkinBackground(phase: _bgPhase, theme: _theme),
           SafeArea(
             child: Column(
               children: [
@@ -376,10 +382,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     ],
                   ),
                 ),
-                Container(height: 1, color: Colors.white12),
+                Container(height: 1, color: _theme.accent.withAlpha(30)),
                 // Section tabs
                 _buildSectionTabs(),
-                Container(height: 1, color: Colors.white12),
+                Container(height: 1, color: _theme.accent.withAlpha(30)),
                 // Weapon cards — selected section only, full width
                 Expanded(
                   child: SingleChildScrollView(
@@ -407,9 +413,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Row(
       children: [
         _buildTab('FRONT', 0),
-        Container(width: 1, color: Colors.white12),
+        Container(width: 1, color: _theme.accentDim),
         _buildTab('SIDE', 1),
-        Container(width: 1, color: Colors.white12),
+        Container(width: 1, color: _theme.accentDim),
         _buildTab('GENERATOR', 2),
       ],
     );
@@ -417,23 +423,29 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   Widget _buildTab(String label, int index) {
     final isActive = _sectionIndex == index;
+    final tabSprite = isActive ? AssetLibrary.instance.getIcon('ui_tab_active') : null;
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() {
           _sectionIndex = index;
           _selectedWeaponIndex = 0;
         }),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          color: isActive ? const Color(0xFF1a1a4e) : Colors.transparent,
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isActive ? Colors.cyanAccent : Colors.white38,
-              fontSize: 11,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              letterSpacing: 1,
+        child: spriteBox(
+          sprite: tabSprite,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            color: tabSprite != null
+                ? Colors.transparent
+                : (isActive ? _theme.surfaceLight : Colors.transparent),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: _theme.styled(TextStyle(
+                color: isActive ? _theme.accent : _theme.accentDim,
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                letterSpacing: 1,
+              )),
             ),
           ),
         ),
@@ -442,9 +454,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   Widget _buildActiveSection() {
-    if (_sectionIndex == 2) return _buildGeneratorSection();
-    if (_sectionIndex == 1) return _buildSideSection();
-    return _buildWeaponGrid(_frontWeapons);
+    Widget section;
+    if (_sectionIndex == 2) {
+      section = _buildGeneratorSection();
+    } else if (_sectionIndex == 1) {
+      section = _buildSideSection();
+    } else {
+      section = _buildWeaponGrid(_frontWeapons);
+    }
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 180),
+      child: KeyedSubtree(key: ValueKey(_sectionIndex), child: section),
+    );
   }
 
   Widget _buildWeaponGrid(List<DevType> weapons) {
@@ -549,11 +570,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
     Color borderColor;
     if (isSelected) {
-      borderColor = Colors.cyanAccent;
+      borderColor = _theme.accent;
     } else if (owned) {
-      borderColor = Colors.greenAccent.withAlpha(120);
+      borderColor = _theme.success.withAlpha(120);
     } else {
-      borderColor = Colors.white12;
+      borderColor = _theme.accentDim.withAlpha(60);
     }
 
     return GestureDetector(
@@ -706,7 +727,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.cyanAccent.withAlpha(60))),
+        border: Border(bottom: BorderSide(color: _theme.accent.withAlpha(60))),
       ),
       child: Row(
         children: [
@@ -717,24 +738,24 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               game.showMessage(
                   _cheatsEnabled ? 'Cheats enabled' : 'Cheats disabled');
             },
-            child: const Text(
+            child: Text(
               'COMMAND CENTER',
-              style: TextStyle(
-                color: Colors.cyanAccent,
+              style: _theme.styled(TextStyle(
+                color: _theme.accent,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 3,
-              ),
+              )),
             ),
           ),
           const Spacer(),
           Text(
             'Credits: ${vessel.credit}',
-            style: const TextStyle(
-              color: Colors.greenAccent,
+            style: _theme.styled(TextStyle(
+              color: _theme.success,
               fontSize: 15,
               fontWeight: FontWeight.bold,
-            ),
+            )),
           ),
           if (game.isCoop && game.vessel2 != null) ...[
             const SizedBox(width: 12),
@@ -763,8 +784,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       width: 72,
       height: 56,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.cyanAccent.withAlpha(40)),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _theme.accent.withAlpha(40)),
+        borderRadius: BorderRadius.circular(_theme.cornerRadius),
         color: Colors.black26,
       ),
       padding: const EdgeInsets.all(4),
@@ -859,16 +880,16 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return TextField(
       controller: _pilotController,
       style: const TextStyle(color: Colors.white, fontSize: 13),
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: 'Pilot',
-        labelStyle: TextStyle(color: Colors.white54, fontSize: 12),
+        labelStyle: const TextStyle(color: Colors.white54, fontSize: 12),
         isDense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 4),
-        enabledBorder: UnderlineInputBorder(
+        contentPadding: const EdgeInsets.symmetric(vertical: 4),
+        enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white24),
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.cyanAccent),
+          borderSide: BorderSide(color: _theme.accent),
         ),
       ),
       onChanged: (v) {
@@ -1105,75 +1126,85 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
     Color borderColor;
     if (isSelected) {
-      borderColor = Colors.cyanAccent;
+      borderColor = _theme.accent;
     } else if (owned) {
-      borderColor = Colors.greenAccent.withAlpha(120);
+      borderColor = _theme.success.withAlpha(120);
     } else {
-      borderColor = Colors.white12;
+      borderColor = _theme.accentDim.withAlpha(60);
     }
 
+    final cardSprite = isSelected ? null : AssetLibrary.instance.getIcon('ui_card_bg');
     return GestureDetector(
       onTap: () => setState(() => _selectedWeaponIndex = index),
       onDoubleTap: () {
         setState(() => _selectedWeaponIndex = index);
         _confirmAction();
       },
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1a1a4e) : const Color(0xFF0a0a1e),
-          border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              owned ? '${weapon.name} ${_romanLevel(device!.level)}' : weapon.name,
-              style: TextStyle(
-                color: owned ? Colors.greenAccent : Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
+      child: AnimatedScale(
+        scale: isSelected ? 1.04 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        child: spriteBox(
+          sprite: cardSprite,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: cardSprite != null
+                  ? Colors.transparent
+                  : (isSelected ? _theme.surfaceLight : _theme.surfaceMid),
+              border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
+              borderRadius: BorderRadius.circular(_theme.cornerRadius),
             ),
-            const SizedBox(height: 4),
-            Text(
-              'DMG:${weapon.damage} SPD:${weapon.speed}',
-              style: const TextStyle(color: Colors.white54, fontSize: 9),
-            ),
-            Text(
-              'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
-              style: TextStyle(
-                color: weapon.beam > 0 ? Colors.purpleAccent : Colors.white38,
-                fontSize: 9,
-              ),
-            ),
-            const SizedBox(height: 4),
-            if (owned)
-              Row(
-                children: [
-                  const Text('OWNED', style: TextStyle(color: Colors.greenAccent, fontSize: 9)),
-                  const Spacer(),
-                  if (device!.level < Device.maxLevel)
-                    Text(
-                      '${device.price}cr',
-                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 8),
-                    ),
-                ],
-              )
-            else
-              Text(
-                '${weapon.price} cr',
-                style: TextStyle(
-                  color: canAfford ? Colors.yellowAccent : Colors.red.withAlpha(150),
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  owned ? '${weapon.name} ${_romanLevel(device!.level)}' : weapon.name,
+                  style: TextStyle(
+                    color: owned ? _theme.success : Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            const SizedBox(height: 4),
-            if (isSelected) _buildCardAction(weapon, owned, canAfford, device),
-          ],
+                const SizedBox(height: 4),
+                Text(
+                  'DMG:${weapon.damage} SPD:${weapon.speed}',
+                  style: const TextStyle(color: Colors.white54, fontSize: 9),
+                ),
+                Text(
+                  'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
+                  style: TextStyle(
+                    color: weapon.beam > 0 ? Colors.purpleAccent : Colors.white38,
+                    fontSize: 9,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                if (owned)
+                  Row(
+                    children: [
+                      Text('OWNED', style: TextStyle(color: _theme.success, fontSize: 9)),
+                      const Spacer(),
+                      if (device!.level < Device.maxLevel)
+                        Text(
+                          '${device.price}cr',
+                          style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                        ),
+                    ],
+                  )
+                else
+                  Text(
+                    '${weapon.price} cr',
+                    style: TextStyle(
+                      color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                const SizedBox(height: 4),
+                if (isSelected) _buildCardAction(weapon, owned, canAfford, device),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -1370,6 +1401,36 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return level >= 0 && level < numerals.length ? numerals[level] : '$level';
   }
 
+  Widget _buildStartButton(String label) {
+    final btnSprite = AssetLibrary.instance.getIcon('ui_button');
+    return GestureDetector(
+      onTap: widget.onStart,
+      child: spriteBox(
+        sprite: btnSprite,
+        child: Container(
+          height: 48,
+          decoration: btnSprite == null
+              ? BoxDecoration(
+                  color: _theme.accent,
+                  borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                )
+              : null,
+          child: Center(
+            child: Text(
+              label,
+              style: _theme.styled(TextStyle(
+                color: btnSprite != null ? _theme.accent : Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              )),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomBar() {
     final label = game.currentSectorIndex == 0 ? 'START MISSION' : 'CONTINUE MISSION';
     final showJoin = widget.onJoinIp != null &&
@@ -1379,7 +1440,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: Colors.cyanAccent.withAlpha(60))),
+        border: Border(top: BorderSide(color: _theme.accent.withAlpha(60))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1389,7 +1450,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 '[OPTIONS / B]  Continue mission     [LB / RB]  Side slot L / R',
-                style: const TextStyle(color: Colors.white24, fontSize: 9),
+                style: TextStyle(color: _theme.accentDim.withAlpha(120), fontSize: 9),
               ),
             ),
           Row(
@@ -1401,39 +1462,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.orangeAccent.withAlpha(150)),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(_theme.cornerRadius),
                     ),
-                    child: const Text(
+                    child: Text(
                       'JOIN',
-                      style: TextStyle(
+                      style: _theme.styled(const TextStyle(
                         color: Colors.orangeAccent,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1,
-                      ),
+                      )),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
               ],
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: widget.onStart,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.cyanAccent,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-              ),
+              Expanded(child: _buildStartButton(label)),
             ],
           ),
         ],
@@ -1442,20 +1486,37 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 }
 
-// ── Animated background (VBA ComCenter.PaintBack — 12-phase gradient cycle) ──
+// ── Skin-aware background ──
 
-class _AnimatedBackground extends StatelessWidget {
+/// Shows the skin's ComCenter background sprite when available,
+/// otherwise falls back to a theme-coloured animated gradient.
+class _SkinBackground extends StatelessWidget {
   final int phase;
-  const _AnimatedBackground({required this.phase});
+  final UiTheme theme;
+  const _SkinBackground({required this.phase, required this.theme});
 
   @override
   Widget build(BuildContext context) {
-    // Cycle through teal→indigo→purple gradients
-    final t = phase / 12.0;
-    final hue = 200 + (t * 60); // 200-260 range (teal to indigo)
-    final c1 = HSLColor.fromAHSL(1, hue % 360, 0.6, 0.08).toColor();
-    final c2 = HSLColor.fromAHSL(1, (hue + 30) % 360, 0.5, 0.03).toColor();
+    final bgSprite = AssetLibrary.instance.getIcon('comcenter_bg');
+    if (bgSprite != null) {
+      return Stack(children: [
+        Positioned.fill(
+          child: CustomPaint(
+            painter: SpritePainter(bgSprite, darkOverlay: 0.55),
+          ),
+        ),
+        CustomPaint(
+          painter: _GridPainter(phase: phase, color: theme.accent),
+          size: Size.infinite,
+        ),
+      ]);
+    }
 
+    // Fallback: animated gradient in skin's hue range
+    final hue = HSLColor.fromColor(theme.accent).hue;
+    final t = phase / 12.0;
+    final c1 = HSLColor.fromAHSL(1, (hue + t * 20) % 360, 0.6, 0.08).toColor();
+    final c2 = HSLColor.fromAHSL(1, (hue + 30 + t * 20) % 360, 0.5, 0.03).toColor();
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -1465,7 +1526,7 @@ class _AnimatedBackground extends StatelessWidget {
         ),
       ),
       child: CustomPaint(
-        painter: _GridPainter(phase: phase),
+        painter: _GridPainter(phase: phase, color: theme.accent),
         size: Size.infinite,
       ),
     );
@@ -1474,12 +1535,13 @@ class _AnimatedBackground extends StatelessWidget {
 
 class _GridPainter extends CustomPainter {
   final int phase;
-  _GridPainter({required this.phase});
+  final Color color;
+  _GridPainter({required this.phase, this.color = Colors.white});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withAlpha(8 + (phase % 3) * 2)
+      ..color = color.withAlpha(8 + (phase % 3) * 2)
       ..strokeWidth = 0.5;
 
     const spacing = 40.0;
@@ -1492,7 +1554,7 @@ class _GridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_GridPainter old) => old.phase != phase;
+  bool shouldRepaint(_GridPainter old) => old.phase != phase || old.color != color;
 }
 
 // Renders the current skin's vessel sprite into the ComCenter ship preview box.

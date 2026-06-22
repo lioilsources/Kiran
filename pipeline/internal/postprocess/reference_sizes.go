@@ -75,3 +75,21 @@ func ReferenceSize(gameName string) (int, int, bool) {
 	}
 	return 0, 0, false
 }
+
+// uiSizes holds exact output dimensions for ComCenter UI sprites.
+// These are NOT multiplied by SupersampleFactor — they are Flutter widget
+// assets rendered at UI resolution, not game-world sprites.
+var uiSizes = map[string][2]int{
+	"comcenter_bg":  {512, 1024},
+	"ui_card_bg":    {192, 192},
+	"ui_button":     {512, 128},
+	"ui_tab_active": {256, 64},
+}
+
+// UiSize returns the exact (width, height) for a ComCenter UI sprite.
+func UiSize(name string) (int, int, bool) {
+	if s, ok := uiSizes[name]; ok {
+		return s[0], s[1], true
+	}
+	return 0, 0, false
+}

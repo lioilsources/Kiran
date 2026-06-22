@@ -92,6 +92,18 @@ func Run(cfg Config) error {
 				return fmt.Errorf("process preview: %w", err)
 			}
 
+		case asset.Type == "comcenter_bg":
+			// Full-screen ComCenter background — opaque, exact resize, no bg removal
+			if err := processUiBg(cfg, asset, uiDir); err != nil {
+				return fmt.Errorf("process %s: %w", asset.Name, err)
+			}
+
+		case asset.Type == "ui_opaque":
+			// ComCenter panel sprites (button, card, tab) — opaque, exact resize
+			if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
+				return fmt.Errorf("process %s: %w", asset.Name, err)
+			}
+
 		default:
 			// Standard sprite: apply name mapping
 			gameName, ok := GameName(asset.Name)
@@ -211,6 +223,39 @@ func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) erro
 		}
 	}
 	return nil
+}
+
+// processUiBg handles the ComCenter background — opaque full-screen art, exact resize.
+func processUiBg(cfg Config, asset skin.ManifestAsset, outDir string) error {
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	img, err := loadJPEG(srcPath)
+	if err != nil {
+		return fmt.Errorf("load %s: %w", srcPath, err)
+	}
+	w, h, ok := UiSize(asset.Name)
+	if !ok {
+		w, h = 512, 1024
+	}
+	out := ResizeExact(img, w, h)
+	outPath := filepath.Join(outDir, asset.Name+".png")
+	return savePNG(outPath, out)
+}
+
+// processOpaqueUiSprite handles ComCenter panel sprites (button, card, tab):
+// opaque, exact resize to reference dimensions, no background removal.
+func processOpaqueUiSprite(cfg Config, asset skin.ManifestAsset, outDir string) error {
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	img, err := loadJPEG(srcPath)
+	if err != nil {
+		return fmt.Errorf("load %s: %w", srcPath, err)
+	}
+	w, h, ok := UiSize(asset.Name)
+	if !ok {
+		w, h = 128, 128
+	}
+	out := ResizeExact(img, w, h)
+	outPath := filepath.Join(outDir, asset.Name+".png")
+	return savePNG(outPath, out)
 }
 
 func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) error {
