@@ -98,8 +98,8 @@ func Run(cfg Config) error {
 				return fmt.Errorf("process %s: %w", asset.Name, err)
 			}
 
-		case asset.Type == "ui_opaque":
-			// ComCenter panel sprites (button, card, tab) — opaque, exact resize
+		case asset.Type == "ui_card_bg" || asset.Type == "ui_button" || asset.Type == "ui_tab_active":
+			// ComCenter panel sprites — opaque, exact resize, no bg removal
 			if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
 				return fmt.Errorf("process %s: %w", asset.Name, err)
 			}

@@ -167,9 +167,9 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		Resolution:  "2k",
 	})
 	for _, uiSpec := range []struct{ name, assetType, aspect string }{
-		{"ui_card_bg",    "ui_opaque", "1:1"},
-		{"ui_button",     "ui_opaque", "4:1"},
-		{"ui_tab_active", "ui_opaque", "4:1"},
+		{"ui_card_bg",    "ui_card_bg",    "1:1"},
+		{"ui_button",     "ui_button",     "4:1"},
+		{"ui_tab_active", "ui_tab_active", "4:1"},
 	} {
 		specs = append(specs, AssetSpec{
 			Name:        uiSpec.name,
