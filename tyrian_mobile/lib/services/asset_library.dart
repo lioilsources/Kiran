@@ -187,8 +187,8 @@ class AssetLibrary {
         final sprite = Sprite(image);
         sprite.paint.filterQuality = config.spriteFilterQuality;
         _icons[name] = sprite;
-      } catch (_) {
-        // ignore
+      } catch (e) {
+        print('Icon load failed [$name]: $e');
       }
     }
   }

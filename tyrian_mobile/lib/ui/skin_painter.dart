@@ -43,6 +43,7 @@ Widget spriteBox({
 }) {
   if (sprite == null) return child;
   return Stack(
+    fit: StackFit.passthrough,
     children: [
       Positioned.fill(
         child: CustomPaint(

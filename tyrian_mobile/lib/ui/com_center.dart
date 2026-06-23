@@ -577,6 +577,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       borderColor = _theme.accentDim.withAlpha(60);
     }
 
+    final cardSprite = isSelected ? null : AssetLibrary.instance.getIcon('ui_card_bg');
     return GestureDetector(
       onTap: () => setState(() {
         _targetSideSlot = slot;
@@ -593,64 +594,73 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           _buyWeaponToSlot(weapon, slot);
         }
       },
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1a1a4e) : const Color(0xFF0a0a1e),
-          border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              owned ? '${weapon.name} ${_romanLevel(slotDevice!.level)}' : weapon.name,
-              style: TextStyle(
-                color: owned ? Colors.greenAccent : Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
+      child: AnimatedScale(
+        scale: isSelected ? 1.04 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        child: spriteBox(
+          sprite: cardSprite,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: cardSprite != null
+                  ? Colors.transparent
+                  : (isSelected ? _theme.surfaceLight : _theme.surfaceMid),
+              border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
+              borderRadius: BorderRadius.circular(_theme.cornerRadius),
             ),
-            const SizedBox(height: 4),
-            Text(
-              'DMG:${weapon.damage} SPD:${weapon.speed}',
-              style: const TextStyle(color: Colors.white54, fontSize: 9),
-            ),
-            Text(
-              'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
-              style: TextStyle(
-                color: weapon.beam > 0 ? Colors.purpleAccent : Colors.white38,
-                fontSize: 9,
-              ),
-            ),
-            const SizedBox(height: 4),
-            if (owned)
-              Row(
-                children: [
-                  const Text('OWNED', style: TextStyle(color: Colors.greenAccent, fontSize: 9)),
-                  const Spacer(),
-                  if (slotDevice!.level < Device.maxLevel)
-                    Text(
-                      '${slotDevice.price.toInt()}cr',
-                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 8),
-                    ),
-                ],
-              )
-            else
-              Text(
-                '${weapon.price} cr',
-                style: TextStyle(
-                  color: canAfford ? Colors.yellowAccent : Colors.red.withAlpha(150),
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  owned ? '${weapon.name} ${_romanLevel(slotDevice!.level)}' : weapon.name,
+                  style: TextStyle(
+                    color: owned ? _theme.success : Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            if (isSelected) ...[
-              const SizedBox(height: 4),
-              _buildSlotCardAction(weapon, owned, canAfford, slotDevice, slot),
-            ],
-          ],
+                const SizedBox(height: 4),
+                Text(
+                  'DMG:${weapon.damage} SPD:${weapon.speed}',
+                  style: const TextStyle(color: Colors.white54, fontSize: 9),
+                ),
+                Text(
+                  'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
+                  style: TextStyle(
+                    color: weapon.beam > 0 ? Colors.purpleAccent : Colors.white38,
+                    fontSize: 9,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                if (owned)
+                  Row(
+                    children: [
+                      Text('OWNED', style: TextStyle(color: _theme.success, fontSize: 9)),
+                      const Spacer(),
+                      if (slotDevice!.level < Device.maxLevel)
+                        Text(
+                          '${slotDevice.price.toInt()}cr',
+                          style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                        ),
+                    ],
+                  )
+                else
+                  Text(
+                    '${weapon.price} cr',
+                    style: TextStyle(
+                      color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                if (isSelected) ...[
+                  const SizedBox(height: 4),
+                  _buildSlotCardAction(weapon, owned, canAfford, slotDevice, slot),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
