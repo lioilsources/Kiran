@@ -577,7 +577,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       borderColor = _theme.accentDim.withAlpha(60);
     }
 
-    final cardSprite = isSelected ? null : AssetLibrary.instance.getIcon('ui_card_bg');
+    final cardSprite = AssetLibrary.instance.getIcon('ui_card_bg');
     return GestureDetector(
       onTap: () => setState(() {
         _targetSideSlot = slot;
@@ -599,6 +599,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         duration: const Duration(milliseconds: 150),
         child: spriteBox(
           sprite: cardSprite,
+          darkOverlay: isSelected ? 0.0 : 0.35,
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -1143,7 +1144,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       borderColor = _theme.accentDim.withAlpha(60);
     }
 
-    final cardSprite = isSelected ? null : AssetLibrary.instance.getIcon('ui_card_bg');
+    final cardSprite = AssetLibrary.instance.getIcon('ui_card_bg');
     return GestureDetector(
       onTap: () => setState(() => _selectedWeaponIndex = index),
       onDoubleTap: () {
@@ -1155,6 +1156,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         duration: const Duration(milliseconds: 150),
         child: spriteBox(
           sprite: cardSprite,
+          darkOverlay: isSelected ? 0.0 : 0.35,
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
