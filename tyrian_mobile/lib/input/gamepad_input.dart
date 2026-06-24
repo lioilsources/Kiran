@@ -22,7 +22,7 @@ class GamepadInput {
 
   /// Poll native API for current controller states.
   Future<void> poll() async {
-    if (!Platform.isMacOS && !Platform.isWindows) return;
+    if (!Platform.isMacOS && !Platform.isWindows && !Platform.isLinux) return;
     try {
       final result = await _channel.invokeMethod<List<dynamic>>('poll');
       if (result == null) {
@@ -93,8 +93,11 @@ class GamepadState {
 
   static const GamepadState empty = GamepadState();
 
-  /// Fire = R2 trigger > 0.3 OR right shoulder OR button A/X
-  bool get fire => rightTrigger > 0.3 || rightShoulder || buttonA || buttonX;
+  /// Fire = B button OR right shoulder OR RT analog (> 0.05 threshold)
+  bool get fire => buttonB || rightShoulder || rightTrigger > 0.05;
+
+  /// Fire rate multiplier 0.0–1.0 for RT analog control (digital buttons = full rate).
+  double get fireRate => (buttonB || rightShoulder) ? 1.0 : rightTrigger;
 
   /// Pause = Start/Options button
   bool get pause => start;

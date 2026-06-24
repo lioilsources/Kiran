@@ -128,7 +128,7 @@ class Device {
 
   /// Port of Device.Create — fire weapon, create projectile or activate beam
   void fire(double vesselX, double vesselY, double vesselXm, double vesselWidth,
-      Component world) {
+      Component world, {double fireRateMult = 1.0}) {
     if (cd > 0) return;
 
     // Check power
@@ -139,7 +139,7 @@ class Device {
       parentVessel!.genValue -= pwrNeed;
     }
 
-    cd = cooldown;
+    cd = cooldown / fireRateMult.clamp(0.1, 1.0);
 
     if (beam > 0) {
       beamActive = seqs;
