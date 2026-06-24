@@ -121,6 +121,7 @@ class TyrianGame extends FlameGame
   VoidCallback? onLoaded;
   VoidCallback? onPauseToggle;
   VoidCallback? onSkinRequested;
+  bool skinSelectorOpen = false;
 
   @override
   Color backgroundColor() => const Color(0xFF000000);
@@ -594,8 +595,11 @@ class TyrianGame extends FlameGame
   static const double _kbSpeed = 300.0;
 
   bool _prevPauseKey = false;
-  bool _prevGamepadPause = false;
   bool _prevSkinGp = false;
+
+  /// Call after ComCenter's Start button triggers game launch so TyrianGame
+  /// doesn't also interpret that same press as "open skin selector".
+  void suppressStartEdge() => _prevSkinGp = true;
 
   /// Apply screen-space input to vessel (handles landscape inverse rotation).
   void _applyMovement(Vessel v, double screenDx, double screenDy, double speed, double dt) {
@@ -625,26 +629,22 @@ class TyrianGame extends FlameGame
       gamepadInput.poll(); // fire-and-forget async
     }
 
-    // ── Pause toggle (edge-triggered, keyboard + gamepad) ──
+    // ── Keyboard pause (Escape) ──
     final pauseKb = keyboardInput.pause;
-    final pauseGp = gamepadInput.primary.pause;
-    if ((pauseKb && !_prevPauseKey) || (pauseGp && !_prevGamepadPause)) {
-      if (state == GameState.playing || state == GameState.paused) {
-        togglePause();
-      }
+    if (pauseKb && !_prevPauseKey && !skinSelectorOpen) {
+      if (state == GameState.playing || state == GameState.paused) togglePause();
     }
     _prevPauseKey = pauseKb;
-    _prevGamepadPause = pauseGp;
 
-    // ── Skin shortcut during pause (gamepad Y) ──
-    if (state == GameState.paused) {
-      final skinGp = gamepadInput.primary.buttonY;
-      if (skinGp && !_prevSkinGp) {
-        onSkinRequested?.call();
-      }
-      _prevSkinGp = skinGp;
-      return;
+    // ── Skin selector: Start/Option opens it, auto-pauses game ──
+    final skinGp = gamepadInput.primary.pause; // Start = Option on PS, Menu on Xbox
+    if (skinGp && !_prevSkinGp && !skinSelectorOpen) {
+      if (state == GameState.playing) togglePause();
+      if (state == GameState.paused) onSkinRequested?.call();
     }
+    _prevSkinGp = skinGp;
+
+    if (state == GameState.paused) return;
 
     if (state != GameState.playing) return;
 
@@ -657,7 +657,9 @@ class TyrianGame extends FlameGame
     if (gpActive) {
       _applyMovement(vessel, gpDx, gpDy, _kbSpeed, dt);
       vessel.fire = gp.fire;
+      vessel.fireRateMult = gp.fireRate;
     } else {
+      vessel.fireRateMult = 1.0;
       // ── Keyboard fallback ──
       final kbDx = keyboardInput.dx;
       final kbDy = keyboardInput.dy;
@@ -674,6 +676,7 @@ class TyrianGame extends FlameGame
       final gp2Dy = GamepadInput.deadzone(gp2.leftStickY);
       _applyMovement(vessel2!, gp2Dx, gp2Dy, _kbSpeed, dt);
       vessel2!.fire = gp2.fire;
+      vessel2!.fireRateMult = gp2.fireRate;
     }
   }
 

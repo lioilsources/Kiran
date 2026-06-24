@@ -67,7 +67,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   bool _prevUp = false, _prevDown = false;
   bool _prevLeft = false, _prevRight = false;
   bool _prevConfirm = false, _prevStart = false, _prevBack = false;
-  bool _prevSell = false;
   bool _prevLb = false, _prevRb = false;
   final FocusNode _focusNode = FocusNode();
 
@@ -140,28 +139,27 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
     final left = gp.dpadLeft || GamepadInput.deadzone(gp.leftStickX) < -0.5;
     final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
-    final confirm = gp.buttonA || gp.buttonX;
+    final confirm = gp.buttonB;
     final start = gp.start;
-    final back = gp.buttonB;
-    final sell = gp.buttonY;
+    final back = gp.back;
     final lb = gp.leftShoulder;
     final rb = gp.rightShoulder;
 
     if (up && !_prevUp) _moveWeapon(-1);
     if (down && !_prevDown) _moveWeapon(1);
-    if (left && !_prevLeft) _switchSection((_sectionIndex - 1).clamp(0, 2));
-    if (right && !_prevRight) _switchSection((_sectionIndex + 1).clamp(0, 2));
+    // D-pad left/right: switch side gun slot when in Side tab
+    if (left && !_prevLeft && _showingSide) setState(() => _targetSideSlot = WeaponSlot.leftGun);
+    if (right && !_prevRight && _showingSide) setState(() => _targetSideSlot = WeaponSlot.rightGun);
     if (confirm && !_prevConfirm) _confirmAction();
-    if (sell && !_prevSell) _sellAction();
     if ((start && !_prevStart) || (back && !_prevBack)) widget.onStart();
-    // LB/RB: choose which side slot to buy into
-    if (lb && !_prevLb && _showingSide) setState(() => _targetSideSlot = WeaponSlot.leftGun);
-    if (rb && !_prevRb && _showingSide) setState(() => _targetSideSlot = WeaponSlot.rightGun);
+    // LB/RB: switch between Front / Side / Generator tabs
+    if (lb && !_prevLb) _switchSection((_sectionIndex - 1).clamp(0, 2));
+    if (rb && !_prevRb) _switchSection((_sectionIndex + 1).clamp(0, 2));
 
     _prevUp = up; _prevDown = down;
     _prevLeft = left; _prevRight = right;
     _prevConfirm = confirm; _prevStart = start;
-    _prevBack = back; _prevSell = sell;
+    _prevBack = back;
     _prevLb = lb; _prevRb = rb;
   }
 

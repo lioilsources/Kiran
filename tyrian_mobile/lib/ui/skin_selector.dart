@@ -14,8 +14,9 @@ import '../input/gamepad_input.dart';
 /// Full-screen skin selection overlay (dark gradient, cyan accents).
 class SkinSelector extends StatefulWidget {
   final VoidCallback onPlay;
+  final VoidCallback? onDiscard;
 
-  const SkinSelector({super.key, required this.onPlay});
+  const SkinSelector({super.key, required this.onPlay, this.onDiscard});
 
   @override
   State<SkinSelector> createState() => _SkinSelectorState();
@@ -33,7 +34,9 @@ class _SkinSelectorState extends State<SkinSelector> {
   bool _prevRight = false;
   bool _prevUp = false;
   bool _prevDown = false;
-  bool _prevConfirm = false;
+  // Start true so the first poll ignores any button held at the time the selector opens.
+  bool _prevConfirm = true;
+  bool _prevDiscard = true;
 
   final FocusNode _focusNode = FocusNode();
   final List<GlobalKey> _cardKeys = List.generate(kSkins.length, (_) => GlobalKey());
@@ -125,19 +128,22 @@ class _SkinSelectorState extends State<SkinSelector> {
     final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
     final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
     final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
-    final confirm = gp.buttonA || gp.buttonX;
+    final confirm = gp.buttonB || gp.start; // B or Option/Start
+    final discard = gp.buttonA || gp.back;
 
     if (left && !_prevLeft) _moveFocus(-1, 0);
     if (right && !_prevRight) _moveFocus(1, 0);
     if (up && !_prevUp) _moveFocus(0, -1);
     if (down && !_prevDown) _moveFocus(0, 1);
     if (confirm && !_prevConfirm) _selectAndPlay(kSkins[_focusIndex].id);
+    if (discard && !_prevDiscard) widget.onDiscard?.call();
 
     _prevLeft = left;
     _prevRight = right;
     _prevUp = up;
     _prevDown = down;
     _prevConfirm = confirm;
+    _prevDiscard = discard;
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
