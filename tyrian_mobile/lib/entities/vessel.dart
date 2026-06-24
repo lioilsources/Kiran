@@ -30,6 +30,7 @@ class Vessel extends PositionComponent
   int score = 0;
   int lvlNum = 1;
   bool fire = false;
+  double fireRateMult = 1.0; // 0.0–1.0; scales weapon cooldown (RT analog control)
   int dmgTaken = 0; // Damage flash counter
 
   // Weapons
@@ -308,6 +309,7 @@ class Vessel extends PositionComponent
           position.x,
           size.x,
           parent!,
+          fireRateMult: fireRateMult,
         );
       }
 

@@ -111,7 +111,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
 
     _game.onSkinRequested = () {
-      if (mounted) setState(() => _showPauseSkinSelector = true);
+      if (mounted) {
+        _game.skinSelectorOpen = true;
+        setState(() => _showPauseSkinSelector = true);
+      }
     };
 
     _game.onGameOver = () async {
@@ -353,6 +356,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   /// ComCenter START button handler (host/solo)
   void _onComCenterStart() {
     _game.saveProgress(); // persist final loadout before the mission
+    // Prevent the same Start press that closed ComCenter from also
+    // triggering the skin selector in TyrianGame's _processDesktopInput.
+    _game.suppressStartEdge();
     setState(() => _showComCenter = false);
     if (_game.currentSector == null) {
       _game.startGame();
@@ -390,15 +396,28 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               OsdPanel(
                 game: _game,
                 onMuteToggle: () => setState(() {}),
-                onSkinSelect: () => setState(() => _showPauseSkinSelector = true),
+                onSkinSelect: () {
+                  _game.skinSelectorOpen = true;
+                  if (_game.state == GameState.playing) _game.togglePause();
+                  setState(() => _showPauseSkinSelector = true);
+                },
               ),
 
             // Skin selector during pause
             if (_game.state == GameState.paused && _showPauseSkinSelector)
-              SkinSelector(onPlay: () {
-                _game.refreshSprites();
-                setState(() => _showPauseSkinSelector = false);
-              }),
+              SkinSelector(
+                onPlay: () {
+                  _game.refreshSprites();
+                  _game.skinSelectorOpen = false;
+                  if (_game.state == GameState.paused) _game.togglePause();
+                  setState(() => _showPauseSkinSelector = false);
+                },
+                onDiscard: () {
+                  _game.skinSelectorOpen = false;
+                  if (_game.state == GameState.paused) _game.togglePause();
+                  setState(() => _showPauseSkinSelector = false);
+                },
+              ),
 
             // ComCenter (host/solo only — P2 never sees this)
             if (_showComCenter)
