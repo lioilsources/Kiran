@@ -511,9 +511,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
             decoration: BoxDecoration(
-              color: isActive ? const Color(0xFF1a1a4e) : Colors.transparent,
+              color: isActive ? _theme.surfaceLight : Colors.transparent,
               border: Border.all(
-                color: isActive ? Colors.cyanAccent : Colors.white24,
+                color: isActive ? _theme.accent : _theme.accentDim,
                 width: isActive ? 1.5 : 0.5,
               ),
               borderRadius: const BorderRadius.only(
@@ -524,24 +524,24 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: isActive ? Colors.cyanAccent : Colors.white38,
+              style: _theme.styled(TextStyle(
+                color: isActive ? _theme.accent : _theme.accentDim,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
-              ),
+              )),
             ),
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          color: Colors.black26,
+          color: _theme.surfaceDark,
           child: Text(
             slotDevice != null
                 ? '${slotDevice.name} Lv.${slotDevice.level}'
                 : '— empty —',
             style: TextStyle(
-              color: slotDevice != null ? Colors.greenAccent : Colors.white24,
+              color: slotDevice != null ? _theme.success : _theme.accentDim,
               fontSize: 9,
             ),
             overflow: TextOverflow.ellipsis,
@@ -622,12 +622,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 9),
+                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
                 ),
                 Text(
                   'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
                   style: TextStyle(
-                    color: weapon.beam > 0 ? Colors.purpleAccent : Colors.white38,
+                    color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
                     fontSize: 9,
                   ),
                 ),
@@ -676,14 +676,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 decoration: BoxDecoration(
-                  color: atMax ? Colors.white10 : Colors.blue.withAlpha(60),
+                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(40),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(
                   atMax ? 'MAX' : 'UPGRADE',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: atMax ? Colors.white24 : Colors.lightBlueAccent,
+                    color: atMax ? _theme.accentDim : _theme.upgrade,
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
                   ),
@@ -697,12 +697,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.red.withAlpha(40),
+                color: _theme.danger.withAlpha(40),
                 borderRadius: BorderRadius.circular(3),
               ),
-              child: const Text(
+              child: Text(
                 'SELL',
-                style: TextStyle(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold),
+                style: TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -715,14 +715,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
-            color: canAfford ? Colors.green.withAlpha(60) : Colors.white10,
+            color: canAfford ? _theme.success.withAlpha(40) : Colors.white10,
             borderRadius: BorderRadius.circular(3),
           ),
           child: Text(
             canAfford ? 'BUY' : 'NO CREDITS',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: canAfford ? Colors.greenAccent : Colors.white24,
+              color: canAfford ? _theme.success : _theme.accentDim,
               fontSize: 9,
               fontWeight: FontWeight.bold,
             ),
@@ -777,7 +777,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             const SizedBox(width: 12),
             Text(
               'IP: ${game.hostIp}',
-              style: const TextStyle(color: Colors.white38, fontSize: 11),
+              style: TextStyle(color: _theme.accentDim, fontSize: 11),
             ),
           ],
         ],
@@ -795,7 +795,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       decoration: BoxDecoration(
         border: Border.all(color: _theme.accent.withAlpha(40)),
         borderRadius: BorderRadius.circular(_theme.cornerRadius),
-        color: Colors.black26,
+        color: _theme.surfaceDark,
       ),
       padding: const EdgeInsets.all(4),
       child: sprite != null
@@ -803,11 +803,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           : Center(
               child: Text(
                 'Lv ${game.currentSectorIndex + 1}',
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
+                style: _theme.styled(TextStyle(
+                  color: _theme.accent,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                ),
+                )),
               ),
             ),
     );
@@ -891,11 +891,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       style: const TextStyle(color: Colors.white, fontSize: 13),
       decoration: InputDecoration(
         labelText: 'Pilot',
-        labelStyle: const TextStyle(color: Colors.white54, fontSize: 12),
+        labelStyle: TextStyle(color: _theme.accentDim, fontSize: 12),
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 4),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white24),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: _theme.accentDim),
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: _theme.accent),
@@ -914,17 +914,17 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       children: [
         Row(
           children: [
-            _statChip('HP', '${vessel.hp}/${vessel.hpMax}', Colors.redAccent),
+            _statChip('HP', '${vessel.hp}/${vessel.hpMax}', _theme.danger),
             const SizedBox(width: 8),
-            _statChip('SH', '${vessel.shield.toInt()}/${vessel.shieldMax.toInt()}', Colors.cyanAccent),
+            _statChip('SH', '${vessel.shield.toInt()}/${vessel.shieldMax.toInt()}', _theme.accent),
           ],
         ),
         const SizedBox(height: 4),
         Row(
           children: [
-            _statChip('GEN', '${vessel.genValue.toInt()}/${vessel.genMax.toInt()}', Colors.yellowAccent),
+            _statChip('GEN', '${vessel.genValue.toInt()}/${vessel.genMax.toInt()}', _theme.upgrade),
             const SizedBox(width: 8),
-            _statChip('DPS', vessel.totalDps.toStringAsFixed(1), Colors.orangeAccent),
+            _statChip('DPS', vessel.totalDps.toStringAsFixed(1), _theme.accent),
           ],
         ),
       ],
@@ -960,7 +960,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       orElse: () => null,
     );
     final name = device != null ? '${device.name} Lv.${device.level}' : '---';
-    final color = device != null ? Colors.greenAccent : Colors.white24;
+    final color = device != null ? _theme.success : _theme.accentDim;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
@@ -970,7 +970,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             width: 42,
             child: Text(
               '$label:',
-              style: const TextStyle(color: Colors.white54, fontSize: 10),
+              style: TextStyle(color: _theme.accentDim, fontSize: 10),
             ),
           ),
           Expanded(
@@ -985,12 +985,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 margin: const EdgeInsets.only(right: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withAlpha(40),
+                  color: _theme.upgrade.withAlpha(40),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
                   device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 8),
+                  style: TextStyle(color: _theme.upgrade, fontSize: 8),
                 ),
               ),
             ),
@@ -999,12 +999,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 decoration: BoxDecoration(
-                  color: Colors.red.withAlpha(40),
+                  color: _theme.danger.withAlpha(40),
                   borderRadius: BorderRadius.circular(2),
                 ),
-                child: const Text(
+                child: Text(
                   'SELL',
-                  style: TextStyle(color: Colors.redAccent, fontSize: 8),
+                  style: TextStyle(color: _theme.danger, fontSize: 8),
                 ),
               ),
             ),
@@ -1017,12 +1017,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withAlpha(40),
+                  color: _theme.upgrade.withAlpha(40),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
                   device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 8),
+                  style: TextStyle(color: _theme.upgrade, fontSize: 8),
                 ),
               ),
             ),
@@ -1035,7 +1035,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Text(
       vessel.genInfo,
       style: TextStyle(
-        color: vessel.generatorLoad > 100 ? Colors.redAccent : Colors.yellowAccent,
+        color: vessel.generatorLoad > 100 ? _theme.danger : _theme.upgrade,
         fontSize: 10,
       ),
     );
@@ -1047,7 +1047,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(height: 1, color: Colors.white12),
+        Container(height: 1, color: _theme.accentDim.withAlpha(60)),
         const SizedBox(height: 8),
         GestureDetector(
           onTap: () => setState(() => _showScores = !_showScores),
@@ -1055,12 +1055,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             children: [
               Text(
                 _showScores ? '▼ TOP SCORES' : '▶ TOP SCORES',
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
+                style: _theme.styled(TextStyle(
+                  color: _theme.accent,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
-                ),
+                )),
               ),
             ],
           ),
@@ -1088,7 +1088,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   child: Text(
                     '${i + 1}.',
                     style: TextStyle(
-                      color: i < 3 ? Colors.cyanAccent : Colors.white38,
+                      color: i < 3 ? _theme.accent : _theme.accentDim,
                       fontSize: 9,
                     ),
                   ),
@@ -1097,7 +1097,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   child: Text(
                     _highScores[i].name,
                     style: TextStyle(
-                      color: i < 3 ? Colors.cyanAccent : Colors.white54,
+                      color: i < 3 ? _theme.accent : _theme.accentDim,
                       fontSize: 9,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -1105,13 +1105,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
                 Text(
                   'Lv${_highScores[i].level}',
-                  style: const TextStyle(color: Colors.white38, fontSize: 9),
+                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   '${_highScores[i].score}',
                   style: TextStyle(
-                    color: i < 3 ? Colors.yellowAccent : Colors.white54,
+                    color: i < 3 ? _theme.upgrade : _theme.accentDim,
                     fontSize: 9,
                     fontWeight: i < 3 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -1179,12 +1179,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 9),
+                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
                 ),
                 Text(
                   'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
                   style: TextStyle(
-                    color: weapon.beam > 0 ? Colors.purpleAccent : Colors.white38,
+                    color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
                     fontSize: 9,
                   ),
                 ),
@@ -1231,14 +1231,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 decoration: BoxDecoration(
-                  color: atMax ? Colors.white10 : Colors.blue.withAlpha(60),
+                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(40),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(
                   atMax ? 'MAX' : 'UPGRADE',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: atMax ? Colors.white24 : Colors.lightBlueAccent,
+                    color: atMax ? _theme.accentDim : _theme.upgrade,
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
                   ),
@@ -1252,12 +1252,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.red.withAlpha(40),
+                color: _theme.danger.withAlpha(40),
                 borderRadius: BorderRadius.circular(3),
               ),
-              child: const Text(
+              child: Text(
                 'SELL',
-                style: TextStyle(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold),
+                style: TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -1270,14 +1270,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
-            color: canAfford ? Colors.green.withAlpha(60) : Colors.white10,
+            color: canAfford ? _theme.success.withAlpha(40) : Colors.white10,
             borderRadius: BorderRadius.circular(3),
           ),
           child: Text(
             canAfford ? 'BUY' : 'NO CREDITS',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: canAfford ? Colors.greenAccent : Colors.white24,
+              color: canAfford ? _theme.success : _theme.accentDim,
               fontSize: 9,
               fontWeight: FontWeight.bold,
             ),
@@ -1302,12 +1302,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       children: [
         Text(
           'GENERATOR',
-          style: TextStyle(
-            color: isFocused ? Colors.cyanAccent : Colors.white38,
+          style: _theme.styled(TextStyle(
+            color: isFocused ? _theme.accent : _theme.accentDim,
             fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
-          ),
+          )),
         ),
         const SizedBox(height: 8),
         GestureDetector(
@@ -1325,9 +1325,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isFocused ? const Color(0xFF1a1a4e) : const Color(0xFF0a0a1e),
+              color: isFocused ? _theme.surfaceLight : _theme.surfaceMid,
               border: Border.all(
-                color: isFocused ? Colors.cyanAccent : Colors.greenAccent.withAlpha(120),
+                color: isFocused ? _theme.accent : _theme.success.withAlpha(120),
                 width: isFocused ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(6),
@@ -1339,31 +1339,31 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   device != null
                       ? '${gen.name} ${_romanLevel(device.level)}'
                       : gen.name,
-                  style: const TextStyle(
-                    color: Colors.greenAccent,
+                  style: _theme.styled(TextStyle(
+                    color: _theme.success,
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                  ),
+                  )),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'PWR: +${gen.pwrGen.toStringAsFixed(2)}/fr',
-                  style: const TextStyle(color: Colors.white54, fontSize: 9),
+                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
                 ),
                 Text(
                   'Cap: ${vessel.genMax.toInt()}',
-                  style: const TextStyle(color: Colors.white38, fontSize: 9),
+                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Text('OWNED', style: TextStyle(color: Colors.greenAccent, fontSize: 9)),
+                    Text('OWNED', style: TextStyle(color: _theme.success, fontSize: 9)),
                     const Spacer(),
                     if (device != null && device.level < Device.maxLevel)
                       Text(
                         '${device.price.toInt()}cr',
-                        style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 8),
+                        style: TextStyle(color: _theme.upgrade, fontSize: 8),
                       ),
                   ],
                 ),
@@ -1379,7 +1379,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       decoration: BoxDecoration(
                         color: device.level >= Device.maxLevel
                             ? Colors.white10
-                            : Colors.blue.withAlpha(60),
+                            : _theme.upgrade.withAlpha(40),
                         borderRadius: BorderRadius.circular(3),
                       ),
                       child: Text(
@@ -1387,8 +1387,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: device.level >= Device.maxLevel
-                              ? Colors.white24
-                              : Colors.lightBlueAccent,
+                              ? _theme.accentDim
+                              : _theme.upgrade,
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1471,13 +1471,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.orangeAccent.withAlpha(150)),
+                      border: Border.all(color: _theme.upgrade.withAlpha(150)),
                       borderRadius: BorderRadius.circular(_theme.cornerRadius),
                     ),
                     child: Text(
                       'JOIN',
-                      style: _theme.styled(const TextStyle(
-                        color: Colors.orangeAccent,
+                      style: _theme.styled(TextStyle(
+                        color: _theme.upgrade,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1,

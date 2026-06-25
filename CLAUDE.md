@@ -17,11 +17,11 @@ tyrian_mobile/
 │   ├── services/       # AssetLibrary (singleton), SaveService, SoundService, SkinRegistry
 │   ├── systems/        # Device/Weapon, Fleet, Sector, PathSystem
 │   └── ui/             # Flutter overlays: OsdPanel, ComCenter, SkinSelector, FloatText
-├── assets/skins/       # 13 skins, each with sprites/, ui/, sfx/, backgrounds/, atlas.png, atlas.json
+├── assets/skins/       # 14 skins, each with sprites/, ui/, sfx/, backgrounds/, atlas.png, atlas.json
 ├── shaders/            # GLSL fragment shaders (.frag)
 └── tool/               # pack_atlas.dart — texture atlas builder
 
-pipeline/               # Go asset generation pipeline (Grok Image API, ElevenLabs SFX)
+pipeline/               # Go asset generation pipeline (ComfyUI images, ElevenLabs SFX) — see pipeline/SKILL.md
 tyrian_vba_64bit/       # Original VB6 source (reference only)
 ```
 
@@ -42,9 +42,13 @@ flutter build apk
 # Rebuild texture atlases
 dart run tool/pack_atlas.dart
 
-# Asset pipeline (Go)
+# Asset pipeline — full pipeline for one skin (see pipeline/SKILL.md for all flags)
 cd ../pipeline
-go run .
+go run ./cmd/generate -skin <id>         # generate images via ComfyUI
+go run ./cmd/generate -sfx -skin <id>   # generate SFX via ElevenLabs
+go run ./cmd/postprocess -skin <id>     # bg removal, resize, glow frames, MP3→OGG
+cd ../tyrian_mobile
+dart run tool/pack_atlas.dart           # pack sprites → atlas.png + atlas.json
 ```
 
 ## Architecture
