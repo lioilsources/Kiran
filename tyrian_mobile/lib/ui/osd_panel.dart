@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../game/tyrian_game.dart';
 import '../entities/vessel.dart';
 import '../rendering/health_bar.dart';
+import '../services/asset_library.dart';
 import '../services/sound_service.dart';
+import 'skin_painter.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
@@ -12,6 +14,42 @@ class OsdPanel extends StatelessWidget {
   final VoidCallback? onSkinSelect;
 
   const OsdPanel({super.key, required this.game, this.onMuteToggle, this.onSkinSelect});
+
+  Widget? _statIcon(String key, {double size = 14}) {
+    final sprite = AssetLibrary.instance.getIcon(key);
+    return sprite == null
+        ? null
+        : SizedBox(
+            width: size,
+            height: size,
+            child: CustomPaint(painter: SpritePainter(sprite)),
+          );
+  }
+
+  Widget _staggeredBar(
+    double val,
+    double max,
+    Color color,
+    String label,
+    String iconKey, {
+    double indent = 0,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(left: indent),
+      child: SizedBox(
+        width: 130,
+        child: HealthBar(
+          label: label,
+          value: val,
+          maxValue: max,
+          color: color,
+          height: 8,
+          icon: _statIcon(iconKey),
+          segments: 5,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +75,7 @@ class OsdPanel extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Sector name + Level
+              // Sector name
               if (sector != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
@@ -50,20 +88,31 @@ class OsdPanel extends StatelessWidget {
                   ),
                 ),
 
-              // P1 stats
-              _buildVesselStats(game.vessel, 'P1'),
-
-              // P2 stats (co-op only)
-              if (game.isCoop) ...[
-                const SizedBox(height: 4),
-                _buildVesselStats(game.vessel2!, 'P2'),
-              ],
+              // Stats (staggered bars left) + Credits (right)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildVesselStats(game.vessel, 'P1'),
+                      if (game.isCoop) ...[
+                        const SizedBox(height: 6),
+                        _buildVesselStats(game.vessel2!, 'P2'),
+                      ],
+                    ],
+                  ),
+                  const Spacer(),
+                  if (game.state != GameState.paused)
+                    _buildCreditsWidget(),
+                ],
+              ),
 
               const SizedBox(height: 4),
 
-              // Bottom row: Credits/PAUSED + Mute + [Skin] + Pause
+              // Bottom row: PAUSED label + buttons
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (game.state == GameState.paused)
                     const Text(
@@ -74,18 +123,8 @@ class OsdPanel extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                       ),
-                    )
-                  else
-                    Text(
-                      game.isCoop
-                          ? 'P1: ${game.vessel.credit}cr  P2: ${game.vessel2!.credit}cr'
-                          : 'Credits: ${game.vessel.credit}',
-                      style: const TextStyle(
-                        color: Colors.greenAccent,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
                     ),
+                  const Spacer(),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -155,52 +194,54 @@ class OsdPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildVesselStats(Vessel vessel, String label) {
+  Widget _buildVesselStats(Vessel vessel, String playerLabel) {
     final dead = !vessel.visible || vessel.hp <= 0;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (game.isCoop)
-          SizedBox(
-            width: 22,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
             child: Text(
-              label,
+              playerLabel,
               style: TextStyle(
-                color: dead ? Colors.red : (label == 'P2' ? const Color(0xFF00FF80) : Colors.cyanAccent),
+                color: dead
+                    ? Colors.red
+                    : (playerLabel == 'P2'
+                        ? const Color(0xFF00FF80)
+                        : Colors.cyanAccent),
                 fontSize: 9,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-        Expanded(
-          child: HealthBar(
-            label: 'HP',
-            value: vessel.hp.toDouble(),
-            maxValue: vessel.hpMax.toDouble(),
-            color: Colors.red,
-            height: 10,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: HealthBar(
-            label: 'SH',
-            value: vessel.shield,
-            maxValue: vessel.shieldMax,
-            color: Colors.cyan,
-            height: 10,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: HealthBar(
-            label: 'PWR',
-            value: vessel.genValue,
-            maxValue: vessel.genMax,
-            color: Colors.yellow,
-            height: 10,
-          ),
-        ),
+        _staggeredBar(vessel.hp.toDouble(), vessel.hpMax.toDouble(),
+            Colors.redAccent, 'HP', 'icon_life',
+            indent: 0),
+        const SizedBox(height: 3),
+        _staggeredBar(vessel.shield, vessel.shieldMax,
+            Colors.cyanAccent, 'SH', 'icon_shield',
+            indent: 10),
+        const SizedBox(height: 3),
+        _staggeredBar(vessel.genValue, vessel.genMax,
+            Colors.amberAccent, 'PWR', 'icon_gen',
+            indent: 20),
       ],
+    );
+  }
+
+  Widget _buildCreditsWidget() {
+    return Text(
+      game.isCoop
+          ? 'P1: ${game.vessel.credit}cr\nP2: ${game.vessel2!.credit}cr'
+          : 'Credits: ${game.vessel.credit}',
+      textAlign: TextAlign.right,
+      style: const TextStyle(
+        color: Colors.greenAccent,
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }

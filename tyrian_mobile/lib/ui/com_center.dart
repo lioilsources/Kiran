@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flame/components.dart' show Sprite;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/dev_type.dart';
@@ -60,6 +61,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   // Per-skin visual theme
   late UiTheme _theme;
+
+  // Credit change animation
+  int _creditDelta = 0;
+  bool _showCreditDelta = false;
 
   // Gamepad polling
   final GamepadInput _gamepad = GamepadInput();
@@ -231,11 +236,19 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
-      _switchSection((_sectionIndex - 1).clamp(0, 2));
+      if (_showingSide) {
+        setState(() { _targetSideSlot = WeaponSlot.leftGun; _selectedWeaponIndex = 0; });
+      } else {
+        _switchSection((_sectionIndex - 1).clamp(0, 2));
+      }
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.keyD) {
-      _switchSection((_sectionIndex + 1).clamp(0, 2));
+      if (_showingSide) {
+        setState(() { _targetSideSlot = WeaponSlot.rightGun; _selectedWeaponIndex = 0; });
+      } else {
+        _switchSection((_sectionIndex + 1).clamp(0, 2));
+      }
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
@@ -255,12 +268,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   // ── Buy / Upgrade / Sell ──
 
+  void _animateCreditChange(int delta) {
+    setState(() {
+      _creditDelta = delta;
+      _showCreditDelta = true;
+    });
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _showCreditDelta = false);
+    });
+  }
+
   void _buyWeapon(DevType weapon) {
     if (vessel.credit < weapon.price) return;
     final slot = _showingSide ? _targetSideSlot : WeaponSlot.frontGun;
     vessel.credit -= weapon.price;
     vessel.equipWeapon(weapon, slot);
-    setState(() {});
+    _animateCreditChange(-weapon.price);
     game.saveProgress();
   }
 
@@ -269,6 +292,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     if (vessel.credit < weapon.price) return;
     vessel.credit -= weapon.price;
     vessel.equipWeapon(weapon, slot);
+    _animateCreditChange(-weapon.price);
     setState(() => _targetSideSlot = slot);
     game.saveProgress();
   }
@@ -281,15 +305,16 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
     vessel.credit -= cost;
     device.upgrade();
-    setState(() {});
+    _animateCreditChange(-cost);
     game.saveProgress();
   }
 
   void _sellWeapon(DevType weapon) {
     final device = vessel.devices.firstWhere((d) => d.name == weapon.name);
-    vessel.credit += device.price;
+    final gained = device.price;
+    vessel.credit += gained;
     vessel.removeWeapon(device.slot);
-    setState(() {});
+    _animateCreditChange(gained);
     game.saveProgress();
   }
 
@@ -302,7 +327,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     if (vessel.credit < cost) return;
     vessel.credit -= cost;
     device.upgrade();
-    setState(() {});
+    _animateCreditChange(-cost);
     game.saveProgress();
   }
 
@@ -311,9 +336,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     if (slot == WeaponSlot.generator) return; // generator cannot be sold
     final device = vessel.getDevice(slot);
     if (device == null) return;
-    vessel.credit += device.price;
+    final gained = device.price;
+    vessel.credit += gained;
     vessel.removeWeapon(slot);
-    setState(() {});
+    _animateCreditChange(gained);
     game.saveProgress();
   }
 
@@ -351,53 +377,61 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Column(
               children: [
                 _buildHeader(),
-                if (_cheatsEnabled) _buildCheatBar(),
-                // Compact stats strip
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: _buildPilotName()),
-                          const SizedBox(width: 12),
-                          _buildGenInfo(),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _buildShipPreview(),
-                          const SizedBox(width: 12),
-                          Expanded(child: _buildStatValues()),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      _buildSlotList(),
-                    ],
-                  ),
-                ),
-                Container(height: 1, color: _theme.accent.withAlpha(30)),
-                // Section tabs
-                _buildSectionTabs(),
-                Container(height: 1, color: _theme.accent.withAlpha(30)),
-                // Weapon cards — selected section only, full width
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                if (platform.isDesktop)
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildActiveSection(),
-                        const SizedBox(height: 16),
-                        _buildScoresPanel(),
+                        SizedBox(
+                          width: 460,
+                          child: Column(
+                            children: [
+                              if (_cheatsEnabled) _buildCheatBar(),
+                              _buildStatsAndSlots(),
+                              Container(height: 1, color: _theme.accent.withAlpha(30)),
+                              _buildSectionTabs(),
+                              Container(height: 1, color: _theme.accent.withAlpha(30)),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      _buildActiveSection(),
+                                      const SizedBox(height: 16),
+                                      _buildScoresPanel(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(width: 1, color: _theme.accent.withAlpha(30)),
+                        const Expanded(child: SizedBox.shrink()),
                       ],
                     ),
+                  )
+                else ...[
+                  if (_cheatsEnabled) _buildCheatBar(),
+                  _buildStatsAndSlots(),
+                  Container(height: 1, color: _theme.accent.withAlpha(30)),
+                  _buildSectionTabs(),
+                  Container(height: 1, color: _theme.accent.withAlpha(30)),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildActiveSection(),
+                          const SizedBox(height: 16),
+                          _buildScoresPanel(),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
                 _buildBottomBar(),
               ],
             ),
@@ -406,6 +440,38 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       ),
     );
   }
+
+  Widget _buildStatsAndSlots() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _buildPilotName()),
+              const SizedBox(width: 12),
+              Flexible(child: _buildGenInfo()),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildShipPreview(),
+              const SizedBox(width: 12),
+              Expanded(child: _buildStatValues()),
+            ],
+          ),
+          const SizedBox(height: 6),
+          _buildSlotList(),
+        ],
+      ),
+    );
+  }
+
+  double _fs(double mobile) => platform.isDesktop ? mobile + 2 : mobile;
 
   Widget _buildSectionTabs() {
     return Row(
@@ -440,7 +506,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               textAlign: TextAlign.center,
               style: _theme.styled(TextStyle(
                 color: isActive ? _theme.accent : _theme.accentDim,
-                fontSize: 11,
+                fontSize: _fs(11),
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                 letterSpacing: 1,
               )),
@@ -467,71 +533,31 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   Widget _buildWeaponGrid(List<DevType> weapons) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final cardWidth = (constraints.maxWidth - 8) / 2;
-        return Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (int i = 0; i < weapons.length; i++)
-              SizedBox(
-                width: cardWidth,
-                child: _buildWeaponCard(weapons[i], i),
-              ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Two independent columns — one per side slot.
-  Widget _buildSideSection() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
       children: [
-        Expanded(child: _buildSlotColumn(WeaponSlot.leftGun, 'LEFT')),
-        const SizedBox(width: 8),
-        Expanded(child: _buildSlotColumn(WeaponSlot.rightGun, 'RIGHT')),
+        for (int i = 0; i < weapons.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _buildWeaponCard(weapons[i], i),
+          ),
       ],
     );
   }
 
-  Widget _buildSlotColumn(WeaponSlot slot, String label) {
-    final isActive = _targetSideSlot == slot;
+  Widget _buildSideSection() {
     final slotDevice = vessel.devices.cast<Device?>().firstWhere(
-      (d) => d?.slot == slot,
+      (d) => d?.slot == _targetSideSlot,
       orElse: () => null,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GestureDetector(
-          onTap: () => setState(() => _targetSideSlot = slot),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-            decoration: BoxDecoration(
-              color: isActive ? _theme.surfaceLight : Colors.transparent,
-              border: Border.all(
-                color: isActive ? _theme.accent : _theme.accentDim,
-                width: isActive ? 1.5 : 0.5,
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(4),
-                topRight: Radius.circular(4),
-              ),
-            ),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: _theme.styled(TextStyle(
-                color: isActive ? _theme.accent : _theme.accentDim,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-              )),
-            ),
-          ),
+        Row(
+          children: [
+            _buildSideSubTab(WeaponSlot.leftGun, 'LEFT'),
+            Container(width: 1, color: _theme.accentDim),
+            _buildSideSubTab(WeaponSlot.rightGun, 'RIGHT'),
+          ],
         ),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -540,20 +566,46 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             slotDevice != null
                 ? '${slotDevice.name} Lv.${slotDevice.level}'
                 : '— empty —',
-            style: TextStyle(
+            style: _theme.styled(TextStyle(
               color: slotDevice != null ? _theme.success : _theme.accentDim,
               fontSize: 9,
-            ),
+            )),
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         for (int i = 0; i < _sideWeapons.length; i++)
           Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: _buildSlotWeaponCard(_sideWeapons[i], i, slot, isActive),
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _buildSlotWeaponCard(_sideWeapons[i], i, _targetSideSlot, true),
           ),
       ],
+    );
+  }
+
+  Widget _buildSideSubTab(WeaponSlot slot, String label) {
+    final isActive = _targetSideSlot == slot;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() {
+          _targetSideSlot = slot;
+          _selectedWeaponIndex = 0;
+        }),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          color: isActive ? _theme.surfaceLight : Colors.transparent,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: _theme.styled(TextStyle(
+              color: isActive ? _theme.accent : _theme.accentDim,
+              fontSize: _fs(10),
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              letterSpacing: 1,
+            )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -595,16 +647,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       child: AnimatedScale(
         scale: isSelected ? 1.04 : 1.0,
         duration: const Duration(milliseconds: 150),
-        child: spriteBox(
+        child: spriteCardBox(
           sprite: cardSprite,
-          darkOverlay: isSelected ? 0.0 : 0.35,
+          darkOverlay: isSelected ? 0.0 : (!owned && !canAfford ? 0.6 : 0.35),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(26),
             decoration: BoxDecoration(
               color: cardSprite != null
                   ? Colors.transparent
                   : (isSelected ? _theme.surfaceLight : _theme.surfaceMid),
-              border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
+              border: cardSprite != null
+                  ? null
+                  : Border.all(color: borderColor, width: isSelected ? 2 : 1),
               borderRadius: BorderRadius.circular(_theme.cornerRadius),
             ),
             child: Column(
@@ -612,51 +666,68 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               children: [
                 Text(
                   owned ? '${weapon.name} ${_romanLevel(slotDevice!.level)}' : weapon.name,
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: owned ? _theme.success : Colors.white,
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                  ),
+                  )),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
                     fontSize: 9,
-                  ),
+                  )),
+                  overflow: TextOverflow.ellipsis,
                 ),
+                if (weapon.guide > 0)
+                  Text(
+                    'GUIDED',
+                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 8, letterSpacing: 0.5)),
+                  ),
                 const SizedBox(height: 4),
                 if (owned)
                   Row(
                     children: [
-                      Text('OWNED', style: TextStyle(color: _theme.success, fontSize: 9)),
+                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 9))),
                       const Spacer(),
                       if (slotDevice!.level < Device.maxLevel)
                         Text(
                           '${slotDevice.price.toInt()}cr',
-                          style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
                         ),
                     ],
                   )
                 else
                   Text(
                     '${weapon.price} cr',
-                    style: TextStyle(
+                    style: _theme.styled(TextStyle(
                       color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                    ),
+                    )),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                if (isSelected) ...[
-                  const SizedBox(height: 4),
-                  _buildSlotCardAction(weapon, owned, canAfford, slotDevice, slot),
-                ],
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.easeInOut,
+                  child: isSelected
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 4),
+                            _buildSlotCardAction(weapon, owned, canAfford, slotDevice, slot),
+                          ],
+                        )
+                      : const SizedBox(width: double.infinity, height: 0),
+                ),
               ],
             ),
           ),
@@ -682,11 +753,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 child: Text(
                   atMax ? 'MAX' : 'UPGRADE',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                  ),
+                  )),
                 ),
               ),
             ),
@@ -702,7 +773,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
               child: Text(
                 'SELL',
-                style: TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold),
+                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -721,11 +792,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           child: Text(
             canAfford ? 'BUY' : 'NO CREDITS',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: _theme.styled(TextStyle(
               color: canAfford ? _theme.success : _theme.accentDim,
               fontSize: 9,
               fontWeight: FontWeight.bold,
-            ),
+            )),
           ),
         ),
       );
@@ -738,48 +809,84 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: _theme.accent.withAlpha(60))),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Long-press the title to toggle the hidden cheats panel (easter egg).
-          GestureDetector(
-            onLongPress: () {
-              setState(() => _cheatsEnabled = !_cheatsEnabled);
-              game.showMessage(
-                  _cheatsEnabled ? 'Cheats enabled' : 'Cheats disabled');
-            },
-            child: Text(
-              'COMMAND CENTER',
-              style: _theme.styled(TextStyle(
-                color: _theme.accent,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 3,
-              )),
-            ),
+          // Row 1: title + P2 name (co-op)
+          Row(
+            children: [
+              // Long-press the title to toggle the hidden cheats panel (easter egg).
+              GestureDetector(
+                onLongPress: () {
+                  setState(() => _cheatsEnabled = !_cheatsEnabled);
+                  game.showMessage(
+                      _cheatsEnabled ? 'Cheats enabled' : 'Cheats disabled');
+                },
+                child: Text(
+                  'COMMAND CENTER',
+                  style: _theme.styled(TextStyle(
+                    color: _theme.accent,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 3,
+                  )),
+                ),
+              ),
+              if (game.isCoop && game.vessel2 != null) ...[
+                const Spacer(),
+                Text(
+                  'P2: ${game.vessel2!.pilotName}',
+                  style: const TextStyle(color: Color(0xFF00FF80), fontSize: 12),
+                ),
+              ],
+            ],
           ),
-          const Spacer(),
-          Text(
-            'Credits: ${vessel.credit}',
-            style: _theme.styled(TextStyle(
-              color: _theme.success,
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-            )),
+          const SizedBox(height: 3),
+          // Row 2: credits (with delta animation) + IP on same line, no overlap
+          Row(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Text(
+                    'Credits: ${vessel.credit}',
+                    style: _theme.styled(TextStyle(
+                      color: _theme.success,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    )),
+                  ),
+                  if (_showCreditDelta)
+                    Positioned(
+                      top: -16,
+                      left: 0,
+                      child: AnimatedOpacity(
+                        opacity: _showCreditDelta ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 600),
+                        child: Text(
+                          _creditDelta >= 0
+                              ? '+$_creditDelta cr'
+                              : '$_creditDelta cr',
+                          style: TextStyle(
+                            color: _creditDelta >= 0 ? _theme.success : _theme.danger,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (game.coopRole == CoopRole.host && game.hostIp != null) ...[
+                const SizedBox(width: 10),
+                Text(
+                  'IP: ${game.hostIp}',
+                  style: TextStyle(color: _theme.accentDim, fontSize: 10),
+                ),
+              ],
+            ],
           ),
-          if (game.isCoop && game.vessel2 != null) ...[
-            const SizedBox(width: 12),
-            Text(
-              'P2: ${game.vessel2!.pilotName}',
-              style: const TextStyle(color: Color(0xFF00FF80), fontSize: 12),
-            ),
-          ],
-          if (game.coopRole == CoopRole.host && game.hostIp != null) ...[
-            const SizedBox(width: 12),
-            Text(
-              'IP: ${game.hostIp}',
-              style: TextStyle(color: _theme.accentDim, fontSize: 11),
-            ),
-          ],
         ],
       ),
     );
@@ -790,8 +897,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         ? AssetLibrary.instance.vesselFrames.first
         : AssetLibrary.instance.getSprite('vessel');
     return Container(
-      width: 72,
-      height: 56,
+      width: platform.isDesktop ? 110 : 72,
+      height: platform.isDesktop ? 85 : 56,
       decoration: BoxDecoration(
         border: Border.all(color: _theme.accent.withAlpha(40)),
         borderRadius: BorderRadius.circular(_theme.cornerRadius),
@@ -908,37 +1015,55 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
+  Widget? _statIcon(String key, {double size = 16}) {
+    final sprite = AssetLibrary.instance.getIcon(key);
+    return sprite == null
+        ? null
+        : SizedBox(
+            width: size,
+            height: size,
+            child: CustomPaint(painter: SpritePainter(sprite)),
+          );
+  }
+
   Widget _buildStatValues() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            _statChip('HP', '${vessel.hp}/${vessel.hpMax}', _theme.danger),
-            const SizedBox(width: 8),
-            _statChip('SH', '${vessel.shield.toInt()}/${vessel.shieldMax.toInt()}', _theme.accent),
-          ],
+        HealthBar(
+          label: 'HP',
+          value: vessel.hp.toDouble(),
+          maxValue: vessel.hpMax.toDouble(),
+          color: _theme.danger,
+          height: 10,
+          icon: _statIcon('icon_life'),
+        ),
+        const SizedBox(height: 4),
+        HealthBar(
+          label: 'SH',
+          value: vessel.shield,
+          maxValue: vessel.shieldMax,
+          color: _theme.accent,
+          height: 10,
+          icon: _statIcon('icon_shield'),
+        ),
+        const SizedBox(height: 4),
+        HealthBar(
+          label: 'GEN',
+          value: vessel.genValue,
+          maxValue: vessel.genMax,
+          color: _theme.upgrade,
+          height: 10,
+          icon: _statIcon('icon_gen'),
         ),
         const SizedBox(height: 4),
         Row(
           children: [
-            _statChip('GEN', '${vessel.genValue.toInt()}/${vessel.genMax.toInt()}', _theme.upgrade),
-            const SizedBox(width: 8),
-            _statChip('DPS', vessel.totalDps.toStringAsFixed(1), _theme.accent),
+            Text('DPS ', style: _theme.styled(TextStyle(color: _theme.accent, fontSize: _fs(10), fontWeight: FontWeight.bold))),
+            Text(vessel.totalDps.toStringAsFixed(1), style: _theme.styled(TextStyle(color: Colors.white70, fontSize: _fs(10)))),
           ],
         ),
       ],
-    );
-  }
-
-  Widget _statChip(String label, String value, Color color) {
-    return Expanded(
-      child: Row(
-        children: [
-          Text('$label ', style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
-          Text(value, style: const TextStyle(color: Colors.white70, fontSize: 10)),
-        ],
-      ),
     );
   }
 
@@ -962,19 +1087,30 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final name = device != null ? '${device.name} Lv.${device.level}' : '---';
     final color = device != null ? _theme.success : _theme.accentDim;
 
+    final slotIconKey = slot == WeaponSlot.generator ? 'icon_gen' : 'icon_bomb';
+    final slotIcon = _statIcon(slotIconKey, size: 12);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
         children: [
           SizedBox(
             width: 42,
-            child: Text(
-              '$label:',
-              style: TextStyle(color: _theme.accentDim, fontSize: 10),
+            child: Row(
+              children: [
+                if (slotIcon != null) ...[slotIcon, const SizedBox(width: 3)],
+                Expanded(
+                  child: Text(
+                    '$label:',
+                    style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: _fs(10))),
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
-            child: Text(name, style: TextStyle(color: color, fontSize: 10)),
+            child: Text(name, style: _theme.styled(TextStyle(color: color, fontSize: _fs(10)))),
           ),
           if (device != null && slot != WeaponSlot.generator) ...[
             GestureDetector(
@@ -990,7 +1126,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
                 child: Text(
                   device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                  style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(8))),
                 ),
               ),
             ),
@@ -1004,7 +1140,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
                 child: Text(
                   'SELL',
-                  style: TextStyle(color: _theme.danger, fontSize: 8),
+                  style: _theme.styled(TextStyle(color: _theme.danger, fontSize: _fs(8))),
                 ),
               ),
             ),
@@ -1022,7 +1158,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
                 child: Text(
                   device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                  style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(8))),
                 ),
               ),
             ),
@@ -1032,12 +1168,39 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   Widget _buildGenInfo() {
-    return Text(
-      vessel.genInfo,
-      style: TextStyle(
-        color: vessel.generatorLoad > 100 ? _theme.danger : _theme.upgrade,
-        fontSize: 10,
-      ),
+    final load = vessel.generatorLoad;
+    final color = load > 100 ? _theme.danger : (load > 70 ? _theme.upgrade : _theme.success);
+    final barRatio = (load / 100).clamp(0.0, 1.0);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('PWR ', style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: _fs(9)))),
+            Text('${load.round()}%', style: _theme.styled(TextStyle(color: color, fontSize: _fs(9), fontWeight: FontWeight.bold))),
+          ],
+        ),
+        const SizedBox(height: 3),
+        SizedBox(
+          width: 64,
+          height: 6,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: Stack(
+              children: [
+                Container(color: Colors.black45),
+                FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: barRatio,
+                  child: Container(color: color),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -1087,34 +1250,34 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   width: 18,
                   child: Text(
                     '${i + 1}.',
-                    style: TextStyle(
+                    style: _theme.styled(TextStyle(
                       color: i < 3 ? _theme.accent : _theme.accentDim,
                       fontSize: 9,
-                    ),
+                    )),
                   ),
                 ),
                 Expanded(
                   child: Text(
                     _highScores[i].name,
-                    style: TextStyle(
+                    style: _theme.styled(TextStyle(
                       color: i < 3 ? _theme.accent : _theme.accentDim,
                       fontSize: 9,
-                    ),
+                    )),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
                   'Lv${_highScores[i].level}',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   '${_highScores[i].score}',
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: i < 3 ? _theme.upgrade : _theme.accentDim,
                     fontSize: 9,
                     fontWeight: i < 3 ? FontWeight.bold : FontWeight.normal,
-                  ),
+                  )),
                 ),
               ],
             ),
@@ -1152,16 +1315,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       child: AnimatedScale(
         scale: isSelected ? 1.04 : 1.0,
         duration: const Duration(milliseconds: 150),
-        child: spriteBox(
+        child: spriteCardBox(
           sprite: cardSprite,
-          darkOverlay: isSelected ? 0.0 : 0.35,
+          darkOverlay: isSelected ? 0.0 : (!owned && !canAfford ? 0.6 : 0.35),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(26),
             decoration: BoxDecoration(
               color: cardSprite != null
                   ? Colors.transparent
                   : (isSelected ? _theme.surfaceLight : _theme.surfaceMid),
-              border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
+              border: cardSprite != null
+                  ? null
+                  : Border.all(color: borderColor, width: isSelected ? 2 : 1),
               borderRadius: BorderRadius.circular(_theme.cornerRadius),
             ),
             child: Column(
@@ -1169,49 +1334,68 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               children: [
                 Text(
                   owned ? '${weapon.name} ${_romanLevel(device!.level)}' : weapon.name,
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: owned ? _theme.success : Colors.white,
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                  ),
+                  )),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
                     fontSize: 9,
-                  ),
+                  )),
+                  overflow: TextOverflow.ellipsis,
                 ),
+                if (weapon.guide > 0)
+                  Text(
+                    'GUIDED',
+                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 8, letterSpacing: 0.5)),
+                  ),
                 const SizedBox(height: 4),
                 if (owned)
                   Row(
                     children: [
-                      Text('OWNED', style: TextStyle(color: _theme.success, fontSize: 9)),
+                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 9))),
                       const Spacer(),
                       if (device!.level < Device.maxLevel)
                         Text(
                           '${device.price}cr',
-                          style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
                         ),
                     ],
                   )
                 else
                   Text(
                     '${weapon.price} cr',
-                    style: TextStyle(
+                    style: _theme.styled(TextStyle(
                       color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                    ),
+                    )),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                const SizedBox(height: 4),
-                if (isSelected) _buildCardAction(weapon, owned, canAfford, device),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.easeInOut,
+                  child: isSelected
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 4),
+                            _buildCardAction(weapon, owned, canAfford, device),
+                          ],
+                        )
+                      : const SizedBox(width: double.infinity, height: 0),
+                ),
               ],
             ),
           ),
@@ -1237,11 +1421,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 child: Text(
                   atMax ? 'MAX' : 'UPGRADE',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                  ),
+                  )),
                 ),
               ),
             ),
@@ -1257,7 +1441,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
               child: Text(
                 'SELL',
-                style: TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold),
+                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -1276,11 +1460,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           child: Text(
             canAfford ? 'BUY' : 'NO CREDITS',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: _theme.styled(TextStyle(
               color: canAfford ? _theme.success : _theme.accentDim,
               fontSize: 9,
               fontWeight: FontWeight.bold,
-            ),
+            )),
           ),
         ),
       );
@@ -1296,6 +1480,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       (d) => d?.slot == WeaponSlot.generator,
       orElse: () => null,
     );
+    final cardSprite = AssetLibrary.instance.getIcon('ui_card_bg');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1322,15 +1507,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             });
             _confirmAction();
           },
-          child: Container(
-            padding: const EdgeInsets.all(8),
+          child: spriteCardBox(
+            sprite: cardSprite,
+            darkOverlay: isFocused ? 0.0 : 0.35,
+            child: Container(
+            padding: const EdgeInsets.all(26),
             decoration: BoxDecoration(
-              color: isFocused ? _theme.surfaceLight : _theme.surfaceMid,
-              border: Border.all(
-                color: isFocused ? _theme.accent : _theme.success.withAlpha(120),
-                width: isFocused ? 2 : 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
+              color: cardSprite != null
+                  ? Colors.transparent
+                  : (isFocused ? _theme.surfaceLight : _theme.surfaceMid),
+              border: cardSprite != null
+                  ? null
+                  : Border.all(
+                      color: isFocused ? _theme.accent : _theme.success.withAlpha(120),
+                      width: isFocused ? 2 : 1,
+                    ),
+              borderRadius: BorderRadius.circular(_theme.cornerRadius),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1349,21 +1541,23 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   'PWR: +${gen.pwrGen.toStringAsFixed(2)}/fr',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'Cap: ${vessel.genMax.toInt()}',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 9),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Text('OWNED', style: TextStyle(color: _theme.success, fontSize: 9)),
+                    Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 9))),
                     const Spacer(),
                     if (device != null && device.level < Device.maxLevel)
                       Text(
                         '${device.price.toInt()}cr',
-                        style: TextStyle(color: _theme.upgrade, fontSize: 8),
+                        style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
                       ),
                   ],
                 ),
@@ -1385,13 +1579,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       child: Text(
                         device.level >= Device.maxLevel ? 'MAX' : 'UPGRADE',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: _theme.styled(TextStyle(
                           color: device.level >= Device.maxLevel
                               ? _theme.accentDim
                               : _theme.upgrade,
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
-                        ),
+                        )),
                       ),
                     ),
                   ),
@@ -1399,17 +1593,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ],
             ),
           ),
+          ),
         ),
       ],
     );
   }
 
-  String _romanLevel(int level) {
-    const numerals = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
-      'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
-      'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV'];
-    return level >= 0 && level < numerals.length ? numerals[level] : '$level';
-  }
+  String _romanLevel(int level) => 'Lv.$level';
 
   Widget _buildStartButton(String label) {
     final btnSprite = AssetLibrary.instance.getIcon('ui_button');
