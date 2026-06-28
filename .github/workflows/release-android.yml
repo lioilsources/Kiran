@@ -60,8 +60,15 @@ jobs:
         working-directory: tyrian_mobile
         run: flutter build apk --release
 
+      - name: Verify APK signing certificate
+        run: |
+          APK="tyrian_mobile/build/app/outputs/flutter-apk/app-release.apk"
+          echo "=== APK signing certificate ==="
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | sort -V | tail -1)/apksigner verify --print-certs "$APK" | head -20
+
       - name: Upload to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
+        continue-on-error: true
         uses: softprops/action-gh-release@v2
         with:
           files: |
