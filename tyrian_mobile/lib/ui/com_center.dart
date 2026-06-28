@@ -471,7 +471,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
-  double _fs(double mobile) => platform.isDesktop ? mobile + 2 : mobile;
+  double _fs(double mobile) => platform.isDesktop ? mobile + 4 : mobile + 2;
 
   Widget _buildSectionTabs() {
     return Row(
@@ -568,7 +568,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 : '— empty —',
             style: _theme.styled(TextStyle(
               color: slotDevice != null ? _theme.success : _theme.accentDim,
-              fontSize: 9,
+              fontSize: 11,
             )),
             overflow: TextOverflow.ellipsis,
           ),
@@ -668,7 +668,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   owned ? '${weapon.name} ${_romanLevel(slotDevice!.level)}' : weapon.name,
                   style: _theme.styled(TextStyle(
                     color: owned ? _theme.success : Colors.white,
-                    fontSize: 11,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   )),
                   overflow: TextOverflow.ellipsis,
@@ -676,32 +676,32 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 11)),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
                   style: _theme.styled(TextStyle(
                     color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
-                    fontSize: 9,
+                    fontSize: 11,
                   )),
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (weapon.guide > 0)
                   Text(
                     'GUIDED',
-                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 8, letterSpacing: 0.5)),
+                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 10, letterSpacing: 0.5)),
                   ),
                 const SizedBox(height: 4),
                 if (owned)
                   Row(
                     children: [
-                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 9))),
+                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 11))),
                       const Spacer(),
                       if (slotDevice!.level < Device.maxLevel)
                         Text(
                           '${slotDevice.price.toInt()}cr',
-                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
+                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
                         ),
                     ],
                   )
@@ -710,7 +710,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     '${weapon.price} cr',
                     style: _theme.styled(TextStyle(
                       color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     )),
                     overflow: TextOverflow.ellipsis,
@@ -755,7 +755,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   textAlign: TextAlign.center,
                   style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
-                    fontSize: 9,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                   )),
                 ),
@@ -773,7 +773,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
               child: Text(
                 'SELL',
-                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold)),
+                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 11, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -794,7 +794,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             textAlign: TextAlign.center,
             style: _theme.styled(TextStyle(
               color: canAfford ? _theme.success : _theme.accentDim,
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: FontWeight.bold,
             )),
           ),
@@ -853,7 +853,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     'Credits: ${vessel.credit}',
                     style: _theme.styled(TextStyle(
                       color: _theme.success,
-                      fontSize: 13,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     )),
                   ),
@@ -995,10 +995,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   Widget _buildPilotName() {
     return TextField(
       controller: _pilotController,
-      style: const TextStyle(color: Colors.white, fontSize: 13),
+      style: const TextStyle(color: Colors.white, fontSize: 15),
       decoration: InputDecoration(
         labelText: 'Pilot',
-        labelStyle: TextStyle(color: _theme.accentDim, fontSize: 12),
+        labelStyle: TextStyle(color: _theme.accentDim, fontSize: 13),
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 4),
         enabledBorder: UnderlineInputBorder(
@@ -1035,26 +1035,29 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           value: vessel.hp.toDouble(),
           maxValue: vessel.hpMax.toDouble(),
           color: _theme.danger,
-          height: 10,
+          height: 12,
           icon: _statIcon('icon_life'),
+          labelStyle: _theme.styled(TextStyle(color: _theme.danger, fontSize: 12, fontWeight: FontWeight.bold)),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 5),
         HealthBar(
           label: 'SH',
           value: vessel.shield,
           maxValue: vessel.shieldMax,
           color: _theme.accent,
-          height: 10,
+          height: 12,
           icon: _statIcon('icon_shield'),
+          labelStyle: _theme.styled(TextStyle(color: _theme.accent, fontSize: 12, fontWeight: FontWeight.bold)),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 5),
         HealthBar(
           label: 'GEN',
           value: vessel.genValue,
           maxValue: vessel.genMax,
           color: _theme.upgrade,
-          height: 10,
+          height: 12,
           icon: _statIcon('icon_gen'),
+          labelStyle: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 12, fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 4),
         Row(
@@ -1252,7 +1255,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     '${i + 1}.',
                     style: _theme.styled(TextStyle(
                       color: i < 3 ? _theme.accent : _theme.accentDim,
-                      fontSize: 9,
+                      fontSize: 11,
                     )),
                   ),
                 ),
@@ -1261,7 +1264,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     _highScores[i].name,
                     style: _theme.styled(TextStyle(
                       color: i < 3 ? _theme.accent : _theme.accentDim,
-                      fontSize: 9,
+                      fontSize: 11,
                     )),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1275,7 +1278,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   '${_highScores[i].score}',
                   style: _theme.styled(TextStyle(
                     color: i < 3 ? _theme.upgrade : _theme.accentDim,
-                    fontSize: 9,
+                    fontSize: 11,
                     fontWeight: i < 3 ? FontWeight.bold : FontWeight.normal,
                   )),
                 ),
@@ -1336,7 +1339,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   owned ? '${weapon.name} ${_romanLevel(device!.level)}' : weapon.name,
                   style: _theme.styled(TextStyle(
                     color: owned ? _theme.success : Colors.white,
-                    fontSize: 11,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   )),
                   overflow: TextOverflow.ellipsis,
@@ -1344,32 +1347,32 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 const SizedBox(height: 4),
                 Text(
                   'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
+                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 11)),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
                   style: _theme.styled(TextStyle(
                     color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
-                    fontSize: 9,
+                    fontSize: 11,
                   )),
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (weapon.guide > 0)
                   Text(
                     'GUIDED',
-                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 8, letterSpacing: 0.5)),
+                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 10, letterSpacing: 0.5)),
                   ),
                 const SizedBox(height: 4),
                 if (owned)
                   Row(
                     children: [
-                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 9))),
+                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 11))),
                       const Spacer(),
                       if (device!.level < Device.maxLevel)
                         Text(
                           '${device.price}cr',
-                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
+                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
                         ),
                     ],
                   )
@@ -1378,7 +1381,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     '${weapon.price} cr',
                     style: _theme.styled(TextStyle(
                       color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     )),
                     overflow: TextOverflow.ellipsis,
@@ -1423,7 +1426,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   textAlign: TextAlign.center,
                   style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
-                    fontSize: 9,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                   )),
                 ),
@@ -1441,7 +1444,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
               child: Text(
                 'SELL',
-                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 9, fontWeight: FontWeight.bold)),
+                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 11, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -1462,7 +1465,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             textAlign: TextAlign.center,
             style: _theme.styled(TextStyle(
               color: canAfford ? _theme.success : _theme.accentDim,
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: FontWeight.bold,
             )),
           ),
@@ -1489,7 +1492,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           'GENERATOR',
           style: _theme.styled(TextStyle(
             color: isFocused ? _theme.accent : _theme.accentDim,
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
           )),
@@ -1583,7 +1586,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                           color: device.level >= Device.maxLevel
                               ? _theme.accentDim
                               : _theme.upgrade,
-                          fontSize: 9,
+                          fontSize: 11,
                           fontWeight: FontWeight.bold,
                         )),
                       ),

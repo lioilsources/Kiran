@@ -207,7 +207,7 @@ class UiTheme {
       success:  Colors.greenAccent,
       upgrade:  Colors.yellowAccent,
       cornerRadius: 6.0,
-      applyFont: null,
+      applyFont: (s) => GoogleFonts.orbitron(textStyle: s),
     ),
   };
 }

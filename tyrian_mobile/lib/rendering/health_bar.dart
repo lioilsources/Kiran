@@ -11,6 +11,7 @@ class HealthBar extends StatelessWidget {
   final double height;
   final Widget? icon;
   final int segments;
+  final TextStyle? labelStyle;
 
   const HealthBar({
     super.key,
@@ -22,6 +23,7 @@ class HealthBar extends StatelessWidget {
     this.height = 10,
     this.icon,
     this.segments = 5,
+    this.labelStyle,
   });
 
   @override
@@ -43,11 +45,12 @@ class HealthBar extends StatelessWidget {
             children: [
               Text(
                 '$label  ${value.toInt()} / ${maxValue.toInt()}',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: labelStyle ??
+                    const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 2),
               Row(
