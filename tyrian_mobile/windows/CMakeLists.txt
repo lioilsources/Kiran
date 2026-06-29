@@ -2,6 +2,11 @@
 cmake_minimum_required(VERSION 3.14)
 project(tyrian_mobile LANGUAGES CXX)
 
+# just_audio_windows uses <experimental/coroutine>, which recent MSVC removed
+# (error STL1011). Silence it for all targets (incl. plugins) until the plugin
+# migrates to the C++20 <coroutine> header.
+add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "tyrian_mobile")
