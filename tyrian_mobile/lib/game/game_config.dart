@@ -78,6 +78,29 @@ const double upgCooldownDivisor = 1.02;
 const double upgPwrGenMultiplier = 1.255;
 const double upgGenMaxMultiplier = 1.2;
 
+// --- Adaptive music ---------------------------------------------------------
+// The soundtrack is N intensity tiers (theme_1..theme_N) plus a one-shot
+// heroic `intro` per sector. MusicDirector computes a live "threat" score each
+// tick and crossfades MusicService between tiers. All values are tunable.
+const int musicTierCount = 5;            // theme_1 (calm) .. theme_5 (boss)
+const double musicCrossfadeSeconds = 1.5; // tier crossfade duration
+const double musicMinDwellSeconds = 3.0;  // min time on a tier before stepping (anti-flap)
+const double musicDirectorInterval = 0.25; // threat re-evaluation period (~4 Hz)
+const double musicMasterVolume = 0.55;    // music sits under SFX
+const double musicMaxIntroSeconds = 20.0;  // hard cap: hand over to tiers even if intro never reports completion
+
+// Threat formula weights (see MusicDirector._computeThreat).
+const double musicWCount = 1.0;   // per active hostile on screen
+const double musicWDmg = 0.15;    // per point of summed hostile collision damage
+const double musicWProj = 0.4;    // per enemy projectile in flight
+const double musicKOff = 1.5;     // how much player offense lowers perceived threat
+const double musicKSurv = 1.0;    // how much low survivability raises perceived threat
+const double musicRefOffense = 250.0; // offense value that counts as "fully armed" (0..1)
+
+// Tier boundaries on the threat score (length = musicTierCount - 1, ascending).
+// threat < t1 → tier 1; t1..t2 → tier 2; … ; >= t4 → tier 5. Boss overrides to max.
+const List<double> musicThresholds = [3.0, 8.0, 16.0, 28.0];
+
 // Entity glow halo colors — color-coded by danger tier
 // Full alpha: BlurStyle.outer spreads the color outward; alpha = peak glow intensity.
 const Color vesselGlowColor    = Color(0xFF00FFEE); // cyan

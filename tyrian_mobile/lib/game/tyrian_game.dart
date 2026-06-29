@@ -24,6 +24,8 @@ import '../systems/dev_type.dart';
 import '../entities/projectile.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
+import '../services/music_service.dart';
+import '../systems/music_director.dart';
 import '../rendering/batch_renderer.dart';
 import '../entities/shard.dart';
 import '../rendering/beam_renderer.dart';
@@ -100,6 +102,17 @@ class TyrianGame extends FlameGame
     }
     return count;
   }
+
+  /// True while any active fleet has a living boss-tier hostile (boss music).
+  bool get bossActive {
+    for (final f in activeFleets) {
+      if (f.hasActiveBoss) return true;
+    }
+    return false;
+  }
+
+  /// Adaptive-music director — created in onLoad, ticked while playing.
+  MusicDirector? musicDirector;
 
   int get projectileCount {
     int count = enemyProjectiles.length;
@@ -195,6 +208,7 @@ class TyrianGame extends FlameGame
     // Start in comCenter state
     state = GameState.comCenter;
     vessel.visible = false;
+    musicDirector = MusicDirector(this);
     isLoaded = true;
     onLoaded?.call();
   }
@@ -249,6 +263,13 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     loadSector(currentSectorIndex);
+    _startSectorMusic();
+  }
+
+  /// Kick off the heroic intro + reset the adaptive-music director for a sector.
+  void _startSectorMusic() {
+    musicDirector?.reset();
+    MusicService.instance.startSector();
   }
 
   void loadSector(int index) {
@@ -358,6 +379,10 @@ class TyrianGame extends FlameGame
     }
     shaderPipeline.setDamageFlash(maxFlash);
 
+    // Adaptive music: re-evaluate intensity and advance tier crossfades.
+    musicDirector?.update(dt);
+    MusicService.instance.update(dt);
+
     // Check sector completion
     if (currentSector != null && currentSector!.isComplete) {
       _onSectorComplete();
@@ -373,6 +398,7 @@ class TyrianGame extends FlameGame
 
   void _onSectorComplete() {
     SoundService.instance.play(SfxEvent.sectorComplete);
+    MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
     vessel.credit += currentSector!.sectorBonus;
     if (vessel2 != null) vessel2!.credit += currentSector!.sectorBonus;
 
@@ -465,16 +491,19 @@ class TyrianGame extends FlameGame
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
     }
+    _startSectorMusic();
   }
 
   void togglePause() {
     if (state == GameState.playing) {
       state = GameState.paused;
+      MusicService.instance.setPaused(true);
       if (coopRole == CoopRole.host && coopHost != null) {
         coopHost!.sendEvent(EventType.paused);
       }
     } else if (state == GameState.paused) {
       state = GameState.playing;
+      MusicService.instance.setPaused(false);
       if (coopRole == CoopRole.host && coopHost != null) {
         coopHost!.sendEvent(EventType.resumed);
       }
@@ -484,6 +513,7 @@ class TyrianGame extends FlameGame
 
   void triggerGameOver() {
     SoundService.instance.play(SfxEvent.gameOver);
+    MusicService.instance.stop();
     state = GameState.gameOver;
     onGameOver?.call();
   }

@@ -319,4 +319,8 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       type == HostType.falconxb ||
       type == HostType.falconxt ||
       type == HostType.bouncer;
+
+  /// True while a boss-tier hostile is alive in this fleet (drives boss music).
+  bool get hasActiveBoss =>
+      hostiles.any((h) => !h.isDead && _isBossTier(h.hostType));
 }

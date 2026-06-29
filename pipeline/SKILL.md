@@ -76,6 +76,41 @@ Output: `output/assets/skins/<skin_id>/sfx/<name>.mp3`
 SFX names (10 per skin): `fire_bullet`, `fire_beam`, `hit_shield`, `hit_hull`,
 `explosion_small`, `explosion_large`, `pickup`, `weapon_unlock`, `sector_complete`, `game_over`
 
+## Stage 2b — Generate music (adaptive soundtrack)
+
+Generates the per-skin adaptive soundtrack via the **Eleven Music** API
+(`/v1/music/compose`, not the SFX endpoint — SFX caps at ~22 s, music needs
+30–60 s loops). 6 tracks per skin: a heroic `intro` (one-shot) + 5 intensity
+tiers (`theme_1` calm … `theme_5` boss). All tiers of one skin share the
+`MusicStyle`/`MusicTempo`/`MusicKey` fields so runtime crossfades stay coherent.
+
+```bash
+# All skins with MusicStyle defined
+go run ./cmd/generate -music
+
+# Single skin
+go run ./cmd/generate -music -skin geometry_wars
+
+# Dry-run: print prompts
+go run ./cmd/generate -music -dry-run
+```
+
+Output: `output/assets/skins/<skin_id>/music/<name>.mp3`
+
+Music names (6 per skin): `intro`, `theme_1`, `theme_2`, `theme_3`, `theme_4`,
+`theme_5`.
+
+> ⚠️ Eleven Music is billed per generation and is much heavier than SFX — pace
+> rollout (resume-skips existing files) and verify quality before doing all skins.
+
+> 📝 Prompt voice: `MusicStyle` is written in the same rich, era-grounded voice as
+> the art prompts (`ArtDirective`), BUT describes the *sound* — hardware, genre,
+> instrumentation, mood — rather than naming games, soundtracks or living
+> composers. Unlike the local ComfyUI image models, Eleven Music is a hosted
+> service with content moderation that can reject or ignore trademark/artist
+> references. Hardware/era descriptors (TIA chip, OPL3 AdLib/Sound Blaster,
+> TurboGrafx-16) are fine and evocative.
+
 ## Stage 3 — Tune prompts (optional)
 
 Iterative loop: generate → vision-LLM score → instruct-LLM refine → repeat.
@@ -185,7 +220,8 @@ dart run tool/pack_atlas.dart
 | `ui_card_bg` | ui/ | exact resize, opaque |
 | `ui_button` | ui/ | exact resize, opaque |
 | `ui_tab_active` | ui/ | exact resize, opaque |
-| `sfx` | sfx/ | ffmpeg MP3→OGG loudnorm |
+| `sfx` | sfx/ | ffmpeg MP3→OGG loudnorm (I=-14) |
+| `music` | music/ | ffmpeg MP3→OGG loudnorm (I=-16, 128k) |
 
 ## Skin definition
 
@@ -194,4 +230,5 @@ Skins live in `pipeline/internal/skin/definitions.go`. Each `SkinDef` has:
 - `PonyStyleKeywords`, `PonyPaletteDescription` — SDXL/Pony overrides
 - `SpriteSize`, `FrameCount` — generation params
 - `PostProcess` — shader preset (`scanlines`, `bloom`, `vignette`, `film_grain`, `grid_distort`)
-- `GoogleFont`, `SfxStyle` — UI font and audio style
+- `GoogleFont`, `SfxStyle` — UI font and SFX audio style
+- `MusicStyle`, `MusicTempo`, `MusicKey` — adaptive soundtrack style (Stage 2b)

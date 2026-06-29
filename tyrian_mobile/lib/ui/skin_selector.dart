@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
+import '../services/music_service.dart';
 import '../services/skin_registry.dart';
 import '../game/platform_config.dart' as platform;
 import '../input/gamepad_input.dart';
@@ -81,6 +82,7 @@ class _SkinSelectorState extends State<SkinSelector> {
     await prefs.setString('selected_skin', id);
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
+    await MusicService.instance.loadSkin(id);
     widget.onPlay();
   }
 

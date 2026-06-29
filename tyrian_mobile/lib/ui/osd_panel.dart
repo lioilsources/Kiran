@@ -4,6 +4,7 @@ import '../entities/vessel.dart';
 import '../rendering/health_bar.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
+import '../services/music_service.dart';
 import 'skin_painter.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
@@ -160,6 +161,22 @@ class OsdPanel extends StatelessWidget {
                             SoundService.instance.muted
                                 ? Icons.volume_off
                                 : Icons.volume_up,
+                            color: Colors.white70,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          MusicService.instance.toggleMute();
+                          onMuteToggle?.call();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            MusicService.instance.muted
+                                ? Icons.music_off
+                                : Icons.music_note,
                             color: Colors.white70,
                             size: 18,
                           ),

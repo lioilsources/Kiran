@@ -14,6 +14,7 @@ import (
 	"tyrian-pipeline/internal/comfyuiimage"
 	"tyrian-pipeline/internal/generator"
 	"tyrian-pipeline/internal/imagegen"
+	"tyrian-pipeline/internal/musicgen"
 	"tyrian-pipeline/internal/pipeline"
 	"tyrian-pipeline/internal/sfxgen"
 	"tyrian-pipeline/internal/skin"
@@ -31,6 +32,7 @@ func main() {
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
 	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
+	musicMode := flag.Bool("music", false, "Generate adaptive music via Eleven Music instead of images")
 	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI job")
 	comfyWorkflow := flag.String("comfyui-workflow", "flux", "ComfyUI workflow: flux or pony")
 	comfyCheckpoint := flag.String("comfyui-checkpoint", "", "Override checkpoint name in ComfyUI workflow node 4")
@@ -39,6 +41,11 @@ func main() {
 
 	if *sfxMode {
 		runSfxGeneration(*skinID, *outDir, *dryRun)
+		return
+	}
+
+	if *musicMode {
+		runMusicGeneration(*skinID, *outDir, *dryRun)
 		return
 	}
 
@@ -123,6 +130,17 @@ func main() {
 						baseName := strings.TrimSuffix(strings.TrimSuffix(e.Name(), ".mp3"), ".ogg")
 						inputs = append(inputs, skin.ManifestAssetInput{
 							Name: baseName, AssetType: "sfx", OutputDir: "sfx",
+						})
+					}
+				}
+			}
+			musicDir := filepath.Join(skinDir, "music")
+			if entries, err := os.ReadDir(musicDir); err == nil {
+				for _, e := range entries {
+					if !e.IsDir() && (strings.HasSuffix(e.Name(), ".mp3") || strings.HasSuffix(e.Name(), ".ogg")) {
+						baseName := strings.TrimSuffix(strings.TrimSuffix(e.Name(), ".mp3"), ".ogg")
+						inputs = append(inputs, skin.ManifestAssetInput{
+							Name: baseName, AssetType: "music", OutputDir: "music",
 						})
 					}
 				}
@@ -250,6 +268,99 @@ func runSfxGeneration(skinID, outDir string, dryRun bool) {
 
 	elapsed := time.Since(start)
 	fmt.Printf("\n=== SFX Summary ===\n")
+	fmt.Printf("Generated: %d | Skipped: %d\n", generated, skipped)
+	fmt.Printf("Elapsed: %s\n", elapsed.Round(time.Millisecond))
+}
+
+func runMusicGeneration(skinID, outDir string, dryRun bool) {
+	apiKey := os.Getenv("ELEVENLABS_API_KEY")
+	if apiKey == "" && !dryRun {
+		fmt.Fprintln(os.Stderr, "Error: ELEVENLABS_API_KEY is required for music generation (or use -dry-run)")
+		os.Exit(1)
+	}
+
+	var skins []skin.SkinDef
+	if skinID != "" {
+		s, ok := skin.GetSkin(skinID)
+		if !ok {
+			fmt.Fprintf(os.Stderr, "Error: unknown skin %q\nAvailable skins: %s\n", skinID, availableSkins())
+			os.Exit(1)
+		}
+		skins = append(skins, s)
+	} else {
+		skins = skin.AllSkins()
+	}
+
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	var client *musicgen.Client
+	if !dryRun {
+		client = musicgen.NewClient(apiKey)
+	}
+
+	fmt.Println("Note: Eleven Music is billed per generation and is far heavier than SFX —")
+	fmt.Printf("      %d tracks/skin × %d skin(s). Generate in phases and verify quality.\n", len(musicgen.MusicSpecs), len(skins))
+
+	start := time.Now()
+	var generated, skipped int
+
+	for _, s := range skins {
+		if s.MusicStyle == "" {
+			fmt.Printf("Skipping %s (no MusicStyle defined)\n", s.ID)
+			continue
+		}
+
+		musicDir := filepath.Join(outDir, s.ID, "music")
+		if err := os.MkdirAll(musicDir, 0755); err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating dir %s: %v\n", musicDir, err)
+			continue
+		}
+
+		fmt.Printf("\n--- Music: %s (%s) ---\n", s.Name, s.ID)
+
+		for _, spec := range musicgen.MusicSpecs {
+			outPath := filepath.Join(musicDir, spec.Name+".mp3")
+			if _, err := os.Stat(outPath); err == nil {
+				fmt.Printf("  [skip] %s (exists)\n", spec.Name)
+				skipped++
+				continue
+			}
+
+			prompt := musicgen.BuildMusicPrompt(s.MusicStyle, s.MusicTempo, s.MusicKey, spec)
+			if dryRun {
+				fmt.Printf("  [dry] %s (%ds): %s\n", spec.Name, spec.DurationSec, prompt)
+				continue
+			}
+
+			fmt.Printf("  [gen] %s (%ds) ...", spec.Name, spec.DurationSec)
+			data, err := client.Generate(ctx, musicgen.GenerateRequest{
+				Prompt:        prompt,
+				MusicLengthMs: spec.DurationSec * 1000,
+			})
+			if err != nil {
+				fmt.Printf(" FAILED: %v\n", err)
+				continue
+			}
+			if err := os.WriteFile(outPath, data, 0644); err != nil {
+				fmt.Printf(" WRITE ERROR: %v\n", err)
+				continue
+			}
+			fmt.Printf(" OK (%d bytes)\n", len(data))
+			generated++
+
+			// Music generation is expensive — pace requests conservatively.
+			select {
+			case <-ctx.Done():
+				fmt.Println("\nInterrupted")
+				return
+			case <-time.After(5 * time.Second):
+			}
+		}
+	}
+
+	elapsed := time.Since(start)
+	fmt.Printf("\n=== Music Summary ===\n")
 	fmt.Printf("Generated: %d | Skipped: %d\n", generated, skipped)
 	fmt.Printf("Elapsed: %s\n", elapsed.Round(time.Millisecond))
 }

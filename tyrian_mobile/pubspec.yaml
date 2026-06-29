@@ -79,11 +79,13 @@ flutter:
     - assets/skins/default/sprites/
     - assets/skins/default/ui/
     - assets/skins/default/sfx/
+    - assets/skins/default/music/
     - assets/skins/default/atlas.png
     - assets/skins/default/atlas.json
     - assets/skins/geometry_wars/sprites/
     - assets/skins/geometry_wars/ui/
     - assets/skins/geometry_wars/sfx/
+    - assets/skins/geometry_wars/music/
     - assets/skins/geometry_wars/backgrounds/
     - assets/skins/geometry_wars/atlas.png
     - assets/skins/geometry_wars/atlas.json

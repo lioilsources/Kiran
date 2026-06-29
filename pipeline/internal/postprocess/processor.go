@@ -37,81 +37,91 @@ func DefaultConfig() Config {
 
 // Run executes the full postprocess pipeline for one skin.
 func Run(cfg Config) error {
-	// Read manifest
+	// Read manifest. Audio-only skins (the hand-authored `default`, or any
+	// `-music`/`-sfx`-only generation) have no image manifest — that's fine, we
+	// skip sprite/UI/background processing and still convert SFX + music below.
 	manifest, err := readManifest(cfg.SkinDir)
-	if err != nil {
-		return fmt.Errorf("read manifest: %w", err)
+	hasManifest := err == nil
+	if !hasManifest {
+		fmt.Printf("No image manifest for %s — processing audio only (%v)\n",
+			filepath.Base(cfg.SkinDir), err)
 	}
 
-	// Create output directories
-	spritesDir := filepath.Join(cfg.OutputDir, "sprites")
-	uiDir := filepath.Join(cfg.OutputDir, "ui")
-	bgDir := filepath.Join(cfg.OutputDir, "backgrounds")
-	if err := os.MkdirAll(spritesDir, 0755); err != nil {
-		return fmt.Errorf("create sprites dir: %w", err)
-	}
-	if err := os.MkdirAll(uiDir, 0755); err != nil {
-		return fmt.Errorf("create ui dir: %w", err)
-	}
-	if err := os.MkdirAll(bgDir, 0755); err != nil {
-		return fmt.Errorf("create bg dir: %w", err)
-	}
+	if hasManifest {
+		// Create output directories
+		spritesDir := filepath.Join(cfg.OutputDir, "sprites")
+		uiDir := filepath.Join(cfg.OutputDir, "ui")
+		bgDir := filepath.Join(cfg.OutputDir, "backgrounds")
+		if err := os.MkdirAll(spritesDir, 0755); err != nil {
+			return fmt.Errorf("create sprites dir: %w", err)
+		}
+		if err := os.MkdirAll(uiDir, 0755); err != nil {
+			return fmt.Errorf("create ui dir: %w", err)
+		}
+		if err := os.MkdirAll(bgDir, 0755); err != nil {
+			return fmt.Errorf("create bg dir: %w", err)
+		}
 
-	for _, asset := range manifest.Assets {
-		switch {
-		case asset.Type == "sfx":
-			// SFX handled separately by processSfx(); skip here.
-			continue
-
-		case asset.Name == "explosion":
-			// Special: load v1-v4 → explosion1-explosion4.png
-			if err := processExplosions(cfg, asset, spritesDir); err != nil {
-				return fmt.Errorf("process explosion: %w", err)
-			}
-
-		case asset.Name == "ship_frames":
-			// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
-			if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
-				return fmt.Errorf("process ship_frames: %w", err)
-			}
-
-		case asset.Type == "background":
-			if err := processBackgrounds(cfg, asset, bgDir); err != nil {
-				return fmt.Errorf("process background %s: %w", asset.Name, err)
-			}
-
-		case asset.Type == "hud_icon":
-			// Copy HUD icons to ui/ subdir
-			if err := processAsset(cfg, asset, uiDir); err != nil {
-				return fmt.Errorf("process %s: %w", asset.Name, err)
-			}
-
-		case asset.Name == "preview":
-			// Copy preview to ui/preview.png
-			if err := processAsset(cfg, asset, uiDir); err != nil {
-				return fmt.Errorf("process preview: %w", err)
-			}
-
-		case asset.Type == "comcenter_bg":
-			// Full-screen ComCenter background — opaque, exact resize, no bg removal
-			if err := processUiBg(cfg, asset, uiDir); err != nil {
-				return fmt.Errorf("process %s: %w", asset.Name, err)
-			}
-
-		case asset.Type == "ui_card_bg" || asset.Type == "ui_button" || asset.Type == "ui_tab_active":
-			// ComCenter panel sprites — opaque, exact resize, no bg removal
-			if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
-				return fmt.Errorf("process %s: %w", asset.Name, err)
-			}
-
-		default:
-			// Standard sprite: apply name mapping
-			gameName, ok := GameName(asset.Name)
-			if !ok {
+		for _, asset := range manifest.Assets {
+			switch {
+			case asset.Type == "sfx":
+				// SFX handled separately by processSfx(); skip here.
 				continue
-			}
-			if err := processNamedAsset(cfg, asset, spritesDir, gameName); err != nil {
-				return fmt.Errorf("process %s: %w", asset.Name, err)
+
+			case asset.Type == "music":
+				// Music handled separately by processMusic(); skip here.
+				continue
+
+			case asset.Name == "explosion":
+				// Special: load v1-v4 → explosion1-explosion4.png
+				if err := processExplosions(cfg, asset, spritesDir); err != nil {
+					return fmt.Errorf("process explosion: %w", err)
+				}
+
+			case asset.Name == "ship_frames":
+				// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
+				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
+					return fmt.Errorf("process ship_frames: %w", err)
+				}
+
+			case asset.Type == "background":
+				if err := processBackgrounds(cfg, asset, bgDir); err != nil {
+					return fmt.Errorf("process background %s: %w", asset.Name, err)
+				}
+
+			case asset.Type == "hud_icon":
+				// Copy HUD icons to ui/ subdir
+				if err := processAsset(cfg, asset, uiDir); err != nil {
+					return fmt.Errorf("process %s: %w", asset.Name, err)
+				}
+
+			case asset.Name == "preview":
+				// Copy preview to ui/preview.png
+				if err := processAsset(cfg, asset, uiDir); err != nil {
+					return fmt.Errorf("process preview: %w", err)
+				}
+
+			case asset.Type == "comcenter_bg":
+				// Full-screen ComCenter background — opaque, exact resize, no bg removal
+				if err := processUiBg(cfg, asset, uiDir); err != nil {
+					return fmt.Errorf("process %s: %w", asset.Name, err)
+				}
+
+			case asset.Type == "ui_card_bg" || asset.Type == "ui_button" || asset.Type == "ui_tab_active":
+				// ComCenter panel sprites — opaque, exact resize, no bg removal
+				if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
+					return fmt.Errorf("process %s: %w", asset.Name, err)
+				}
+
+			default:
+				// Standard sprite: apply name mapping
+				gameName, ok := GameName(asset.Name)
+				if !ok {
+					continue
+				}
+				if err := processNamedAsset(cfg, asset, spritesDir, gameName); err != nil {
+					return fmt.Errorf("process %s: %w", asset.Name, err)
+				}
 			}
 		}
 	}
@@ -121,7 +131,12 @@ func Run(cfg Config) error {
 		fmt.Printf("Warning: SFX processing: %v\n", err)
 	}
 
-	fmt.Printf("Postprocessed skin %s → %s\n", manifest.Skin.ID, cfg.OutputDir)
+	// Process music: convert MP3 → OGG with music-grade loudness normalization
+	if err := processMusic(cfg); err != nil {
+		fmt.Printf("Warning: music processing: %v\n", err)
+	}
+
+	fmt.Printf("Postprocessed skin %s → %s\n", filepath.Base(cfg.SkinDir), cfg.OutputDir)
 	return nil
 }
 
@@ -396,6 +411,65 @@ func processSfx(cfg Config) error {
 
 	if converted > 0 {
 		fmt.Printf("  Converted %d SFX files\n", converted)
+	}
+	return nil
+}
+
+// processMusic converts MP3 files in {skinDir}/music/ to OGG/Opus in
+// {outputDir}/music/ using ffmpeg. Music uses a gentler loudness target than
+// SFX (more headroom, wider dynamic range) and a higher bitrate.
+//
+// NOTE: tracks are converted as-is. Seamless-loop "surgery" (crossfading the
+// tail into the head) is intentionally NOT done here — the Eleven Music prompt
+// already asks for loopable output, and the runtime crossfades between tiers
+// mask any residual seam. Bake a proper loop point here if loop clicks appear.
+func processMusic(cfg Config) error {
+	srcDir := filepath.Join(cfg.SkinDir, "music")
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		// No music directory — not an error, just skip
+		return nil
+	}
+
+	dstDir := filepath.Join(cfg.OutputDir, "music")
+	if err := os.MkdirAll(dstDir, 0755); err != nil {
+		return fmt.Errorf("create music output dir: %w", err)
+	}
+
+	converted := 0
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".mp3") {
+			continue
+		}
+
+		baseName := strings.TrimSuffix(entry.Name(), ".mp3")
+		srcPath := filepath.Join(srcDir, entry.Name())
+		dstPath := filepath.Join(dstDir, baseName+".ogg")
+
+		// Skip if output already exists
+		if _, err := os.Stat(dstPath); err == nil {
+			continue
+		}
+
+		// ffmpeg: music-grade loudnorm + convert to OGG/Opus at a higher bitrate
+		cmd := exec.Command("ffmpeg", "-y",
+			"-i", srcPath,
+			"-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
+			"-c:a", "libopus",
+			"-b:a", "128k",
+			dstPath,
+		)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			fmt.Printf("  [music] ffmpeg error for %s: %v\n%s\n", baseName, err, output)
+			continue
+		}
+
+		converted++
+		fmt.Printf("  [music] %s.mp3 → %s.ogg\n", baseName, baseName)
+	}
+
+	if converted > 0 {
+		fmt.Printf("  Converted %d music files\n", converted)
 	}
 	return nil
 }

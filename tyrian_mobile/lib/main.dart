@@ -15,6 +15,7 @@ import 'ui/high_scores.dart';
 import 'ui/skin_selector.dart';
 import 'services/save_service.dart';
 import 'services/sound_service.dart';
+import 'services/music_service.dart';
 import 'net/coop_host.dart';
 import 'net/coop_client.dart';
 import 'net/discovery.dart';
@@ -89,6 +90,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _loadHighScores();
     SoundService.instance.init();
     SoundService.instance.loadSkin('default');
+    MusicService.instance.init();
+    MusicService.instance.loadSkin('default');
   }
 
   void _setupGameCallbacks() {
