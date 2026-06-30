@@ -85,5 +85,13 @@ class ShaderConfig {
       tintR: 1.0, tintG: 0.95, tintB: 0.9,
       bloomEnabled: true, bloomStrength: 0.8, bloomThreshold: 0.7,
     ),
+    // flux2pony watercolor restyle: soft vignette, gentle bloom, slightly muted
+    // and warm to suit the painterly look.
+    'galaga_watercolor': ShaderConfig(
+      vignetteRadius: 0.92, vignetteSoft: 0.2,
+      tintR: 1.0, tintG: 0.98, tintB: 0.95,
+      saturation: 0.95,
+      bloomEnabled: true, bloomStrength: 0.4, bloomThreshold: 0.7,
+    ),
   };
 }
