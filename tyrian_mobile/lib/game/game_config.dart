@@ -58,6 +58,23 @@ const double spriteScale = 0.74 / spriteSupersample;
 // kept so retro skins stay crisp and factor-1.0 behaviour is unchanged.
 FilterQuality spriteFilterQuality = FilterQuality.none;
 
+// --- Immersive experiment (feature branch experiment/immersive-depth) ---
+// Feature 1: camera shows only ~immersiveVisibleFraction of the play field (zoom-in)
+// and pans horizontally (+ gentle vertical) to follow the vessel with a dead zone.
+// Feature 2: purely visual depth pulse on hostiles + vessel (never touches `size`,
+// so collisions/hitboxes are unaffected). All effects are additive and toggleable.
+const bool immersiveCameraEnabled = true; // Feature 1 master toggle (portrait only)
+const double immersiveVisibleFraction = 0.8; // see 80% of width → zoom = 1/0.8 = 1.25
+const double immersiveDeadZoneX = 0.15; // fraction of half-window with no camera move
+const double immersiveDeadZoneY = 0.30; // larger vertically (follow is primarily horizontal)
+const double immersiveCameraLerp = 6.0; // camera ease speed (higher = snappier)
+
+const bool depthPulseEnabled = true; // Feature 2 master toggle
+const double hostileDepthAmplitude = 0.15; // ±15% visual scale on hostiles
+const double hostileDepthPeriod = 2.6; // seconds per breath (grow→shrink)
+const double vesselDepthAmplitude = 0.05; // ±5% visual scale on vessel (subtle)
+const double vesselDepthPeriod = 3.2; // seconds
+
 // Collectable icon size
 const double iconWidth = 70.0;
 const double iconHeight = 70.0;

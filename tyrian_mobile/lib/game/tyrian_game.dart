@@ -1,4 +1,4 @@
-import 'dart:math' show pi;
+import 'dart:math' show pi, min;
 import 'dart:typed_data';
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
@@ -162,8 +162,19 @@ class TyrianGame extends FlameGame
       camera.viewport = FixedResolutionViewport(
         resolution: Vector2(config.gameWidth, config.gameHeight),
       );
-      camera.viewfinder.anchor = Anchor.topLeft;
-      camera.viewfinder.position = Vector2.zero();
+      if (config.immersiveCameraEnabled) {
+        // Immersive experiment: zoom in so only ~immersiveVisibleFraction of the
+        // play field is visible; the field stays gameWidth wide (VB6 parity), the
+        // camera pans within it (see _updateImmersiveCamera). Centre anchor makes
+        // the follow math symmetric.
+        camera.viewfinder.anchor = Anchor.center;
+        camera.viewfinder.zoom = 1.0 / config.immersiveVisibleFraction;
+        camera.viewfinder.position =
+            Vector2(config.gameWidth / 2, config.gameHeight / 2);
+      } else {
+        camera.viewfinder.anchor = Anchor.topLeft;
+        camera.viewfinder.position = Vector2.zero();
+      }
     }
 
     await AssetLibrary.instance.loadAll();
@@ -383,6 +394,9 @@ class TyrianGame extends FlameGame
     musicDirector?.update(dt);
     MusicService.instance.update(dt);
 
+    // Immersive experiment: pan the zoomed-in camera to follow the vessel.
+    _updateImmersiveCamera(dt);
+
     // Check sector completion
     if (currentSector != null && currentSector!.isComplete) {
       _onSectorComplete();
@@ -394,6 +408,54 @@ class TyrianGame extends FlameGame
         coopHost!.sendSnapshot(extractSnapshot());
       } catch (_) {}
     }
+  }
+
+  /// Immersive experiment (Feature 1): dead-zone camera follow.
+  ///
+  /// The play field stays [config.gameWidth]×[config.gameHeight] (VB6 parity);
+  /// the zoomed-in viewfinder pans within it so the visible window never leaves
+  /// the field (background always covers, no empty edges). Motion is primarily
+  /// horizontal — the vertical dead zone is larger so it only nudges the ship
+  /// back into frame near the top/bottom. Portrait only; landscape unchanged.
+  void _updateImmersiveCamera(double dt) {
+    if (!config.immersiveCameraEnabled || platform.isLandscape) return;
+
+    final zoom = camera.viewfinder.zoom;
+    final halfW = (config.gameWidth / zoom) / 2;
+    final halfH = (config.gameHeight / zoom) / 2;
+    final cam = camera.viewfinder.position;
+
+    // Dead zone: only chase the vessel once it strays beyond a central box.
+    final dzx = config.immersiveDeadZoneX * halfW;
+    double targetX = cam.x;
+    final dxOff = vessel.position.x - cam.x;
+    if (dxOff > dzx) {
+      targetX = vessel.position.x - dzx;
+    } else if (dxOff < -dzx) {
+      targetX = vessel.position.x + dzx;
+    }
+
+    final dzy = config.immersiveDeadZoneY * halfH;
+    double targetY = cam.y;
+    final dyOff = vessel.position.y - cam.y;
+    if (dyOff > dzy) {
+      targetY = vessel.position.y - dzy;
+    } else if (dyOff < -dzy) {
+      targetY = vessel.position.y + dzy;
+    }
+
+    // Clamp the window inside the field.
+    targetX = targetX.clamp(halfW, config.gameWidth - halfW);
+    targetY = targetY.clamp(halfH, config.gameHeight - halfH);
+
+    // Smooth ease toward the target. NOTE: viewfinder.position's getter returns
+    // a *copy* (`-transform.offset`), so mutating it in place is a no-op — we
+    // must assign a fresh Vector2 to invoke the setter.
+    final t = min(1.0, config.immersiveCameraLerp * dt);
+    camera.viewfinder.position = Vector2(
+      cam.x + (targetX - cam.x) * t,
+      cam.y + (targetY - cam.y) * t,
+    );
   }
 
   void _onSectorComplete() {
@@ -565,7 +627,9 @@ class TyrianGame extends FlameGame
     final delta = pos - _prevDragPos!;
     _prevDragPos = pos.clone();
 
-    final scale = config.gameWidth / size.x;
+    // Divide by camera zoom so a finger drag still moves the vessel 1:1 on screen
+    // when the immersive camera is zoomed in (zoom is 1.0 otherwise → no-op).
+    final scale = config.gameWidth / size.x / camera.viewfinder.zoom;
 
     if (coopRole == CoopRole.client) {
       // Client: compute target and send to host

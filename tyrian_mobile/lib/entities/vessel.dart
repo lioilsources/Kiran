@@ -57,6 +57,12 @@ class Vessel extends PositionComponent
   static const _frameDuration = 0.12; // seconds per frame
   bool visible = true;
 
+  /// Visual-only depth pulse (Feature 2 experiment). Applied as a canvas scale
+  /// about the sprite centre in render(); never touches [size], so collisions
+  /// and beam/nozzle offsets stay exact.
+  double visualScale = 1.0;
+  double _depthTime = 0.0;
+
   /// Y offset from position.y to front gun nozzle tip (negative = above center).
   /// Computed from sprite alpha at load time to handle skins with transparent padding.
   double _gunNozzleOffsetY = 0.0;
@@ -273,6 +279,14 @@ class Vessel extends PositionComponent
         }
         _sprite = _frames[_frameIndex];
       }
+    }
+
+    // Visual-only depth breathing (runs on both host and client, like the frame
+    // animation above). Leaves `size` untouched.
+    if (config.depthPulseEnabled) {
+      _depthTime += dt;
+      final w = 2 * pi / config.vesselDepthPeriod;
+      visualScale = 1.0 + config.vesselDepthAmplitude * sin(_depthTime * w);
     }
 
     // Client: positions set by snapshot, skip all game logic
@@ -585,6 +599,17 @@ class Vessel extends PositionComponent
 
     final paint = playerIndex == 1 ? _p2Paint : null;
 
+    // Visual depth pulse: scale the whole ship (sprite + dissolve) about its
+    // centre. `size` is unchanged, so hitboxes/beams are unaffected.
+    final pulse = config.depthPulseEnabled ? visualScale : 1.0;
+    final scaled = (pulse - 1.0).abs() > 0.0001;
+    if (scaled) {
+      canvas.save();
+      canvas.translate(size.x / 2, size.y / 2);
+      canvas.scale(pulse);
+      canvas.translate(-size.x / 2, -size.y / 2);
+    }
+
     if (dissolveEffect.amount > 0.001) {
       dissolveEffect.renderWith(canvas, size.x, size.y, (c) {
         _renderSprite(c, paint);
@@ -592,6 +617,8 @@ class Vessel extends PositionComponent
     } else {
       _renderSprite(canvas, paint);
     }
+
+    if (scaled) canvas.restore();
   }
 
   void _renderSprite(Canvas canvas, Paint? paint) {

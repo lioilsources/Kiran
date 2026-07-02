@@ -43,6 +43,12 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   Device? weapon;
   Fleet? parentFleet;
 
+  /// Visual-only depth pulse (Feature 2 experiment). Multiplies the render scale
+  /// in HostileBatchRenderer; never touches [size], so collisions are unchanged.
+  double visualScale = 1.0;
+  double _depthTime = 0.0;
+  final double _depthPhase = Random().nextDouble() * 2 * pi; // desync per enemy
+
   bool get isDead => hp <= 0;
 
   double get x2 => position.x + size.x;
@@ -155,6 +161,17 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   @override
   void update(double dt) {
     if (isDead) return;
+
+    // Visual-only depth breathing (grow→shrink). Computed before the client
+    // early-return so it runs wherever this component is ticked; leaves `size`
+    // untouched so hitboxes/AABB tests are unaffected.
+    if (config.depthPulseEnabled) {
+      _depthTime += dt;
+      final w = 2 * pi / config.hostileDepthPeriod;
+      visualScale =
+          1.0 + config.hostileDepthAmplitude * sin(_depthTime * w + _depthPhase);
+    }
+
     // Client: positions set by snapshot, skip all game logic
     if (game.coopRole == CoopRole.client) return;
 
