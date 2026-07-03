@@ -101,6 +101,19 @@ const double musicRefOffense = 250.0; // offense value that counts as "fully arm
 // threat < t1 → tier 1; t1..t2 → tier 2; … ; >= t4 → tier 5. Boss overrides to max.
 const List<double> musicThresholds = [3.0, 8.0, 16.0, 28.0];
 
+// --- 3D immersion banking ---------------------------------------------------
+// Purely visual: the vessel sprite rolls into lateral movement and world layers
+// shift the opposite way with depth-scaled magnitude. No gameplay/collision
+// coordinates are affected anywhere.
+const double bankMaxRoll = 0.16;      // rad (~9°) vessel roll at full bank
+const double bankSquashX = 0.15;      // horizontal foreshortening: scaleX = 1 - |bank|*this
+const double bankResponse = 8.0;      // 1/s exponential smoothing rate toward target bank
+const double bankFullSpeed = 300.0;   // px/s lateral speed that equals full bank
+const double bankTeleportPx = 60.0;   // |dx| per frame above this = teleport, don't bank
+const double bankWorldShift = 8.0;    // entity-plane shift px at full bank
+const double bankStarShiftMax = 14.0; // nearest-star shift px at full bank
+const double bankParallaxShift = 6.0; // nearest bg layer shift px at full bank
+
 // Entity glow halo colors — color-coded by danger tier
 // Full alpha: BlurStyle.outer spreads the color outward; alpha = peak glow intensity.
 const Color vesselGlowColor    = Color(0xFF00FFEE); // cyan

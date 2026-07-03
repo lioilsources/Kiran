@@ -57,6 +57,11 @@ class Vessel extends PositionComponent
   static const _frameDuration = 0.12; // seconds per frame
   bool visible = true;
 
+  /// Visual banking state (-1..1), driven by lateral movement. Purely
+  /// cosmetic — read by TyrianGame for the opposite world shift.
+  double bank = 0;
+  double _prevBankX = double.nan;
+
   /// Y offset from position.y to front gun nozzle tip (negative = above center).
   /// Computed from sprite alpha at load time to handle skins with transparent padding.
   double _gunNozzleOffsetY = 0.0;
@@ -131,6 +136,8 @@ class Vessel extends PositionComponent
     dmgTaken = 0;
     fire = false;
     visible = true;
+    bank = 0;
+    _prevBankX = double.nan;
     for (final d in devices) {
       d.clearProjectiles();
     }
@@ -273,6 +280,19 @@ class Vessel extends PositionComponent
         }
         _sprite = _frames[_frameIndex];
       }
+    }
+
+    // Visual bank from lateral movement (runs on both host and client —
+    // client positions come from snapshots and still produce deltas)
+    if (dt > 0) {
+      final dx = _prevBankX.isNaN ? 0.0 : position.x - _prevBankX;
+      _prevBankX = position.x;
+      double target = 0;
+      if (dx.abs() < config.bankTeleportPx) {
+        target = ((dx / dt) / config.bankFullSpeed).clamp(-1.0, 1.0);
+      }
+      bank = target + (bank - target) * exp(-config.bankResponse * dt);
+      if (bank.abs() < 0.001) bank = 0;
     }
 
     // Client: positions set by snapshot, skip all game logic
@@ -585,6 +605,19 @@ class Vessel extends PositionComponent
 
     final paint = playerIndex == 1 ? _p2Paint : null;
 
+    // Bank transform must wrap the dissolve branch too: renderWith rasterizes
+    // into a size.x × size.y offscreen buffer, so rotating inside it would
+    // clip the corners.
+    final banked = bank.abs() > 0.001;
+    if (banked) {
+      canvas.save();
+      final cx = size.x / 2, cy = size.y / 2;
+      canvas.translate(cx, cy);
+      canvas.rotate(bank * config.bankMaxRoll);
+      canvas.scale(1.0 - bank.abs() * config.bankSquashX, 1.0);
+      canvas.translate(-cx, -cy);
+    }
+
     if (dissolveEffect.amount > 0.001) {
       dissolveEffect.renderWith(canvas, size.x, size.y, (c) {
         _renderSprite(c, paint);
@@ -592,6 +625,8 @@ class Vessel extends PositionComponent
     } else {
       _renderSprite(canvas, paint);
     }
+
+    if (banked) canvas.restore();
   }
 
   void _renderSprite(Canvas canvas, Paint? paint) {

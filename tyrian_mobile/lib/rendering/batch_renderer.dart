@@ -101,6 +101,13 @@ class HostileBatchRenderer extends Component
 
   @override
   void render(Canvas canvas) {
+    // Banking world shift — render-only, entity/collision positions untouched
+    final shift = game.worldShiftX;
+    if (shift != 0) {
+      canvas.save();
+      canvas.translate(shift, 0);
+    }
+
     // Clear batches
     for (final b in _batches.values) {
       b.clear();
@@ -130,6 +137,8 @@ class HostileBatchRenderer extends Component
         _drawHpBar(canvas, h);
       }
     }
+
+    if (shift != 0) canvas.restore();
   }
 
   void _addHostile(Hostile h) {
@@ -197,6 +206,12 @@ class ProjectileBatchRenderer extends Component
 
   @override
   void render(Canvas canvas) {
+    final shift = game.worldShiftX;
+    if (shift != 0) {
+      canvas.save();
+      canvas.translate(shift, 0);
+    }
+
     for (final b in _batches.values) {
       b.clear();
     }
@@ -223,6 +238,8 @@ class ProjectileBatchRenderer extends Component
     for (final b in _batches.values) {
       b.render(canvas, _paint);
     }
+
+    if (shift != 0) canvas.restore();
   }
 
   void _addProjectile(Projectile p) {
@@ -252,6 +269,12 @@ class StructureBatchRenderer extends Component
 
   @override
   void render(Canvas canvas) {
+    final shift = game.worldShiftX;
+    if (shift != 0) {
+      canvas.save();
+      canvas.translate(shift, 0);
+    }
+
     for (final b in _batches.values) {
       b.clear();
     }
@@ -267,6 +290,8 @@ class StructureBatchRenderer extends Component
     for (final b in _batches.values) {
       b.render(canvas, _paint);
     }
+
+    if (shift != 0) canvas.restore();
   }
 
   void _addStructure(Structure s) {
@@ -296,6 +321,12 @@ class ShardBatchRenderer extends Component
 
   @override
   void render(Canvas canvas) {
+    final shift = game.worldShiftX;
+    if (shift != 0) {
+      canvas.save();
+      canvas.translate(shift, 0);
+    }
+
     for (final b in _batches.values) {
       b.clear();
     }
@@ -323,5 +354,7 @@ class ShardBatchRenderer extends Component
     for (final b in _batches.values) {
       b.render(canvas, _paint);
     }
+
+    if (shift != 0) canvas.restore();
   }
 }

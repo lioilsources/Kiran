@@ -13,6 +13,11 @@ class BeamRenderer extends Component {
   Vessel? vessel2;
   List<Fleet>? activeFleets;
 
+  /// Banking world shift (set by TyrianGame each frame). Beams are a
+  /// continuous line from the unshifted vessel nose, so only the endpoint
+  /// follows the shifted entity plane.
+  double worldShiftX = 0;
+
   // Gradient colors for beam (blue to yellow, ported from GenerateBeamGrad)
   static final List<Color> _gradColors = _generateGradient();
 
@@ -56,10 +61,13 @@ class BeamRenderer extends Component {
       ..strokeWidth = fat ? 3.0 : 1.5
       ..strokeCap = StrokeCap.round;
 
+    // Endpoint follows the banking-shifted entity plane; source stays on the ship
+    final ex = d.dx + worldShiftX;
+
     // Main beam line
     canvas.drawLine(
       Offset(d.sx, d.sy),
-      Offset(d.dx, d.dy),
+      Offset(ex, d.dy),
       paint,
     );
 
@@ -73,12 +81,12 @@ class BeamRenderer extends Component {
 
       canvas.drawLine(
         Offset(d.sx - 1, d.sy),
-        Offset(d.dx - 1, d.dy),
+        Offset(ex - 1, d.dy),
         glowPaint,
       );
       canvas.drawLine(
         Offset(d.sx + 1, d.sy),
-        Offset(d.dx + 1, d.dy),
+        Offset(ex + 1, d.dy),
         glowPaint,
       );
     }
@@ -87,6 +95,6 @@ class BeamRenderer extends Component {
     final impactPaint = Paint()
       ..color = color.withAlpha(100)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-    canvas.drawCircle(Offset(d.dx, d.dy), 6, impactPaint);
+    canvas.drawCircle(Offset(ex, d.dy), 6, impactPaint);
   }
 }

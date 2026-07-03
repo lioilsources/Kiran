@@ -121,6 +121,9 @@ class Collectable extends PositionComponent
 
   @override
   void render(Canvas canvas) {
+    // Banking world shift — render-only; pickup AABB uses logic positions
+    canvas.translate(game.worldShiftX, 0);
+
     if (_sprite != null) {
       _sprite!.render(canvas, size: size);
       return;

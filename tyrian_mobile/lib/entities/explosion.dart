@@ -74,6 +74,12 @@ class ExplosionRenderer extends Component with HasGameReference<TyrianGame> {
 
   @override
   void render(Canvas canvas) {
+    final shift = game.worldShiftX;
+    if (shift != 0) {
+      canvas.save();
+      canvas.translate(shift, 0);
+    }
+
     for (final e in _pool) {
       if (!e.active) continue;
 
@@ -90,6 +96,8 @@ class ExplosionRenderer extends Component with HasGameReference<TyrianGame> {
         canvas.drawCircle(Offset(e.x, e.y), radius * 0.3, _corePaint);
       }
     }
+
+    if (shift != 0) canvas.restore();
   }
 
   /// Deactivate all explosions (used on sector clear).
