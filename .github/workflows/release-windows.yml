@@ -31,14 +31,14 @@ jobs:
         working-directory: tyrian_mobile
         run: flutter pub get
 
-      - name: Build Windows (debug)
+      - name: Build Windows (release)
         working-directory: tyrian_mobile
-        run: flutter build windows --debug
+        run: flutter build windows --release
 
       - name: Package as ZIP
         shell: pwsh
         run: |
-          $src = "tyrian_mobile\build\windows\x64\runner\Debug"
+          $src = "tyrian_mobile\build\windows\x64\runner\Release"
           $dest = "Kiran-${{ github.ref_name }}-Windows.zip"
           Compress-Archive -Path "$src\*" -DestinationPath $dest
 
