@@ -28,13 +28,13 @@ jobs:
         working-directory: tyrian_mobile
         run: flutter pub get
 
-      - name: Build macOS (debug)
+      - name: Build macOS (release)
         working-directory: tyrian_mobile
-        run: flutter build macos --debug
+        run: flutter build macos --release
 
       - name: Package as ZIP
         run: |
-          cd "tyrian_mobile/build/macos/Build/Products/Debug"
+          cd "tyrian_mobile/build/macos/Build/Products/Release"
           zip -r "$OLDPWD/Kiran-${{ github.ref_name }}-macOS.zip" "tyrian_mobile.app"
 
       - name: Upload to GitHub Release
