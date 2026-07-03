@@ -57,6 +57,19 @@ class TyrianGame extends FlameGame
 
   bool get isCoop => vessel2 != null;
 
+  /// Purely visual horizontal world shift (opposite of the local vessel's
+  /// bank) — read by world renderers at draw time; never touches positions.
+  double worldShiftX = 0;
+
+  Vessel get _bankVessel =>
+      coopRole == CoopRole.client ? (vessel2 ?? vessel) : vessel;
+
+  void _updateWorldShift() {
+    worldShiftX = state == GameState.playing
+        ? -_bankVessel.bank * config.bankWorldShift
+        : 0.0;
+  }
+
   // Co-op networking
   CoopRole coopRole = CoopRole.none;
   CoopHost? coopHost;
@@ -335,6 +348,7 @@ class TyrianGame extends FlameGame
         coopClient!.latestSnapshot = null;
       }
       super.update(dt);
+      _updateWorldShift();
       return;
     }
 
@@ -350,11 +364,13 @@ class TyrianGame extends FlameGame
     super.update(dt);
     elapsed += dt;
     shardPool.update(dt);
+    _updateWorldShift();
 
     // Update beam renderer with vessel data
     beamRenderer.vessel = vessel;
     beamRenderer.vessel2 = vessel2;
     beamRenderer.activeFleets = activeFleets;
+    beamRenderer.worldShiftX = worldShiftX;
 
     // Periodic OSD refresh (~4Hz)
     _osdTimer += dt;

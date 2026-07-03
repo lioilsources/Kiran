@@ -54,6 +54,9 @@ class PixelExplosionOverlay extends PositionComponent
   void render(Canvas canvas) {
     if (_shader == null) return;
 
+    // Banking world shift — keeps the effect glued to the shifted entity plane
+    canvas.translate(game.worldShiftX, 0);
+
     final t = (_time / _duration).clamp(0.0, 1.0);
     final w = size.x;
     final h = size.y;

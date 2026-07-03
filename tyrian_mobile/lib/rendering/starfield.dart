@@ -2,10 +2,11 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
+import '../game/tyrian_game.dart';
 
 /// Ported from Module.bas MoveStars + starField initialization.
 /// Parallax starfield with 1000 stars, cone/tunnel expanding effect.
-class Starfield extends Component with HasGameReference {
+class Starfield extends Component with HasGameReference<TyrianGame> {
   static const int count = config.starCount;
 
   final List<_Star> _stars = [];
@@ -81,14 +82,20 @@ class Starfield extends Component with HasGameReference {
   @override
   void render(Canvas canvas) {
     final paint = Paint();
+    // Banking world shift: faster (nearer) stars shift more — render-only.
+    final shiftBase = game.worldShiftX / config.bankWorldShift;
     for (final star in _stars) {
       if (star.y < 0 || star.y > config.gameHeight) continue;
-      if (star.x < 0 || star.x > config.gameWidth) continue;
+      final sx = star.x +
+          shiftBase *
+              config.bankStarShiftMax *
+              (star.speed / 3.0).clamp(0.15, 1.0);
+      if (sx < 0 || sx > config.gameWidth) continue;
 
       final b = (star.brightness * 255).round().clamp(0, 255);
       paint.color = Color.fromARGB(255, b, b, b);
       canvas.drawRect(
-        Rect.fromLTWH(star.x, star.y, star.size, star.size),
+        Rect.fromLTWH(sx, star.y, star.size, star.size),
         paint,
       );
     }
