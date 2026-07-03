@@ -109,10 +109,13 @@ const double bankMaxRoll = 0.16;      // rad (~9°) vessel roll at full bank
 const double bankSquashX = 0.15;      // horizontal foreshortening: scaleX = 1 - |bank|*this
 const double bankResponse = 8.0;      // 1/s exponential smoothing rate toward target bank
 const double bankFullSpeed = 300.0;   // px/s lateral speed that equals full bank
-const double bankTeleportPx = 60.0;   // |dx| per frame above this = teleport, don't bank
-const double bankWorldShift = 8.0;    // entity-plane shift px at full bank
-const double bankStarShiftMax = 14.0; // nearest-star shift px at full bank
-const double bankParallaxShift = 6.0; // nearest bg layer shift px at full bank
+const double bankTeleportPx = 120.0;  // |dx| per frame above this = teleport, don't bank
+const double bankWorldShift = 24.0;   // entity-plane shift px at full bank
+const double bankStarShiftMax = 40.0; // nearest-star shift px at full bank
+const double bankParallaxShift = 16.0; // nearest bg layer shift px at full bank
+// World shift eases slower than the vessel roll so layers visibly trail the
+// ship — the differential motion is what sells the 3D depth cue.
+const double bankWorldResponse = 5.0; // 1/s smoothing rate of the world shift
 
 // Entity glow halo colors — color-coded by danger tier
 // Full alpha: BlurStyle.outer spreads the color outward; alpha = peak glow intensity.
