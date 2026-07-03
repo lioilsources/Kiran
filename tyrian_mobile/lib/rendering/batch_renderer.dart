@@ -153,7 +153,9 @@ class HostileBatchRenderer extends Component
       sprite.src,
       h.position.x + h.size.x / 2,
       h.position.y + h.size.y / 2,
-      h.size.x / sprite.srcSize.x,
+      // Visual depth pulse: scales about the sprite centre, so the hitbox
+      // (h.size / h.position) is unaffected.
+      h.size.x / sprite.srcSize.x * h.visualScale,
       pi,
       h.hit > 0 ? _hitColor : _normalColor,
     );

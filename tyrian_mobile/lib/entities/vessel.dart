@@ -62,6 +62,12 @@ class Vessel extends PositionComponent
   double bank = 0;
   double _prevBankX = double.nan;
 
+  /// Visual-only depth pulse (Feature 2 experiment). Applied as a canvas scale
+  /// about the sprite centre in render(); never touches [size], so collisions
+  /// and beam/nozzle offsets stay exact.
+  double visualScale = 1.0;
+  double _depthTime = 0.0;
+
   /// Y offset from position.y to front gun nozzle tip (negative = above center).
   /// Computed from sprite alpha at load time to handle skins with transparent padding.
   double _gunNozzleOffsetY = 0.0;
@@ -293,6 +299,14 @@ class Vessel extends PositionComponent
       }
       bank = target + (bank - target) * exp(-config.bankResponse * dt);
       if (bank.abs() < 0.001) bank = 0;
+    }
+
+    // Visual-only depth breathing (runs on both host and client, like the frame
+    // animation above). Leaves `size` untouched.
+    if (config.depthPulseEnabled) {
+      _depthTime += dt;
+      final w = 2 * pi / config.vesselDepthPeriod;
+      visualScale = 1.0 + config.vesselDepthAmplitude * sin(_depthTime * w);
     }
 
     // Client: positions set by snapshot, skip all game logic
@@ -605,16 +619,24 @@ class Vessel extends PositionComponent
 
     final paint = playerIndex == 1 ? _p2Paint : null;
 
-    // Bank transform must wrap the dissolve branch too: renderWith rasterizes
-    // into a size.x × size.y offscreen buffer, so rotating inside it would
-    // clip the corners.
+    // Combine visual bank (roll + horizontal squash) and depth pulse (uniform
+    // scale) into one centre-anchored transform. It must wrap the dissolve
+    // branch too: renderWith rasterizes into a size.x × size.y offscreen
+    // buffer, so transforming inside it would clip the corners. `size` is
+    // never touched, so hitboxes/beams/nozzles stay exact.
     final banked = bank.abs() > 0.001;
-    if (banked) {
+    final pulse = config.depthPulseEnabled ? visualScale : 1.0;
+    final scaled = (pulse - 1.0).abs() > 0.0001;
+    final transformed = banked || scaled;
+    if (transformed) {
       canvas.save();
       final cx = size.x / 2, cy = size.y / 2;
       canvas.translate(cx, cy);
-      canvas.rotate(bank * config.bankMaxRoll);
-      canvas.scale(1.0 - bank.abs() * config.bankSquashX, 1.0);
+      if (banked) {
+        canvas.rotate(bank * config.bankMaxRoll);
+        canvas.scale(1.0 - bank.abs() * config.bankSquashX, 1.0);
+      }
+      if (scaled) canvas.scale(pulse);
       canvas.translate(-cx, -cy);
     }
 
@@ -626,7 +648,7 @@ class Vessel extends PositionComponent
       _renderSprite(canvas, paint);
     }
 
-    if (banked) canvas.restore();
+    if (transformed) canvas.restore();
   }
 
   void _renderSprite(Canvas canvas, Paint? paint) {
