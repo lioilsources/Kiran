@@ -1,4 +1,4 @@
-import 'dart:math' show pi;
+import 'dart:math' show pi, exp;
 import 'dart:typed_data';
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
@@ -64,10 +64,14 @@ class TyrianGame extends FlameGame
   Vessel get _bankVessel =>
       coopRole == CoopRole.client ? (vessel2 ?? vessel) : vessel;
 
-  void _updateWorldShift() {
-    worldShiftX = state == GameState.playing
+  void _updateWorldShift(double dt) {
+    final target = state == GameState.playing
         ? -_bankVessel.bank * config.bankWorldShift
         : 0.0;
+    // Slower easing than the vessel roll — the world visibly trails the ship
+    worldShiftX =
+        target + (worldShiftX - target) * exp(-config.bankWorldResponse * dt);
+    if (worldShiftX.abs() < 0.01) worldShiftX = 0;
   }
 
   // Co-op networking
@@ -348,7 +352,7 @@ class TyrianGame extends FlameGame
         coopClient!.latestSnapshot = null;
       }
       super.update(dt);
-      _updateWorldShift();
+      _updateWorldShift(dt);
       return;
     }
 
@@ -364,7 +368,7 @@ class TyrianGame extends FlameGame
     super.update(dt);
     elapsed += dt;
     shardPool.update(dt);
-    _updateWorldShift();
+    _updateWorldShift(dt);
 
     // Update beam renderer with vessel data
     beamRenderer.vessel = vessel;
