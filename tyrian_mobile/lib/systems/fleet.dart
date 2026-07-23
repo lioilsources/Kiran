@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 import '../services/sound_service.dart';
+import '../entities/boss.dart';
 import '../entities/hostile.dart';
 import '../entities/collectable.dart';
 import '../entities/vessel.dart';
@@ -26,6 +27,12 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   bool started = false;
   PathSystem path;
   PathAction defaultPathAction;
+
+  // Boss-wave overrides (Sector._addBossWave) — null/absent for regular fleets
+  BossSpec? bossSpec;
+  int? hpOverride;
+  int? collisionDmgOverride;
+  int? creditOverride; // kill credit decoupled from hpMax (boss economy)
 
   // Fleet bounding box (for broad-phase collision)
   double minX = double.infinity;
@@ -74,6 +81,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     this.triggerSteps = 20,
     required this.path,
     this.defaultPathAction = PathAction.destroy,
+    this.bossSpec,
+    this.hpOverride,
+    this.collisionDmgOverride,
+    this.creditOverride,
   });
 
   @override
@@ -166,22 +177,36 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   }
 
   void _spawnHostile() {
-    final hpMax = Hostile.getHpMax(hostType);
+    final hpMax = hpOverride ?? Hostile.getHpMax(hostType);
     final clonedPath = path.clone();
     clonedPath.onExit = defaultPathAction;
     if (extraPath != null) {
       clonedPath.addPath(extraPath!);
     }
     final firstNode = clonedPath.current;
-    final h = Hostile(
-      caption: Hostile.hostCaption(hostType),
-      id: _spawned,
-      hostType: hostType,
-      hp: hpMax,
-      hpMax: hpMax,
-      trace: clonedPath,
-      position: firstNode != null ? Vector2(firstNode.x, firstNode.y) : null,
-    );
+    final spawnPos =
+        firstNode != null ? Vector2(firstNode.x, firstNode.y) : null;
+    final h = bossSpec != null
+        ? Boss(
+            caption: caption,
+            id: _spawned,
+            spec: bossSpec!,
+            hp: hpMax,
+            hpMax: hpMax,
+            collisionDmg: collisionDmgOverride,
+            trace: clonedPath,
+            position: spawnPos,
+          )
+        : Hostile(
+            caption: Hostile.hostCaption(hostType),
+            id: _spawned,
+            hostType: hostType,
+            hp: hpMax,
+            hpMax: hpMax,
+            collisionDmg: collisionDmgOverride,
+            trace: clonedPath,
+            position: spawnPos,
+          );
     h.parentFleet = this;
     hostiles.add(h);
     game.world.add(h);
@@ -224,7 +249,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     // Add score and credit to the vessel that got the kill
     final target = attacker ?? gameInstance.vessel;
     target.addScore(h.hpMax);
-    target.credit += h.hpMax;
+    target.credit += creditOverride ?? h.hpMax;
   }
 
   void _spawnBonus() {
@@ -294,6 +319,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     int bonusMoney = 0,
     PathAction defaultPathAction = PathAction.destroy,
     bool showDamage = true,
+    BossSpec? bossSpec,
+    int? hpOverride,
+    int? collisionDmgOverride,
+    int? creditOverride,
   }) {
     final steps = (durationSec * 1000 / config.frameDelay).round();
     final path = PathSystem();
@@ -312,6 +341,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       triggerSteps: triggerSteps,
       path: path,
       defaultPathAction: defaultPathAction,
+      bossSpec: bossSpec,
+      hpOverride: hpOverride,
+      collisionDmgOverride: collisionDmgOverride,
+      creditOverride: creditOverride,
     );
   }
 

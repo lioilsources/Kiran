@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../entities/boss.dart';
 import '../entities/hostile.dart';
 import '../entities/structure.dart';
 import '../entities/collectable.dart';
@@ -82,11 +83,15 @@ class Sector extends Component with HasGameReference<TyrianGame> {
 
   /// Factory to create sector by index (ports VBA Sector.Setup case blocks)
   static Sector? create(int index, TyrianGame game) {
-    if (index >= 0 && index < _sectorBuilders.length) {
-      return _sectorBuilders[index](game);
+    final s = (index >= 0 && index < _sectorBuilders.length)
+        ? _sectorBuilders[index](game)
+        : _createRandom(index, game);
+    // Every 5th level gets a phased boss as its final wave. Starts at level 10
+    // so the hand-scripted sectors (levels 1-7, VB6 parity) stay untouched.
+    if (s.level % 5 == 0 && s.level >= 10) {
+      _addBossWave(s, game);
     }
-    // Random sector for indices beyond defined levels
-    return _createRandom(index, game);
+    return s;
   }
 
   static final List<Sector Function(TyrianGame)> _sectorBuilders = [
@@ -664,6 +669,79 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     return _createRandom(6, game);
   }
 
+  /// VB6 damage growth coefficient (Sector.cls:493-519)
+  static double _damageCoefficient(int level) {
+    const dmgGrowLevel = 20;
+    if (level < dmgGrowLevel) return 1.0;
+    double dmgGrow = 0.25;
+    if (level >= 35) {
+      dmgGrow = 0.60;
+    } else if (level >= 30) {
+      dmgGrow = 0.45;
+    } else if (level >= 25) {
+      dmgGrow = 0.35;
+    }
+    return 1 + ((level - dmgGrowLevel + 1) * dmgGrow);
+  }
+
+  /// Append a phased boss as the sector's final wave (every 5th level >= 10).
+  ///
+  /// Stats scale without bound with the boss ordinal n (level 10 → 1, 15 → 2,
+  /// ...): HP is rubber-banded to the player's peak DPS via a growing target
+  /// time-to-kill, weapon damage follows the VB6 dcf curve with a boss premium,
+  /// and cadence tightens toward a floor. Kill credit is a bounded bounty
+  /// (creditOverride) so the DPS-scaled HP can't inflate the economy.
+  static void _addBossWave(Sector s, TyrianGame game) {
+    final n = s.level ~/ 5 - 1; // boss ordinal: level 10 → 1, 15 → 2, ...
+    final w = config.gameWidth;
+    final h = config.gameHeight;
+
+    final dps = max(game.vessel.lastMaxDps, 100.0);
+    final ttk = 20.0 + 3.0 * n; // target time-to-kill grows forever
+    final bossHp = max((dps * ttk).round(), 10000 + 5000 * n);
+    final dcf = _damageCoefficient(s.level);
+    final bossDmg = (9 * 5.555 * dcf * 1.5).round().clamp(30, 9999);
+    final recharge = (130 - 6 * n).clamp(40, 130);
+    final collisionDmg = 20 + 2 * n;
+    final bounty = 5000 + 5000 * n;
+
+    // Enter once the last wave has fully spawned and flown its path (+3s).
+    double lastEnd = 0;
+    for (final f in s.fleets) {
+      final pathDur = f.path.nodes.length * config.frameDelay / 1000.0;
+      final end = f.enterTime + f.count * f.triggerInterval + pathDur;
+      if (end > lastEnd) lastEnd = end;
+    }
+
+    final boss = Fleet.create(
+      id: s.fleets.length,
+      enterTime: lastEnd + 3.0,
+      caption: 'Rododendron Mk.$n',
+      hostType: HostType.bouncer,
+      count: 1,
+      durationSec: 6.0,
+      srcX: w / 2,
+      srcY: -160,
+      dstX: w / 2,
+      dstY: h * 0.22,
+      pathType: PathType.cosinus,
+      amplitude: 120,
+      cycles: 2,
+      bonus: CollType.shieldUpgrade,
+      bonusMoney: bounty ~/ 2,
+      defaultPathAction: PathAction.stay, // phase 1 hovers; Boss strafes later
+      bossSpec: BossSpec(
+        ordinal: n,
+        weapDamage: bossDmg,
+        rechargeFrames: recharge,
+      ),
+      hpOverride: bossHp,
+      collisionDmgOverride: collisionDmg,
+      creditOverride: bounty,
+    );
+    s.fleets.add(boss);
+  }
+
   // ---- Random Sector Generation (VB6 Sector.SetupRandom) ----
   static Sector _createRandom(int index, TyrianGame game) {
     final rng = Random(index * 42);
@@ -686,20 +764,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     }
     final lastMaxDps = game.vessel.lastMaxDps;
 
-    // VB6 damage growth coefficient (Sector.cls:493-519)
-    double dcf = 1.0;
-    const dmgGrowLevel = 20;
-    if (level >= dmgGrowLevel) {
-      double dmgGrow = 0.25;
-      if (level >= 35) {
-        dmgGrow = 0.60;
-      } else if (level >= 30) {
-        dmgGrow = 0.45;
-      } else if (level >= 25) {
-        dmgGrow = 0.35;
-      }
-      dcf = 1 + ((level - dmgGrowLevel + 1) * dmgGrow);
-    }
+    final dcf = _damageCoefficient(level);
 
     // VB6 maxHostLevel: scales with player DPS (Sector.cls:528-531)
     var maxHostLevel = (6 * (lastMaxDps / 500)).round();

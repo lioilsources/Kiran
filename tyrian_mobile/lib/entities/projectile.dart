@@ -8,6 +8,7 @@ import '../services/asset_library.dart';
 class Projectile extends PositionComponent with HasGameReference {
   String imgName;
   double speed; // negative = moving up (player), positive = down (enemy)
+  double vx; // horizontal speed (boss aimed/spread shots); 0 = straight
   double damage;
   double projScale;
   Device? parentDevice;
@@ -22,6 +23,7 @@ class Projectile extends PositionComponent with HasGameReference {
     required Vector2 position,
     required this.speed,
     required this.damage,
+    this.vx = 0,
     double scale = 1.0,
     this.parentDevice,
   })  : projScale = scale,
@@ -58,9 +60,13 @@ class Projectile extends PositionComponent with HasGameReference {
 
     final scaledDt = dt * config.originalFps;
     position.y += speed * scaledDt;
+    position.x += vx * scaledDt;
 
     // Remove if off screen
-    if (position.y < -size.y || position.y > config.gameHeight + size.y) {
+    if (position.y < -size.y ||
+        position.y > config.gameHeight + size.y ||
+        position.x < -size.x ||
+        position.x > config.gameWidth + size.x) {
       returnToPool();
     }
   }
@@ -71,6 +77,7 @@ class Projectile extends PositionComponent with HasGameReference {
 
   void activate(double x, double y, double spd, double dmg, double scale) {
     speed = spd;
+    vx = 0;
     damage = dmg;
     projScale = scale;
     active = true;
