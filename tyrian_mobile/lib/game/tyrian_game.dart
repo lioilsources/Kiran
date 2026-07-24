@@ -14,6 +14,7 @@ import '../input/gamepad_input.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../entities/vessel.dart';
+import '../entities/boss.dart';
 import '../entities/explosion.dart';
 import '../entities/collectable.dart';
 import '../entities/structure.dart';
@@ -126,6 +127,16 @@ class TyrianGame extends FlameGame
       if (f.hasActiveBoss) return true;
     }
     return false;
+  }
+
+  /// The living phased boss, if one is on the field (drives the boss HP bar).
+  Boss? get activeBoss {
+    for (final f in activeFleets) {
+      for (final h in f.hostiles) {
+        if (h is Boss && !h.isDead) return h;
+      }
+    }
+    return null;
   }
 
   /// Adaptive-music director — created in onLoad, ticked while playing.
@@ -861,11 +872,13 @@ class TyrianGame extends FlameGame
   }
 
   /// Spawn an enemy projectile (called from Hostile firing logic)
-  void spawnEnemyProjectile(double x, double y, int dmg, double scale) {
+  void spawnEnemyProjectile(double x, double y, int dmg, double scale,
+      {double vx = 0, double speed = 15.0}) {
     final proj = Projectile(
       imgName: 'bubble',
       position: Vector2(x, y),
-      speed: 15.0, // positive = downward
+      speed: speed, // positive = downward
+      vx: vx,
       damage: dmg.toDouble(),
       scale: scale,
     );

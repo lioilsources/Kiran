@@ -144,6 +144,8 @@ class AssetLibrary {
     await _load('falconxb', p('falconxb'));
     await _load('falconxt', p('falconxt'));
     await _load('bouncer', p('bouncer'));
+    // Boss sprite — optional per skin, Boss falls back to bouncer when absent
+    await _tryLoad('rododendron', p('rododendron'));
 
     // Structures
     await _load('asteroid', p('asteroid'));

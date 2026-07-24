@@ -40,6 +40,7 @@ var enemySpecs = []struct{ name, directive string }{
 	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
 	{"bouncer", "agile drone, spherical body, unpredictable movement design"},
+	{"rododendron", "boss dreadnought, layered armor plating, dominating silhouette, ornate command superstructure"},
 }
 
 var structureSpecs = []struct{ name, directive string }{

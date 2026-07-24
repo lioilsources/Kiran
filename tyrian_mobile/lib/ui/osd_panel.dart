@@ -262,3 +262,46 @@ class OsdPanel extends StatelessWidget {
     );
   }
 }
+
+/// Top-of-screen boss health bar, visible while a phased boss is on the field.
+/// Rebuilt via the same ~4Hz onOsdUpdate tick as the rest of the HUD.
+class BossHealthBar extends StatelessWidget {
+  final TyrianGame game;
+
+  const BossHealthBar({super.key, required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    final boss = game.activeBoss;
+    if (boss == null) return const SizedBox.shrink();
+
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: 0,
+      child: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withAlpha(180),
+                Colors.black.withAlpha(0),
+              ],
+            ),
+          ),
+          child: HealthBar(
+            label: boss.caption,
+            value: boss.hp.toDouble(),
+            maxValue: boss.hpMax.toDouble(),
+            color: Colors.deepOrangeAccent,
+            height: 8,
+            segments: 20,
+          ),
+        ),
+      ),
+    );
+  }
+}

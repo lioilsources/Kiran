@@ -96,7 +96,6 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   }
 
   void _refreshSprite() {
-    final spriteName = _spriteNameForType(hostType);
     _sprite = AssetLibrary.instance.getSprite(spriteName);
     if (_sprite != null) {
       size = _sprite!.srcSize * config.spriteScale;

@@ -393,6 +393,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             if (_game.state == GameState.paused && !_showPauseSkinSelector)
               Container(color: Colors.black26),
 
+            // Boss HP bar (visible while a phased boss is on the field)
+            if (!_showComCenter && !_showHighScores && !_clientWaiting &&
+                _game.state != GameState.gameOver)
+              BossHealthBar(game: _game),
+
             // OSD HUD
             if (!_showComCenter && !_showHighScores && !_clientWaiting &&
                 _game.state != GameState.gameOver)
