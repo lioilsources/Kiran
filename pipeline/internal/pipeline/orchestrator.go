@@ -31,6 +31,7 @@ type Orchestrator struct {
 	model       string
 	resolution  string
 	dryRun      bool
+	force       bool   // regenerate even when all variations already exist
 	assetType   string // filter: empty = all
 	promptStyle string // "pony" selects Pony SDXL templates; "" uses Flux default
 	tunedDir    string // if set, load tuned prompts from pipeline/tuned/<skin>/<workflow>/
@@ -44,6 +45,7 @@ func WithN(n int) OrchestratorOption              { return func(o *Orchestrator)
 func WithModel(m string) OrchestratorOption       { return func(o *Orchestrator) { o.model = m } }
 func WithResolution(r string) OrchestratorOption  { return func(o *Orchestrator) { o.resolution = r } }
 func WithDryRun(d bool) OrchestratorOption        { return func(o *Orchestrator) { o.dryRun = d } }
+func WithForce(f bool) OrchestratorOption         { return func(o *Orchestrator) { o.force = f } }
 func WithAssetType(t string) OrchestratorOption   { return func(o *Orchestrator) { o.assetType = t } }
 func WithPromptStyle(s string) OrchestratorOption { return func(o *Orchestrator) { o.promptStyle = s } }
 func WithTunedDir(d string) OrchestratorOption    { return func(o *Orchestrator) { o.tunedDir = d } }
@@ -114,8 +116,8 @@ func (o *Orchestrator) Run(ctx context.Context, s skin.SkinDef) Stats {
 					return
 				}
 
-				// Check resume: skip if all N variations exist
-				if o.allVariationsExist(skinDir, spec) {
+				// Check resume: skip if all N variations exist (unless -force)
+				if !o.force && o.allVariationsExist(skinDir, spec) {
 					mu.Lock()
 					stats.Skipped++
 					mu.Unlock()

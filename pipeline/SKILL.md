@@ -54,6 +54,7 @@ go run ./cmd/generate -skin rtype -dry-run
 #   -n <n>                variations per asset (default 4)
 #   -resolution 1k|2k     (default 1k = 1024px)
 #   -comfyui-job-timeout  per-job timeout (default 15m)
+#   -force                regenerate even if all variations already exist
 ```
 
 Output: `output/assets/skins/<skin_id>/<subdir>/<asset>_v{1..N}.jpg` + `manifest.json`
