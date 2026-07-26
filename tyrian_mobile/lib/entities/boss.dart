@@ -49,8 +49,9 @@ class Boss extends Hostile {
   /// 1 above 66% HP, 2 above 33%, 3 below.
   int get phase => hp * 3 > hpMax * 2 ? 1 : (hp * 3 > hpMax ? 2 : 3);
 
-  /// Dedicated boss sprite where the skin provides one (only `default` ships
-  /// with a rododendron atlas frame today); other skins fall back to bouncer.
+  /// Dedicated boss sprite where the skin provides one. Every skin now ships a
+  /// rododendron atlas frame; bouncer stays as a defensive fallback for any
+  /// skin whose atlas lacks it.
   @override
   String get spriteName =>
       AssetLibrary.instance.getSprite('rododendron') != null
