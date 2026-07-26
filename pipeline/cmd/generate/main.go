@@ -28,6 +28,7 @@ func main() {
 	workers := flag.Int("workers", 3, "Number of concurrent workers")
 	model := flag.String("model", "flux-1-dev", "ComfyUI checkpoint name")
 	dryRun := flag.Bool("dry-run", false, "Print prompts without calling API")
+	force := flag.Bool("force", false, "Regenerate assets even if all variations already exist")
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
@@ -97,6 +98,7 @@ func main() {
 		pipeline.WithModel(*model),
 		pipeline.WithResolution(*resolution),
 		pipeline.WithDryRun(*dryRun),
+		pipeline.WithForce(*force),
 		pipeline.WithAssetType(*assetType),
 		pipeline.WithPromptStyle(promptStyle),
 		pipeline.WithTunedDir(*tunedDir),

@@ -15,8 +15,8 @@ func main() {
 	output := flag.String("output", "../tyrian_mobile/assets/skins", "Game assets dir")
 	variation := flag.Int("variation", 1, "Which variation to use (default 1)")
 	size := flag.Int("size", 128, "Max target dimension px")
-	threshold := flag.Int("threshold", 30, "Background removal threshold")
-	margin := flag.Int("margin", 15, "Background removal soft-edge margin")
+	threshold := flag.Int("threshold", 60, "Background removal threshold")
+	margin := flag.Int("margin", 20, "Background removal soft-edge margin")
 	flag.Parse()
 
 	var skinIDs []string

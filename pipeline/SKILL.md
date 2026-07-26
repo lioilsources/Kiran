@@ -54,6 +54,7 @@ go run ./cmd/generate -skin rtype -dry-run
 #   -n <n>                variations per asset (default 4)
 #   -resolution 1k|2k     (default 1k = 1024px)
 #   -comfyui-job-timeout  per-job timeout (default 15m)
+#   -force                regenerate even if all variations already exist
 ```
 
 Output: `output/assets/skins/<skin_id>/<subdir>/<asset>_v{1..N}.jpg` + `manifest.json`
@@ -160,8 +161,8 @@ go run ./cmd/postprocess
 #   -output <dir>         game assets dir (default: ../tyrian_mobile/assets/skins)
 #   -variation <n>        which _v{N} to use (default 1)
 #   -size <px>            max dimension for sprites without reference size (default 128)
-#   -threshold <n>        bg removal color-distance threshold (default 30)
-#   -margin <n>           bg removal soft-edge ramp width px (default 15)
+#   -threshold <n>        bg removal color-distance threshold (default 60)
+#   -margin <n>           bg removal soft-edge ramp width px (default 20)
 ```
 
 Output: `tyrian_mobile/assets/skins/<skin_id>/sprites/*.png`, `ui/*.png`, `backgrounds/*.png`, `sfx/*.ogg`
