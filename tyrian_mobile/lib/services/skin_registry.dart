@@ -33,5 +33,8 @@ const kSkins = [
   SkinInfo('nuclear_throne', 'Nuclear Throne (2015)', pixelArt: true),
   SkinInfo('nex_machina', 'Nex Machina (2017)'),
   SkinInfo('river_raid', 'River Raid (1982)', pixelArt: true),
+  // flux2pony img2img restyle — repainted variants of an existing skin's art.
+  // Not pixel-art (soft painterly look → smooth filtering).
+  SkinInfo('galaga_watercolor', 'Galaga · Watercolor', pixelArt: false),
   SkinInfo('default', 'Kiran (2026)', pixelArt: true),
 ];

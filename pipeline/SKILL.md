@@ -58,6 +58,48 @@ go run ./cmd/generate -skin rtype -dry-run
 
 Output: `output/assets/skins/<skin_id>/<subdir>/<asset>_v{1..N}.jpg` + `manifest.json`
 
+## Stage 1b — flux2pony img2img restyle (optional)
+
+Pass 2: take the flux images already generated in Stage 1 for a **source** skin,
+repaint each one through the **Pony SDXL** model with a paint-style prompt
+(`watercolor`, …) and write a **new** skin `<src>_<style>`. The source skin is
+untouched. Uses ComfyUI img2img (`LoadImage → VAEEncode → KSampler` at `denoise<1`)
+so flux's composition is preserved while the medium changes.
+
+```bash
+# Restyle galaga's flux art into watercolor → galaga_watercolor
+go run ./cmd/flux2pony -skin galaga -style watercolor
+
+# One asset only, tune the repaint strength (lower keeps more of the flux base)
+go run ./cmd/flux2pony -skin galaga -style watercolor -asset-type ship -denoise 0.45 -workers 1
+
+# Dry-run: print composed prompts + in/out paths, no ComfyUI calls
+go run ./cmd/flux2pony -skin galaga -style watercolor -dry-run
+
+# Key flags
+#   -skin <id>            source skin (must have Stage 1 flux images) — required
+#   -style <id>           paint preset: watercolor (extend internal/style)
+#   -out-skin <id>        output skin id (default: <skin>_<style>)
+#   -denoise <0..1>       repaint strength (0 = preset default 0.55)
+#   -asset-type <t>       filter by asset type or name
+#   -workers <n>          concurrent ComfyUI jobs (default 2)
+#   -comfyui-checkpoint   override Pony checkpoint
+#   -dry-run              print prompts without calling ComfyUI
+```
+
+Output: `output/assets/skins/<src>_<style>/…` (+ copied sfx/music, `manifest.json`).
+Then run Stage 4 + atlas on `<src>_<style>` like any skin.
+
+Styles live in `internal/style/style.go` (`Registry`): each preset is a positive
+prompt prefix + extra negatives + default denoise. Add `oil` etc. there — no
+command/client changes needed. The img2img workflow is
+`internal/comfyuiimage/workflows/pony_img2img.json`.
+
+> 📝 Tuning: the Pony subject prompt still carries flat/cel-shade tags from the
+> base templates that fight painterly media. The watercolor preset counters them
+> via negatives + leading style tags; the main lever is `-denoise` (≈0.45 holds
+> the silhouette, ≈0.65 paints more freely). Tune per asset type.
+
 ## Stage 2 — Generate SFX
 
 ```bash
