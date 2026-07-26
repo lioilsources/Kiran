@@ -21,17 +21,19 @@ type Config struct {
 	OutputDir   string // output: tyrian_mobile/assets/skins/{id}
 	Variation   int    // which _v{N} to pick (default 1; explosion always uses 1-4)
 	TargetSize  int    // max dimension in px (default 128)
-	BgThreshold int    // color distance threshold (default 30)
-	BgMargin    int    // soft-edge ramp width (default 15)
+	BgThreshold int    // color distance threshold (default 60)
+	BgMargin    int    // soft-edge ramp width (default 20)
 }
 
-// DefaultConfig returns a Config with sensible defaults.
+// DefaultConfig returns a Config with sensible defaults. The threshold/margin
+// defaults are tuned for RemoveBackgroundFlood, whose border-connectivity
+// guard makes a wider threshold safe for the sprite artwork.
 func DefaultConfig() Config {
 	return Config{
 		Variation:   1,
 		TargetSize:  128,
-		BgThreshold: 30,
-		BgMargin:    15,
+		BgThreshold: 60,
+		BgMargin:    20,
 	}
 }
 
@@ -151,7 +153,7 @@ func processNamedAsset(cfg Config, asset skin.ManifestAsset, outDir, gameName st
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	rgba := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
+	rgba := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
 	out := normalizeSprite(rgba, gameName, cfg.TargetSize)
 
 	outPath := filepath.Join(outDir, gameName+".png")
@@ -198,7 +200,7 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 		numFrames = 6
 	}
 
-	ship := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
+	ship := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
 	frames := SynthesizeGlowFrames(ship, numFrames, shipGlowMinGain, shipGlowMaxGain, shipGlowLumGamma)
 
 	// Normalize all frames together so the animation keeps a steady size and
@@ -229,7 +231,7 @@ func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) erro
 			return fmt.Errorf("load explosion v%d: %w", v, err)
 		}
 
-		rgba := RemoveBackground(img, cfg.BgThreshold, cfg.BgMargin)
+		rgba := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
 		out := normalizeSprite(rgba, fmt.Sprintf("explosion%d", frame), cfg.TargetSize)
 
 		outPath := filepath.Join(outDir, fmt.Sprintf("explosion%d.png", frame))
@@ -282,7 +284,11 @@ func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) erro
 
 	resized := ResizeExact(img, 512, 1024)
 
-	// layer_0 is opaque (no bg removal); layer_1+ get bg removal
+	// layer_0 is opaque (no bg removal); layer_1+ get bg removal.
+	// Layers keep the global chroma key rather than RemoveBackgroundFlood:
+	// their content (cloud banks, terrain silhouettes) legitimately covers
+	// large stretches of the border, which would poison a border-sampled
+	// background model and erase the content itself.
 	var out image.Image
 	if asset.Name == "layer_0" {
 		out = resized
