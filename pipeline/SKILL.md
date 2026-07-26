@@ -160,8 +160,8 @@ go run ./cmd/postprocess
 #   -output <dir>         game assets dir (default: ../tyrian_mobile/assets/skins)
 #   -variation <n>        which _v{N} to use (default 1)
 #   -size <px>            max dimension for sprites without reference size (default 128)
-#   -threshold <n>        bg removal color-distance threshold (default 30)
-#   -margin <n>           bg removal soft-edge ramp width px (default 15)
+#   -threshold <n>        bg removal color-distance threshold (default 60)
+#   -margin <n>           bg removal soft-edge ramp width px (default 20)
 ```
 
 Output: `tyrian_mobile/assets/skins/<skin_id>/sprites/*.png`, `ui/*.png`, `backgrounds/*.png`, `sfx/*.ogg`
