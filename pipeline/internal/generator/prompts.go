@@ -71,9 +71,10 @@ Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Irregular natural shape, no propulsion or weapons visible.
 Drawn large and detailed, centered and filling the frame edge-to-edge with only a few pixels of margin. No text, no UI, no gradient, no scene.`,
 
-	"preview": `Game skin preview image showing the overall visual theme.
+	"preview": `Game skin preview image showing the overall visual theme, centered on a single massive boss creature/vessel filling the frame.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Show a representative scene: spacecraft, stars, projectiles in this art style.
+{{.BossDirective}}.
+Symmetrical, centered composition, dramatic scale, atmospheric background with stars or energy effects behind it.
 Atmospheric, eye-catching thumbnail for a selection screen. No text overlay.`,
 
 	"comcenter_bg": `{{.ArtDirective}}
@@ -156,9 +157,10 @@ irregular natural shape, no propulsion, no weapons, detailed, centered, fills fr
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid background, no text, no UI, no 3d render, no voxel`,
 
-	"preview": ponyQuality + `, anime style game skin key visual, splash art,
+	"preview": ponyQuality + `, anime style game skin key visual, splash art, giant boss monster centered in frame,
+{{.BossDirective}},
 {{.StyleKeywords}}, {{.PaletteDescription}},
-spaceship, stars, projectiles, dynamic action scene, eye-catching thumbnail, no text overlay`,
+symmetrical composition, dramatic scale, stars, energy effects, eye-catching thumbnail, no text overlay`,
 
 	"comcenter_bg": ponyQuality + `, anime style science fiction illustration, cockpit view, space station interior,
 dramatic atmospheric scene, nebulae, distant planets, alien landscape,
@@ -233,6 +235,7 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"BackgroundMood":     s.BackgroundMood,
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
+		"BossDirective":      s.BossDirective,
 		"SpriteSize":         s.SpriteSize,
 		"FrameCount":         s.FrameCount,
 	}

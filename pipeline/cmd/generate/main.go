@@ -37,6 +37,9 @@ func main() {
 	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI job")
 	comfyWorkflow := flag.String("comfyui-workflow", "flux", "ComfyUI workflow: flux or pony")
 	comfyCheckpoint := flag.String("comfyui-checkpoint", "", "Override checkpoint name in ComfyUI workflow node 4")
+	comfyLora := flag.String("comfyui-lora", "", "LoRA .safetensors to splice into the ComfyUI workflow (pony only)")
+	comfyLoraStrength := flag.Float64("comfyui-lora-strength", 0.9, "Injected LoRA model+clip strength")
+	loraTrigger := flag.String("lora-trigger", "", "Trigger word(s) prepended to every prompt so the LoRA activates, e.g. \"st4rhu11s, spaceship, starship, \"")
 	tunedDir := flag.String("tuned-dir", "", "Directory of tuned prompt sidecars (e.g. tuned); empty = use templates only")
 	flag.Parse()
 
@@ -81,6 +84,9 @@ func main() {
 		if *comfyCheckpoint != "" {
 			comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(*comfyCheckpoint))
 		}
+		if *comfyLora != "" {
+			comfyOpts = append(comfyOpts, comfyuiimage.WithLora(*comfyLora, *comfyLoraStrength))
+		}
 		client = comfyuiimage.NewClient(comfyURL, cfID, cfSecret, comfyOpts...)
 	}
 
@@ -102,6 +108,7 @@ func main() {
 		pipeline.WithAssetType(*assetType),
 		pipeline.WithPromptStyle(promptStyle),
 		pipeline.WithTunedDir(*tunedDir),
+		pipeline.WithPromptPrefix(*loraTrigger),
 	)
 
 	start := time.Now()

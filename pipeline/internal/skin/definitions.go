@@ -4,11 +4,11 @@ package skin
 type PostProcessEffect string
 
 const (
-	EffectNone       PostProcessEffect = "none"
-	EffectScanlines  PostProcessEffect = "scanlines"
-	EffectBloom      PostProcessEffect = "bloom"
-	EffectVignette   PostProcessEffect = "vignette"
-	EffectFilmGrain  PostProcessEffect = "film_grain"
+	EffectNone        PostProcessEffect = "none"
+	EffectScanlines   PostProcessEffect = "scanlines"
+	EffectBloom       PostProcessEffect = "bloom"
+	EffectVignette    PostProcessEffect = "vignette"
+	EffectFilmGrain   PostProcessEffect = "film_grain"
 	EffectGridDistort PostProcessEffect = "grid_distort"
 )
 
@@ -24,6 +24,7 @@ type SkinDef struct {
 	BackgroundMood     string
 	ExplosionStyle     string
 	BulletDirective    string
+	BossDirective      string // centered boss for the "preview" thumbnail
 
 	// Technical
 	SpriteSize int
@@ -66,6 +67,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "deep starfield, dark blue-black space with distant nebulae and drifting stars",
 		ExplosionStyle:     "bright cyan-white energy burst expanding outward with sparks",
 		BulletDirective:    "bright cyan energy bolt, elongated glowing pulse, 3x8 pixels",
+		BossDirective:      "A massive modern capital-ship boss dominating the frame — sleek angular hull plating, multiple weapon turrets, pulsing cyan energy cores running along its spine",
 		SpriteSize:         32,
 		FrameCount:         6,
 		PostProcess:        EffectNone,
@@ -86,6 +88,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "deep black void with sparse green-tinted pixel stars, CRT phosphor glow",
 		ExplosionStyle:     "blocky pixel explosion, green squares scatter outward, no smooth gradients",
 		BulletDirective:    "small bright green pixel rectangle, 2x6 pixels, sharp edges, no glow",
+		BossDirective:      "A giant blocky pixel-art mothership boss filling the frame — symmetrical alien-invader silhouette scaled up to monstrous size, chunky green pixel plating",
 		SpriteSize:         16,
 		FrameCount:         6,
 		PostProcess:        EffectScanlines,
@@ -106,6 +109,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "dark space with colorful distant stars, warm arcade cabinet glow",
 		ExplosionStyle:     "colorful pixel burst, red-yellow-white concentric rings expanding outward",
 		BulletDirective:    "small bright white pixel bolt with yellow trail, 3x8 pixels",
+		BossDirective:      "A large ornate boss flagship centered in frame — classic arcade mothership silhouette with colorful geometric wing patterns and a glowing central eye",
 		SpriteSize:         24,
 		FrameCount:         6,
 		PostProcess:        EffectScanlines,
@@ -126,6 +130,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "empty void with faint geometric grid lines fading into distance",
 		ExplosionStyle:     "wireframe line segments flying outward from center, no fill, just edges",
 		BulletDirective:    "single bright white dot with short trailing line, 2x4 pixels",
+		BossDirective:      "A huge wireframe boss vessel built entirely from interlocking polygonal vector shapes, glowing outline edges, no fill, centered and dominating the frame",
 		SpriteSize:         32,
 		FrameCount:         6,
 		PostProcess:        EffectVignette,
@@ -146,6 +151,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "deep black with subtle dark blue grid lines that pulse and warp",
 		ExplosionStyle:     "neon particle shower, cyan and magenta sparks radiating outward with bloom trails",
 		BulletDirective:    "small glowing cyan diamond shape with bloom trail, 4x4 pixels",
+		BossDirective:      "A massive rotating neon geometric boss entity centered in frame — interlocking glowing polygons orbiting a pulsing core, intense bloom trails",
 		SpriteSize:         32,
 		FrameCount:         6,
 		PostProcess:        EffectBloom,
@@ -166,6 +172,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "serene dark gradient with faint geometric mandalas, subtle violet accent light",
 		ExplosionStyle:     "elegant white particle dissolve, circular wave expanding outward, minimal debris",
 		BulletDirective:    "small white circle with violet core glow, 3x3 pixels, clean anti-aliased",
+		BossDirective:      "A large elegant boss ship centered in frame, symmetrically split into light and dark halves with a glowing violet polarity core at its center",
 		SpriteSize:         28,
 		FrameCount:         6,
 		PostProcess:        EffectVignette,
@@ -186,6 +193,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "scorched desert wasteland, irradiated dunes, dusty orange haze",
 		ExplosionStyle:     "chunky pixel debris burst, brown-orange-green particles, thick smoke chunks",
 		BulletDirective:    "chunky glowing bullet, thick bright green pixel pellet, 4x4 pixels",
+		BossDirective:      "A hulking mutant boss creature-vehicle hybrid centered in frame, scavenged rusted armor plating fused with exposed toxic-green growths",
 		SpriteSize:         24,
 		FrameCount:         6,
 		PostProcess:        EffectFilmGrain,
@@ -206,6 +214,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "overcast sepia sky, thick cloud banks in cream and brown, vintage film grain",
 		ExplosionStyle:     "ink-splatter explosion, dark brown burst with sepia smoke rings",
 		BulletDirective:    "dark brown ink dot projectile, small circular pellet with short sepia trail, 3x6 pixels",
+		BossDirective:      "A colossal ink-lined WW2 zeppelin-boss silhouette centered in frame, bristling with gun turrets, heavy sepia ink outlines",
 		SpriteSize:         28,
 		FrameCount:         6,
 		PostProcess:        EffectVignette,
@@ -218,26 +227,27 @@ var Registry = map[string]SkinDef{
 		UnlockDesc:         "Complete 5 sectors without upgrades",
 	},
 	"nex_machina": {
-		ID:                 "nex_machina",
-		Name:               "Voxel Storm",
-		ArtDirective:       "Housemarque 2017 voxel-art twin-stick shooter. Dense neon particle effects, HDR bloom, dark backgrounds with vivid saturated colors.",
-		StyleKeywords:      "voxel 3D rendered, intense neon particles, HDR bloom glow, Housemarque arcade, dense particle effects, vivid saturated neon",
-		PaletteDescription: "electric blue #0066FF, hot magenta #FF0066, neon green #00FF66, bright orange #FF6600 on deep black #050510",
-		BackgroundMood:     "dark alien planet surface, voxel terrain with deep shadows, distant neon-lit structures",
-		ExplosionStyle:     "dense voxel particle shower, bright neon cubes scattering, electric blue and magenta with bloom trails",
-		BulletDirective:    "bright neon blue energy cube projectile, small glowing voxel with intense bloom trail, 3x5 pixels",
-		SpriteSize:         32,
-		FrameCount:         6,
-		PostProcess:        EffectBloom,
-		GoogleFont:         "Exo 2",
-		SfxStyle:           "Dense electronic, bass-heavy impacts, neon synth, Housemarque arcade intensity",
-		MusicStyle:         "Relentless modern arcade electronica. Dense driving synthwave, sequenced bass and bright neon leads over pounding electronic percussion, high-energy bullet-storm intensity",
-		MusicTempo:         "140 BPM",
-		MusicKey:           "G minor",
+		ID:                     "nex_machina",
+		Name:                   "Voxel Storm",
+		ArtDirective:           "Housemarque 2017 voxel-art twin-stick shooter. Dense neon particle effects, HDR bloom, dark backgrounds with vivid saturated colors.",
+		StyleKeywords:          "voxel 3D rendered, intense neon particles, HDR bloom glow, Housemarque arcade, dense particle effects, vivid saturated neon",
+		PaletteDescription:     "electric blue #0066FF, hot magenta #FF0066, neon green #00FF66, bright orange #FF6600 on deep black #050510",
+		BackgroundMood:         "dark alien planet surface, voxel terrain with deep shadows, distant neon-lit structures",
+		ExplosionStyle:         "dense voxel particle shower, bright neon cubes scattering, electric blue and magenta with bloom trails",
+		BulletDirective:        "bright neon blue energy cube projectile, small glowing voxel with intense bloom trail, 3x5 pixels",
+		BossDirective:          "A towering voxel-constructed boss entity centered in frame, radiating dense neon particle effects and intense bloom from every joint",
+		SpriteSize:             32,
+		FrameCount:             6,
+		PostProcess:            EffectBloom,
+		GoogleFont:             "Exo 2",
+		SfxStyle:               "Dense electronic, bass-heavy impacts, neon synth, Housemarque arcade intensity",
+		MusicStyle:             "Relentless modern arcade electronica. Dense driving synthwave, sequenced bass and bright neon leads over pounding electronic percussion, high-energy bullet-storm intensity",
+		MusicTempo:             "140 BPM",
+		MusicKey:               "G minor",
 		PonyStyleKeywords:      "vivid saturated neon, HDR bloom glow, intense neon arcade, vibrant cel-shaded",
 		PonyPaletteDescription: "electric blue, hot magenta, neon green, bright orange on deep black",
-		UnlockedByDefault:  false,
-		UnlockDesc:         "Score 500,000 points",
+		UnlockedByDefault:      false,
+		UnlockDesc:             "Score 500,000 points",
 	},
 	"tyrian_dos": {
 		ID:                 "tyrian_dos",
@@ -248,6 +258,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "classic DOS parallax starfield, deep blue-purple space, layered star planes",
 		ExplosionStyle:     "detailed pixel explosion, orange-yellow-white fireball with dithered shading",
 		BulletDirective:    "bright VGA-colored energy bolt, yellow-white elongated pulse with blue edge glow, 3x8 pixels",
+		BossDirective:      "A heavily detailed metallic DOS-era boss dreadnought centered in frame, bristling with gun ports, dithered shading, gold accent trim",
 		SpriteSize:         32,
 		FrameCount:         6,
 		PostProcess:        EffectScanlines,
@@ -268,6 +279,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "dark outer space with mechanical Moai structures, organic-mechanical landscape, dim purple nebula",
 		ExplosionStyle:     "clean bright explosion, white-hot center expanding to orange-red ring, smooth gradient falloff",
 		BulletDirective:    "bright plasma blue energy oval, smooth glowing projectile, 3x6 pixels",
+		BossDirective:      "A massive organic-mechanical boss structure centered in frame, Moai-like carved features fused with precise mechanical plating, glowing red weak points",
 		SpriteSize:         32,
 		FrameCount:         6,
 		PostProcess:        EffectNone,
@@ -288,6 +300,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "dark alien interior, biomechanical walls with ribbed organic textures, pulsing veins, dim red ambient",
 		ExplosionStyle:     "organic burst, dark red-pink fleshy debris, bone-white fragments, sickly green fluid splatter",
 		BulletDirective:    "bright orange-white energy beam segment, thin concentrated laser, 2x8 pixels",
+		BossDirective:      "A colossal biomechanical boss organism centered in frame, fused flesh and rusted machinery, pulsing veins, layered bone-white armor segments",
 		SpriteSize:         32,
 		FrameCount:         6,
 		PostProcess:        EffectVignette,
@@ -308,6 +321,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "top-down river valley, flat tan-brown terrain on sides, wide blue river channel center, minimal detail",
 		ExplosionStyle:     "simple chunky pixel burst, 4-5 large colored squares scattering, primary red-orange-white, no gradients",
 		BulletDirective:    "tiny bright white vertical rectangle, 2x5 pixels, hard edges, no glow, pure Atari 2600 missile sprite",
+		BossDirective:      "A giant chunky 4-color boss vehicle centered in frame, blocking the river channel wall-to-wall, flat primary-color fills, no gradients",
 		SpriteSize:         16,
 		FrameCount:         6,
 		PostProcess:        EffectScanlines,
@@ -328,6 +342,7 @@ var Registry = map[string]SkinDef{
 		BackgroundMood:     "colorful alien planet, bright blue sky fading to space, vivid terrain, cheerful cosmic backdrop",
 		ExplosionStyle:     "colorful 16-bit explosion, bright red-yellow-white fireball with blue sparks",
 		BulletDirective:    "bright yellow-white energy beam, wide vertical pulse with blue edge glow, 4x8 pixels",
+		BossDirective:      "A large vibrant 16-bit boss mecha centered in frame, bristling with colorful weapon pods, clean bold sprite outlines",
 		SpriteSize:         28,
 		FrameCount:         6,
 		PostProcess:        EffectScanlines,

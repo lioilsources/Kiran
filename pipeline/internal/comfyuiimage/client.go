@@ -106,7 +106,9 @@ type Client struct {
 	jobTimeout   time.Duration
 	workflowJSON []byte
 	roles        NodeRoles
-	checkpoint   string // optional: overrides the checkpoint loader node named in roles
+	checkpoint   string  // optional: overrides the checkpoint loader node named in roles
+	lora         string  // optional: LoRA .safetensors to splice in after the checkpoint
+	loraStrength float64 // model+clip strength for the injected LoRA
 }
 
 // ClientOption configures the Client.
@@ -155,6 +157,21 @@ func WithCheckpoint(name string) ClientOption {
 	return func(c *Client) { c.checkpoint = name }
 }
 
+// WithLora splices a LoraLoader into the graph after the checkpoint loader
+// (NodeRoles.CheckpointNode) and reroutes every model/clip consumer through it,
+// so the LoRA affects both the sampler and the prompt encoders. Remember the
+// LoRA's trigger word still has to appear in the prompt (see the generator's
+// prompt prefix) — the node alone won't activate it. strength <= 0 falls back
+// to 0.9. Only meaningful for a checkpoint-based (Pony/SDXL) workflow.
+func WithLora(name string, strength float64) ClientOption {
+	return func(c *Client) {
+		c.lora = name
+		if strength > 0 {
+			c.loraStrength = strength
+		}
+	}
+}
+
 // NewClient creates a client for a ComfyUI server. cfClientID and cfSecret are
 // the Cloudflare Access service-token credentials (env vars
 // CF_ACCESS_CLIENT_ID / CF_ACCESS_CLIENT_SECRET); pass empty strings for a
@@ -171,6 +188,7 @@ func NewClient(baseURL, cfClientID, cfSecret string, opts ...ClientOption) *Clie
 		jobTimeout:   defaultJobTimeout,
 		workflowJSON: defaultWorkflow,
 		roles:        defaultNodeRoles,
+		loraStrength: 0.9,
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -267,7 +285,67 @@ func (c *Client) buildWorkflow(prompt, negativePrompt, filenamePrefix string, w,
 			return nil, err
 		}
 	}
+	if c.lora != "" {
+		if err := injectLora(graph, c.roles.CheckpointNode, c.lora, c.loraStrength); err != nil {
+			return nil, err
+		}
+	}
 	return graph, nil
+}
+
+// injectLora splices a LoraLoader between the checkpoint loader and everything
+// that consumes its model (output 0) or clip (output 1). VAE (output 2) is left
+// on the checkpoint. Mirrors the app-side ComfyUI LoRA injection: orthogonal
+// edge rewiring, so it composes with the rest of the graph untouched.
+func injectLora(graph map[string]any, ckptNode, loraName string, strength float64) error {
+	if _, ok := graph[ckptNode].(map[string]any); !ok {
+		return fmt.Errorf("checkpoint node %q not found for LoRA injection", ckptNode)
+	}
+	const loraID = "__lora__"
+	graph[loraID] = map[string]any{
+		"class_type": "LoraLoader",
+		"_meta":      map[string]any{"title": "LoRA: " + loraName},
+		"inputs": map[string]any{
+			"lora_name":      loraName,
+			"strength_model": strength,
+			"strength_clip":  strength,
+			"model":          []any{ckptNode, float64(0)},
+			"clip":           []any{ckptNode, float64(1)},
+		},
+	}
+	for id, n := range graph {
+		if id == loraID {
+			continue
+		}
+		node, ok := n.(map[string]any)
+		if !ok {
+			continue
+		}
+		inputs, ok := node["inputs"].(map[string]any)
+		if !ok {
+			continue
+		}
+		for k, v := range inputs {
+			arr, ok := v.([]any)
+			if !ok || len(arr) != 2 {
+				continue
+			}
+			src, ok := arr[0].(string)
+			if !ok || src != ckptNode {
+				continue
+			}
+			port, ok := arr[1].(float64)
+			if !ok {
+				continue
+			}
+			if port == 0 {
+				inputs[k] = []any{loraID, float64(0)}
+			} else if port == 1 {
+				inputs[k] = []any{loraID, float64(1)}
+			}
+		}
+	}
+	return nil
 }
 
 func setNodeInput(graph map[string]any, nodeID, key string, val any) error {

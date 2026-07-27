@@ -35,6 +35,7 @@ type Orchestrator struct {
 	assetType   string // filter: empty = all
 	promptStyle string // "pony" selects Pony SDXL templates; "" uses Flux default
 	tunedDir    string // if set, load tuned prompts from pipeline/tuned/<skin>/<workflow>/
+	promptPfx   string // prepended to every rendered prompt (e.g. a LoRA trigger word)
 }
 
 // OrchestratorOption configures the Orchestrator.
@@ -49,6 +50,11 @@ func WithForce(f bool) OrchestratorOption         { return func(o *Orchestrator)
 func WithAssetType(t string) OrchestratorOption   { return func(o *Orchestrator) { o.assetType = t } }
 func WithPromptStyle(s string) OrchestratorOption { return func(o *Orchestrator) { o.promptStyle = s } }
 func WithTunedDir(d string) OrchestratorOption    { return func(o *Orchestrator) { o.tunedDir = d } }
+
+// WithPromptPrefix prepends s to every template-rendered prompt. Used to inject
+// a LoRA trigger word so the spliced LoRA actually activates. Not applied to
+// tuned prompts (those are already final).
+func WithPromptPrefix(s string) OrchestratorOption { return func(o *Orchestrator) { o.promptPfx = s } }
 
 // NewOrchestrator creates a configured Orchestrator.
 func NewOrchestrator(client imagegen.ImageGenerator, outDir string, opts ...OrchestratorOption) *Orchestrator {
@@ -161,6 +167,7 @@ func (o *Orchestrator) dryRunSpecs(s skin.SkinDef, specs []generator.AssetSpec, 
 			fmt.Printf("[%d] %s/%s — ERROR: %v\n", i+1, spec.OutputDir, spec.Name, err)
 			continue
 		}
+		prompt = o.promptPfx + prompt
 		fmt.Printf("[%d] %s/%s\n", i+1, spec.OutputDir, spec.Name)
 		fmt.Printf("    Type: %s | Ratio: %s | Res: %s\n", spec.AssetType, spec.AspectRatio, spec.Resolution)
 		fmt.Printf("    Output: {skin}/%s/%s_v1..v%d.jpg\n", spec.OutputDir, spec.Name, o.n)
@@ -202,7 +209,7 @@ func (o *Orchestrator) generateAsset(ctx context.Context, s skin.SkinDef, spec g
 		if err != nil {
 			return fmt.Errorf("build prompt: %w", err)
 		}
-		req.Prompt = prompt
+		req.Prompt = o.promptPfx + prompt
 	}
 
 	resp, err := o.client.Generate(ctx, req)
