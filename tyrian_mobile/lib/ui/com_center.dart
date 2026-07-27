@@ -9,9 +9,8 @@ import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
-import '../services/save_service.dart';
+import '../services/leaderboard_service.dart';
 import '../services/asset_library.dart';
-import 'high_scores.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
 
@@ -44,10 +43,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   // Side slot target for buy (LB/RB gamepad or tap →L/→R)
   WeaponSlot _targetSideSlot = WeaponSlot.leftGun;
-
-  // High scores
-  List<HighScoreEntry> _highScores = [];
-  bool _showScores = false;
 
   // Pilot name field (persistent controller so the cursor doesn't reset)
   late final TextEditingController _pilotController;
@@ -100,7 +95,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     super.initState();
     _pilotController = TextEditingController(text: vessel.pilotName);
     _theme = UiTheme.forSkin(AssetLibrary.instance.skinId);
-    _loadScores();
     _bgAnim = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800), // 12 phases × ~67ms
@@ -117,11 +111,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         (_) => _pollGamepad(),
       );
     }
-  }
-
-  Future<void> _loadScores() async {
-    final scores = await SaveService.loadHighScores();
-    if (mounted) setState(() => _highScores = scores);
   }
 
   @override
@@ -1208,19 +1197,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   /// Collapsible TOP SCORES section shown below the weapon grid (VBA Top-10 panel).
+  /// Opens the native leaderboard (Game Center / Play Games). Shown only where
+  /// one is available — Windows/Linux and not-signed-in players get nothing
+  /// here (the on-device top-score table was removed).
   Widget _buildScoresPanel() {
-    if (_highScores.isEmpty) return const SizedBox.shrink();
+    if (!LeaderboardService.instance.available) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(height: 1, color: _theme.accentDim.withAlpha(60)),
         const SizedBox(height: 8),
         GestureDetector(
-          onTap: () => setState(() => _showScores = !_showScores),
+          onTap: () => LeaderboardService.instance.showLeaderboard(),
           child: Row(
             children: [
               Text(
-                _showScores ? '▼ TOP SCORES' : '▶ TOP SCORES',
+                '🏆 LEADERBOARD',
                 style: _theme.styled(TextStyle(
                   color: _theme.accent,
                   fontSize: 11,
@@ -1231,60 +1223,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             ],
           ),
         ),
-        if (_showScores) ...[
-          const SizedBox(height: 6),
-          _buildScoreTable(),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildScoreTable() {
-    if (_highScores.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (int i = 0; i < _highScores.length && i < 10; i++)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 18,
-                  child: Text(
-                    '${i + 1}.',
-                    style: _theme.styled(TextStyle(
-                      color: i < 3 ? _theme.accent : _theme.accentDim,
-                      fontSize: 11,
-                    )),
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    _highScores[i].name,
-                    style: _theme.styled(TextStyle(
-                      color: i < 3 ? _theme.accent : _theme.accentDim,
-                      fontSize: 11,
-                    )),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  'Lv${_highScores[i].level}',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  '${_highScores[i].score}',
-                  style: _theme.styled(TextStyle(
-                    color: i < 3 ? _theme.upgrade : _theme.accentDim,
-                    fontSize: 11,
-                    fontWeight: i < 3 ? FontWeight.bold : FontWeight.normal,
-                  )),
-                ),
-              ],
-            ),
-          ),
       ],
     );
   }

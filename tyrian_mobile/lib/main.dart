@@ -11,8 +11,8 @@ import 'game/tyrian_game.dart';
 import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
 import 'ui/osd_panel.dart';
-import 'ui/high_scores.dart';
 import 'ui/skin_selector.dart';
+import 'services/leaderboard_service.dart';
 import 'services/save_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
@@ -68,8 +68,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   late TyrianGame _game;
   _ScreenState _screen = _ScreenState.mainMenu;
   bool _showComCenter = false;
-  bool _showHighScores = false;
-  List<HighScoreEntry> _highScores = [];
 
   // Pause skin selector
   bool _showPauseSkinSelector = false;
@@ -87,7 +85,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _game = TyrianGame();
     _setupGameCallbacks();
-    _loadHighScores();
+    LeaderboardService.instance.init();
     SoundService.instance.init();
     SoundService.instance.loadSkin('default');
     MusicService.instance.init();
@@ -121,20 +119,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
 
     _game.onGameOver = () async {
-      final entry = HighScoreEntry(
-        name: _game.vessel.pilotName,
-        score: _game.vessel.credit,
-        level: _game.currentSectorIndex + 1,
-      );
-      await SaveService.saveHighScore(entry);
-      await _loadHighScores();
+      // Submit the run's score to the native leaderboard (Game Center / Play
+      // Games). No-op on Windows/Linux or when not signed in — there is no
+      // local table anymore. The _GameOverOverlay stays up; the player opens
+      // the leaderboard from its button if one is available.
+      await LeaderboardService.instance.submit(_game.vessel.credit);
 
       if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
         _game.coopHost!.sendEvent(EventType.gameOver);
-      }
-
-      if (mounted) {
-        setState(() => _showHighScores = true);
       }
     };
 
@@ -177,11 +169,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         // If playing, just show message (already done in setupCoopClient)
       }
     };
-  }
-
-  Future<void> _loadHighScores() async {
-    _highScores = await SaveService.loadHighScores();
-    if (mounted) setState(() {});
   }
 
   @override
@@ -335,7 +322,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       setState(() {
         _screen = _ScreenState.mainMenu;
         _showComCenter = false;
-        _showHighScores = false;
         _clientWaiting = false;
       });
     }
@@ -350,7 +336,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game.state = GameState.comCenter;
     if (mounted) {
       setState(() {
-        _showHighScores = false;
         _showComCenter = true;
       });
     }
@@ -394,12 +379,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               Container(color: Colors.black26),
 
             // Boss HP bar (visible while a phased boss is on the field)
-            if (!_showComCenter && !_showHighScores && !_clientWaiting &&
+            if (!_showComCenter && !_clientWaiting &&
                 _game.state != GameState.gameOver)
               BossHealthBar(game: _game),
 
             // OSD HUD
-            if (!_showComCenter && !_showHighScores && !_clientWaiting &&
+            if (!_showComCenter && !_clientWaiting &&
                 _game.state != GameState.gameOver)
               OsdPanel(
                 game: _game,
@@ -436,22 +421,15 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
 
             // Client waiting overlay (P2)
-            if (_clientWaiting && !_showHighScores)
+            if (_clientWaiting)
               _buildWaitingOverlay(),
 
-            // High Scores
-            if (_showHighScores)
-              HighScoresScreen(
-                scores: _highScores,
-                onClose: _game.isCoop ? _returnToCoopComCenter : _returnToMainMenu,
-              ),
-
             // Game Over
-            if (_game.state == GameState.gameOver && !_showHighScores)
+            if (_game.state == GameState.gameOver)
               _GameOverOverlay(
                 credit: _game.vessel.credit,
                 credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
-                onViewScores: () => setState(() => _showHighScores = true),
+                onClose: _game.isCoop ? _returnToCoopComCenter : _returnToMainMenu,
               ),
           ],
 
@@ -550,12 +528,14 @@ class _FpsOverlayState extends State<_FpsOverlay> {
 class _GameOverOverlay extends StatefulWidget {
   final int credit;
   final int? credit2;
-  final VoidCallback onViewScores;
+
+  /// Leave the game-over screen (main menu solo, or ComCenter in co-op).
+  final VoidCallback onClose;
 
   const _GameOverOverlay({
     required this.credit,
     this.credit2,
-    required this.onViewScores,
+    required this.onClose,
   });
 
   @override
@@ -595,7 +575,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
     final back = gp.buttonB;
 
     if ((confirm && !_prevConfirm) || (back && !_prevBack)) {
-      widget.onViewScores();
+      widget.onClose();
     }
 
     _prevConfirm = confirm;
@@ -609,7 +589,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
     if (key == LogicalKeyboardKey.enter ||
         key == LogicalKeyboardKey.space ||
         key == LogicalKeyboardKey.escape) {
-      widget.onViewScores();
+      widget.onClose();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -654,13 +634,27 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                 ),
               ],
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: widget.onViewScores,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.cyanAccent,
-                  foregroundColor: Colors.black,
+              // Native leaderboard button — only on a platform with Game Center
+              // / Play Games and a signed-in player (hidden on Windows/Linux
+              // and when sign-in failed). There is no local score table.
+              if (LeaderboardService.instance.available) ...[
+                ElevatedButton(
+                  onPressed: LeaderboardService.instance.showLeaderboard,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.cyanAccent,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: const Text('LEADERBOARD'),
                 ),
-                child: const Text('VIEW SCORES'),
+                const SizedBox(height: 8),
+              ],
+              ElevatedButton(
+                onPressed: widget.onClose,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white24,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('CONTINUE'),
               ),
             ],
           ),

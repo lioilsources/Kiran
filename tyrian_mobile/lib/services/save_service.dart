@@ -1,42 +1,12 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../ui/high_scores.dart';
 
-/// Ported from state file persistence — saves game state and high scores.
+/// Ported from state file persistence — saves the in-progress game state.
 /// Uses shared_preferences for mobile storage (replaces VBA "state.d" file).
+/// High scores are no longer stored on-device — they live in the native
+/// leaderboards (Game Center / Play Games), see [LeaderboardService].
 class SaveService {
-  static const _keyHighScores = 'high_scores';
   static const _keyGameState = 'game_state';
-  static const _maxScores = 10;
-
-  /// Load high scores
-  static Future<List<HighScoreEntry>> loadHighScores() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonStr = prefs.getString(_keyHighScores);
-    if (jsonStr == null) return [];
-
-    final List<dynamic> list = jsonDecode(jsonStr);
-    return list.map((e) => HighScoreEntry.fromJson(e)).toList();
-  }
-
-  /// Save a new high score. Returns true if it made the top 10.
-  static Future<bool> saveHighScore(HighScoreEntry entry) async {
-    final scores = await loadHighScores();
-    scores.add(entry);
-    scores.sort((a, b) => b.score.compareTo(a.score));
-
-    if (scores.length > _maxScores) {
-      scores.removeRange(_maxScores, scores.length);
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      _keyHighScores,
-      jsonEncode(scores.map((e) => e.toJson()).toList()),
-    );
-
-    return scores.contains(entry);
-  }
 
   /// Save game state (vessel stats, credit, level)
   static Future<void> saveGameState({

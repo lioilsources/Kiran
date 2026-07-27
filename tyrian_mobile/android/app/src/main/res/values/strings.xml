@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Google Play Games Services APP_ID. PLACEHOLDER — replace with the
+         numeric id from Play Console → Play Games Services → Configuration.
+         Until it's real, Play Games sign-in fails gracefully and the in-game
+         leaderboard button stays hidden (LeaderboardService.available == false). -->
+    <string name="game_services_app_id">000000000000</string>
+</resources>
