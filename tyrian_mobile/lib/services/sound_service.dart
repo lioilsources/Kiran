@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +23,30 @@ class SoundService {
   SoundService._();
 
   static const _poolSize = 3;
+
+  final _rnd = Random();
+
+  /// Per-event base volume mix. The loudnorm pass equalizes perceived loudness
+  /// across files, so this is the *relative* balance in-game: the frequent,
+  /// low-stakes shots sit back so impacts and events cut through.
+  static const _eventVolume = {
+    SfxEvent.fireBullet: 0.5,
+    SfxEvent.fireBeam: 0.6,
+    SfxEvent.hitShield: 0.6,
+    SfxEvent.hitHull: 0.7,
+    SfxEvent.explosionSmall: 0.8,
+    SfxEvent.explosionLarge: 1.0,
+    SfxEvent.pickup: 0.75,
+    SfxEvent.weaponUnlock: 0.85,
+    SfxEvent.sectorComplete: 0.9,
+    SfxEvent.gameOver: 0.9,
+  };
+
+  /// Per-play randomization so rapid repeats (bullets, hits) never sound
+  /// identical. Speed jitter shifts pitch+tempo together; on a <1 s effect the
+  /// tempo change is inaudible but the pitch variety reads as distinct shots.
+  static const _speedJitter = 0.06; // ±6%
+  static const _volumeJitter = 0.10; // ±10% around the event base
 
   String _skinId = 'default';
   bool _muted = false;
@@ -106,9 +132,9 @@ class SoundService {
     final pool = _pools[event];
     if (pool == null) return;
     try {
-      // Only preload the first player; others load lazily on play()
+      // Only preload the first player; others load lazily on play().
+      // Volume/speed are set per-play in _playPlayer, not here.
       await pool[0].setAsset(path).timeout(const Duration(seconds: 2));
-      pool[0].setVolume(1.0);
     } catch (e) {
       _failedPaths.add(path);
       // Try default fallback
@@ -117,13 +143,16 @@ class SoundService {
         _paths[event] = fallback;
         try {
           await pool[0].setAsset(fallback).timeout(const Duration(seconds: 2));
-          pool[0].setVolume(1.0);
         } catch (_) {
           _failedPaths.add(fallback);
         }
       }
     }
   }
+
+  /// Event's base volume, or muted (0). Per-play jitter is applied on top.
+  double _baseVolume(SfxEvent event) =>
+      _muted ? 0.0 : (_eventVolume[event] ?? 1.0);
 
   /// Play a sound effect (fire-and-forget).
   void play(SfxEvent event) {
@@ -138,16 +167,24 @@ class SoundService {
     _poolIndex[event] = (idx + 1) % pool.length;
     final player = pool[idx];
 
-    _playPlayer(player, path);
+    _playPlayer(player, event, path);
   }
 
-  void _playPlayer(AudioPlayer player, String path) async {
+  /// Symmetric jitter in [-amount, +amount].
+  double _jitter(double amount) => (_rnd.nextDouble() * 2 - 1) * amount;
+
+  void _playPlayer(AudioPlayer player, SfxEvent event, String path) async {
     try {
       // If player has no source yet, set it first
       if (player.audioSource == null) {
         await player.setAsset(path).timeout(const Duration(seconds: 2));
-        player.setVolume(_muted ? 0.0 : 1.0);
       }
+      // Per-play variation: base mix ± volume jitter, and a pitch/tempo nudge
+      // so consecutive shots don't sound machine-stamped.
+      final vol =
+          (_baseVolume(event) * (1 + _jitter(_volumeJitter))).clamp(0.0, 1.0);
+      player.setVolume(vol);
+      player.setSpeed(1 + _jitter(_speedJitter));
       await player.seek(Duration.zero);
       player.play();
       _failCount = 0;
@@ -164,10 +201,11 @@ class SoundService {
   /// Toggle mute on/off and persist.
   Future<void> toggleMute() async {
     _muted = !_muted;
-    // Mute/unmute all active players
-    for (final pool in _pools.values) {
-      for (final player in pool) {
-        player.setVolume(_muted ? 0.0 : 1.0);
+    // Update currently-loaded players. On unmute, restore each event's base
+    // volume (not a flat 1.0); the next play re-applies jitter on top.
+    for (final entry in _pools.entries) {
+      for (final player in entry.value) {
+        player.setVolume(_baseVolume(entry.key));
       }
     }
     final prefs = await SharedPreferences.getInstance();
