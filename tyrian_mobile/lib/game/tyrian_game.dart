@@ -381,7 +381,12 @@ class TyrianGame extends FlameGame
     // Desktop keyboard + gamepad input (handles pause toggle even when paused)
     _processDesktopInput(dt);
 
-    if (state == GameState.paused || state == GameState.comCenter) {
+    // Only the `playing` state runs the full simulation. paused, comCenter AND
+    // gameOver keep just the visual backdrop alive — previously gameOver was
+    // missing here, so after death enemies kept spawning and firing (audible
+    // SFX "as if the game continued") and the loop ran forever, flooding the
+    // audio sink with AudioTrack write failures even in the background.
+    if (state != GameState.playing) {
       starfield.update(dt);
       parallaxBg.update(dt);
       return;
