@@ -42,10 +42,8 @@ class SoundService {
     SfxEvent.gameOver: 0.9,
   };
 
-  /// Per-play randomization so rapid repeats (bullets, hits) never sound
-  /// identical. Speed jitter shifts pitch+tempo together; on a <1 s effect the
-  /// tempo change is inaudible but the pitch variety reads as distinct shots.
-  static const _speedJitter = 0.06; // ±6%
+  /// Per-play volume randomization so rapid repeats (bullets, hits) aren't
+  /// machine-stamped. Pitch jitter was tried too but removed — see _playPlayer.
   static const _volumeJitter = 0.10; // ±10% around the event base
 
   String _skinId = 'default';
@@ -179,12 +177,15 @@ class SoundService {
       if (player.audioSource == null) {
         await player.setAsset(path).timeout(const Duration(seconds: 2));
       }
-      // Per-play variation: base mix ± volume jitter, and a pitch/tempo nudge
-      // so consecutive shots don't sound machine-stamped.
+      // Per-play variation: base mix ± volume jitter so consecutive shots
+      // aren't machine-stamped. NOTE: no setSpeed() here — changing playback
+      // speed forces media3 out of the opus offload/bypass path through the
+      // Sonic processor, reconfiguring the AudioTrack on every shot; across the
+      // pooled players that thrashed the sink into `AudioTrack write failed: -6`
+      // on Android. setVolume alone doesn't reconfigure the track, so it's safe.
       final vol =
           (_baseVolume(event) * (1 + _jitter(_volumeJitter))).clamp(0.0, 1.0);
       player.setVolume(vol);
-      player.setSpeed(1 + _jitter(_speedJitter));
       await player.seek(Duration.zero);
       player.play();
       _failCount = 0;
