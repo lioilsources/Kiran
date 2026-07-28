@@ -134,10 +134,28 @@ class Structure extends PositionComponent
           position.y + smy < vessel.position.y + vhy &&
           y2 - smy > vessel.position.y - vhy) {
         vessel.takeDamage(collisionDmg);
-        // VB6: push player below asteroid
-        vessel.position.y = y2 + vessel.size.y / 2;
+        // Ramming shatters the asteroid into Voronoi fragments instead of
+        // shoving the ship out below it — the collision damage still lands.
+        // This is the ONLY way an asteroid breaks; gunfire can't destroy them.
+        _shatter(vessel.position.x, vessel.position.y);
+        return;
       }
     }
+  }
+
+  /// Break the asteroid apart: a pixel explosion plus Voronoi sprite shards
+  /// flung out from ([hitX], [hitY]), then remove it. Asteroids are fragmentable
+  /// (the atlas bakes 'asteroid*' fragments), so this shows real sprite pieces
+  /// tumbling away rather than just a puff.
+  void _shatter(double hitX, double hitY) {
+    final cx = position.x + size.x / 2;
+    final cy = position.y + size.y / 2;
+    game.addExplosion(cx, cy, size.x.toInt() ~/ 10);
+    if (_sprite != null) {
+      game.shardPool
+          .spawn(_sprite!, cx, cy, hitX, hitY, size.x, size.y, _imgName);
+    }
+    _remove();
   }
 
   void _remove() {
