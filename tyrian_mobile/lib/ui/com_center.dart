@@ -402,20 +402,30 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     ),
                   )
                 else ...[
-                  if (_cheatsEnabled) _buildCheatBar(),
-                  _buildStatsAndSlots(),
-                  Container(height: 1, color: _theme.accent.withAlpha(30)),
-                  _buildSectionTabs(),
-                  Container(height: 1, color: _theme.accent.withAlpha(30)),
+                  // Whole content scrolls as one unit — stats/progress bars and
+                  // section tabs scroll away with the weapon list so the list
+                  // gets the full screen height instead of the cramped leftover.
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildActiveSection(),
-                          const SizedBox(height: 16),
-                          _buildScoresPanel(),
+                          if (_cheatsEnabled) _buildCheatBar(),
+                          _buildStatsAndSlots(),
+                          Container(height: 1, color: _theme.accent.withAlpha(30)),
+                          _buildSectionTabs(),
+                          Container(height: 1, color: _theme.accent.withAlpha(30)),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildActiveSection(),
+                                const SizedBox(height: 16),
+                                _buildScoresPanel(),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -574,24 +584,30 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   Widget _buildSideSubTab(WeaponSlot slot, String label) {
     final isActive = _targetSideSlot == slot;
+    final tabSprite = isActive ? AssetLibrary.instance.getIcon('ui_tab_active') : null;
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() {
           _targetSideSlot = slot;
           _selectedWeaponIndex = 0;
         }),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 7),
-          color: isActive ? _theme.surfaceLight : Colors.transparent,
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: _theme.styled(TextStyle(
-              color: isActive ? _theme.accent : _theme.accentDim,
-              fontSize: _fs(10),
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              letterSpacing: 1,
-            )),
+        child: spriteBox(
+          sprite: tabSprite,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 7),
+            color: tabSprite != null
+                ? Colors.transparent
+                : (isActive ? _theme.surfaceLight : Colors.transparent),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: _theme.styled(TextStyle(
+                color: isActive ? _theme.accent : _theme.accentDim,
+                fontSize: _fs(10),
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                letterSpacing: 1,
+              )),
+            ),
           ),
         ),
       ),
