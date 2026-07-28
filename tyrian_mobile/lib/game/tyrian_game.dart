@@ -169,41 +169,7 @@ class TyrianGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    if (platform.isLandscape) {
-      // Desktop landscape: game height scales with screen WIDTH (fills after -90° rotation)
-      config.gameHeight = config.gameWidth * (size.x / size.y);
-
-      camera.viewport = FixedResolutionViewport(
-        resolution: Vector2(config.gameHeight, config.gameWidth), // landscape dims
-      );
-      camera.viewfinder.anchor = Anchor.center;
-      camera.viewfinder.position =
-          Vector2(config.gameWidth / 2, config.gameHeight / 2);
-      camera.viewfinder.angle = -pi / 2; // CCW: game UP → screen RIGHT
-    } else {
-      // Mobile portrait: width=600, height scaled to device aspect ratio
-      config.gameHeight = config.gameWidth * (size.y / size.x);
-      if (config.gameHeight < config.gameWidth) {
-        config.gameHeight = config.gameWidth;
-      }
-
-      camera.viewport = FixedResolutionViewport(
-        resolution: Vector2(config.gameWidth, config.gameHeight),
-      );
-      if (config.immersiveCameraEnabled) {
-        // Immersive experiment: zoom in so only ~immersiveVisibleFraction of the
-        // play field is visible; the field stays gameWidth wide (VB6 parity), the
-        // camera pans within it (see _updateImmersiveCamera). Centre anchor makes
-        // the follow math symmetric.
-        camera.viewfinder.anchor = Anchor.center;
-        camera.viewfinder.zoom = 1.0 / config.immersiveVisibleFraction;
-        camera.viewfinder.position =
-            Vector2(config.gameWidth / 2, config.gameHeight / 2);
-      } else {
-        camera.viewfinder.anchor = Anchor.topLeft;
-        camera.viewfinder.position = Vector2.zero();
-      }
-    }
+    _applyViewportLayout();
 
     await AssetLibrary.instance.loadAll();
 
@@ -250,6 +216,72 @@ class TyrianGame extends FlameGame
     musicDirector = MusicDirector(this);
     isLoaded = true;
     onLoaded?.call();
+  }
+
+  /// (Re)compute the aspect-dependent play-field height + camera viewport from
+  /// the current [size].
+  ///
+  /// On iOS cold start the very first layout pass can report a 0×0 game size.
+  /// Deriving `gameHeight = gameWidth * size.y / size.x` from it yields NaN
+  /// (0/0), which corrupts the viewport and the vessel spawn — `resetPosition`
+  /// then places the ship at (300, NaN), collapsing its transform to (0,0) so it
+  /// renders in the top-left corner, off-screen. Android reports a valid size
+  /// immediately, hence iOS-only. We only overwrite `gameHeight` when the size
+  /// is valid; [onGameResize] re-runs this once a real size arrives.
+  void _applyViewportLayout() {
+    final valid = size.x > 0 && size.y > 0;
+    if (platform.isLandscape) {
+      // Desktop landscape: game height scales with screen WIDTH (fills after -90° rotation)
+      if (valid) config.gameHeight = config.gameWidth * (size.x / size.y);
+
+      camera.viewport = FixedResolutionViewport(
+        resolution: Vector2(config.gameHeight, config.gameWidth), // landscape dims
+      );
+      camera.viewfinder.anchor = Anchor.center;
+      camera.viewfinder.position =
+          Vector2(config.gameWidth / 2, config.gameHeight / 2);
+      camera.viewfinder.angle = -pi / 2; // CCW: game UP → screen RIGHT
+    } else {
+      // Mobile portrait: width=600, height scaled to device aspect ratio
+      if (valid) {
+        config.gameHeight = config.gameWidth * (size.y / size.x);
+        if (config.gameHeight < config.gameWidth) {
+          config.gameHeight = config.gameWidth;
+        }
+      }
+
+      camera.viewport = FixedResolutionViewport(
+        resolution: Vector2(config.gameWidth, config.gameHeight),
+      );
+      if (config.immersiveCameraEnabled) {
+        // Immersive experiment: zoom in so only ~immersiveVisibleFraction of the
+        // play field is visible; the field stays gameWidth wide (VB6 parity), the
+        // camera pans within it (see _updateImmersiveCamera). Centre anchor makes
+        // the follow math symmetric.
+        camera.viewfinder.anchor = Anchor.center;
+        camera.viewfinder.zoom = 1.0 / config.immersiveVisibleFraction;
+        camera.viewfinder.position =
+            Vector2(config.gameWidth / 2, config.gameHeight / 2);
+      } else {
+        camera.viewfinder.anchor = Anchor.topLeft;
+        camera.viewfinder.position = Vector2.zero();
+      }
+    }
+  }
+
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    // Re-apply the aspect-dependent layout once a real size arrives — covers the
+    // iOS cold-start case where onLoad computed the play field from a 0×0 size
+    // (see _applyViewportLayout). Never mid-play, to avoid snapping the live
+    // camera/vessel; the idle vessel is re-homed so the next startGame spawns it
+    // correctly.
+    if (!isLoaded) return;
+    if (size.x <= 0 || size.y <= 0) return;
+    if (state == GameState.playing || state == GameState.paused) return;
+    _applyViewportLayout();
+    if (!vessel.visible) vessel.resetPosition();
   }
 
   /// Re-fetch sprites on all entities after a skin change.
