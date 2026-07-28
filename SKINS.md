@@ -1,8 +1,12 @@
 # Skins
 
-Kiran ships with 13 visual themes. Each skin provides its own sprites, parallax backgrounds, SFX, and post-process shader preset.
+Kiran ships with 14 visual themes. Each skin provides its own sprites, parallax
+backgrounds, SFX, adaptive music, and post-process shader preset.
 
-All skin sprites were generated via the **Grok Image API** and post-processed through the Go pipeline in `pipeline/`, unless noted otherwise.
+Sprites are generated via the ComfyUI pipeline in `pipeline/` — **Flux** for the
+in-game sprites (clean silhouettes that read at gameplay size and background-key
+cleanly) and **Pony SDXL + a starship-hull LoRA** for the boss preview thumbnails
+(hero art where the extra hull detail pays off). See `pipeline/SKILL.md`.
 
 ---
 
@@ -11,6 +15,7 @@ All skin sprites were generated via the **Grok Image API** and post-processed th
 | Space Invaders (1978) | 1978 arcade | 4 | — | scanlines 0.4, curve 0.01 | neutral | Subtle CRT phosphor | [Wikipedia](https://en.wikipedia.org/wiki/Space_Invaders) |
 | Asteroids (1979) | Vector wireframe | 4 | 0.6× | — | green tint (0.85 / 1.0 / 0.85) | Glow on geometry | [Wikipedia](https://en.wikipedia.org/wiki/Asteroids_(video_game)) |
 | Galaga (1981) | Classic fixed-shooter | 4 | 0.5× | — | neutral | Soft bloom on projectiles | [Wikipedia](https://en.wikipedia.org/wiki/Galaga) |
+| River Raid (1982) | Atari 2600 4-color | 4 | — | — | neutral | Ultra-chunky flat sprites | [Wikipedia](https://en.wikipedia.org/wiki/River_Raid) |
 | R-Type (1987) | Sci-fi horizontal shmup | 4 | 0.7× | — | neutral | Neutral bloom | [Wikipedia](https://en.wikipedia.org/wiki/R-Type) |
 | Blazing Lazers (1989) | PC Engine shooter | 4 | 0.8× | — | warm (1.0 / 0.95 / 0.9) | Subtle warm glow | [Wikipedia](https://en.wikipedia.org/wiki/Blazing_Lazers) |
 | Tyrian DOS (1995) | DOS-era pixel art | 4 | — | scanlines 0.7, curve 0.02 | warm (1.0 / 0.95 / 0.85) | Faithful retro feel | [Wikipedia](https://en.wikipedia.org/wiki/Tyrian_(video_game)) |
@@ -21,6 +26,55 @@ All skin sprites were generated via the **Grok Image API** and post-processed th
 | Nuclear Throne (2015) | Post-apoc top-down | 4 | — | — | desaturated warm | Saturation 0.85, orange tint | [Wikipedia](https://en.wikipedia.org/wiki/Nuclear_Throne) |
 | Nex Machina (2017) | Neon twin-stick (dark) | 4 | 1.0× | — | neutral | High-contrast neon | [Wikipedia](https://en.wikipedia.org/wiki/Nex_Machina) |
 | Kiran (2026) | Tyrian original | 1 | — | — | neutral | Hand-crafted baseline | — |
+
+---
+
+## Gallery
+
+Each entry: the boss preview thumbnail (left) and the enemy roster — falcon,
+falcon1–6, falconx/x2/x3/xb/xt, bouncer (right).
+
+### Space Invaders (1978)
+<p><img src="tyrian_mobile/assets/skins/space_invaders/ui/preview.png" width="190" align="top"> <img src="docs/gallery/space_invaders_enemies.png" width="560" align="top"></p>
+
+### Asteroids (1979)
+<p><img src="tyrian_mobile/assets/skins/asteroids/ui/preview.png" width="190" align="top"> <img src="docs/gallery/asteroids_enemies.png" width="560" align="top"></p>
+
+### Galaga (1981)
+<p><img src="tyrian_mobile/assets/skins/galaga/ui/preview.png" width="190" align="top"> <img src="docs/gallery/galaga_enemies.png" width="560" align="top"></p>
+
+### River Raid (1982)
+<p><img src="tyrian_mobile/assets/skins/river_raid/ui/preview.png" width="190" align="top"> <img src="docs/gallery/river_raid_enemies.png" width="560" align="top"></p>
+
+### R-Type (1987)
+<p><img src="tyrian_mobile/assets/skins/rtype/ui/preview.png" width="190" align="top"> <img src="docs/gallery/rtype_enemies.png" width="560" align="top"></p>
+
+### Blazing Lazers (1989)
+<p><img src="tyrian_mobile/assets/skins/blazing_lazers/ui/preview.png" width="190" align="top"> <img src="docs/gallery/blazing_lazers_enemies.png" width="560" align="top"></p>
+
+### Tyrian DOS (1995)
+<p><img src="tyrian_mobile/assets/skins/tyrian_dos/ui/preview.png" width="190" align="top"> <img src="docs/gallery/tyrian_dos_enemies.png" width="560" align="top"></p>
+
+### Ikaruga (2001)
+<p><img src="tyrian_mobile/assets/skins/ikaruga/ui/preview.png" width="190" align="top"> <img src="docs/gallery/ikaruga_enemies.png" width="560" align="top"></p>
+
+### Geometry Wars (2003)
+<p><img src="tyrian_mobile/assets/skins/geometry_wars/ui/preview.png" width="190" align="top"> <img src="docs/gallery/geometry_wars_enemies.png" width="560" align="top"></p>
+
+### Gradius V (2004)
+<p><img src="tyrian_mobile/assets/skins/gradius_v/ui/preview.png" width="190" align="top"> <img src="docs/gallery/gradius_v_enemies.png" width="560" align="top"></p>
+
+### Luftrausers (2014)
+<p><img src="tyrian_mobile/assets/skins/luftrausers/ui/preview.png" width="190" align="top"> <img src="docs/gallery/luftrausers_enemies.png" width="560" align="top"></p>
+
+### Nuclear Throne (2015)
+<p><img src="tyrian_mobile/assets/skins/nuclear_throne/ui/preview.png" width="190" align="top"> <img src="docs/gallery/nuclear_throne_enemies.png" width="560" align="top"></p>
+
+### Nex Machina (2017)
+<p><img src="tyrian_mobile/assets/skins/nex_machina/ui/preview.png" width="190" align="top"> <img src="docs/gallery/nex_machina_enemies.png" width="560" align="top"></p>
+
+### Kiran (2026)
+<p><img src="tyrian_mobile/assets/skins/default/ui/preview.png" width="190" align="top"> <img src="docs/gallery/default_enemies.png" width="560" align="top"></p>
 
 ---
 
