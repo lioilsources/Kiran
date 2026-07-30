@@ -11,6 +11,9 @@ class CoopClient {
 
   bool get isConnected => _socket != null;
 
+  /// Reason the last [connect] attempt failed (for UI display)
+  String? lastError;
+
   // Latest snapshot received from host (client reads this each frame)
   GameSnapshot? latestSnapshot;
 
@@ -23,6 +26,7 @@ class CoopClient {
   /// Connect to host at given IP and port
   Future<bool> connect(String host, int port, String pilotName) async {
     print('Client: connecting to $host:$port');
+    lastError = null;
     try {
       _socket = await Socket.connect(host, port,
           timeout: const Duration(seconds: 5));
@@ -39,7 +43,12 @@ class CoopClient {
       _socket!.add(encodeLobbyHandshake(pilotName));
       print('Client: connected');
       return true;
+    } on TimeoutException {
+      lastError = 'Connection timed out';
+      print('Client: connect failed: timeout');
+      return false;
     } catch (e) {
+      lastError = e is SocketException ? (e.osError?.message ?? e.message) : '$e';
       print('Client: connect failed: $e');
       return false;
     }
