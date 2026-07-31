@@ -23,6 +23,7 @@ const kSkins = [
   SkinInfo('space_invaders', 'Space Invaders (1978)', pixelArt: true),
   SkinInfo('asteroids', 'Asteroids (1979)', pixelArt: true),
   SkinInfo('galaga', 'Galaga (1981)', pixelArt: true),
+  SkinInfo('river_raid', 'River Raid (1982)', pixelArt: true),
   SkinInfo('rtype', 'R-Type (1987)'),
   SkinInfo('blazing_lazers', 'Blazing Lazers (1989)'),
   SkinInfo('tyrian_dos', 'Tyrian DOS (1995)', pixelArt: true),
@@ -32,6 +33,5 @@ const kSkins = [
   SkinInfo('luftrausers', 'Luftrausers (2014)'),
   SkinInfo('nuclear_throne', 'Nuclear Throne (2015)', pixelArt: true),
   SkinInfo('nex_machina', 'Nex Machina (2017)'),
-  SkinInfo('river_raid', 'River Raid (1982)', pixelArt: true),
   SkinInfo('default', 'Kiran (2026)', pixelArt: true),
 ];
