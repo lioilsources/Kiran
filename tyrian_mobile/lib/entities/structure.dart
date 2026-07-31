@@ -133,10 +133,12 @@ class Structure extends PositionComponent
           x2 - smx > vessel.position.x - vhx &&
           position.y + smy < vessel.position.y + vhy &&
           y2 - smy > vessel.position.y - vhy) {
-        vessel.takeDamage(collisionDmg);
+        // Escalating ram punishment (shields down → half HP → death within a
+        // short window), replacing the old flat collisionDmg + knockback.
+        vessel.hitByAsteroid();
         // Ramming shatters the asteroid into Voronoi fragments instead of
-        // shoving the ship out below it — the collision damage still lands.
-        // This is the ONLY way an asteroid breaks; gunfire can't destroy them.
+        // shoving the ship out below it. This is the ONLY way an asteroid
+        // breaks; gunfire can't destroy them.
         _shatter(vessel.position.x, vessel.position.y);
         return;
       }
