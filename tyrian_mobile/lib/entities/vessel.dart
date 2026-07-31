@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import '../services/pilot_name_generator.dart';
 import '../systems/device.dart';
@@ -32,6 +33,13 @@ class Vessel extends PositionComponent
   bool fire = false;
   double fireRateMult = 1.0; // 0.0–1.0; scales weapon cooldown (RT analog control)
   int dmgTaken = 0; // Damage flash counter
+
+  // Asteroid ram combo — escalating collision punishment. Consecutive rams
+  // within _asteroidComboWindow seconds ramp up: 1st drops shields, 2nd costs
+  // half of max HP, 3rd is fatal. The window resets once it lapses.
+  int _asteroidComboStage = 0;
+  double _asteroidComboTimer = 0;
+  static const double _asteroidComboWindow = 3.0; // seconds to chain rams
 
   // Weapons
   final List<Device> devices = [];
@@ -140,6 +148,8 @@ class Vessel extends PositionComponent
     shield = shieldMax;
     genValue = genMax;
     dmgTaken = 0;
+    _asteroidComboStage = 0;
+    _asteroidComboTimer = 0;
     fire = false;
     visible = true;
     bank = 0;
@@ -151,6 +161,7 @@ class Vessel extends PositionComponent
 
   /// Full reset for new game — VB6 ResetVessel: all stats back to defaults
   void newGame() {
+    AchievementService.instance.onRunStarted();
     score = 0;
     credit = 0;
     nextWeaponLevel = 0;
@@ -360,6 +371,8 @@ class Vessel extends PositionComponent
 
     // Damage flash decay
     if (dmgTaken > 0) dmgTaken--;
+    // Asteroid ram-combo window decay — lapse resets the escalation
+    if (_asteroidComboTimer > 0) _asteroidComboTimer -= dt;
   }
 
   /// VB6 TestDistance — finds closest enemy within guidance cone
@@ -497,9 +510,50 @@ class Vessel extends PositionComponent
     }
     if (amount > 0) {
       SoundService.instance.play(SfxEvent.hitHull);
+      game.sectorHullDamage = true;
     }
     hp -= amount;
     dmgTaken = 4; // Flash frames
+    game.shaderPipeline.triggerAberration();
+
+    if (hp <= 0) {
+      hp = 0;
+      if (game.isCoop) {
+        visible = false;
+        fire = false;
+        game.checkCoopGameOver();
+      } else {
+        game.triggerGameOver();
+      }
+    }
+  }
+
+  /// Asteroid ram — escalating, not a flat hit. Consecutive rams within
+  /// [_asteroidComboWindow] seconds ramp up: 1st drops shields, 2nd costs half
+  /// of max HP, 3rd is fatal. The combo resets once the window lapses.
+  void hitByAsteroid() {
+    if (_asteroidComboTimer <= 0) _asteroidComboStage = 0;
+    _asteroidComboStage++;
+    _asteroidComboTimer = _asteroidComboWindow;
+    AchievementService.instance.onAsteroidRam();
+
+    switch (_asteroidComboStage) {
+      case 1:
+        shield = 0; // first ram: shields down
+        SoundService.instance.play(SfxEvent.hitShield);
+      case 2:
+        shield = 0;
+        hp -= hpMax ~/ 2; // second ram in quick succession: half of max HP
+        SoundService.instance.play(SfxEvent.hitHull);
+        game.sectorHullDamage = true;
+      default:
+        shield = 0;
+        hp = 0; // third+ ram: fatal
+        SoundService.instance.play(SfxEvent.hitHull);
+        game.sectorHullDamage = true;
+    }
+
+    dmgTaken = 4; // flash frames + brief invuln (mirrors takeDamage)
     game.shaderPipeline.triggerAberration();
 
     if (hp <= 0) {

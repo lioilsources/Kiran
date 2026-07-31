@@ -23,6 +23,7 @@ import '../systems/sector.dart';
 import '../systems/fleet.dart';
 import '../systems/dev_type.dart';
 import '../entities/projectile.dart';
+import '../services/achievement_service.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../services/music_service.dart';
@@ -107,6 +108,10 @@ class TyrianGame extends FlameGame
 
   Sector? currentSector;
   int currentSectorIndex = 0;
+
+  /// Any hull HP lost during the current sector — the "untouchable"
+  /// achievement checks this on sector completion. Set by Vessel.
+  bool sectorHullDamage = false;
   double elapsed = 0;
   double _osdTimer = 0;
 
@@ -335,6 +340,8 @@ class TyrianGame extends FlameGame
     }
     loadSector(currentSectorIndex);
     _startSectorMusic();
+    AchievementService.instance
+        .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
   }
 
   /// Kick off the heroic intro + reset the adaptive-music director for a sector.
@@ -355,6 +362,7 @@ class TyrianGame extends FlameGame
     currentSectorIndex = index;
     vessel.lvlNum = index + 1;
     if (vessel2 != null) vessel2!.lvlNum = index + 1;
+    sectorHullDamage = false;
     elapsed = 0;
   }
 
@@ -426,6 +434,7 @@ class TyrianGame extends FlameGame
 
     super.update(dt);
     elapsed += dt;
+    AchievementService.instance.addPlayTime(dt);
     shardPool.update(dt);
     _updateWorldShift(dt);
 
@@ -527,6 +536,10 @@ class TyrianGame extends FlameGame
   }
 
   void _onSectorComplete() {
+    AchievementService.instance.onSectorCompleted(
+      currentSectorIndex + 1,
+      tookHullDamage: sectorHullDamage,
+    );
     SoundService.instance.play(SfxEvent.sectorComplete);
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
     vessel.credit += currentSector!.sectorBonus;

@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import 'dev_type.dart';
 import '../entities/projectile.dart';
@@ -254,6 +255,9 @@ class Device {
     price = (price * (1 + upgCost)).round();
     // VB6: update displayName with roman numeral
     displayName = '$name ${_roman[level]}';
+    if (parentVessel != null) {
+      AchievementService.instance.onWeaponLevel(name, level);
+    }
 
     if (pwrGen > 0 && parentVessel != null) {
       pwrGen *= config.upgPwrGenMultiplier;

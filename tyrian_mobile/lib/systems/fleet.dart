@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import '../entities/boss.dart';
 import '../entities/hostile.dart';
@@ -239,6 +240,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   void onHostileKilled(Hostile h, TyrianGame gameInstance, {Vessel? attacker}) {
     kills++;
+    AchievementService.instance.onKill(h.hostType, isBoss: h is Boss);
     lastKillX = h.position.x + h.size.x / 2;
     lastKillY = h.position.y + h.size.y / 2;
 

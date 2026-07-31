@@ -12,6 +12,7 @@ import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
 import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
+import 'services/achievement_service.dart';
 import 'services/leaderboard_service.dart';
 import 'services/save_service.dart';
 import 'services/sound_service.dart';
@@ -85,7 +86,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _game = TyrianGame();
     _setupGameCallbacks();
-    LeaderboardService.instance.init();
+    // Achievements piggyback on the leaderboard's sign-in, so init them after
+    // it settles — the first flush then pushes any progress accumulated
+    // while signed out.
+    LeaderboardService.instance
+        .init()
+        .then((_) => AchievementService.instance.init());
     SoundService.instance.init();
     SoundService.instance.loadSkin('default');
     MusicService.instance.init();
@@ -123,6 +129,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       // Games). No-op on Windows/Linux or when not signed in — there is no
       // local table anymore. The _GameOverOverlay stays up; the player opens
       // the leaderboard from its button if one is available.
+      AchievementService.instance.onGameOver();
       await LeaderboardService.instance.submit(_game.vessel.credit);
 
       if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
@@ -175,6 +182,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
+      AchievementService.instance.flush();
       if (_game.state == GameState.playing) {
         _game.togglePause(); // co-op events handled inside togglePause()
         if (mounted) setState(() {});
@@ -645,6 +653,17 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                     foregroundColor: Colors.black,
                   ),
                   child: const Text('LEADERBOARD'),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (AchievementService.instance.available) ...[
+                ElevatedButton(
+                  onPressed: AchievementService.instance.showAchievements,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amberAccent,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: const Text('ACHIEVEMENTS'),
                 ),
                 const SizedBox(height: 8),
               ],
