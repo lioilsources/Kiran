@@ -81,6 +81,7 @@ class BloomPass extends PostProcess {
       Paint()..shader = _compositeShader,
     );
     vBlurImg.dispose();
+    scene.dispose();
   }
 
   /// Render a shader into an offscreen image at pixel dimensions [w] x [h].
