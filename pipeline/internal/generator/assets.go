@@ -52,11 +52,24 @@ var structureSpecs = []struct{ name, directive string }{
 	{"asteroid3", "tiny asteroid shard, sharp angular fragment"},
 }
 
-// backgroundLayers describe the four parallax planes. The layerDesc for
-// layers 1-3 asks for a flat black backdrop because postprocess derives their
-// alpha with a corner-sampled chroma key (postprocess/bgremove.go) — the
-// cleaner the separation from black, the cleaner the alpha and the smaller the
-// encoded alpha plane.
+// isolatedOnBlack is the composition contract for every chroma-keyed layer.
+// Postprocess derives their alpha by keying out whatever sits within a colour
+// distance of the corner pixels (postprocess/bgremove.go), so anything the
+// model draws dark is deleted, not made translucent.
+//
+// Both halves are load-bearing, and both were learned the hard way: asking only
+// for "isolated on a flat pure black background" got dark full-frame landscapes
+// that the key erased outright — one layer came back 100% transparent. The
+// elements have to be explicitly luminous, and the scene words have to be
+// explicitly banned, or the model reaches for a horizon every time.
+const isolatedOnBlack = "The elements float in an empty pure black void with " +
+	"nothing behind them — no horizon, no ground, no terrain, no landscape, " +
+	"no skyline, no planet surface. Every element is bright and clearly " +
+	"separated from the black; the background stays pure flat black everywhere"
+
+// backgroundLayers describe the four parallax planes. Layers 1-3 are composited
+// over layer_0 with alpha derived by chroma key, hence isolatedOnBlack; layer_0
+// is the opaque plate and is free to be a full scene.
 //
 // perZone layers are generated once per entry in backgroundZones; the rest are
 // generated once per skin and reused across every zone. layer_0 and layer_1
@@ -67,9 +80,9 @@ var backgroundLayers = []struct {
 	perZone   bool
 }{
 	{"layer_0", "the sky/void itself — the opaque base plate, fills the entire frame edge to edge with no gaps, furthest away, low detail, soft and unfocused", true},
-	{"layer_1", "mid-distance atmosphere — translucent cloud banks, gas and haze forms isolated on a flat pure black background, soft feathered edges, clear separation between the forms and the black", true},
-	{"layer_2", "mid-detail particulate — scattered small motes, dust and specks isolated on a flat pure black background, moderate even density", false},
-	{"layer_3", "foreground pass — larger near objects, debris chunks and fragments isolated on a flat pure black background, sparse, high contrast against the black", false},
+	{"layer_1", "mid-distance atmosphere — luminous gas clouds and glowing haze, self-lit and much brighter than the void behind them, soft feathered edges fading out to pure black. " + isolatedOnBlack, true},
+	{"layer_2", "mid-detail particulate — densely scattered bright motes, dust and glowing specks, each one clearly luminous. " + isolatedOnBlack, false},
+	{"layer_3", "foreground pass — larger near objects, brightly lit debris chunks and fragments catching the light, sparse. " + isolatedOnBlack, false},
 }
 
 // backgroundZones mirror the seven hand-scripted sectors in
@@ -93,7 +106,7 @@ var backgroundZones = []struct {
 }{
 	{
 		"the outermost frontier of the territory, far from everything, almost empty — a vast open expanse, a few tiny distant landmarks, nothing threatening in sight",
-		"hold the base palette at its coldest and calmest — desaturated, dim, low contrast, large areas of empty darkness, nothing glowing",
+		"hold the base palette at its coldest and calmest — desaturated, cool, low contrast, large areas of empty darkness, only the faintest cold highlights",
 	},
 	{
 		"further inside the territory, lightly travelled — scattered mining debris and drifting rubble, the first signs the place is used",

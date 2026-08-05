@@ -307,6 +307,14 @@ func processOpaqueUiSprite(cfg Config, asset skin.ManifestAsset, outDir string) 
 	return savePNG(outPath, out)
 }
 
+// Luminance cut-offs for parallax overlay alpha. black sits just above the JPEG
+// noise floor so flat black stays flat; white is deliberately low so the dim
+// mid-tones of a gas bank still carry visible alpha rather than vanishing.
+const (
+	bgAlphaBlack = 8
+	bgAlphaWhite = 70
+)
+
 func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) error {
 	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
 	img, err := loadJPEG(srcPath)
@@ -316,23 +324,23 @@ func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) erro
 
 	resized := ResizeExact(img, 512, 1024)
 
-	// layer_0 is opaque (no bg removal); layer_1+ get bg removal. The decision
-	// rides on the parsed layer index, not the literal name, because zone
-	// variants are named layer_0_z3 — testing asset.Name == "layer_0" would
-	// chroma-key every zone's base plate and let the starfield bleed through
-	// the sky.
+	// layer_0 is the opaque base plate; layer_1+ are luminous overlays drawn on
+	// black and composited over it. The decision rides on the parsed layer
+	// index, not the literal name, because zone variants are named layer_0_z3 —
+	// testing asset.Name == "layer_0" would key every zone's base plate and let
+	// the starfield bleed through the sky.
 	//
-	// Layers keep the global chroma key rather than RemoveBackgroundFlood:
-	// their content (cloud banks, terrain silhouettes) legitimately covers
-	// large stretches of the border, which would poison a border-sampled
-	// background model and erase the content itself.
+	// Overlays get AlphaFromLuminance rather than either chroma key. A key asks
+	// a yes/no question and so deletes the soft falloff that ought to read as
+	// translucent; on real art it left these layers 97% transparent. Luminance
+	// keying turns that same falloff into proportional alpha.
 	layerIdx, _, ok := parseLayerName(asset.Name)
 	opaque := ok && layerIdx == 0
 	var out image.Image
 	if opaque {
 		out = resized
 	} else {
-		out = RemoveBackground(resized, cfg.BgThreshold, cfg.BgMargin)
+		out = AlphaFromLuminance(resized, bgAlphaBlack, bgAlphaWhite)
 	}
 
 	outPath := filepath.Join(bgDir, asset.Name+".webp")

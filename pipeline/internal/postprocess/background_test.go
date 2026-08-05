@@ -137,6 +137,53 @@ func TestProcessBackgroundsZoneOpacity(t *testing.T) {
 	}
 }
 
+// TestAlphaFromLuminance pins the property a chroma key cannot provide: the
+// soft falloff between black and full brightness has to survive as graded
+// alpha. Keying it away is what left the real overlay layers 97% transparent.
+func TestAlphaFromLuminance(t *testing.T) {
+	// A horizontal ramp from black to white across 256 columns.
+	img := image.NewRGBA(image.Rect(0, 0, 256, 1))
+	for x := 0; x < 256; x++ {
+		img.Set(x, 0, color.RGBA{uint8(x), uint8(x), uint8(x), 255})
+	}
+
+	out := AlphaFromLuminance(img, 8, 70)
+
+	if a := out.NRGBAAt(0, 0).A; a != 0 {
+		t.Errorf("black must be fully transparent, got alpha %d", a)
+	}
+	if a := out.NRGBAAt(255, 0).A; a != 255 {
+		t.Errorf("white must be fully opaque, got alpha %d", a)
+	}
+	if a := out.NRGBAAt(39, 0).A; a < 100 || a > 160 {
+		t.Errorf("midpoint of the ramp should be roughly half alpha, got %d", a)
+	}
+
+	// Monotonic, and RGB carried through untouched.
+	prev := -1
+	for x := 0; x < 256; x++ {
+		px := out.NRGBAAt(x, 0)
+		if int(px.A) < prev {
+			t.Fatalf("alpha decreased at x=%d", x)
+		}
+		prev = int(px.A)
+		if px.R != uint8(x) {
+			t.Fatalf("RGB altered at x=%d: got %d", x, px.R)
+		}
+	}
+
+	// Graded alpha is the whole point: a key would leave only 0s and 255s.
+	graded := 0
+	for x := 0; x < 256; x++ {
+		if a := out.NRGBAAt(x, 0).A; a > 0 && a < 255 {
+			graded++
+		}
+	}
+	if graded < 32 {
+		t.Errorf("expected a wide translucent band, got %d graded pixels", graded)
+	}
+}
+
 // TestProcessBackgroundsMissingSourceIsNotExist pins the error identity the
 // rollout depends on: postprocess must be able to tell "this skin has no zone
 // art yet" apart from a real failure, or one un-generated skin aborts the whole

@@ -123,7 +123,7 @@ Missing files in `default/` skin fall through to a null/skip path in `AssetLibra
 
 ### Parallax backgrounds
 
-Four layers, stacked back to front at scroll speeds `[0.5, 1.0, 2.0, 3.5]`. `layer_0` is the opaque base plate; `layer_1`–`layer_3` are chroma-keyed and composite over it.
+Four layers, stacked back to front at scroll speeds `[0.5, 1.0, 2.0, 3.5]`. `layer_0` is the opaque base plate; `layer_1`–`layer_3` are luminous forms drawn on black whose alpha comes from their own brightness, composited over it.
 
 `layer_0` and `layer_1` ship a variant per **zone** (the seven hand-scripted sectors in `lib/systems/sector.dart`), named `layer_<L>_z<Z>.webp`. `layer_2`/`layer_3` are shared across zones and stay unsuffixed. Names must stay flat in `backgrounds/` — `pubspec.yaml` declares the directory non-recursively, so subdirectories would cost a line per skin per zone.
 
