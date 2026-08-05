@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:math' show pi, exp, min;
 import 'dart:typed_data';
 import 'package:flame/camera.dart';
@@ -293,6 +294,9 @@ class TyrianGame extends FlameGame
   void refreshSprites() {
     vessel.refreshSprite();
     vessel2?.refreshSprite();
+    // Covers a skin change made from the main menu, before any sector loaded.
+    requestZoneBackgrounds(currentSectorIndex);
+    parallaxBg.setLevel(currentSectorIndex + 1);
     parallaxBg.loadLayers();
 
     // Refresh all live entities
@@ -362,8 +366,18 @@ class TyrianGame extends FlameGame
     currentSectorIndex = index;
     vessel.lvlNum = index + 1;
     if (vessel2 != null) vessel2!.lvlNum = index + 1;
+    requestZoneBackgrounds(index);
+    parallaxBg.setLevel(index + 1);
     sectorHullDamage = false;
     elapsed = 0;
+  }
+
+  /// Fire-and-forget background zone swap. Deliberately not awaited: loadSector
+  /// is synchronous and must stay that way, and ParallaxBackground keeps
+  /// rendering the previous zone until the new images decode. The ComCenter
+  /// sits between sectors, so in practice the load always finishes unseen.
+  void requestZoneBackgrounds(int sectorIndex) {
+    unawaited(AssetLibrary.instance.loadZoneBackgrounds(sectorIndex));
   }
 
   void _clearActiveObjects() {
@@ -603,6 +617,11 @@ class TyrianGame extends FlameGame
     if (state == null) return false;
     vessel.loadFromSave(state);
     currentSectorIndex = (state['level'] as num?)?.toInt() ?? 0;
+    // onLoad's loadLayers() ran before the save was read, so a run resumed deep
+    // in the game would otherwise come back with zone 0's art. Awaiting is free
+    // here — loadProgress is already awaited during startup.
+    await AssetLibrary.instance.loadZoneBackgrounds(currentSectorIndex);
+    parallaxBg.setLevel(currentSectorIndex + 1);
     return true;
   }
 
@@ -612,6 +631,8 @@ class TyrianGame extends FlameGame
     currentSector?.removeFromParent();
     currentSector = null;
     currentSectorIndex = 0;
+    requestZoneBackgrounds(0);
+    parallaxBg.setLevel(1);
     vessel.newGame();
     elapsed = 0;
   }
@@ -1213,6 +1234,13 @@ class TyrianGame extends FlameGame
       if (!(coopRole == CoopRole.client && state == GameState.playing && newState == GameState.comCenter)) {
         state = newState;
       }
+    }
+    // Guard on change: snapshots arrive continuously, and an unguarded call
+    // would allocate a Future per snapshot. The client's zone follows the host;
+    // nothing in gameplay reads it, so a few frames of lag are invisible.
+    if (snap.sectorIndex != currentSectorIndex) {
+      requestZoneBackgrounds(snap.sectorIndex);
+      parallaxBg.setLevel(snap.sectorIndex + 1);
     }
     currentSectorIndex = snap.sectorIndex;
     elapsed = snap.elapsed;

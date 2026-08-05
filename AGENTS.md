@@ -114,12 +114,22 @@ assets/skins/<id>/
   atlas.png          packed sprite sheet
   atlas.json         sprite frame metadata
   sprites/           individual sprites (before atlas packing)
-  backgrounds/       layer_0.png … layer_3.png (parallax layers)
+  backgrounds/       parallax layers, WebP (see below)
   sfx/               .ogg or .mp3 sound effects
   ui/preview.png     thumbnail shown in SkinSelector
 ```
 
 Missing files in `default/` skin fall through to a null/skip path in `AssetLibrary` — they do not crash the game. Other skins fall back to `default` for missing assets.
+
+### Parallax backgrounds
+
+Four layers, stacked back to front at scroll speeds `[0.5, 1.0, 2.0, 3.5]`. `layer_0` is the opaque base plate; `layer_1`–`layer_3` are chroma-keyed and composite over it.
+
+`layer_0` and `layer_1` ship a variant per **zone** (the seven hand-scripted sectors in `lib/systems/sector.dart`), named `layer_<L>_z<Z>.webp`. `layer_2`/`layer_3` are shared across zones and stay unsuffixed. Names must stay flat in `backgrounds/` — `pubspec.yaml` declares the directory non-recursively, so subdirectories would cost a line per skin per zone.
+
+`AssetLibrary.loadZoneBackgrounds()` resolves each of the four slots independently through `layer_<L>_z<Z>.webp` → `layer_<L>.webp` → `layer_<L>.png`, so skins without zone art keep working on their old flat set. Only the free skins (`galaga`, `geometry_wars`) carry zone art today.
+
+Levels past the last zone reuse zone 6's art and keep escalating through a runtime tint in `lib/rendering/bg_zones.dart` — that part is art-independent, so every skin gets it.
 
 ## Shader passes
 

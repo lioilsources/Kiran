@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 import '../services/asset_library.dart';
+import 'bg_zones.dart';
 
 /// Vertically scrolling parallax background from skin layer images.
 /// Layers scroll at different speeds for depth effect.
@@ -22,8 +23,26 @@ class ParallaxBackground extends Component
 
   void loadLayers() {
     _layers = AssetLibrary.instance.bgLayers;
-    _offsets = List.filled(_layers.length, 0.0);
+    // Carry scroll positions across a reload so a skin change cuts cleanly
+    // instead of snapping every layer back to the top.
+    final old = _offsets;
+    _offsets = List<double>.generate(
+        _layers.length, (i) => i < old.length ? old[i] : 0.0);
   }
+
+  /// Re-derive the escalating background tint for [level] (1-based). Idempotent
+  /// and cheap; call it whenever the sector changes.
+  void setLevel(int level) {
+    if (level == _tintLevel) return;
+    _tintLevel = level;
+    final c = BgZones.tintFor(level);
+    // modulate multiplies source RGBA by the filter colour, and the filter's
+    // alpha is 0xFF so it does not compound with the paint's 0x99 dim.
+    _bgPaint.colorFilter =
+        c == null ? null : ui.ColorFilter.mode(c, ui.BlendMode.modulate);
+  }
+
+  int _tintLevel = -1;
 
   double _layerScale(ui.Image img) =>
       (config.gameWidth + 2 * _pad) / img.width;
@@ -62,8 +81,11 @@ class ParallaxBackground extends Component
     }
   }
 
-  // 0x99 alpha = 60% opacity (background dimmed 40% for entity visibility)
-  static final _bgPaint = ui.Paint()..color = const ui.Color(0x99FFFFFF);
+  // 0x99 alpha = 60% opacity (background dimmed 40% for entity visibility).
+  // Instance-level rather than static: colorFilter carries the per-level
+  // danger escalation set by [setLevel]. Note drawImage ignores Paint.color's
+  // RGB and honours only its alpha, so the tint has to ride the colour filter.
+  final _bgPaint = ui.Paint()..color = const ui.Color(0x99FFFFFF);
 
   void _drawLayer(
       ui.Canvas canvas, ui.Image img, double scale, double y, double xShift) {
