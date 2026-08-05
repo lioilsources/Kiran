@@ -144,7 +144,7 @@ Converts raw JPEG variations → final game PNGs:
 - **Sprites**: background removal (color-distance), trim transparent padding, fit to canonical reference canvas
 - **ship_frames**: generates N animation frames via glow modulation (brightness oscillation)
 - **explosion**: maps v1–v4 → `explosion1–4.png`
-- **backgrounds**: exact resize to 512×1024; `layer_0` opaque, `layer_1+` bg-removed
+- **backgrounds**: exact resize to 512×1024, lossy WebP via `cwebp`; `layer_0*` opaque (`-noalpha`), `layer_1+` bg-removed (`-alpha_q 90`). Superseded `layer_*.png` are pruned. Requires `cwebp` (`brew install webp`)
 - **UI sprites** (`comcenter_bg`, `ui_card_bg`, `ui_button`, `ui_tab_active`): opaque exact resize, no bg removal
 - **SFX**: ffmpeg MP3 → OGG/Opus with `loudnorm` volume normalization
 
@@ -214,7 +214,7 @@ dart run tool/pack_atlas.dart
 | `bullet` | sprites/ | bg remove → resize to reference |
 | `enemy` | sprites/ | bg remove → fit to reference square |
 | `structure` | sprites/ | bg remove → fit to reference |
-| `background` | backgrounds/ | exact 512×1024; layer_0 opaque |
+| `background` | backgrounds/ | exact 512×1024 → `.webp`; `layer_0*` opaque |
 | `hud_icon` | ui/ | bg remove → resize |
 | `preview` | ui/ | bg remove → resize |
 | `comcenter_bg` | ui/ | exact resize, opaque |

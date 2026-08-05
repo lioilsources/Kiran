@@ -22,9 +22,13 @@ type SkinDef struct {
 	StyleKeywords      string
 	PaletteDescription string
 	BackgroundMood     string
-	ExplosionStyle     string
-	BulletDirective    string
-	BossDirective      string // centered boss for the "preview" thumbnail
+	// SceneNoun is the domain the background prompts are built on. Empty means
+	// "deep space"; skins that are not set in space must override it, otherwise
+	// the background template asserts a setting their BackgroundMood contradicts.
+	SceneNoun       string
+	ExplosionStyle  string
+	BulletDirective string
+	BossDirective   string // centered boss for the "preview" thumbnail
 
 	// Technical
 	SpriteSize int
@@ -212,6 +216,7 @@ var Registry = map[string]SkinDef{
 		StyleKeywords:      "sepia monochrome, WW2 propaganda poster, heavy ink outlines, cream and brown tones, vintage aviation, silhouette art",
 		PaletteDescription: "warm sepia #704214, dark ink brown #2C1810, cream parchment #F5E6C8 on aged paper #E8D5B0",
 		BackgroundMood:     "overcast sepia sky, thick cloud banks in cream and brown, vintage film grain",
+		SceneNoun:          "open sky and ocean seen from above, wartime aerial theatre",
 		ExplosionStyle:     "ink-splatter explosion, dark brown burst with sepia smoke rings",
 		BulletDirective:    "dark brown ink dot projectile, small circular pellet with short sepia trail, 3x6 pixels",
 		BossDirective:      "A colossal ink-lined WW2 zeppelin-boss silhouette centered in frame, bristling with gun turrets, heavy sepia ink outlines",
@@ -319,6 +324,7 @@ var Registry = map[string]SkinDef{
 		StyleKeywords:      "Atari 2600, 4-color sprites, ultra-chunky pixels, early home console, Activision 1982, flat color fills, no gradients",
 		PaletteDescription: "sky blue river #3CBCFC, tan riverbank #C8A064, bright red enemies #D82800, orange fuel depot #FC7460, white player jet #FCFCFC on blue water #3CBCFC",
 		BackgroundMood:     "top-down river valley, flat tan-brown terrain on sides, wide blue river channel center, minimal detail",
+		SceneNoun:          "aerial river valley seen from directly overhead, water and jungle banks",
 		ExplosionStyle:     "simple chunky pixel burst, 4-5 large colored squares scattering, primary red-orange-white, no gradients",
 		BulletDirective:    "tiny bright white vertical rectangle, 2x5 pixels, hard edges, no glow, pure Atari 2600 missile sprite",
 		BossDirective:      "A giant chunky 4-color boss vehicle centered in frame, blocking the river channel wall-to-wall, flat primary-color fills, no gradients",

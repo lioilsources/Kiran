@@ -1,7 +1,9 @@
 package postprocess
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -10,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"tyrian-pipeline/internal/skin"
@@ -63,6 +66,15 @@ func Run(cfg Config) error {
 		if err := os.MkdirAll(bgDir, 0755); err != nil {
 			return fmt.Errorf("create bg dir: %w", err)
 		}
+		if _, err := exec.LookPath("cwebp"); err != nil {
+			return fmt.Errorf("cwebp not found in PATH (brew install webp): %w", err)
+		}
+
+		// Background base names written this run, used to prune superseded files.
+		// bgComplete stays true only if every background in the manifest landed;
+		// a partial run must not prune the fallback art it failed to replace.
+		bgWritten := map[string]bool{}
+		bgComplete := true
 
 		for _, asset := range manifest.Assets {
 			switch {
@@ -87,7 +99,18 @@ func Run(cfg Config) error {
 				}
 
 			case asset.Type == "background":
-				if err := processBackgrounds(cfg, asset, bgDir); err != nil {
+				// A skin whose zone art has not been generated yet is the normal
+				// case, not an error: the manifest lists every zone for every
+				// skin, but only some skins have the source images. Missing
+				// sources are skipped so the rest of the skin still processes,
+				// and the game falls back to that skin's flat layer_N files.
+				switch err := processBackgrounds(cfg, asset, bgDir); {
+				case err == nil:
+					bgWritten[asset.Name] = true
+				case errors.Is(err, os.ErrNotExist):
+					fmt.Printf("  [bg] no source for %s — skipping\n", asset.Name)
+					bgComplete = false
+				default:
 					return fmt.Errorf("process background %s: %w", asset.Name, err)
 				}
 
@@ -124,6 +147,15 @@ func Run(cfg Config) error {
 				if err := processNamedAsset(cfg, asset, spritesDir, gameName); err != nil {
 					return fmt.Errorf("process %s: %w", asset.Name, err)
 				}
+			}
+		}
+
+		if len(bgWritten) > 0 {
+			if !bgComplete {
+				fmt.Printf("  [bg] incomplete set — keeping fallback art\n")
+			}
+			if err := pruneStaleBackgrounds(bgDir, bgWritten, bgComplete); err != nil {
+				fmt.Printf("  [bg] prune failed: %v\n", err)
 			}
 		}
 	}
@@ -284,20 +316,130 @@ func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) erro
 
 	resized := ResizeExact(img, 512, 1024)
 
-	// layer_0 is opaque (no bg removal); layer_1+ get bg removal.
+	// layer_0 is opaque (no bg removal); layer_1+ get bg removal. The decision
+	// rides on the parsed layer index, not the literal name, because zone
+	// variants are named layer_0_z3 — testing asset.Name == "layer_0" would
+	// chroma-key every zone's base plate and let the starfield bleed through
+	// the sky.
+	//
 	// Layers keep the global chroma key rather than RemoveBackgroundFlood:
 	// their content (cloud banks, terrain silhouettes) legitimately covers
 	// large stretches of the border, which would poison a border-sampled
 	// background model and erase the content itself.
+	layerIdx, _, ok := parseLayerName(asset.Name)
+	opaque := ok && layerIdx == 0
 	var out image.Image
-	if asset.Name == "layer_0" {
+	if opaque {
 		out = resized
 	} else {
 		out = RemoveBackground(resized, cfg.BgThreshold, cfg.BgMargin)
 	}
 
-	outPath := filepath.Join(bgDir, asset.Name+".png")
-	return savePNG(outPath, out)
+	outPath := filepath.Join(bgDir, asset.Name+".webp")
+	return saveWebP(outPath, out, opaque)
+}
+
+// parseLayerName splits a background asset name into its parallax layer index
+// and its optional zone index: "layer_0" -> (0, -1, true), "layer_1_z3" ->
+// (1, 3, true), anything else -> ok=false.
+//
+// The layer index alone decides opacity: layer 0 is always the opaque base
+// plate, every other layer is chroma-keyed. A prefix match would be subtly
+// wrong here — it would also accept "layer_01".
+func parseLayerName(name string) (layer, zone int, ok bool) {
+	rest, found := strings.CutPrefix(name, "layer_")
+	if !found {
+		return 0, 0, false
+	}
+	zone = -1
+	if i := strings.Index(rest, "_z"); i >= 0 {
+		z, err := strconv.Atoi(rest[i+2:])
+		if err != nil {
+			return 0, 0, false
+		}
+		zone, rest = z, rest[:i]
+	}
+	l, err := strconv.Atoi(rest)
+	if err != nil {
+		return 0, 0, false
+	}
+	return l, zone, true
+}
+
+// saveWebP encodes img to path as lossy WebP via the cwebp binary.
+//
+// Backgrounds are the bulk of the asset bundle and WebP buys roughly an order
+// of magnitude over Go's default png.Encode, which is what makes per-zone art
+// affordable. Opaque base plates encode with no alpha plane at all; every other
+// layer keeps a near-lossless alpha channel, because the chroma-keyed edges are
+// what sell the parallax depth and lossy alpha shows up as halos around stars.
+//
+// The image is piped in as PNG and the WebP comes back on stdout, so no
+// temporary files are involved. Note the argument order: -o must come before
+// the "--" separator, otherwise cwebp reads "-o" and "-" as further input files
+// and silently produces nothing.
+func saveWebP(path string, img image.Image, opaque bool) error {
+	var src bytes.Buffer
+	if err := png.Encode(&src, img); err != nil {
+		return fmt.Errorf("encode png for %s: %w", path, err)
+	}
+
+	args := []string{"-q", "82", "-m", "6", "-metadata", "none"}
+	if opaque {
+		args = append(args, "-noalpha")
+	} else {
+		args = append(args, "-alpha_q", "90", "-alpha_filter", "best")
+	}
+	args = append(args, "-o", "-", "--", "-")
+
+	cmd := exec.Command("cwebp", args...)
+	cmd.Stdin = &src
+	var out, stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("cwebp %s: %w\n%s", path, err, stderr.String())
+	}
+	return os.WriteFile(path, out.Bytes(), 0644)
+}
+
+// pruneStaleBackgrounds removes background files this run superseded, so a
+// migrated skin never ships both the PNG and the WebP. The pubspec entry for
+// backgrounds/ globs the whole directory, so a leftover PNG set would silently
+// double the bundle cost of the per-zone art while the game looked perfect.
+//
+// Two conservative rules:
+//  1. delete layer_X.png whenever layer_X.webp was written this run — always
+//     safe, the replacement is right there under the same name;
+//  2. delete any other layer_* file not written this run, but only when the run
+//     produced a *complete* zone set (complete=true) — i.e. nothing was skipped
+//     for a missing source.
+//
+// Rule 2 hangs on completeness rather than on "wrote at least one zone file"
+// because a half-finished generation run (an image backend dying mid-way) would
+// otherwise delete the flat art the game still falls back on for every zone the
+// run never reached, leaving those zones with no base plate at all.
+func pruneStaleBackgrounds(bgDir string, written map[string]bool, complete bool) error {
+	entries, err := os.ReadDir(bgDir)
+	if err != nil {
+		return err
+	}
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasPrefix(e.Name(), "layer_") {
+			continue // leaves .gitkeep and anything hand-added alone
+		}
+		base := strings.TrimSuffix(e.Name(), filepath.Ext(e.Name()))
+		stale := (strings.HasSuffix(e.Name(), ".png") && written[base]) ||
+			(complete && !written[base])
+		if !stale {
+			continue
+		}
+		if err := os.Remove(filepath.Join(bgDir, e.Name())); err != nil {
+			return err
+		}
+		fmt.Printf("  [bg] pruned stale %s\n", e.Name())
+	}
+	return nil
 }
 
 func variationPath(skinDir, subDir, name string, variation int) string {

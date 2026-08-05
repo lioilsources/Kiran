@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"fmt"
+
 	"tyrian-pipeline/internal/skin"
 )
 
@@ -50,19 +52,85 @@ var structureSpecs = []struct{ name, directive string }{
 	{"asteroid3", "tiny asteroid shard, sharp angular fragment"},
 }
 
+// backgroundLayers describe the four parallax planes. The layerDesc for
+// layers 1-3 asks for a flat black backdrop because postprocess derives their
+// alpha with a corner-sampled chroma key (postprocess/bgremove.go) — the
+// cleaner the separation from black, the cleaner the alpha and the smaller the
+// encoded alpha plane.
+//
+// perZone layers are generated once per entry in backgroundZones; the rest are
+// generated once per skin and reused across every zone. layer_0 and layer_1
+// carry the colour, so they are the two worth varying.
 var backgroundLayers = []struct {
-	name     string
+	name      string
 	layerDesc string
+	perZone   bool
 }{
-	{"layer_0", "distant stars, very sparse tiny dots, deepest background layer"},
-	{"layer_1", "nebula clouds and gas, mid-distance, translucent wisps"},
-	{"layer_2", "medium stars and space dust, moderate density"},
-	{"layer_3", "foreground debris, closest layer, larger particles and rocks"},
+	{"layer_0", "the sky/void itself — the opaque base plate, fills the entire frame edge to edge with no gaps, furthest away, low detail, soft and unfocused", true},
+	{"layer_1", "mid-distance atmosphere — translucent cloud banks, gas and haze forms isolated on a flat pure black background, soft feathered edges, clear separation between the forms and the black", true},
+	{"layer_2", "mid-detail particulate — scattered small motes, dust and specks isolated on a flat pure black background, moderate even density", false},
+	{"layer_3", "foreground pass — larger near objects, debris chunks and fragments isolated on a flat pure black background, sparse, high contrast against the black", false},
 }
+
+// backgroundZones mirror the seven hand-scripted sectors in
+// tyrian_mobile/lib/systems/sector.dart (System Perimeter .. Unknown Space).
+// The zone index is the game's currentSectorIndex; sectors past the last zone
+// clamp to it and keep escalating through a runtime tint instead. The count
+// must stay in sync with BgZones.count in tyrian_mobile/lib/rendering/bg_zones.dart.
+//
+// zoneDesc is deliberately domain-neutral ("territory", "large body",
+// "surface" rather than "space", "planet", "orbit") so one table serves skins
+// that are not set in space at all — river_raid's river valley, luftrausers'
+// wartime sky. The domain word comes from the skin's SceneNoun instead.
+//
+// dangerMood is a *shift* of the skin's own BackgroundMood, never a replacement
+// palette: that is what lets the danger ramp escalate without erasing the skin's
+// identity. It climbs on three axes at once — temperature (indigo -> teal ->
+// amber -> orange -> red -> crimson), saturation and density.
+var backgroundZones = []struct {
+	zoneDesc   string
+	dangerMood string
+}{
+	{
+		"the outermost frontier of the territory, far from everything, almost empty — a vast open expanse, a few tiny distant landmarks, nothing threatening in sight",
+		"hold the base palette at its coldest and calmest — desaturated, dim, low contrast, large areas of empty darkness, nothing glowing",
+	},
+	{
+		"further inside the territory, lightly travelled — scattered mining debris and drifting rubble, the first signs the place is used",
+		"the base palette barely shifted — still cool, a first faint highlight, density and contrast one notch up",
+	},
+	{
+		"the outer boundary of a huge body — its curved edge entering the frame, a boundary ring or shoreline crossing the scene, a thin haze layer where the open expanse meets the body",
+		"cool the base palette toward green-teal, with the first warm accent on the boundary line, moderate contrast, distance softened by haze",
+	},
+	{
+		"a contested patrol corridor above the surface — a defence grid, marker beacons, sweeping searchlight cones from below, geometric perimeter markings on the ground",
+		"shift the base palette warmer — alert amber and gold cutting into the cold shadows, hard-edged pools of light, contrast clearly raised",
+	},
+	{
+		"skimming low and fast over the body — the surface fills the frame, defence platforms and the terminator line between lit and unlit ground, upper atmosphere burning past",
+		"push the base palette hot — strong orange rim light against deep shadow, high saturation, dramatic directional light, a sense of speed",
+	},
+	{
+		"a heavy industrial region — refinery stacks, molten channels, slag heaps and pipe runs, thick pollution haze, drifting embers and smoke",
+		"push the base palette into burning red-orange and toxic yellow-green through black smoke, heavy saturation, harsh contrast, glowing hot spots, dirty and oppressive",
+	},
+	{
+		"unmapped hostile territory — nothing here matches the charts, wrong geometry, torn voids and structures that should not exist, an anomaly bleeding light",
+		"push the base palette to its most aggressive — malignant crimson and violet-magenta against near-black, extreme saturation and contrast, colours that read as wrong and hostile, dense, almost no calm space left",
+	},
+}
+
+// Fillers for the shared layers, which are reused under every zone and so must
+// commit to none of them.
+const (
+	sharedZoneDesc   = "generic mid-territory, no distinctive landmarks — ambient detail that must sit believably over any sector of this setting"
+	sharedDangerMood = "the base palette held neutral, mid-tone, no strong colour cast — must read over both cold and hot backdrops"
+)
 
 // AssetsForSkin returns all asset specs needed for a given skin.
 func AssetsForSkin(s skin.SkinDef) []AssetSpec {
-	specs := make([]AssetSpec, 0, 32)
+	specs := make([]AssetSpec, 0, 48)
 
 	// Ship: ONE craft on a square canvas. The N animation frames are synthesized
 	// in postprocess by glow modulation — generating multi-frame strips in one
@@ -120,16 +188,32 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		})
 	}
 
-	// Background layers
+	// Background layers. Per-zone layers get a "_z<N>" suffix on the asset name;
+	// that name is what the orchestrator, the manifest and postprocess all key
+	// on, so the zone dimension propagates end to end without a new field.
 	for _, layer := range backgroundLayers {
-		specs = append(specs, AssetSpec{
-			Name:        layer.name,
-			AssetType:   "background",
-			OutputDir:   "backgrounds",
-			AspectRatio: "1:2",
-			Resolution:  "2k",
-			ExtraVars:   map[string]string{"LayerDesc": layer.layerDesc},
-		})
+		bg := func(name, zoneDesc, dangerMood string) AssetSpec {
+			return AssetSpec{
+				Name:        name,
+				AssetType:   "background",
+				OutputDir:   "backgrounds",
+				AspectRatio: "1:2",
+				Resolution:  "2k",
+				ExtraVars: map[string]string{
+					"LayerDesc":  layer.layerDesc,
+					"ZoneDesc":   zoneDesc,
+					"DangerMood": dangerMood,
+				},
+			}
+		}
+		if !layer.perZone {
+			specs = append(specs, bg(layer.name, sharedZoneDesc, sharedDangerMood))
+			continue
+		}
+		for z, zone := range backgroundZones {
+			specs = append(specs, bg(
+				fmt.Sprintf("%s_z%d", layer.name, z), zone.zoneDesc, zone.dangerMood))
+		}
 	}
 
 	// HUD icons
