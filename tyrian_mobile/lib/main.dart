@@ -15,6 +15,7 @@ import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
 import 'services/leaderboard_service.dart';
 import 'services/save_service.dart';
+import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
 import 'net/coop_host.dart';
@@ -96,6 +97,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     SoundService.instance.loadSkin('default');
     MusicService.instance.init();
     MusicService.instance.loadSkin('default');
+    SkinStoreService.instance.init();
   }
 
   void _setupGameCallbacks() {

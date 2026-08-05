@@ -1,5 +1,10 @@
 # Changelog
 
+## [31/07/2026]
+- Per-skin in-app purchases: only Default (Kiran 2026), Galaga and Geometry Wars ship free; the remaining 11 skins are non-consumable IAPs (`skin_<id>`) bought directly in the skin selector — locked cards show a lock + localized price, tap/confirm starts the purchase, Restore Purchases button included
+- Existing installs are grandfathered (all skins stay unlocked after update); desktop builds keep everything unlocked
+- Added `ios/SkinStore.storekit` for local StoreKit testing without App Store Connect
+
 ## [01/04/2026]
 - Corner statistics overlay on gameplay screen
 - Doubled sprite scale to 0.74 to correctly match original VBA proportions

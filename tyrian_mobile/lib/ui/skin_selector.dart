@@ -9,6 +9,7 @@ import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import '../services/skin_registry.dart';
+import '../services/skin_store_service.dart';
 import '../game/platform_config.dart' as platform;
 import '../input/gamepad_input.dart';
 
@@ -46,6 +47,7 @@ class _SkinSelectorState extends State<SkinSelector> {
   void initState() {
     super.initState();
     _loadState();
+    SkinStoreService.instance.addListener(_onStoreChanged);
     if (platform.isDesktop) {
       _pollTimer = Timer.periodic(
         const Duration(milliseconds: 16),
@@ -56,9 +58,22 @@ class _SkinSelectorState extends State<SkinSelector> {
 
   @override
   void dispose() {
+    SkinStoreService.instance.removeListener(_onStoreChanged);
     _pollTimer?.cancel();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onStoreChanged() {
+    if (!mounted) return;
+    // A purchase started from this selector just completed — jump straight
+    // into the freshly bought skin.
+    final purchased = SkinStoreService.instance.takeJustPurchased();
+    if (purchased != null) {
+      _selectAndPlay(purchased);
+      return;
+    }
+    setState(() {}); // prices arrived / pending state changed
   }
 
   Future<void> _loadState() async {
@@ -77,6 +92,12 @@ class _SkinSelectorState extends State<SkinSelector> {
 
   Future<void> _selectAndPlay(String id) async {
     if (_loading) return;
+    // Locked skin: every input path (tap, keyboard, gamepad) converges here,
+    // so this one gate turns "select" into "buy" for skins not yet owned.
+    if (!SkinStoreService.instance.isUnlocked(id)) {
+      SkinStoreService.instance.buy(id);
+      return;
+    }
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
@@ -219,6 +240,18 @@ class _SkinSelectorState extends State<SkinSelector> {
                         ),
                       ),
               ),
+              if (SkinStoreService.instance.supported)
+                TextButton(
+                  onPressed: SkinStoreService.instance.restore,
+                  child: const Text(
+                    'RESTORE PURCHASES',
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 12,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
             ],
           ),
@@ -232,6 +265,10 @@ class _SkinSelectorState extends State<SkinSelector> {
     final focused = index == _focusIndex;
     final preview = _previews[skin.id];
     final key = _cardKeys[index];
+    final store = SkinStoreService.instance;
+    final unlocked = store.isUnlocked(skin.id);
+    final buying = store.pendingSkinId == skin.id;
+    final price = store.priceFor(skin.id);
 
     return GestureDetector(
       key: key,
@@ -256,19 +293,35 @@ class _SkinSelectorState extends State<SkinSelector> {
               child: ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(9)),
-                child: preview != null
-                    ? RawImage(
-                        image: preview,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      )
-                    : Container(
-                        color: Colors.black26,
-                        child: const Center(
-                          child: Icon(Icons.image_not_supported,
-                              color: Colors.white24, size: 40),
-                        ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Opacity(
+                      opacity: unlocked ? 1.0 : 0.35,
+                      child: preview != null
+                          ? RawImage(
+                              image: preview,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            )
+                          : Container(
+                              color: Colors.black26,
+                              child: const Center(
+                                child: Icon(Icons.image_not_supported,
+                                    color: Colors.white24, size: 40),
+                              ),
+                            ),
+                    ),
+                    if (!unlocked)
+                      Center(
+                        child: buying
+                            ? const CircularProgressIndicator(
+                                color: Colors.amberAccent)
+                            : const Icon(Icons.lock,
+                                color: Colors.amberAccent, size: 36),
                       ),
+                  ],
+                ),
               ),
             ),
             Container(
@@ -281,15 +334,32 @@ class _SkinSelectorState extends State<SkinSelector> {
                   ),
                 ),
               ),
-              child: Text(
-                skin.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: focused ? Colors.cyanAccent : Colors.white70,
-                  fontSize: 13,
-                  fontWeight: focused ? FontWeight.bold : FontWeight.normal,
-                  letterSpacing: 1,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    skin.name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: focused ? Colors.cyanAccent : Colors.white70,
+                      fontSize: 13,
+                      fontWeight: focused ? FontWeight.bold : FontWeight.normal,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  if (!unlocked)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        price ?? 'LOCKED',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.amberAccent,
+                          fontSize: 11,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],

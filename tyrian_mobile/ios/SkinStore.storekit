@@ -1,0 +1,177 @@
+{
+  "identifier": "1740D90A-6BE7-43EA-BCE6-6601D094E9FC",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "8AA62FB6-1178-4EF1-9C44-2BCF6DF08CDC",
+      "localizations": [
+        {
+          "description": "Unlocks the Space Invaders (1978) skin",
+          "displayName": "Space Invaders Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_space_invaders",
+      "referenceName": "Space Invaders Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "76C83A43-7B2B-4895-A15D-6A35D4B1906C",
+      "localizations": [
+        {
+          "description": "Unlocks the Asteroids (1979) skin",
+          "displayName": "Asteroids Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_asteroids",
+      "referenceName": "Asteroids Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "D1120A52-F16B-4DA0-9486-27525C8144F5",
+      "localizations": [
+        {
+          "description": "Unlocks the River Raid (1982) skin",
+          "displayName": "River Raid Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_river_raid",
+      "referenceName": "River Raid Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "E82A5EEE-82D9-4ACB-88CE-BA0D5E87311B",
+      "localizations": [
+        {
+          "description": "Unlocks the R-Type (1987) skin",
+          "displayName": "R-Type Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_rtype",
+      "referenceName": "R-Type Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "681A63B3-3103-460C-8581-ED9843FFD2E7",
+      "localizations": [
+        {
+          "description": "Unlocks the Blazing Lazers (1989) skin",
+          "displayName": "Blazing Lazers Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_blazing_lazers",
+      "referenceName": "Blazing Lazers Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "601DDC34-1DA3-4A0D-AB63-706F76FC0B4E",
+      "localizations": [
+        {
+          "description": "Unlocks the Tyrian DOS (1995) skin",
+          "displayName": "Tyrian DOS Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_tyrian_dos",
+      "referenceName": "Tyrian DOS Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "C71B5117-37FC-4EDB-A20B-8BA671A67E2D",
+      "localizations": [
+        {
+          "description": "Unlocks the Ikaruga (2001) skin",
+          "displayName": "Ikaruga Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_ikaruga",
+      "referenceName": "Ikaruga Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "CFFA633C-DBD7-4BEB-881B-1285178C3FF0",
+      "localizations": [
+        {
+          "description": "Unlocks the Gradius V (2004) skin",
+          "displayName": "Gradius V Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_gradius_v",
+      "referenceName": "Gradius V Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "8103A803-BD90-4C47-BF33-E4D7AB24ED4D",
+      "localizations": [
+        {
+          "description": "Unlocks the Luftrausers (2014) skin",
+          "displayName": "Luftrausers Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_luftrausers",
+      "referenceName": "Luftrausers Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "57CA839D-4C51-4B3F-95B3-D0F6F1BB1C51",
+      "localizations": [
+        {
+          "description": "Unlocks the Nuclear Throne (2015) skin",
+          "displayName": "Nuclear Throne Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_nuclear_throne",
+      "referenceName": "Nuclear Throne Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "1A63C207-CC5B-4884-A4CB-03B8B0D80639",
+      "localizations": [
+        {
+          "description": "Unlocks the Nex Machina (2017) skin",
+          "displayName": "Nex Machina Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "skin_nex_machina",
+      "referenceName": "Nex Machina Skin",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {},
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}
