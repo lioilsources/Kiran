@@ -128,6 +128,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
 
     _game.onGameOver = () async {
+      // Rebuild so _GameOverOverlay actually appears. Nothing else will do it:
+      // the only thing driving setState during a run is onOsdUpdate, and that
+      // fires from inside update() *after* the `state != playing` early-return
+      // — which triggerGameOver has just armed. Without this the run freezes
+      // mid-frame with no overlay, which is exactly what it looks like: a hang.
+      // Must come before the await; the submit below can take seconds.
+      if (mounted) setState(() {});
+
       // Submit the run's score to the native leaderboard (Game Center / Play
       // Games). No-op on Windows/Linux or when not signed in — there is no
       // local table anymore. The _GameOverOverlay stays up; the player opens
