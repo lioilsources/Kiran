@@ -13,6 +13,7 @@ import 'ui/com_center.dart';
 import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
+import 'services/asset_library.dart';
 import 'services/leaderboard_service.dart';
 import 'services/save_service.dart';
 import 'services/skin_store_service.dart';
@@ -327,6 +328,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     await SaveService.clearGameState();
     _game.vessel.newGame();
     _game.currentSectorIndex = 0;
+    _game.requestZoneBackgrounds(0);
+    _game.parallaxBg.setLevel(1);
     _game.state = GameState.comCenter;
     if (mounted) {
       setState(() {
@@ -352,12 +355,18 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   /// ComCenter START button handler (host/solo)
-  void _onComCenterStart() {
+  Future<void> _onComCenterStart() async {
     _game.saveProgress(); // persist final loadout before the mission
     // Prevent the same Start press that closed ComCenter from also
     // triggering the skin selector in TyrianGame's _processDesktopInput.
+    // Must stay ahead of the first await, or the edge leaks through the yield.
     _game.suppressStartEdge();
     setState(() => _showComCenter = false);
+    // ComCenter is an unbounded UI screen, so the zone load kicked off by
+    // advanceToNextSector has almost certainly finished — this is the backstop
+    // for when it has not. Costs a single microtask when already loaded.
+    await AssetLibrary.instance.loadZoneBackgrounds(_game.currentSectorIndex);
+    if (!mounted) return;
     if (_game.currentSector == null) {
       _game.startGame();
     } else {

@@ -7,6 +7,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import '../game/game_config.dart' as config;
+import '../rendering/bg_zones.dart';
 import 'skin_registry.dart';
 
 /// Voronoi fragment metadata for a single piece of a shattered sprite.
@@ -27,6 +28,24 @@ class AssetLibrary {
   final List<Sprite> _vesselFrames = [];
   final List<ui.Image> _bgLayers = [];
   List<ui.Image> get bgLayers => _bgLayers;
+
+  /// Flame cache keys backing [_bgLayers], index-aligned. Needed so a zone swap
+  /// evicts exactly the images it replaced — shared layers appear in both the
+  /// old and the new key set and are therefore never disposed.
+  final List<String> _bgKeys = [];
+
+  /// Art zone currently resident. -1 = none; reset by [loadSkin].
+  int _bgZone = -1;
+
+  /// Art zone the game wants. Deliberately survives [loadSkin] so changing skin
+  /// at sector 12 reloads zone 6, not zone 0.
+  int _desiredZone = 0;
+
+  /// Monotonic token so overlapping loads (ComCenter sector-jump spam) resolve
+  /// last-wins instead of interleaving.
+  int _bgLoadSeq = 0;
+
+  int get bgZone => _bgZone;
 
   ui.Image? _atlasImage;
   final Map<String, Rect> _atlasRects = {};
@@ -50,6 +69,10 @@ class AssetLibrary {
     _sprites.clear();
     _images.clear();
     _bgLayers.clear();
+    _bgKeys.clear();
+    _bgZone = -1;
+    // _desiredZone is deliberately NOT reset: a skin change mid-run must land on
+    // the sector the player is actually in.
     _icons.clear();
     _atlasImage = null;
     _atlasRects.clear();
@@ -57,7 +80,10 @@ class AssetLibrary {
     _loaded = false;
     _placeholder = null;
     _manifest = null;
-    // Clear Flame's image cache so it reloads from the new paths
+    // Clear Flame's image cache so it reloads from the new paths. This disposes
+    // the atlas too, which every live Sprite references — correct for a skin
+    // change (already a full stall), and exactly why a zone swap must never
+    // reach it. loadZoneBackgrounds() evicts single keys instead.
     Flame.images.clearCache();
     _skinId = skinId;
     await loadAll();
@@ -108,12 +134,8 @@ class AssetLibrary {
       }
 
       // Background layers are NOT in the atlas — load separately
-      _bgLayers.clear();
-      for (int i = 0; i < 4; i++) {
-        final img =
-            await _tryLoadImage('skins/$_skinId/backgrounds/layer_$i.png');
-        if (img != null) _bgLayers.add(img);
-      }
+      _bgZone = -1;
+      await loadZoneBackgrounds(_desiredZone);
 
       await _loadIcons();
       _loaded = true;
@@ -166,14 +188,66 @@ class AssetLibrary {
     }
 
     // Background layers (optional — only AI skins have them)
-    _bgLayers.clear();
-    for (int i = 0; i < 4; i++) {
-      final img = await _tryLoadImage('skins/$_skinId/backgrounds/layer_$i.png');
-      if (img != null) _bgLayers.add(img);
-    }
+    _bgZone = -1;
+    await loadZoneBackgrounds(_desiredZone);
 
     await _loadIcons();
     _loaded = true;
+  }
+
+  /// Swap the parallax layers to the art zone for [sectorIndex].
+  ///
+  /// layer_0/layer_1 ship per-zone variants; layer_2/layer_3 are shared and stay
+  /// resident across the swap. Each of the four slots resolves independently
+  /// through zone WebP → shared WebP → legacy PNG, so a skin without zone art
+  /// still gets a complete four-layer set and this becomes a no-op for it after
+  /// the first call.
+  ///
+  /// Safe to call from a synchronous path without awaiting: the live [bgLayers]
+  /// list — which ParallaxBackground aliases — is only mutated once every new
+  /// image has decoded, so a torn layer set is never observable.
+  Future<void> loadZoneBackgrounds(int sectorIndex) async {
+    _desiredZone = sectorIndex;
+    final zone = BgZones.forSector(sectorIndex);
+    if (zone == _bgZone && _bgLayers.isNotEmpty) return;
+    final seq = ++_bgLoadSeq;
+
+    final next = <ui.Image>[];
+    final keys = <String>[];
+    for (int i = 0; i < 4; i++) {
+      for (final key in [
+        'skins/$_skinId/backgrounds/layer_${i}_z$zone.webp',
+        'skins/$_skinId/backgrounds/layer_$i.webp',
+        'skins/$_skinId/backgrounds/layer_$i.png',
+      ]) {
+        final img = await _tryLoadImage(key);
+        if (img != null) {
+          next.add(img);
+          keys.add(key);
+          break;
+        }
+      }
+    }
+
+    if (seq != _bgLoadSeq) return; // superseded mid-flight
+
+    // Order matters, and there must be no await between these steps:
+    // Flame.images.clear() disposes the image it evicts, so the new set has to
+    // be installed before the old keys are dropped. Dart schedules no frame
+    // inside a synchronous block, so the swap is atomic from the renderer's
+    // point of view. Breaking this yields an intermittent "Cannot use a
+    // disposed Image" under sector-jump spam.
+    final stale = [for (final k in _bgKeys) if (!keys.contains(k)) k];
+    _bgLayers
+      ..clear()
+      ..addAll(next);
+    _bgKeys
+      ..clear()
+      ..addAll(keys);
+    _bgZone = zone;
+    for (final k in stale) {
+      Flame.images.clear(k);
+    }
   }
 
   Future<void> _loadIcons() async {

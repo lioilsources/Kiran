@@ -48,11 +48,14 @@ Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Single projectile, centered, pointing STRAIGHT UP — perfectly vertical, zero diagonal, zero rotation, zero isometric angle. The projectile axis is exactly parallel to the vertical edge of the image.
 No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
-	"background": `Seamless tileable space background, vertical scrolling game.
-Layer: {{.LayerDesc}}.
-Style: {{.StyleKeywords}}. Color mood: {{.BackgroundMood}}.
-Must tile seamlessly vertically. No ships, no UI, purely atmospheric.
-Wide landscape format 1024x2048px.`,
+	"background": `Seamless tileable {{.SceneNoun}} background for a vertical scrolling shooter.
+{{if .ZoneDesc}}This sector: {{.ZoneDesc}}. Render it within the setting above — do not abandon the setting.
+{{end}}Layer: {{.LayerDesc}}.
+Style: {{.StyleKeywords}}.
+Base palette: {{.BackgroundMood}}.{{if .DangerMood}} Palette shift: {{.DangerMood}}.{{end}}
+Must tile seamlessly top to bottom — the top edge must continue the bottom edge exactly.
+No ships, no vehicles, no characters, no UI, no text. Purely atmospheric.
+Tall portrait format, 1024 pixels wide by 2048 pixels high.`,
 
 	"hud_icon": `Game HUD icon: {{.IconType}}. Style: {{.StyleKeywords}}.
 Pixel art, 32x32 pixels, on a flat, uniform solid-color background.
@@ -135,10 +138,11 @@ glowing energy beam, flat 2d vector pulse, core glow,
 single projectile, centered, perfectly vertical, pointing straight up, no diagonal, no rotation, no isometric,
 flat solid background, no text, no UI, no voxel, no 3d render`,
 
-	"background": ponyQuality + `, anime style space background, vertical scrolling shooter background, seamless vertical loop,
-tall composition, vertical scrolling background,
-{{.LayerDesc}},
-{{.StyleKeywords}}, {{.BackgroundMood}},
+	"background": ponyQuality + `, anime style {{.SceneNoun}} background, vertical scrolling shooter background, seamless vertical loop,
+tall portrait composition, 1024x2048,
+{{if .ZoneDesc}}{{.ZoneDesc}},
+{{end}}{{.LayerDesc}},
+{{.StyleKeywords}}, {{.BackgroundMood}},{{if .DangerMood}} {{.DangerMood}},{{end}}
 atmospheric, no ships, no characters, no UI`,
 
 	"hud_icon": ponyQuality + `, anime style game HUD icon, {{.IconType}}, simple bold readable shape,
@@ -233,6 +237,7 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"StyleKeywords":      styleKeywords,
 		"PaletteDescription": palette,
 		"BackgroundMood":     s.BackgroundMood,
+		"SceneNoun":          sceneNoun(s),
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
 		"BossDirective":      s.BossDirective,
@@ -248,6 +253,17 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		return "", fmt.Errorf("execute template %q: %w", assetType, err)
 	}
 	return buf.String(), nil
+}
+
+// sceneNoun is the domain word the background template builds on. Most skins
+// are set in space, but not all — and hardcoding "space" made the template
+// assert one setting while the skin's BackgroundMood asserted another (river
+// valley, wartime sky), leaving the model to pick.
+func sceneNoun(s skin.SkinDef) string {
+	if s.SceneNoun != "" {
+		return s.SceneNoun
+	}
+	return "deep space"
 }
 
 // BuildPrompt renders a prompt template for the given asset type and skin using the default (Flux) style.
