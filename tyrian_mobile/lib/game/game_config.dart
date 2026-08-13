@@ -82,6 +82,11 @@ const double iconHeight = 70.0;
 // Sector delay
 const double delayOnComplete = 2.0; // seconds
 
+// How long a hostile may sit stranded outside the play field before it is
+// written off. Only ever armed for enemies whose path can no longer bring them
+// back (parked or cycling), so this is a deadlock backstop, not a cull.
+const double hostileOffFieldGrace = 3.0; // seconds
+
 // Structure fall speed (original: 0.05 per frame)
 const double structureFallSpeed = 0.05 * originalFps; // per second
 

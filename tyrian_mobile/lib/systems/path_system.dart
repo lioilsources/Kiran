@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import '../game/game_config.dart' as config;
 
 /// Path types from VBA PathType enum
@@ -57,10 +58,14 @@ class PathSystem {
     double amplMultiplier = 1.0,
   }) {
     if (steps <= 0) return;
-    print('[PATH] generate ${type.name} steps=$steps '
-        'from=(${sx.toStringAsFixed(0)}, ${sy.toStringAsFixed(0)}) '
-        'to=(${dx.toStringAsFixed(0)}, ${dy.toStringAsFixed(0)}) '
-        'ampl=$amplitude cycles=$cycles amplMul=$amplMultiplier');
+    // Debug only: every fleet generates one of these at sector build time, and
+    // slicing sectors into parts rebuilds the parent each time.
+    if (kDebugMode) {
+      debugPrint('[PATH] generate ${type.name} steps=$steps '
+          'from=(${sx.toStringAsFixed(0)}, ${sy.toStringAsFixed(0)}) '
+          'to=(${dx.toStringAsFixed(0)}, ${dy.toStringAsFixed(0)}) '
+          'ampl=$amplitude cycles=$cycles amplMul=$amplMultiplier');
+    }
 
     final length = sqrt((dx - sx) * (dx - sx) + (dy - sy) * (dy - sy));
     final angStep =
