@@ -51,6 +51,24 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   bool get isDead => hp <= 0;
 
+  /// Seconds this hostile has been stranded outside the play field with no way
+  /// back. Reset the moment it is in-field or still flying a path.
+  double _offFieldTime = 0.0;
+
+  /// Whether a sprite box overlaps the play field at all.
+  ///
+  /// Deliberately the play field and not the camera window: the immersive
+  /// camera shows 80% of the width, so an enemy parked at x=2 or x=542 is
+  /// off-camera yet perfectly reachable by flying over. Culling on visibility
+  /// would delete whole legitimate formations.
+  static bool inPlayField(double x, double y, double w, double h) =>
+      x + w > 0 && x < config.gameWidth && y + h > 0 && y < config.gameHeight;
+
+  /// Clamp a cycle anchor into [0, upper]. `upper` can be negative when the
+  /// sprite has not been laid out yet, hence the guard.
+  static double clampAnchor(double v, double upper) =>
+      v.clamp(0.0, upper < 0 ? 0.0 : upper);
+
   double get x2 => position.x + size.x;
   double get y2 => position.y + size.y;
   Vector2 get hostCenter => Vector2(position.x + size.x / 2, position.y + size.y / 2);
@@ -183,6 +201,27 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
       }
     }
 
+    // Safety net for hostiles that can no longer move under their own power and
+    // sit entirely outside the play field. Such an enemy is unreachable — the
+    // player's projectiles cull off-field and Fleet gates its return fire on an
+    // in-field muzzle — yet it keeps its fleet active forever, which blocks
+    // both the dead-time skip and sector completion.
+    //
+    // The trigger is deliberately narrow. Waves legitimately spend seconds
+    // off-field on the way in (sector 3's swarm starts at -180,-180), so the
+    // timer only arms once the hostile is parked or cycling, i.e. its path can
+    // never carry it back.
+    final stranded = (trace == null || trace!.current == null || trace!.cycled) &&
+        !inPlayField(position.x, position.y, size.x, size.y);
+    if (stranded) {
+      _offFieldTime += dt;
+      if (_offFieldTime > config.hostileOffFieldGrace) {
+        hp = 0; // same route as PathAction.destroy; Fleet.update sweeps it
+      }
+    } else {
+      _offFieldTime = 0.0;
+    }
+
     // Hit flash decay
     if (hit > 0) hit--;
 
@@ -214,6 +253,16 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
         if (parentFleet != null) {
           for (final ho in parentFleet!.hostiles) {
             if (ho.isDead) continue;
+            // Skip members that have not flown in yet. Path advance is one node
+            // per frame while spawning is wall-clock, so above 40fps the first
+            // arrival can trigger this while later members are still sitting at
+            // their off-field spawn point (srcX -50 / gameWidth+5). Re-pathing
+            // them there anchors the cycle outside the play area, where the
+            // player cannot reach them and they never shoot — the fleet then
+            // never empties and the sector can never complete. Each straggler
+            // re-runs this itself on arrival; its cloned path carries the same
+            // onExit.
+            if (ho.trace != null && !ho.trace!.isComplete) continue;
             ho.cyclePath(
               parentFleet!.altParam1,
               parentFleet!.altParam2,
@@ -227,8 +276,14 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   /// VB6 Hostile.CyclePath — create oscillating out-and-back cyclic path
   void cyclePath(int steps, int dx, int dy, PathType pt) {
-    final x = trace?.current?.x ?? position.x;
-    final y = trace?.current?.y ?? position.y;
+    // Clamp the anchor into the play field. An anchor already inside it is
+    // untouched, so this can only ever affect a hostile that would otherwise
+    // oscillate somewhere unreachable. The far end (anchor + d) needs no clamp:
+    // the widest real case is 534 + 20 + sprite, still inside gameWidth.
+    final x = clampAnchor(
+        trace?.current?.x ?? position.x, config.gameWidth - size.x);
+    final y = clampAnchor(
+        trace?.current?.y ?? position.y, config.gameHeight - size.y);
     final ampl = sqrt((dx * dx + dy * dy).toDouble());
     final newTrace = PathSystem();
     newTrace.generate(steps, x, y, x + dx, y + dy, pt,

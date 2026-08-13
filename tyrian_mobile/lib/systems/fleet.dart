@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 import '../services/achievement_service.dart';
@@ -213,10 +214,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     game.world.add(h);
 
     // Debug: log fleet spawn info
-    if (_spawned == 0) {
+    if (kDebugMode && _spawned == 0) {
       final first = clonedPath.nodes.first;
       final last = clonedPath.nodes.last;
-      print('[FLEET] "$caption" id=$id type=${hostType.name} count=$count '
+      debugPrint('[FLEET] "$caption" id=$id type=${hostType.name} count=$count '
           'pathType=${path.nodes.length} nodes '
           'start=(${first.x.toStringAsFixed(0)}, ${first.y.toStringAsFixed(0)}) '
           'end=(${last.x.toStringAsFixed(0)}, ${last.y.toStringAsFixed(0)})');
