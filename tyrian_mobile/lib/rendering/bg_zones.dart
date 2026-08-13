@@ -20,6 +20,11 @@ abstract final class BgZones {
     return sectorIndex >= count ? count - 1 : sectorIndex;
   }
 
+  /// Art zone for a 1-based difficulty level. This is the mapping callers
+  /// should use — sector *index* stopped being a proxy for level once levels
+  /// could be split into several shorter sectors.
+  static int forLevel(int level) => forSector(level - 1);
+
   /// Multiplicative tint for the parallax layers at [level] (1-based, so
   /// `level == sectorIndex + 1`). Returns null for levels 1..7, whose mood is
   /// baked into the art — the colour filter is cleared entirely there.

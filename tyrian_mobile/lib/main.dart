@@ -8,6 +8,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
+import 'systems/sector.dart';
 import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
 import 'ui/osd_panel.dart';
@@ -373,7 +374,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     // ComCenter is an unbounded UI screen, so the zone load kicked off by
     // advanceToNextSector has almost certainly finished — this is the backstop
     // for when it has not. Costs a single microtask when already loaded.
-    await AssetLibrary.instance.loadZoneBackgrounds(_game.currentSectorIndex);
+    await AssetLibrary.instance
+        .loadZoneBackgrounds(Sector.zoneForIndex(_game.currentSectorIndex));
     if (!mounted) return;
     if (_game.currentSector == null) {
       _game.startGame();

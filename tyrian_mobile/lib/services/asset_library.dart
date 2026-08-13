@@ -7,7 +7,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import '../game/game_config.dart' as config;
-import '../rendering/bg_zones.dart';
 import 'skin_registry.dart';
 
 /// Voronoi fragment metadata for a single piece of a shattered sprite.
@@ -195,7 +194,9 @@ class AssetLibrary {
     _loaded = true;
   }
 
-  /// Swap the parallax layers to the art zone for [sectorIndex].
+  /// Swap the parallax layers to art [zone]. Callers resolve the zone from a
+  /// sector index via `Sector.zoneForIndex` — index stopped being a proxy for
+  /// zone once one level could span several sectors.
   ///
   /// layer_0/layer_1 ship per-zone variants; layer_2/layer_3 are shared and stay
   /// resident across the swap. Each of the four slots resolves independently
@@ -206,9 +207,8 @@ class AssetLibrary {
   /// Safe to call from a synchronous path without awaiting: the live [bgLayers]
   /// list — which ParallaxBackground aliases — is only mutated once every new
   /// image has decoded, so a torn layer set is never observable.
-  Future<void> loadZoneBackgrounds(int sectorIndex) async {
-    _desiredZone = sectorIndex;
-    final zone = BgZones.forSector(sectorIndex);
+  Future<void> loadZoneBackgrounds(int zone) async {
+    _desiredZone = zone;
     if (zone == _bgZone && _bgLayers.isNotEmpty) return;
     final seq = ++_bgLoadSeq;
 

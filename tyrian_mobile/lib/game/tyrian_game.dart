@@ -296,7 +296,7 @@ class TyrianGame extends FlameGame
     vessel2?.refreshSprite();
     // Covers a skin change made from the main menu, before any sector loaded.
     requestZoneBackgrounds(currentSectorIndex);
-    parallaxBg.setLevel(currentSectorIndex + 1);
+    parallaxBg.setLevel(Sector.levelForIndex(currentSectorIndex));
     parallaxBg.loadLayers();
 
     // Refresh all live entities
@@ -364,10 +364,14 @@ class TyrianGame extends FlameGame
       world.add(currentSector!);
     }
     currentSectorIndex = index;
-    vessel.lvlNum = index + 1;
-    if (vessel2 != null) vessel2!.lvlNum = index + 1;
+    // Difficulty level, not sector index — several sectors can share a level.
+    // lvlNum feeds the max-level weapon payout (sectorLevel * 125000 in
+    // Device), so paying it out per index would inflate the economy.
+    final level = currentSector?.level ?? Sector.levelForIndex(index);
+    vessel.lvlNum = level;
+    if (vessel2 != null) vessel2!.lvlNum = level;
     requestZoneBackgrounds(index);
-    parallaxBg.setLevel(index + 1);
+    parallaxBg.setLevel(level);
     sectorHullDamage = false;
     elapsed = 0;
   }
@@ -376,8 +380,11 @@ class TyrianGame extends FlameGame
   /// is synchronous and must stay that way, and ParallaxBackground keeps
   /// rendering the previous zone until the new images decode. The ComCenter
   /// sits between sectors, so in practice the load always finishes unseen.
+  /// Takes a sector index and resolves the art zone here, so every caller can
+  /// keep passing the index it already has.
   void requestZoneBackgrounds(int sectorIndex) {
-    unawaited(AssetLibrary.instance.loadZoneBackgrounds(sectorIndex));
+    unawaited(
+        AssetLibrary.instance.loadZoneBackgrounds(Sector.zoneForIndex(sectorIndex)));
   }
 
   void _clearActiveObjects() {
@@ -620,8 +627,9 @@ class TyrianGame extends FlameGame
     // onLoad's loadLayers() ran before the save was read, so a run resumed deep
     // in the game would otherwise come back with zone 0's art. Awaiting is free
     // here — loadProgress is already awaited during startup.
-    await AssetLibrary.instance.loadZoneBackgrounds(currentSectorIndex);
-    parallaxBg.setLevel(currentSectorIndex + 1);
+    await AssetLibrary.instance
+        .loadZoneBackgrounds(Sector.zoneForIndex(currentSectorIndex));
+    parallaxBg.setLevel(Sector.levelForIndex(currentSectorIndex));
     return true;
   }
 
@@ -1240,7 +1248,7 @@ class TyrianGame extends FlameGame
     // nothing in gameplay reads it, so a few frames of lag are invisible.
     if (snap.sectorIndex != currentSectorIndex) {
       requestZoneBackgrounds(snap.sectorIndex);
-      parallaxBg.setLevel(snap.sectorIndex + 1);
+      parallaxBg.setLevel(Sector.levelForIndex(snap.sectorIndex));
     }
     currentSectorIndex = snap.sectorIndex;
     elapsed = snap.elapsed;
