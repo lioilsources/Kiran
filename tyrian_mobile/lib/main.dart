@@ -260,10 +260,17 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           ),
           TextButton(
             onPressed: () {
-              final ip = controller.text.trim();
-              if (ip.isNotEmpty) {
+              final input = controller.text.trim();
+              if (input.isNotEmpty) {
                 Navigator.pop(ctx);
-                _joinAsClient(ip, CoopHost.defaultPort);
+                // Accept "192.168.x.x" or "192.168.x.x:port"
+                final colon = input.lastIndexOf(':');
+                final ip = colon > 0 ? input.substring(0, colon) : input;
+                final port = colon > 0
+                    ? (int.tryParse(input.substring(colon + 1)) ??
+                        CoopHost.defaultPort)
+                    : CoopHost.defaultPort;
+                _joinAsClient(ip, port);
               }
             },
             child: const Text('CONNECT', style: TextStyle(color: Colors.cyanAccent)),
@@ -301,21 +308,79 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _joinAsClient(String ip, int port) async {
-    _game.resetForNewGame();
     print('Joining $ip:$port');
+
+    // Progress dialog — Socket.connect can take up to 5s before timing out
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+          backgroundColor: Colors.grey[900],
+          content: Row(
+            children: [
+              const CircularProgressIndicator(color: Colors.cyanAccent),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Text(
+                  'Connecting to $ip:$port...',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final client = CoopClient();
     final ok = await client.connect(ip, port, _game.vessel.pilotName);
+
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop(); // close progress
+    }
+
     if (!ok) {
-      // Connection failed → fall back to auto-host
-      if (mounted) await _startAsAutoHost();
+      // Stay in our own hosted ComCenter and tell the user why it failed
+      await client.dispose();
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text('Connection failed',
+                style: TextStyle(color: Colors.redAccent)),
+            content: Text(
+              'Could not reach $ip:$port'
+              '${client.lastError != null ? '\n(${client.lastError})' : ''}\n\n'
+              'Check that both devices are on the same WiFi and the host '
+              'is on the ComCenter screen (its IP is shown in the top bar).',
+              style: const TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK',
+                    style: TextStyle(color: Colors.cyanAccent)),
+              ),
+            ],
+          ),
+        );
+      }
       return;
     }
 
+    // Connected as client — stop hosting/broadcasting our own game
+    _disposeAutoHost();
+    await _game.disposeCoop();
+
+    _game.resetForNewGame();
     await _game.setupCoopClient(client);
 
     if (mounted) {
       setState(() {
         _screen = _ScreenState.game;
+        _showComCenter = false;
         _clientWaiting = true;
       });
     }
