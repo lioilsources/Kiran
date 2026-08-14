@@ -152,11 +152,26 @@ class SoundService {
   double _baseVolume(SfxEvent event) =>
       _muted ? 0.0 : (_eventVolume[event] ?? 1.0);
 
+  /// Shortest gap between two plays of the same event.
+  ///
+  /// The pool round-robins over three players with no floor on the rate, so a
+  /// fast weapon stacked 0.5s one-shots on top of each other several times a
+  /// second and the result smeared into a wash that buried everything else.
+  /// One retrigger every 70ms is still far quicker than the ear resolves as
+  /// separate hits, and it leaves room for impacts to be heard.
+  static const _minRetrigger = Duration(milliseconds: 70);
+  final Map<SfxEvent, int> _lastPlayMs = {};
+
   /// Play a sound effect (fire-and-forget).
   void play(SfxEvent event) {
     if (_muted || !_ready || _disabled) return;
     final path = _paths[event];
     if (path == null || _failedPaths.contains(path)) return;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final last = _lastPlayMs[event];
+    if (last != null && now - last < _minRetrigger.inMilliseconds) return;
+    _lastPlayMs[event] = now;
 
     final pool = _pools[event];
     if (pool == null || pool.isEmpty) return;
