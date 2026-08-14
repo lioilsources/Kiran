@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
+import '../systems/sector.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
@@ -914,7 +915,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           ? CustomPaint(painter: _ShipPreviewPainter(sprite))
           : Center(
               child: Text(
-                'Lv ${game.currentSectorIndex + 1}',
+                'Lv ${Sector.levelForIndex(game.currentSectorIndex)}',
                 style: _theme.styled(TextStyle(
                   color: _theme.accent,
                   fontSize: 18,
@@ -964,7 +965,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              'Lv ${game.currentSectorIndex + 1}',
+              'Lv ${Sector.levelForIndex(game.currentSectorIndex)}',
               style: const TextStyle(
                   color: Colors.cyanAccent,
                   fontSize: 12,

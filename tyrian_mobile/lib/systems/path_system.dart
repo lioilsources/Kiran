@@ -30,15 +30,60 @@ class PathSystem {
 
   bool get isComplete => currentIndex >= nodes.length;
 
+  /// Fractional progress from [current] toward the next node, 0..1. Non-zero
+  /// only when advancing by fractional steps, i.e. whenever the refresh rate
+  /// differs from the 40fps the node spacing was authored for.
+  double _frac = 0.0;
+
+  /// Position along the path including the fractional remainder.
+  ///
+  /// Node spacing encodes 40fps, so a 120Hz frame covers a third of a node.
+  /// Snapping to whole nodes would make motion visibly step at 40Hz; lerping
+  /// between them keeps it smooth at any refresh rate.
+  PathNode? get interpolated {
+    final a = current;
+    if (a == null) return null;
+    if (_frac <= 0) return a;
+    final nextIndex = currentIndex + 1;
+    final PathNode b;
+    if (nextIndex < nodes.length) {
+      b = nodes[nextIndex];
+    } else if (cycled && nodes.isNotEmpty) {
+      b = nodes[0];
+    } else {
+      return a;
+    }
+    return PathNode(a.x + (b.x - a.x) * _frac, a.y + (b.y - a.y) * _frac);
+  }
+
   /// Advance to next node. Returns true if still has nodes.
-  bool advance() {
+  bool advance() => advanceBy(1.0);
+
+  /// Advance along the path by [steps] node-steps, fractions allowed.
+  ///
+  /// Callers pass `dt * config.originalFps` so travel takes the wall-clock time
+  /// the script intended, rather than one node per rendered frame — which made
+  /// every enemy 1.5x faster at 60Hz and 3x at 120Hz while the player's
+  /// weapons, timed in seconds, stayed put.
+  ///
+  /// Returns false once a non-cycled path has run out.
+  bool advanceBy(double steps) {
     if (nodes.isEmpty) return false;
-    currentIndex++;
+    if (steps <= 0) return !isComplete;
+
+    _frac += steps;
+    final whole = _frac.floor();
+    _frac -= whole;
+    if (whole == 0) return !isComplete;
+
+    currentIndex += whole;
     if (currentIndex >= nodes.length) {
       if (cycled) {
-        currentIndex = 0;
+        // Wrap, preserving overshoot so a slow frame does not lose distance.
+        currentIndex %= nodes.length;
         return true;
       }
+      _frac = 0.0;
       return false;
     }
     return true;

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../rendering/bg_zones.dart';
 import '../entities/boss.dart';
 import '../entities/hostile.dart';
 import '../entities/structure.dart';
@@ -9,11 +10,37 @@ import '../entities/collectable.dart';
 import 'fleet.dart';
 import 'path_system.dart';
 
+/// One playable sector carved out of a hand-scripted VB6 level.
+///
+/// A level's script can be longer than is comfortable to play in one sitting,
+/// so it may be split into several parts. Parts share their parent's [level],
+/// which is what keeps VB6 balance — damage scaling, boss cadence, enemy HP —
+/// identical no matter how the timeline is cut.
+class _Part {
+  /// Index into [Sector._parentBuilders].
+  final int parent;
+
+  /// The parent's VB6 difficulty level, duplicated so an index-only caller can
+  /// resolve a level without building the sector.
+  final int level;
+
+  const _Part(this.parent, this.level);
+}
+
 /// Ported from Sector.cls — a game level containing fleets and structures.
 class Sector extends Component with HasGameReference<TyrianGame> {
   String caption;
+
+  /// VB6 difficulty level, 1-based. Drives enemy damage scaling, boss cadence
+  /// and the max-level weapon payout. Deliberately NOT the sector index: once
+  /// a level is split into several shorter parts, several sectors share a level.
   int level;
   int sectorBonus;
+
+  /// Which parallax art zone this sector wears. Defaults to the zone for its
+  /// level, so every part of one level shares a backdrop.
+  late final int zone;
+
   bool complete = false;
   double elapsed = 0;
   double completeTime = 0;
@@ -28,7 +55,10 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     required this.caption,
     required this.level,
     this.sectorBonus = 500,
-  });
+    int? zone,
+  }) {
+    this.zone = zone ?? BgZones.forLevel(level);
+  }
 
   @override
   void update(double dt) {
@@ -83,9 +113,9 @@ class Sector extends Component with HasGameReference<TyrianGame> {
 
   /// Factory to create sector by index (ports VBA Sector.Setup case blocks)
   static Sector? create(int index, TyrianGame game) {
-    final s = (index >= 0 && index < _sectorBuilders.length)
-        ? _sectorBuilders[index](game)
-        : _createRandom(index, game);
+    final s = (index >= 0 && index < _parts.length)
+        ? _parentBuilders[_parts[index].parent](game)
+        : _createRandom(levelForIndex(index), game);
     // Every 5th level gets a phased boss as its final wave. Starts at level 10
     // so the hand-scripted sectors (levels 1-7, VB6 parity) stay untouched.
     if (s.level % 5 == 0 && s.level >= 10) {
@@ -94,15 +124,43 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     return s;
   }
 
-  static final List<Sector Function(TyrianGame)> _sectorBuilders = [
+  /// The hand-scripted sectors, one per VB6 level. These are the only source of
+  /// VB6 fleet data; [_parts] carves playable sectors out of them.
+  static final List<Sector Function(TyrianGame)> _parentBuilders = [
     _sector0,
     _sector1,
     _sector2,
     _sector3,
     _sector4,
     _sector5,
-    _sector6,
   ];
+
+  /// Playable sectors, in order. Index into this list *is* the sector index.
+  ///
+  /// Today every parent yields exactly one part spanning its whole timeline, so
+  /// this is a no-op mapping that reproduces the previous behaviour exactly.
+  /// It exists so the split into shorter parts is a data change rather than a
+  /// structural one.
+  static const List<_Part> _parts = [
+    _Part(0, 1),
+    _Part(1, 2),
+    _Part(2, 3),
+    _Part(3, 4),
+    _Part(4, 5),
+    _Part(5, 6),
+  ];
+
+  /// VB6 difficulty level for a sector index. Past the authored parts, each
+  /// further sector is one level harder, continuing from where they left off.
+  static int levelForIndex(int index) {
+    if (index < 0) return 1;
+    return index < _parts.length
+        ? _parts[index].level
+        : _parts.last.level + (index - _parts.length) + 1;
+  }
+
+  /// Parallax art zone for a sector index.
+  static int zoneForIndex(int index) => BgZones.forLevel(levelForIndex(index));
 
   /// VB6 Sector.AddAsteroids — staggered asteroid spawning with paths
   static void _addAsteroids(Sector s, double enterTime, int count, double x, double width) {
@@ -664,11 +722,6 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     return s;
   }
 
-  // ---- Sector 6+: Random (VB6 Level 7+) ----
-  static Sector _sector6(TyrianGame game) {
-    return _createRandom(6, game);
-  }
-
   /// VB6 damage growth coefficient (Sector.cls:493-519)
   static double _damageCoefficient(int level) {
     const dmgGrowLevel = 20;
@@ -743,15 +796,18 @@ class Sector extends Component with HasGameReference<TyrianGame> {
   }
 
   // ---- Random Sector Generation (VB6 Sector.SetupRandom) ----
-  static Sector _createRandom(int index, TyrianGame game) {
-    final rng = Random(index * 42);
-    final level = index + 1;
+  /// Keyed on difficulty [level], not on sector index — the two stopped being
+  /// interchangeable once a level could span several sectors. Seeding on
+  /// `level - 1` reproduces the previous `index * 42` seed exactly, so existing
+  /// random sectors are unchanged.
+  static Sector _createRandom(int level, TyrianGame game) {
+    final rng = Random((level - 1) * 42);
 
     // VB6: fleetCount = Round(Rnd * 15 + 5) → 5-20 fleets
     final numFleets = (rng.nextDouble() * 15 + 5).round();
 
     final s = Sector(
-      caption: 'Sector ${index + 1} — Unknown Space',
+      caption: 'Sector $level — Unknown Space',
       level: level,
       // VB6: sectorBonus = CLng(fleetCount) * CLng(2500) * level
       sectorBonus: numFleets * 2500 * level,
