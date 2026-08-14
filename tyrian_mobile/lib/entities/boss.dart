@@ -29,10 +29,13 @@ class BossSpec {
 /// death effect all apply without special-casing.
 class Boss extends Hostile {
   final BossSpec spec;
-  int _fireCD = 0;
+  /// Fire cooldowns in VB6 frame units (40fps), advanced by `dt * originalFps`
+  /// rather than per rendered frame — otherwise the boss fires 1.5x more often
+  /// at 60Hz and 3x at 120Hz while the player's cadence stays in seconds.
+  double _fireCD = 0;
   int _volleys = 0;
   int _burstLeft = 0;
-  int _burstCD = 0;
+  double _burstCD = 0;
   int _phaseSeen = 1;
 
   Boss({
@@ -83,7 +86,7 @@ class Boss extends Hostile {
     // Hold fire until fully on screen
     if (y2 <= 0) return;
 
-    _fireCD++;
+    _fireCD += dt * config.originalFps;
     if (_fireCD >= _cadence) {
       _fireCD = 0;
       _fireVolley();
@@ -91,7 +94,7 @@ class Boss extends Hostile {
 
     // Phase 3: aimed 3-shot burst trailing every third volley
     if (_burstLeft > 0) {
-      _burstCD++;
+      _burstCD += dt * config.originalFps;
       if (_burstCD >= 8) {
         _burstCD = 0;
         _burstLeft--;

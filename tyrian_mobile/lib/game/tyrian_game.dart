@@ -14,6 +14,7 @@ import '../input/keyboard_input.dart';
 import '../input/gamepad_input.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
+import '../rendering/offscreen_markers.dart';
 import '../entities/vessel.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
@@ -215,6 +216,11 @@ class TyrianGame extends FlameGame
         orElse: () => kSkins.first);
     shaderPipeline.configure(skinInfo.shaderConfig);
     camera.postProcess = shaderPipeline.build();
+
+    // Edge markers for enemies outside the zoomed camera window. Added to the
+    // viewport rather than the world so it draws in screen space, unaffected by
+    // the viewfinder's pan and zoom.
+    camera.viewport.add(OffscreenEnemyMarkers());
 
     // Start in comCenter state
     state = GameState.comCenter;

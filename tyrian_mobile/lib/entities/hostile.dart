@@ -192,10 +192,14 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     // Client: positions set by snapshot, skip all game logic
     if (game.coopRole == CoopRole.client) return;
 
-    // Follow path
+    // Follow path, in wall-clock time. Node spacing encodes the original 40fps,
+    // so advancing one node per rendered frame made enemies 1.5x faster at 60Hz
+    // and 3x at 120Hz — while the player's weapons, timed in seconds, did not
+    // speed up at all.
     if (trace != null && trace!.current != null) {
-      position.setValues(trace!.current!.x, trace!.current!.y);
-      if (!trace!.advance()) {
+      final at = trace!.interpolated ?? trace!.current!;
+      position.setValues(at.x, at.y);
+      if (!trace!.advanceBy(dt * config.originalFps)) {
         // Path ended
         _onPathEnd();
       }

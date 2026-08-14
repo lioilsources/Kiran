@@ -44,8 +44,12 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   // Enemy weapon (VB6 Fleet.weap / weapCharge / weapCD)
   Device? weapon;
-  int weapCharge = 0;   // frames between shots (recharge)
-  int weapCD = 0;       // current cooldown counter
+  int weapCharge = 0;   // VB6 frames between shots (recharge), at 40fps
+  /// Cooldown accumulator in VB6 frame units. Advanced by `dt * originalFps`
+  /// rather than incremented per rendered frame — the latter made enemies fire
+  /// 1.5x more often at 60Hz and 3x at 120Hz, while the player's weapons are
+  /// timed in seconds and did not speed up at all.
+  double weapCD = 0;
   int weapDamage = 0;   // enemy weapon damage
   double weapScale = 0.5; // projectile scale ratio (dmg/75 clamped 0.3-0.99)
 
@@ -105,7 +109,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
     // Fleet weapon firing (centralized — prevents multi-fire bug from parallel hostile updates)
     if (weapCharge > 0 && hostiles.isNotEmpty) {
-      weapCD++;
+      weapCD += dt * config.originalFps;
       if (weapCD >= weapCharge) {
         final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
         if (alive.isNotEmpty) {
