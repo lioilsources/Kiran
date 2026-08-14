@@ -64,8 +64,13 @@ func TestBuildSfxPrompt(t *testing.T) {
 		if !containsStr(prompt, tt.contains) {
 			t.Errorf("prompt %q should contain %q", prompt, tt.contains)
 		}
-		if !containsStr(prompt, "game audio") {
-			t.Errorf("prompt %q should contain 'game audio'", prompt)
+		if !containsStr(prompt, "Game sound effect") {
+			t.Errorf("prompt %q should contain 'Game sound effect'", prompt)
+		}
+		// The playback steer is the whole point of the rewrite — a skin style
+		// that asks for deep bass must not be the last word on the matter.
+		if !containsStr(prompt, "small phone speaker") {
+			t.Errorf("prompt %q is missing the playback steer", prompt)
 		}
 	}
 }

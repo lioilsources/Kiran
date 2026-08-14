@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -52,6 +53,12 @@ func Run(cfg Config) error {
 			filepath.Base(cfg.SkinDir), err)
 	}
 
+	// Image failures must not take the audio down with them. The hand-authored
+	// `default` skin has a manifest but no generated sprite sources, so this
+	// block always errors for it — and used to return before processSfx ever
+	// ran, which is why that skin's sound was never reprocessed. Record the
+	// error, finish the audio, report at the end.
+	var imgErr error
 	if hasManifest {
 		// Create output directories
 		spritesDir := filepath.Join(cfg.OutputDir, "sprites")
@@ -89,13 +96,15 @@ func Run(cfg Config) error {
 			case asset.Name == "explosion":
 				// Special: load v1-v4 → explosion1-explosion4.png
 				if err := processExplosions(cfg, asset, spritesDir); err != nil {
-					return fmt.Errorf("process explosion: %w", err)
+					imgErr = fmt.Errorf("process explosion: %w", err)
+					continue
 				}
 
 			case asset.Name == "ship_frames":
 				// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
 				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
-					return fmt.Errorf("process ship_frames: %w", err)
+					imgErr = fmt.Errorf("process ship_frames: %w", err)
+					continue
 				}
 
 			case asset.Type == "background":
@@ -111,31 +120,36 @@ func Run(cfg Config) error {
 					fmt.Printf("  [bg] no source for %s — skipping\n", asset.Name)
 					bgComplete = false
 				default:
-					return fmt.Errorf("process background %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process background %s: %w", asset.Name, err)
+					continue
 				}
 
 			case asset.Type == "hud_icon":
 				// Copy HUD icons to ui/ subdir
 				if err := processAsset(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 
 			case asset.Name == "preview":
 				// Copy preview to ui/preview.png
 				if err := processAsset(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process preview: %w", err)
+					imgErr = fmt.Errorf("process preview: %w", err)
+					continue
 				}
 
 			case asset.Type == "comcenter_bg":
 				// Full-screen ComCenter background — opaque, exact resize, no bg removal
 				if err := processUiBg(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 
 			case asset.Type == "ui_card_bg" || asset.Type == "ui_button" || asset.Type == "ui_tab_active":
 				// ComCenter panel sprites — opaque, exact resize, no bg removal
 				if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 
 			default:
@@ -145,7 +159,8 @@ func Run(cfg Config) error {
 					continue
 				}
 				if err := processNamedAsset(cfg, asset, spritesDir, gameName); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 			}
 		}
@@ -171,7 +186,7 @@ func Run(cfg Config) error {
 	}
 
 	fmt.Printf("Postprocessed skin %s → %s\n", filepath.Base(cfg.SkinDir), cfg.OutputDir)
-	return nil
+	return imgErr
 }
 
 func processAsset(cfg Config, asset skin.ManifestAsset, outDir string) error {
@@ -518,8 +533,67 @@ func ListSpriteNames(manifest *skin.Manifest) []string {
 	return names
 }
 
-// processSfx converts MP3 files in {skinDir}/sfx/ to OGG in {outputDir}/sfx/
-// using ffmpeg with loudnorm volume normalization.
+// Loudness targets for SFX, measured over the band a phone speaker can actually
+// reproduce rather than full range.
+//
+// loudnorm was the obvious tool and the wrong one. It measures integrated
+// loudness with K-weighting, which de-emphasises bass — so a sub-heavy file
+// reads as quiet and gets turned *up*, pushing yet more energy into a band the
+// hardware cannot render. Measured on the shipped set, that left the laser shot
+// 13dB above the big explosion in the only band that reaches the player's ears,
+// which is exactly how it sounded: shots everywhere, explosions with no weight.
+//
+// Measuring above sfxAudibleFloorHz instead makes the comparison the one the
+// player experiences. The gain clamp keeps a file that simply has nothing up
+// there from being dragged up by 50dB of pure noise floor.
+const (
+	sfxAudibleFloorHz = 500 // below this a phone speaker gives up
+	sfxSubCutHz       = 60  // inaudible on the target device; only eats headroom
+	// How far the audible-band peak may sit below the file's overall peak before
+	// the content counts as unreachable on a phone. Absolute level says nothing
+	// here — loudnorm sets that — so the diagnostic has to be a ratio.
+	sfxWeakRatioDb = -12.0
+)
+
+// audibleShortfall reports how far a file's peak within the phone-reproducible
+// band sits below its overall peak. Near 0 means the energy is where it can be
+// heard; a large negative means the sound lives in bass the device cannot
+// render, which no amount of levelling can recover.
+//
+// Peak, not mean. These are short one-shots with a fast transient and a long
+// quiet tail, so a mean taken over the whole file mostly measures the silence:
+// rtype's hull hit reads -29dB mean against a -6.6dB peak, and levelling on the
+// mean asked for +34dB of gain on a file that was already loud enough. Peak is
+// insensitive to how much of the clip is empty, which is what makes it the
+// right statistic here.
+func audibleShortfall(path string) (float64, error) {
+	peak := func(filter string) (float64, error) {
+		cmd := exec.Command("ffmpeg", "-hide_banner", "-i", path,
+			"-af", filter, "-f", "null", "-")
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return 0, fmt.Errorf("volumedetect: %w", err)
+		}
+		m := regexp.MustCompile(`max_volume:\s*(-?[0-9.]+) dB`).FindSubmatch(out)
+		if m == nil {
+			return 0, fmt.Errorf("no max_volume in ffmpeg output")
+		}
+		return strconv.ParseFloat(string(m[1]), 64)
+	}
+
+	full, err := peak("volumedetect")
+	if err != nil {
+		return 0, err
+	}
+	audible, err := peak(fmt.Sprintf("highpass=f=%d,volumedetect", sfxAudibleFloorHz))
+	if err != nil {
+		return 0, err
+	}
+	return audible - full, nil
+}
+
+// processSfx converts MP3 files in {skinDir}/sfx/ to OGG in {outputDir}/sfx/,
+// levelled on the phone-audible band (see audibleBandGain).
 func processSfx(cfg Config) error {
 	srcSfxDir := filepath.Join(cfg.SkinDir, "sfx")
 	entries, err := os.ReadDir(srcSfxDir)
@@ -548,10 +622,24 @@ func processSfx(cfg Config) error {
 			continue
 		}
 
-		// ffmpeg: normalize volume + convert to OGG/Opus
+		// Diagnostic only. A file with nothing up here cannot be rescued by
+		// levelling — no gain reaches content that was never generated — so the
+		// fix is to regenerate it, and the point of measuring is to say which.
+		if d, err := audibleShortfall(srcPath); err == nil && d < sfxWeakRatioDb {
+			fmt.Printf("  [sfx] %s is %.1f dB down above %dHz — its energy sits "+
+				"in bass a phone cannot render, regenerate it\n",
+				baseName, d, sfxAudibleFloorHz)
+		}
+
+		// Drop the inaudible sub before normalising. That part is unambiguous:
+		// on the target device it is silent, and all it does here is consume
+		// headroom and drag loudnorm's K-weighted measurement around. The
+		// levelling itself stays with loudnorm — a hand-rolled peak normaliser
+		// measured no better than it and is a worse tool.
+		filter := fmt.Sprintf("highpass=f=%d,loudnorm=I=-14:TP=-3", sfxSubCutHz)
 		cmd := exec.Command("ffmpeg", "-y",
 			"-i", srcPath,
-			"-af", "loudnorm=I=-14:TP=-3",
+			"-af", filter,
 			"-c:a", "libopus",
 			"-b:a", "96k",
 			dstPath,
