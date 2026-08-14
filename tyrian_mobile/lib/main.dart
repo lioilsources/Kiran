@@ -11,6 +11,7 @@ import 'game/tyrian_game.dart';
 import 'systems/sector.dart';
 import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
+import 'ui/enemy_counter.dart';
 import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
@@ -413,6 +414,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               BossHealthBar(game: _game),
 
             // OSD HUD
+            // Enemy tally — drawn under the OSD so the stat bars stay on top
+            // if the pop ever overlaps them.
+            if (!_showComCenter && !_clientWaiting &&
+                _game.state != GameState.gameOver)
+              EnemyCounter(game: _game),
+
             if (!_showComCenter && !_clientWaiting &&
                 _game.state != GameState.gameOver)
               OsdPanel(

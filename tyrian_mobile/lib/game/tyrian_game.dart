@@ -217,11 +217,6 @@ class TyrianGame extends FlameGame
     shaderPipeline.configure(skinInfo.shaderConfig);
     camera.postProcess = shaderPipeline.build();
 
-    // Edge markers for enemies outside the zoomed camera window. Added to the
-    // viewport rather than the world so it draws in screen space, unaffected by
-    // the viewfinder's pan and zoom.
-    camera.viewport.add(OffscreenEnemyMarkers());
-
     // Start in comCenter state
     state = GameState.comCenter;
     vessel.visible = false;
@@ -279,6 +274,13 @@ class TyrianGame extends FlameGame
         camera.viewfinder.position = Vector2.zero();
       }
     }
+
+    // Both branches above replace the viewport object outright, which discards
+    // whatever was attached to the old one — so anything living in the viewport
+    // has to be re-attached here rather than once in onLoad. On iOS the cold
+    // start always lands here a second time (see the 0x0 guard), which is how
+    // the edge markers silently disappeared.
+    camera.viewport.add(OffscreenEnemyMarkers());
   }
 
   @override
