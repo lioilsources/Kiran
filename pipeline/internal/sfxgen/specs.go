@@ -28,9 +28,9 @@ var SfxSpecs = []SfxSpec{
 	{"fire_bullet", "single laser shot, tight fast zap with a short thump under it, sharp attack, quick decay, not piercing", 0.5},
 	{"fire_beam", "sustained energy beam, steady continuous hum with body in the low mids, focused", 0.8},
 	{"hit_shield", "energy shield deflection, electronic ping with body behind it, short zap, not shrill", 0.5},
-	{"hit_hull", "metallic hull impact, clean hard hit, solid mid-range thud", 0.5},
-	{"explosion_small", "small explosion, short clean noise burst, crisp, firm low-mid thump", 0.5},
-	{"explosion_large", "big explosion, full clean noise burst, hard low-mid punch, scale from mid-range weight not sub rumble", 1.2},
+	{"hit_hull", "metallic hull impact, whip-crack hit, solid mid-range knock", 0.5},
+	{"explosion_small", "small explosion cracking like a single pistol shot, sharp bang, instant attack, short tail", 0.5},
+	{"explosion_large", "big explosion cracking like a close gunshot, hard sharp bang with a punchy mid-range body, short tail", 1.2},
 	{"pickup", "item pickup, ascending chime, clean and short, warm rather than glassy", 0.5},
 	{"weapon_unlock", "power-up unlock, triumphant rising fanfare with mid-range body", 1.5},
 	{"sector_complete", "level complete, uplifting victory fanfare with mid-range body", 2.0},
@@ -89,8 +89,8 @@ func BuildSfxPrompt(sfxStyle string, spec SfxSpec) string {
 	case spec.isMelodic():
 		steer = "Clean, musical, minimal reverb tail."
 	case spec.isNoiseBurst():
-		steer = "Dry mono. Clean synthetic noise burst, arcade noise channel " +
-			"— atonal, no pitch, no chime. Sharp attack, short decay, no grit."
+		steer = "Dry mono, atonal — no pitch, no chime. Cracks like a " +
+			"gunshot: instant attack, hard snap, short decay."
 	}
 	return sfxStyle + " " + spec.EventDesc + ". Game sound effect, " +
 		formatDuration(spec.Duration) + " seconds. " + steer + " " + playbackSteer
