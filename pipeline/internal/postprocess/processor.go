@@ -636,7 +636,15 @@ func processSfx(cfg Config) error {
 		// headroom and drag loudnorm's K-weighted measurement around. The
 		// levelling itself stays with loudnorm — a hand-rolled peak normaliser
 		// measured no better than it and is a worse tool.
-		filter := fmt.Sprintf("highpass=f=%d,loudnorm=I=-14:TP=-3", sfxSubCutHz)
+		//
+		// Explosions get a hotter target than the rest: they are the sounds
+		// that must land on top of the music bed, and the previous TP=-3 left
+		// 3dB of ceiling unused on what are sub-second one-shots.
+		target := "loudnorm=I=-14:TP=-1.5"
+		if strings.HasPrefix(baseName, "explosion") {
+			target = "loudnorm=I=-11:TP=-1.0"
+		}
+		filter := fmt.Sprintf("highpass=f=%d,%s", sfxSubCutHz, target)
 		cmd := exec.Command("ffmpeg", "-y",
 			"-i", srcPath,
 			"-af", filter,

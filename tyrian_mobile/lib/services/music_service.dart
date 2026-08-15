@@ -100,6 +100,23 @@ class MusicService {
     _targetTier = tier.clamp(1, _tierCount);
   }
 
+  /// Sidechain-style duck: 1.0 = no duck, [config.musicDuckFloor] right after
+  /// an explosion. Recovers linearly; while below 1.0 every theme's volume is
+  /// re-applied each frame.
+  double _duck = 1.0;
+
+  /// Momentarily push the music bed down so a transient can land on top.
+  ///
+  /// The SFX files cannot get louder — they are already normalised to the
+  /// ceiling — and a continuous music bed masks a half-second burst even when
+  /// the burst peaks higher. Dipping the bed for a beat is how games make
+  /// impacts read as loud; the dip itself is short enough that the ear hears
+  /// "big explosion", not "quiet music".
+  void duck() {
+    if (!_ready || _disabled || _muted) return;
+    _duck = config.musicDuckFloor;
+  }
+
   /// Advance crossfades. Call every frame while the game is playing.
   void update(double dt) {
     if (!_ready || _disabled) return;
@@ -109,6 +126,14 @@ class MusicService {
       _introElapsed += dt;
       if (_introElapsed >= config.musicMaxIntroSeconds) _introPlaying = false;
     }
+
+    // Duck recovery. While recovering, volumes must be re-applied even for
+    // themes whose crossfade level is otherwise at rest.
+    final ducking = _duck < 1.0;
+    if (ducking) {
+      _duck = min(1.0, _duck + dt / config.musicDuckRecoverSeconds);
+    }
+
     final step = dt / config.musicCrossfadeSeconds;
     for (int i = 0; i < _themes.length; i++) {
       // During the intro all themes stay silent; afterwards only the active
@@ -119,7 +144,7 @@ class MusicService {
         _vol[i] = min(target, _vol[i] + step);
       } else if (_vol[i] > target) {
         _vol[i] = max(target, _vol[i] - step);
-      } else {
+      } else if (!ducking) {
         continue;
       }
       _applyTheme(i);
@@ -166,7 +191,8 @@ class MusicService {
   void _applyTheme(int i) {
     if (i >= _themes.length) return;
     // Equal-power curve so a rising + falling pair sums to ~constant loudness.
-    final gain = _muted ? 0.0 : sqrt(_vol[i]) * config.musicMasterVolume;
+    final gain =
+        _muted ? 0.0 : sqrt(_vol[i]) * config.musicMasterVolume * _duck;
     _safe(() => _themes[i].setVolume(gain));
   }
 

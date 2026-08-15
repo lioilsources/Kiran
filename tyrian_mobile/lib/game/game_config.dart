@@ -111,7 +111,15 @@ const double musicCrossfadeSeconds = 1.5; // tier crossfade duration
 // ladder and back inside a fleet wave.
 const double musicMinDwellSeconds = 10.0; // min time on a tier before stepping (anti-flap)
 const double musicDirectorInterval = 0.25; // threat re-evaluation period (~4 Hz)
-const double musicMasterVolume = 0.55;    // music sits under SFX
+// Music bed level. Lowered from 0.55 — the continuous bed was masking the
+// explosion transients even though the SFX files peak higher.
+const double musicMasterVolume = 0.45;
+
+// Sidechain duck: explosions momentarily push the music down to this factor,
+// recovering linearly over the given time. This is what makes an explosion
+// read as loud — the files themselves are already normalised to the ceiling.
+const double musicDuckFloor = 0.35;
+const double musicDuckRecoverSeconds = 0.6;
 const double musicMaxIntroSeconds = 20.0;  // hard cap: hand over to tiers even if intro never reports completion
 
 // Threat formula weights (see MusicDirector._computeThreat).
