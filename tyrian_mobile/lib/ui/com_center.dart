@@ -12,7 +12,6 @@ import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
-import '../services/leaderboard_service.dart';
 import '../services/asset_library.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
@@ -379,8 +378,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                           child: Column(
                             children: [
                               if (_cheatsEnabled) _buildCheatBar(),
+                              _sectionHeader('STATS'),
                               _buildStatsAndSlots(),
-                              Container(height: 1, color: _theme.accent.withAlpha(30)),
+                              _sectionHeader('LOADOUT'),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: _buildSlotList(),
+                              ),
+                              _sectionHeader('SHOP'),
                               _buildSectionTabs(),
                               Container(height: 1, color: _theme.accent.withAlpha(30)),
                               Expanded(
@@ -390,8 +396,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       _buildActiveSection(),
-                                      const SizedBox(height: 16),
-                                      _buildScoresPanel(),
                                     ],
                                   ),
                                 ),
@@ -414,8 +418,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (_cheatsEnabled) _buildCheatBar(),
+                          _sectionHeader('STATS'),
                           _buildStatsAndSlots(),
-                          Container(height: 1, color: _theme.accent.withAlpha(30)),
+                          _sectionHeader('LOADOUT'),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12),
+                            child: _buildSlotList(),
+                          ),
+                          _sectionHeader('SHOP'),
                           _buildSectionTabs(),
                           Container(height: 1, color: _theme.accent.withAlpha(30)),
                           Padding(
@@ -424,8 +435,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _buildActiveSection(),
-                                const SizedBox(height: 16),
-                                _buildScoresPanel(),
                               ],
                             ),
                           ),
@@ -466,8 +475,32 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               Expanded(child: _buildStatValues()),
             ],
           ),
-          const SizedBox(height: 6),
-          _buildSlotList(),
+        ],
+      ),
+    );
+  }
+
+  /// Section label — a short accent bar and near-white caps. The shop is where
+  /// the player parks between sectors; the three zones (ship stats, current
+  /// loadout, shop) need to read as zones at a glance.
+  Widget _sectionHeader(String label) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+      child: Row(
+        children: [
+          Container(width: 4, height: 12, color: _theme.accent),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: _theme.styled(TextStyle(
+              color: Colors.white.withAlpha(165),
+              fontSize: _fs(10),
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            )),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Container(height: 1, color: _theme.accent.withAlpha(50))),
         ],
       ),
     );
@@ -482,38 +515,39 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         Container(width: 1, color: _theme.accentDim),
         _buildTab('SIDE', 1),
         Container(width: 1, color: _theme.accentDim),
-        _buildTab('GENERATOR', 2),
+        _buildTab('GEN', 2),
       ],
     );
   }
 
   Widget _buildTab(String label, int index) {
     final isActive = _sectionIndex == index;
-    final tabSprite = isActive ? AssetLibrary.instance.getIcon('ui_tab_active') : null;
+    // No ui_tab_active sprite here on purpose: its glowing accent stripe runs
+    // straight through the label and reads as strikethrough.
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() {
           _sectionIndex = index;
           _selectedWeaponIndex = 0;
         }),
-        child: spriteBox(
-          sprite: tabSprite,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              color: tabSprite != null
-                  ? Colors.transparent
-                  : (isActive ? _theme.accent.withAlpha(36) : Colors.transparent),
-              // The active marker is a thick accent underline — visible on any
-              // skin. Inactive labels use near-white, never accentDim: the dim
-              // shades (e.g. 0xFF004411) vanish against the dark backgrounds.
-              border: Border(
-                bottom: BorderSide(
-                  color: isActive ? _theme.accent : Colors.transparent,
-                  width: 3,
-                ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+          decoration: BoxDecoration(
+            color: isActive ? _theme.accent.withAlpha(36) : Colors.transparent,
+            // The active marker is a thick accent underline — visible on any
+            // skin. Inactive labels use near-white, never accentDim: the dim
+            // shades (e.g. 0xFF004411) vanish against the dark backgrounds.
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? _theme.accent : Colors.transparent,
+                width: 3,
               ),
             ),
+          ),
+          // FittedBox: Press Start 2P is the widest face in the game — labels
+          // must shrink, never wrap.
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
             child: Text(
               label,
               textAlign: TextAlign.center,
@@ -578,9 +612,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           child: Text(
             slotDevice != null
                 ? '${slotDevice.name} Lv.${slotDevice.level}'
-                : '— empty —',
+                : 'NO WEAPON INSTALLED',
             style: _theme.styled(TextStyle(
-              color: slotDevice != null ? _theme.success : _theme.accentDim,
+              color: slotDevice != null
+                  ? _theme.success
+                  : Colors.white.withAlpha(120),
               fontSize: 11,
             )),
             overflow: TextOverflow.ellipsis,
@@ -598,32 +634,34 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   Widget _buildSideSubTab(WeaponSlot slot, String label) {
     final isActive = _targetSideSlot == slot;
-    final tabSprite = isActive ? AssetLibrary.instance.getIcon('ui_tab_active') : null;
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() {
           _targetSideSlot = slot;
           _selectedWeaponIndex = 0;
         }),
-        child: spriteBox(
-          sprite: tabSprite,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 7),
-            color: tabSprite != null
-                ? Colors.transparent
-                : (isActive ? _theme.surfaceLight : Colors.transparent),
+        child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color:
+                  isActive ? _theme.accent.withAlpha(36) : Colors.transparent,
+              border: Border(
+                bottom: BorderSide(
+                  color: isActive ? _theme.accent : Colors.transparent,
+                  width: 3,
+                ),
+              ),
+            ),
             child: Text(
               label,
               textAlign: TextAlign.center,
               style: _theme.styled(TextStyle(
-                color: isActive ? _theme.accent : _theme.accentDim,
-                fontSize: _fs(10),
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isActive ? _theme.accent : Colors.white.withAlpha(165),
+                fontSize: _fs(11),
+                fontWeight: FontWeight.bold,
                 letterSpacing: 1,
               )),
-            ),
-          ),
-        ),
+            )),
       ),
     );
   }
@@ -918,9 +956,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
               if (game.coopRole == CoopRole.host && game.hostIp != null) ...[
                 const SizedBox(width: 10),
-                Text(
-                  'IP: ${game.hostIp}',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 10),
+                Flexible(
+                  child: Text(
+                    'IP: ${game.hostIp}',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.white.withAlpha(110), fontSize: 10),
+                  ),
                 ),
               ],
             ],
@@ -1128,28 +1170,26 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final name = device != null ? '${device.name} Lv.${device.level}' : '---';
     final color = device != null ? _theme.success : _theme.accentDim;
 
-    final slotIconKey = slot == WeaponSlot.generator ? 'icon_gen' : 'icon_bomb';
-    final slotIcon = _statIcon(slotIconKey, size: 12);
-
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
           SizedBox(
-            width: 42,
-            child: Row(
-              children: [
-                if (slotIcon != null) ...[slotIcon, const SizedBox(width: 3)],
-                Expanded(
-                  child: Text(
-                    '$label:',
-                    style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: _fs(10))),
-                    overflow: TextOverflow.clip,
-                  ),
-                ),
-              ],
+            width: 78,
+            // FittedBox, not wrap: Press Start 2P rendered 'Front:' as a
+            // one-character-per-line ladder in a 42px column.
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '$label:',
+                maxLines: 1,
+                style: _theme.styled(TextStyle(
+                    color: Colors.white.withAlpha(150), fontSize: _fs(10))),
+              ),
             ),
           ),
+          const SizedBox(width: 6),
           Expanded(
             child: Text(name, style: _theme.styled(TextStyle(color: color, fontSize: _fs(10)))),
           ),
@@ -1242,37 +1282,6 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
               ],
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Collapsible TOP SCORES section shown below the weapon grid (VBA Top-10 panel).
-  /// Opens the native leaderboard (Game Center / Play Games). Shown only where
-  /// one is available — Windows/Linux and not-signed-in players get nothing
-  /// here (the on-device top-score table was removed).
-  Widget _buildScoresPanel() {
-    if (!LeaderboardService.instance.available) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(height: 1, color: _theme.accentDim.withAlpha(60)),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => LeaderboardService.instance.showLeaderboard(),
-          child: Row(
-            children: [
-              Text(
-                '🏆 LEADERBOARD',
-                style: _theme.styled(TextStyle(
-                  color: _theme.accent,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                )),
-              ),
-            ],
           ),
         ),
       ],
