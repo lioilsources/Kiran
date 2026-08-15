@@ -57,8 +57,29 @@ void main() {
       expect(Sector.migrateLegacyIndex(3), 9);
       expect(Sector.migrateLegacyIndex(5), 15);
       // Old procedural indices keep their level (identical seed).
+      expect(Sector.migrateLegacyIndex(6), 18);
+      expect(Sector.migrateLegacyIndex(9), 21);
       expect(Sector.levelForIndex(Sector.migrateLegacyIndex(6)), 7);
       expect(Sector.levelForIndex(Sector.migrateLegacyIndex(9)), 10);
+    });
+  });
+
+  group('achievement level mapping', () {
+    // _onSectorComplete reports Sector.levelForIndex(completedIndex + 1) as
+    // the reached level. Guards "Reach sector N" against firing three times
+    // faster now that levels are split into three parts.
+    test('only the last part of a level claims the next level', () {
+      int reached(int completedIndex) =>
+          Sector.levelForIndex(completedIndex + 1);
+      expect(reached(0), 1); // System Perimeter I → still level 1
+      expect(reached(1), 1);
+      expect(reached(2), 2); // level 1 finished → reached level 2
+      expect(reached(3), 2); // Inner Zone I must NOT claim level 3
+      expect(reached(4), 2);
+      expect(reached(5), 3);
+      expect(reached(16), 6);
+      expect(reached(17), 7); // last authored part → first procedural level
+      expect(reached(18), 8);
     });
   });
 
