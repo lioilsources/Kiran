@@ -19,6 +19,12 @@ class UiTheme {
   final double cornerRadius;
   final TextStyle Function(TextStyle)? applyFont;
 
+  /// Rendered-size compensation for the skin's font. Nominal font sizes are
+  /// tuned for a "normal" face; VT323 is condensed and reads a third smaller
+  /// at the same size, while Press Start 2P is enormous and wide. Scaling here
+  /// fixes every styled() call site at once instead of chasing them one by one.
+  final double fontScale;
+
   const UiTheme({
     required this.accent,
     required this.accentDim,
@@ -32,10 +38,17 @@ class UiTheme {
     required this.upgrade,
     required this.cornerRadius,
     this.applyFont,
+    this.fontScale = 1.0,
   });
 
-  /// Returns a TextStyle optionally wrapped in the skin's Google Font.
-  TextStyle styled(TextStyle base) => applyFont?.call(base) ?? base;
+  /// Returns a TextStyle optionally wrapped in the skin's Google Font, with
+  /// the size compensated for how large that font actually renders.
+  TextStyle styled(TextStyle base) {
+    final scaled = base.fontSize == null
+        ? base
+        : base.copyWith(fontSize: base.fontSize! * fontScale);
+    return applyFont?.call(scaled) ?? scaled;
+  }
 
   static UiTheme forSkin(String skinId) =>
       _themes[skinId] ?? _themes['default']!;
@@ -52,6 +65,7 @@ class UiTheme {
       upgrade:  const Color(0xFF44FF88),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.pressStart2p(textStyle: s),
+      fontScale: 0.8,
     ),
     'asteroids': UiTheme(
       accent:       const Color(0xFF44FF44),
@@ -76,6 +90,7 @@ class UiTheme {
       upgrade:  const Color(0xFFFFEE44),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.vt323(textStyle: s),
+      fontScale: 1.35,
     ),
     'rtype': UiTheme(
       accent:       const Color(0xFF44FFCC),
@@ -112,6 +127,7 @@ class UiTheme {
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.vt323(textStyle: s),
+      fontScale: 1.35,
     ),
     'ikaruga': UiTheme(
       accent:       const Color(0xFF8888FF),
@@ -196,6 +212,7 @@ class UiTheme {
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.pressStart2p(textStyle: s),
+      fontScale: 0.8,
     ),
     'default': UiTheme(
       accent:       const Color(0xFF00FFEE),
