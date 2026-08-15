@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game/tyrian_game.dart';
+import 'enemy_counter.dart';
+import 'format.dart';
 import '../entities/vessel.dart';
 import '../rendering/health_bar.dart';
 import '../services/asset_library.dart';
@@ -106,7 +108,17 @@ class OsdPanel extends StatelessWidget {
                   ),
                   const Spacer(),
                   if (game.state != GameState.paused)
-                    _buildCreditsWidget(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildCreditsWidget(),
+                        const SizedBox(height: 2),
+                        // Enemy tally lives under the credits so it can never
+                        // hide behind the HUD — it *is* the HUD.
+                        EnemyCounter(game: game),
+                      ],
+                    ),
                 ],
               ),
 
@@ -251,8 +263,8 @@ class OsdPanel extends StatelessWidget {
   Widget _buildCreditsWidget() {
     return Text(
       game.isCoop
-          ? 'P1: ${game.vessel.credit}cr\nP2: ${game.vessel2!.credit}cr'
-          : 'Credits: ${game.vessel.credit}',
+          ? 'P1: ${fmtNum(game.vessel.credit)}cr\nP2: ${fmtNum(game.vessel2!.credit)}cr'
+          : 'Credits: ${fmtNum(game.vessel.credit)}',
       textAlign: TextAlign.right,
       style: const TextStyle(
         color: Colors.greenAccent,

@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../ui/format.dart';
 import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import 'dev_type.dart';
@@ -244,7 +245,7 @@ class Device {
         parentVessel!.credit += bonus;
         (parentVessel! as HasGameReference<TyrianGame>)
             .game
-            .showMessage('Max. level! Sold for \$$bonus');
+            .showMessage('Max. level! Sold for \$${fmtNum(bonus)}');
       }
       return;
     }
