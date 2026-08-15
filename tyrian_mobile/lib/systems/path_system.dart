@@ -56,6 +56,16 @@ class PathSystem {
     return PathNode(a.x + (b.x - a.x) * _frac, a.y + (b.y - a.y) * _frac);
   }
 
+  /// Stop dead: the path completes where it stands and never resumes.
+  /// Used by freezeFleet so a formation freezes strung out along its line
+  /// instead of collapsing onto the shared final node.
+  void halt() {
+    currentIndex = nodes.length;
+    _frac = 0.0;
+    cycled = false;
+    onExit = PathAction.stay;
+  }
+
   /// Advance to next node. Returns true if still has nodes.
   bool advance() => advanceBy(1.0);
 

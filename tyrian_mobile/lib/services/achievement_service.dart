@@ -211,9 +211,10 @@ class AchievementService {
     unawaited(_flush());
   }
 
-  void onSectorCompleted(int completedSector, {required bool tookHullDamage}) {
-    // Finishing sector N means the player has reached sector N+1.
-    _raise('max_sector', completedSector + 1);
+  /// [reachedLevel] is the LEVEL of the sector the player advanced to (parts
+  /// of a level share it), not a raw sector index — see _onSectorComplete.
+  void onSectorCompleted(int reachedLevel, {required bool tookHullDamage}) {
+    _raise('max_sector', reachedLevel);
     if (!tookHullDamage) _bump('untouchable_sectors');
     unawaited(_flush());
   }

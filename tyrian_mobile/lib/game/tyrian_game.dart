@@ -566,7 +566,11 @@ class TyrianGame extends FlameGame
 
   void _onSectorComplete() {
     AchievementService.instance.onSectorCompleted(
-      currentSectorIndex + 1,
+      // Level of the sector the player advances to — with three parts per
+      // level, finishing Inner Zone II must not claim "reached sector 3".
+      // Under the old one-sector-per-level table this equals the old
+      // completedSector + 1, so pre-v2.4 progress semantics are unchanged.
+      Sector.levelForIndex(currentSectorIndex + 1),
       tookHullDamage: sectorHullDamage,
     );
     SoundService.instance.play(SfxEvent.sectorComplete);
@@ -631,7 +635,12 @@ class TyrianGame extends FlameGame
     final state = await SaveService.loadGameState();
     if (state == null) return false;
     vessel.loadFromSave(state);
-    currentSectorIndex = (state['level'] as num?)?.toInt() ?? 0;
+    final rawIndex = (state['level'] as num?)?.toInt() ?? 0;
+    final version = (state['saveVersion'] as num?)?.toInt() ?? 1;
+    // v1 saves predate the 18-part table: 'level' held one-sector-per-level
+    // indices, so an old run resumes at the first part of its level.
+    currentSectorIndex =
+        version >= SaveService.saveVersion ? rawIndex : Sector.migrateLegacyIndex(rawIndex);
     // onLoad's loadLayers() ran before the save was read, so a run resumed deep
     // in the game would otherwise come back with zone 0's art. Awaiting is free
     // here — loadProgress is already awaited during startup.

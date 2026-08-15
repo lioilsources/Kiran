@@ -8,6 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SaveService {
   static const _keyGameState = 'game_state';
 
+  /// Save format version. v1 saves (no marker) predate the 18-part sector
+  /// table — their 'level' field holds one-sector-per-level indices and is
+  /// migrated on load via [Sector.migrateLegacyIndex].
+  static const int saveVersion = 2;
+
   /// Save game state (vessel stats, credit, level)
   static Future<void> saveGameState({
     required String pilotName,
@@ -24,6 +29,7 @@ class SaveService {
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final state = {
+      'saveVersion': saveVersion,
       'pilotName': pilotName,
       'credit': credit,
       'score': score,

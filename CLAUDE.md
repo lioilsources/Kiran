@@ -71,6 +71,6 @@ dart run tool/pack_atlas.dart           # pack sprites → atlas.png + atlas.jso
 ## Constraints
 
 - **No web target** — `web/` folder does not exist; do not add it.
-- **VB6 parity** — all gameplay balance changes require a reference to the original VB6 values.
+- **VB6 parity — stats only (since v2.4.0)** — HP, damage, prices and per-level economy (±20%) still track the original VB6 values. Sector *composition* does not: waves are hand-authored in `lib/systems/sector_parts.dart`, three ~60s parts per level, with design rules enforced by `test/sector_parts_test.dart`.
 - **Audio**: Use `just_audio` only — `flame_audio` was removed for cross-platform `.ogg` support.
 - **Sprite scale**: `spriteScale` in `game_config.dart` is the single source of truth for all entity sizing. Do not hardcode pixel sizes in entities.
