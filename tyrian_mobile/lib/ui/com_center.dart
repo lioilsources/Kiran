@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
 import '../systems/sector.dart';
+import 'format.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
@@ -706,14 +707,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       const Spacer(),
                       if (slotDevice!.level < Device.maxLevel)
                         Text(
-                          '${slotDevice.price.toInt()}cr',
+                          '${fmtNum(slotDevice.price)}cr',
                           style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
                         ),
                     ],
                   )
                 else
                   Text(
-                    '${weapon.price} cr',
+                    '${fmtNum(weapon.price)} cr',
                     style: _theme.styled(TextStyle(
                       color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
                       fontSize: 12,
@@ -856,7 +857,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 clipBehavior: Clip.none,
                 children: [
                   Text(
-                    'Credits: ${vessel.credit}',
+                    'Credits: ${fmtNum(vessel.credit)}',
                     style: _theme.styled(TextStyle(
                       color: _theme.success,
                       fontSize: 16,
@@ -872,8 +873,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                         duration: const Duration(milliseconds: 600),
                         child: Text(
                           _creditDelta >= 0
-                              ? '+$_creditDelta cr'
-                              : '$_creditDelta cr',
+                              ? '+${fmtNum(_creditDelta)} cr'
+                              : '${fmtNum(_creditDelta)} cr',
                           style: TextStyle(
                             color: _creditDelta >= 0 ? _theme.success : _theme.danger,
                             fontSize: 11,
@@ -1326,14 +1327,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       const Spacer(),
                       if (device!.level < Device.maxLevel)
                         Text(
-                          '${device.price}cr',
+                          '${fmtNum(device.price)}cr',
                           style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
                         ),
                     ],
                   )
                 else
                   Text(
-                    '${weapon.price} cr',
+                    '${fmtNum(weapon.price)} cr',
                     style: _theme.styled(TextStyle(
                       color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
                       fontSize: 12,
@@ -1514,7 +1515,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     const Spacer(),
                     if (device != null && device.level < Device.maxLevel)
                       Text(
-                        '${device.price.toInt()}cr',
+                        '${fmtNum(device.price)}cr',
                         style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
                       ),
                   ],
