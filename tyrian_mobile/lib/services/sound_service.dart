@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'music_service.dart';
+
 enum SfxEvent {
   fireBullet,
   fireBeam,
@@ -172,6 +174,13 @@ class SoundService {
     final last = _lastPlayMs[event];
     if (last != null && now - last < _minRetrigger.inMilliseconds) return;
     _lastPlayMs[event] = now;
+
+    // Explosions duck the music bed so the crack lands on top of it instead
+    // of inside it — the files are already normalised to the ceiling, so this
+    // is the only lever that makes them read louder.
+    if (event == SfxEvent.explosionLarge || event == SfxEvent.explosionSmall) {
+      MusicService.instance.duck();
+    }
 
     final pool = _pools[event];
     if (pool == null || pool.isEmpty) return;
