@@ -499,18 +499,29 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         child: spriteBox(
           sprite: tabSprite,
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            color: tabSprite != null
-                ? Colors.transparent
-                : (isActive ? _theme.surfaceLight : Colors.transparent),
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              color: tabSprite != null
+                  ? Colors.transparent
+                  : (isActive ? _theme.accent.withAlpha(36) : Colors.transparent),
+              // The active marker is a thick accent underline — visible on any
+              // skin. Inactive labels use near-white, never accentDim: the dim
+              // shades (e.g. 0xFF004411) vanish against the dark backgrounds.
+              border: Border(
+                bottom: BorderSide(
+                  color: isActive ? _theme.accent : Colors.transparent,
+                  width: 3,
+                ),
+              ),
+            ),
             child: Text(
               label,
               textAlign: TextAlign.center,
               style: _theme.styled(TextStyle(
-                color: isActive ? _theme.accent : _theme.accentDim,
-                fontSize: _fs(11),
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                letterSpacing: 1,
+                color: isActive ? _theme.accent : Colors.white.withAlpha(165),
+                fontSize: _fs(12),
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
               )),
             ),
           ),
@@ -709,7 +720,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       if (slotDevice!.level < Device.maxLevel)
                         Text(
                           '${fmtNum(slotDevice.price)}cr',
-                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
+                          style: _theme.styled(TextStyle(
+                              color: _theme.upgrade,
+                              fontSize: _fs(13),
+                              fontWeight: FontWeight.bold)),
                         ),
                     ],
                   )
@@ -717,8 +731,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   Text(
                     '${fmtNum(weapon.price)} cr',
                     style: _theme.styled(TextStyle(
-                      color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
-                      fontSize: 12,
+                      color: canAfford
+                          ? _theme.upgrade
+                          : _theme.danger.withAlpha(150),
+                      fontSize: _fs(14),
                       fontWeight: FontWeight.bold,
                     )),
                     overflow: TextOverflow.ellipsis,
@@ -753,17 +769,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: GestureDetector(
               onTap: atMax ? null : () => _upgradeSlot(slot),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 3),
+                // 44pt-class touch target (iPhone 12 mini is the floor).
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(40),
-                  borderRadius: BorderRadius.circular(3),
+                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(50),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                      color: atMax
+                          ? Colors.white12
+                          : _theme.upgrade.withAlpha(130)),
                 ),
                 child: Text(
                   atMax ? 'MAX' : 'UPGRADE',
                   textAlign: TextAlign.center,
                   style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
-                    fontSize: 11,
+                    fontSize: _fs(13),
                     fontWeight: FontWeight.bold,
                   )),
                 ),
@@ -774,14 +795,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           GestureDetector(
             onTap: () => _sellSlot(slot),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               decoration: BoxDecoration(
-                color: _theme.danger.withAlpha(40),
-                borderRadius: BorderRadius.circular(3),
+                color: _theme.danger.withAlpha(50),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: _theme.danger.withAlpha(130)),
               ),
               child: Text(
                 'SELL',
-                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 11, fontWeight: FontWeight.bold)),
+                style: _theme.styled(TextStyle(
+                    color: _theme.danger,
+                    fontSize: _fs(13),
+                    fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -792,17 +817,20 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         onTap: canAfford ? () => _buyWeaponToSlot(weapon, slot) : null,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 3),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: canAfford ? _theme.success.withAlpha(40) : Colors.white10,
-            borderRadius: BorderRadius.circular(3),
+            color: canAfford ? _theme.success.withAlpha(50) : Colors.white10,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+                color:
+                    canAfford ? _theme.success.withAlpha(130) : Colors.white12),
           ),
           child: Text(
             canAfford ? 'BUY' : 'NO CREDITS',
             textAlign: TextAlign.center,
             style: _theme.styled(TextStyle(
-              color: canAfford ? _theme.success : _theme.accentDim,
-              fontSize: 11,
+              color: canAfford ? _theme.success : Colors.white.withAlpha(140),
+              fontSize: _fs(13),
               fontWeight: FontWeight.bold,
             )),
           ),
@@ -1131,7 +1159,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   ? null
                   : () => _upgradeSlot(slot),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 margin: const EdgeInsets.only(right: 4),
                 decoration: BoxDecoration(
                   color: _theme.upgrade.withAlpha(40),
@@ -1139,21 +1167,23 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
                 child: Text(
                   device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(8))),
+                  style: _theme.styled(
+                      TextStyle(color: _theme.upgrade, fontSize: _fs(11))),
                 ),
               ),
             ),
             GestureDetector(
               onTap: () => _sellSlot(slot),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
                   color: _theme.danger.withAlpha(40),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
                   'SELL',
-                  style: _theme.styled(TextStyle(color: _theme.danger, fontSize: _fs(8))),
+                  style: _theme.styled(
+                      TextStyle(color: _theme.danger, fontSize: _fs(11))),
                 ),
               ),
             ),
@@ -1164,14 +1194,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   ? null
                   : () => _upgradeSlot(slot),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
                   color: _theme.upgrade.withAlpha(40),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
                   device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(8))),
+                  style: _theme.styled(
+                      TextStyle(color: _theme.upgrade, fontSize: _fs(11))),
                 ),
               ),
             ),
@@ -1331,7 +1362,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       if (device!.level < Device.maxLevel)
                         Text(
                           '${fmtNum(device.price)}cr',
-                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
+                          style: _theme.styled(TextStyle(
+                              color: _theme.upgrade,
+                              fontSize: _fs(13),
+                              fontWeight: FontWeight.bold)),
                         ),
                     ],
                   )
@@ -1339,8 +1373,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   Text(
                     '${fmtNum(weapon.price)} cr',
                     style: _theme.styled(TextStyle(
-                      color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
-                      fontSize: 12,
+                      color: canAfford
+                          ? _theme.upgrade
+                          : _theme.danger.withAlpha(150),
+                      fontSize: _fs(14),
                       fontWeight: FontWeight.bold,
                     )),
                     overflow: TextOverflow.ellipsis,
@@ -1375,17 +1411,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: GestureDetector(
               onTap: atMax ? null : () => _upgradeWeapon(weapon),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 3),
+                // 44pt-class touch target (iPhone 12 mini is the floor).
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(40),
-                  borderRadius: BorderRadius.circular(3),
+                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(50),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                      color: atMax
+                          ? Colors.white12
+                          : _theme.upgrade.withAlpha(130)),
                 ),
                 child: Text(
                   atMax ? 'MAX' : 'UPGRADE',
                   textAlign: TextAlign.center,
                   style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
-                    fontSize: 11,
+                    fontSize: _fs(13),
                     fontWeight: FontWeight.bold,
                   )),
                 ),
@@ -1396,14 +1437,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           GestureDetector(
             onTap: () => _sellWeapon(weapon),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               decoration: BoxDecoration(
-                color: _theme.danger.withAlpha(40),
-                borderRadius: BorderRadius.circular(3),
+                color: _theme.danger.withAlpha(50),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: _theme.danger.withAlpha(130)),
               ),
               child: Text(
                 'SELL',
-                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 11, fontWeight: FontWeight.bold)),
+                style: _theme.styled(TextStyle(
+                    color: _theme.danger,
+                    fontSize: _fs(13),
+                    fontWeight: FontWeight.bold)),
               ),
             ),
           ),
@@ -1414,17 +1459,20 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         onTap: canAfford ? () => _buyWeapon(weapon) : null,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 3),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: canAfford ? _theme.success.withAlpha(40) : Colors.white10,
-            borderRadius: BorderRadius.circular(3),
+            color: canAfford ? _theme.success.withAlpha(50) : Colors.white10,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+                color:
+                    canAfford ? _theme.success.withAlpha(130) : Colors.white12),
           ),
           child: Text(
             canAfford ? 'BUY' : 'NO CREDITS',
             textAlign: TextAlign.center,
             style: _theme.styled(TextStyle(
-              color: canAfford ? _theme.success : _theme.accentDim,
-              fontSize: 11,
+              color: canAfford ? _theme.success : Colors.white.withAlpha(140),
+              fontSize: _fs(13),
               fontWeight: FontWeight.bold,
             )),
           ),
@@ -1519,7 +1567,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     if (device != null && device.level < Device.maxLevel)
                       Text(
                         '${fmtNum(device.price)}cr',
-                        style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
+                        style: _theme.styled(TextStyle(
+                            color: _theme.upgrade,
+                            fontSize: _fs(12),
+                            fontWeight: FontWeight.bold)),
                       ),
                   ],
                 ),

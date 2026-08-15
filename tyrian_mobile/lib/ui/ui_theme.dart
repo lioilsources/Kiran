@@ -99,7 +99,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'tyrian_dos': UiTheme(
       accent:       const Color(0xFFFFCC44),
@@ -123,7 +123,7 @@ class UiTheme {
       success:  const Color(0xFF88FFCC),
       upgrade:  const Color(0xFF8888FF),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.rajdhani(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'geometry_wars': UiTheme(
       accent:       const Color(0xFF00FFFF),
@@ -135,7 +135,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFF00FFFF),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.orbitron(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'gradius_v': UiTheme(
       accent:       const Color(0xFF44AAFF),
@@ -147,7 +147,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFF44AAFF),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.rajdhani(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'luftrausers': UiTheme(
       accent:       const Color(0xFFFF9944),
@@ -159,7 +159,7 @@ class UiTheme {
       success:  const Color(0xFF88FF44),
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'nuclear_throne': UiTheme(
       accent:       const Color(0xFFFF8800),
@@ -171,7 +171,7 @@ class UiTheme {
       success:  const Color(0xFF88FF44),
       upgrade:  const Color(0xFFFF8800),
       cornerRadius: 0.0,
-      applyFont: (s) => GoogleFonts.oswald(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'nex_machina': UiTheme(
       accent:       const Color(0xFFFF4444),
@@ -183,7 +183,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFFFF8844),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'river_raid': UiTheme(
       accent:       const Color(0xFFFF4422),
@@ -207,7 +207,7 @@ class UiTheme {
       success:  Colors.greenAccent,
       upgrade:  Colors.yellowAccent,
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.orbitron(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
   };
 }
