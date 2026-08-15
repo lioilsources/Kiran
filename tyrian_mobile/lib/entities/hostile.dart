@@ -242,15 +242,16 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
       case PathAction.noop:
         break;
       case PathAction.freezeFleet:
+        // Freeze every live sibling WHERE IT STANDS. The VB6 port teleported
+        // them all onto the shared final node, which collapsed a "formation"
+        // into a stack of overlapping sprites on one pixel; halting in place
+        // yields the strung-out row the waves are designed around. Authoring
+        // contract: the fleet must be fully on-field by first arrival, or the
+        // off-field net reaps stragglers and voids the fleet bonus.
         if (parentFleet != null) {
           for (final ho in parentFleet!.hostiles) {
             if (ho.isDead || ho.trace == null) continue;
-            ho.trace!.finish();
-            final last = ho.trace!.current;
-            if (last != null) {
-              ho.position.setValues(last.x, last.y);
-            }
-            ho.trace!.onExit = PathAction.stay;
+            ho.trace!.halt();
           }
         }
       case PathAction.replacePath:

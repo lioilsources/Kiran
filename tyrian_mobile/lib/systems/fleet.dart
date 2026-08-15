@@ -75,7 +75,12 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   double get triggerInterval => triggerSteps * config.frameDelay / 1000.0;
 
+  /// Shape of the main path — carried for tests and tooling that assert wave
+  /// variety without re-deriving geometry from nodes.
+  final PathType pathType;
+
   Fleet({
+    this.pathType = PathType.linear,
     required this.caption,
     required this.id,
     this.showDamage = true,
@@ -337,6 +342,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
         amplitude: amplitude, cycles: cycles, amplMultiplier: amplMultiplier);
 
     return Fleet(
+      pathType: pathType,
       caption: caption,
       id: id,
       showDamage: showDamage,

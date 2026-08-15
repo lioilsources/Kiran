@@ -148,14 +148,28 @@ class Sector extends Component with HasGameReference<TyrianGame> {
   }
 
   /// Playable sectors, in order. Index into this list *is* the sector index.
-  /// Builders live in sector_parts.dart.
+  /// Three ~60-second parts per level; builders live in sector_parts.dart.
+  /// Per-level bonus shares sum to the VB6 sectorBonus (5000/7500/10000/
+  /// 15000/20000/25000) so the credit curve survives the split.
   static const List<_Part> _parts = [
-    _Part(1, 'System Perimeter', 5000, _buildSector0),
-    _Part(2, 'Inner Zone', 7500, _buildSector1),
-    _Part(3, 'Planet Perimeter', 10000, _buildSector2),
-    _Part(4, 'Planet Patrol', 15000, _buildSector3),
-    _Part(5, 'Planet Orbit', 20000, _buildSector4),
-    _Part(6, 'Industry Zone', 25000, _buildSector5),
+    _Part(1, 'System Perimeter I', 1500, _l1p1),
+    _Part(1, 'System Perimeter II', 1500, _l1p2),
+    _Part(1, 'System Perimeter III', 2000, _l1p3),
+    _Part(2, 'Inner Zone I', 2000, _l2p1),
+    _Part(2, 'Inner Zone II', 2500, _l2p2),
+    _Part(2, 'Inner Zone III', 3000, _l2p3),
+    _Part(3, 'Planet Perimeter I', 3000, _l3p1),
+    _Part(3, 'Planet Perimeter II', 3000, _l3p2),
+    _Part(3, 'Planet Perimeter III', 4000, _l3p3),
+    _Part(4, 'Planet Patrol I', 4000, _l4p1),
+    _Part(4, 'Planet Patrol II', 5000, _l4p2),
+    _Part(4, 'Planet Patrol III', 6000, _l4p3),
+    _Part(5, 'Planet Orbit I', 6000, _l5p1),
+    _Part(5, 'Planet Orbit II', 6000, _l5p2),
+    _Part(5, 'Planet Orbit III', 8000, _l5p3),
+    _Part(6, 'Industry Zone I', 7000, _l6p1),
+    _Part(6, 'Industry Zone II', 8000, _l6p2),
+    _Part(6, 'Industry Zone III', 10000, _l6p3),
   ];
 
   /// VB6 difficulty level for a sector index. Past the authored parts, each

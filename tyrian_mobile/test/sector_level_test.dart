@@ -2,25 +2,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tyrian_mobile/rendering/bg_zones.dart';
 import 'package:tyrian_mobile/systems/sector.dart';
 
-/// Sector index and VB6 difficulty level used to be the same number. They are
-/// being separated so a long level can be split into several shorter sectors.
-/// While the part table is still one-window-per-level these must agree with the
-/// old `index + 1`, which is what makes the refactor provably behaviour-neutral.
+/// Index → level/zone mapping for the 18-part table (three ~60s parts per
+/// level, v2.4.0). The first procedural sector must still be level 7 with the
+/// same RNG seed, or every "Unknown Space" silently changes content.
 void main() {
   group('Sector.levelForIndex', () {
-    test('reproduces index + 1 across the hand-scripted range', () {
-      for (var i = 0; i < 6; i++) {
-        expect(Sector.levelForIndex(i), i + 1, reason: 'index $i');
+    test('three parts share each hand-authored level', () {
+      for (var i = 0; i < 18; i++) {
+        expect(Sector.levelForIndex(i), 1 + i ~/ 3, reason: 'index $i');
       }
     });
 
-    test('the first procedural sector is level 7, as it was', () {
-      expect(Sector.levelForIndex(6), 7);
+    test('the first procedural sector is level 7, as it always was', () {
+      expect(Sector.levelForIndex(18), 7);
     });
 
     test('procedural sectors keep climbing one level at a time', () {
-      for (var i = 6; i < 40; i++) {
-        expect(Sector.levelForIndex(i), i + 1, reason: 'index $i');
+      for (var i = 18; i < 50; i++) {
+        expect(Sector.levelForIndex(i), i - 11, reason: 'index $i');
       }
     });
 
@@ -34,25 +33,44 @@ void main() {
       }
     });
 
-    test('no hand-scripted sector can trigger the every-5th-level boss', () {
-      // _addBossWave fires on level % 5 == 0 && level >= 10. Splitting levels
-      // into parts must never let a scripted sector drift into that window.
-      for (var i = 0; i < 6; i++) {
+    test('no hand-authored part can trigger the every-5th-level boss', () {
+      for (var i = 0; i < 18; i++) {
         final lv = Sector.levelForIndex(i);
         expect(lv % 5 == 0 && lv >= 10, isFalse, reason: 'index $i → level $lv');
       }
     });
   });
 
+  group('Sector.firstIndexForLevel and migrateLegacyIndex', () {
+    test('first part of each level sits at 3*(level-1)', () {
+      for (var lv = 1; lv <= 6; lv++) {
+        expect(Sector.firstIndexForLevel(lv), 3 * (lv - 1));
+      }
+      expect(Sector.firstIndexForLevel(7), 18);
+      expect(Sector.firstIndexForLevel(10), 21);
+    });
+
+    test('a pre-v2.4 save resumes at the first part of its level', () {
+      // Old table: one sector per level, index == level - 1.
+      expect(Sector.migrateLegacyIndex(0), 0);
+      expect(Sector.migrateLegacyIndex(1), 3);
+      expect(Sector.migrateLegacyIndex(3), 9);
+      expect(Sector.migrateLegacyIndex(5), 15);
+      // Old procedural indices keep their level (identical seed).
+      expect(Sector.levelForIndex(Sector.migrateLegacyIndex(6)), 7);
+      expect(Sector.levelForIndex(Sector.migrateLegacyIndex(9)), 10);
+    });
+  });
+
   group('Sector.zoneForIndex', () {
-    test('matches the old index-keyed mapping over the authored zones', () {
-      for (var i = 0; i < BgZones.count; i++) {
-        expect(Sector.zoneForIndex(i), BgZones.forSector(i), reason: 'index $i');
+    test('all three parts of a level share its art zone', () {
+      for (var i = 0; i < 18; i++) {
+        expect(Sector.zoneForIndex(i), i ~/ 3, reason: 'index $i');
       }
     });
 
-    test('clamps to the last authored zone beyond it', () {
-      for (final i in [7, 8, 20, 200]) {
+    test('procedural sectors clamp to the last authored zone', () {
+      for (final i in [18, 19, 30, 200]) {
         expect(Sector.zoneForIndex(i), BgZones.count - 1);
       }
     });
@@ -66,7 +84,6 @@ void main() {
     });
 
     test('the escalation tint still starts only past the authored zones', () {
-      // Tied to level, not index — a split level must not tint early.
       for (var lv = 1; lv <= BgZones.count; lv++) {
         expect(BgZones.tintFor(lv), isNull, reason: 'level $lv');
       }
