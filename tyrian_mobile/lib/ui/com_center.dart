@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
 import '../systems/sector.dart';
+import 'credits_wave.dart';
 import 'format.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/dev_type.dart';
@@ -856,8 +857,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Text(
-                    'Credits: ${fmtNum(vessel.credit)}',
+                  CreditsWave(
+                    prefix: 'Credits: ',
+                    value: vessel.credit,
+                    textAlign: TextAlign.left,
                     style: _theme.styled(TextStyle(
                       color: _theme.success,
                       fontSize: 16,
