@@ -425,6 +425,9 @@ class SkinShopSection extends StatefulWidget {
 class _SkinShopSectionState extends State<SkinShopSection> {
   Map<String, ui.Image> _previews = {};
   bool _switching = false;
+  final Map<String, GlobalKey> _cardKeys = {
+    for (final s in kSkins) s.id: GlobalKey(),
+  };
 
   @override
   void initState() {
@@ -461,26 +464,27 @@ class _SkinShopSectionState extends State<SkinShopSection> {
       return;
     }
     if (id == AssetLibrary.instance.skinId) return;
-    // Drop the preview references before switching: loadSkin() clears Flame's
-    // image cache, which disposes these ui.Images, and painting a disposed
-    // image corrupts the cards. The full-screen selector never hits this —
-    // it unmounts right after switching; this section stays on screen.
-    setState(() {
-      _switching = true;
-      _previews = {};
-    });
+    // Previews live outside Flame's image cache (see loadPreviews), so they
+    // survive the loadSkin cache clear and the cards never flicker.
+    setState(() => _switching = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     await MusicService.instance.loadSkin(id);
-    final previews = await AssetLibrary.instance.loadPreviews();
     if (!mounted) return;
-    setState(() {
-      _previews = previews;
-      _switching = false;
-    });
+    setState(() => _switching = false);
     widget.onSkinChanged(id);
+    // The host re-themes on the callback above and the sections above this
+    // grid change height with the new skin's fonts, dragging the cards away
+    // from where the user just tapped. Re-anchor the switched card once the
+    // re-themed layout is done.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final ctx = _cardKeys[id]?.currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(ctx, alignment: 0.5);
+    });
   }
 
   @override
@@ -499,6 +503,7 @@ class _SkinShopSectionState extends State<SkinShopSection> {
           children: [
             for (final skin in kSkins)
               SkinCard(
+                key: _cardKeys[skin.id],
                 skin: skin,
                 preview: _previews[skin.id],
                 highlighted: skin.id == active,

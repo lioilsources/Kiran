@@ -88,19 +88,26 @@ class AssetLibrary {
     await loadAll();
   }
 
-  /// Load preview images for all skins (for the skin selector screen).
+  /// Skin previews, decoded once for the app's lifetime. Deliberately NOT in
+  /// Flame's image cache: [loadSkin] clears that cache and disposes everything
+  /// in it, and these images are painted by selector/shop grids that stay on
+  /// screen across a skin switch.
+  final Map<String, ui.Image> _previewCache = {};
+
+  /// Load preview images for all skins (skin selector / ComCenter shop).
   Future<Map<String, ui.Image>> loadPreviews() async {
-    Flame.images.prefix = 'assets/';
-    final previews = <String, ui.Image>{};
     for (final skin in kSkins) {
+      if (_previewCache.containsKey(skin.id)) continue;
       try {
-        final img = await Flame.images.load(skin.previewPath);
-        previews[skin.id] = img;
+        final data = await rootBundle.load('assets/${skin.previewPath}');
+        final codec =
+            await ui.instantiateImageCodec(data.buffer.asUint8List());
+        _previewCache[skin.id] = (await codec.getNextFrame()).image;
       } catch (e) {
         print('Preview load failed for ${skin.id}: $e');
       }
     }
-    return previews;
+    return Map.of(_previewCache);
   }
 
   Future<void> loadAll() async {
