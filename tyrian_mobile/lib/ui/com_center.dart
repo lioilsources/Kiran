@@ -15,6 +15,7 @@ import '../input/gamepad_input.dart';
 import '../services/asset_library.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
+import 'skin_selector.dart' show SkinShopSection;
 
 /// Ported from ComCenter.cls — the shop/equipment screen.
 /// Aligned with original VBA layout: ship stats + scores left, weapon cards right.
@@ -396,6 +397,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       _buildActiveSection(),
+                                      _sectionHeader('SKINS'),
+                                      SkinShopSection(
+                                        crossAxisCount: 4,
+                                        onSkinChanged: _onSkinChanged,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -436,6 +442,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                               children: [
                                 _buildActiveSection(),
                               ],
+                            ),
+                          ),
+                          _sectionHeader('SKINS'),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: SkinShopSection(
+                              crossAxisCount: 2,
+                              onSkinChanged: _onSkinChanged,
                             ),
                           ),
                         ],
@@ -507,6 +521,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   double _fs(double mobile) => platform.isDesktop ? mobile + 4 : mobile + 2;
+
+  /// A skin was switched (or bought) from the SKINS section below the shop.
+  /// The new skin's assets are already loaded; restyle this screen and the
+  /// game behind it now — the player gets back into the game only when they
+  /// tap Continue Mission, same as before.
+  void _onSkinChanged(String id) {
+    game.refreshSprites();
+    setState(() => _theme = UiTheme.forSkin(AssetLibrary.instance.skinId));
+  }
 
   Widget _buildSectionTabs() {
     return Row(

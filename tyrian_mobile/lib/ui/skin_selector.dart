@@ -262,29 +262,60 @@ class _SkinSelectorState extends State<SkinSelector> {
 
   Widget _buildSkinCard(int index) {
     final skin = kSkins[index];
-    final focused = index == _focusIndex;
-    final preview = _previews[skin.id];
-    final key = _cardKeys[index];
     final store = SkinStoreService.instance;
-    final unlocked = store.isUnlocked(skin.id);
-    final buying = store.pendingSkinId == skin.id;
-    final price = store.priceFor(skin.id);
-
-    return GestureDetector(
-      key: key,
+    return SkinCard(
+      key: _cardKeys[index],
+      skin: skin,
+      preview: _previews[skin.id],
+      highlighted: index == _focusIndex,
+      unlocked: store.isUnlocked(skin.id),
+      buying: store.pendingSkinId == skin.id,
+      price: store.priceFor(skin.id),
       onTap: () {
         setState(() {
           _focusIndex = index;
         });
         _selectAndPlay(skin.id);
       },
+    );
+  }
+}
+
+/// One skin card — preview, name, lock/price state. Shared between the
+/// full-screen [SkinSelector] and the embeddable [SkinShopSection].
+class SkinCard extends StatelessWidget {
+  final SkinInfo skin;
+  final ui.Image? preview;
+
+  /// Focused (selector) or currently active (shop section).
+  final bool highlighted;
+  final bool unlocked;
+  final bool buying;
+  final String? price;
+  final VoidCallback onTap;
+
+  const SkinCard({
+    super.key,
+    required this.skin,
+    required this.preview,
+    required this.highlighted,
+    required this.unlocked,
+    required this.buying,
+    required this.price,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: focused ? const Color(0xFF1a1a4e) : const Color(0xFF0d0d20),
+          color: highlighted ? const Color(0xFF1a1a4e) : const Color(0xFF0d0d20),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: focused ? Colors.cyanAccent : Colors.white24,
-            width: focused ? 2 : 1,
+            color: highlighted ? Colors.cyanAccent : Colors.white24,
+            width: highlighted ? 2 : 1,
           ),
         ),
         child: Column(
@@ -330,7 +361,9 @@ class _SkinSelectorState extends State<SkinSelector> {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: focused ? Colors.cyanAccent.withAlpha(80) : Colors.white10,
+                    color: highlighted
+                        ? Colors.cyanAccent.withAlpha(80)
+                        : Colors.white10,
                   ),
                 ),
               ),
@@ -340,9 +373,10 @@ class _SkinSelectorState extends State<SkinSelector> {
                     skin.name,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: focused ? Colors.cyanAccent : Colors.white70,
+                      color: highlighted ? Colors.cyanAccent : Colors.white70,
                       fontSize: 13,
-                      fontWeight: focused ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          highlighted ? FontWeight.bold : FontWeight.normal,
                       letterSpacing: 1,
                     ),
                   ),
@@ -365,6 +399,118 @@ class _SkinSelectorState extends State<SkinSelector> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Embeddable version of the selector's skin grid for hosting inside other
+/// scrollable screens — currently the bottom of the ComCenter page. Same
+/// cards and buy/unlock behaviour as [SkinSelector], but switching a skin
+/// only reloads assets and reports back via [onSkinChanged]; the caller
+/// decides when the player actually returns to the game.
+class SkinShopSection extends StatefulWidget {
+  final int crossAxisCount;
+  final ValueChanged<String> onSkinChanged;
+
+  const SkinShopSection({
+    super.key,
+    required this.crossAxisCount,
+    required this.onSkinChanged,
+  });
+
+  @override
+  State<SkinShopSection> createState() => _SkinShopSectionState();
+}
+
+class _SkinShopSectionState extends State<SkinShopSection> {
+  Map<String, ui.Image> _previews = {};
+  bool _switching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SkinStoreService.instance.addListener(_onStoreChanged);
+    AssetLibrary.instance.loadPreviews().then((p) {
+      if (mounted) setState(() => _previews = p);
+    });
+  }
+
+  @override
+  void dispose() {
+    SkinStoreService.instance.removeListener(_onStoreChanged);
+    super.dispose();
+  }
+
+  void _onStoreChanged() {
+    if (!mounted) return;
+    // A purchase started from this section just completed — switch straight
+    // into the freshly bought skin.
+    final purchased = SkinStoreService.instance.takeJustPurchased();
+    if (purchased != null) {
+      _select(purchased);
+      return;
+    }
+    setState(() {}); // prices arrived / pending state changed
+  }
+
+  Future<void> _select(String id) async {
+    if (_switching) return;
+    // Same gate as the selector: "select" becomes "buy" for skins not owned.
+    if (!SkinStoreService.instance.isUnlocked(id)) {
+      SkinStoreService.instance.buy(id);
+      return;
+    }
+    if (id == AssetLibrary.instance.skinId) return;
+    setState(() => _switching = true);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_skin', id);
+    await AssetLibrary.instance.loadSkin(id);
+    await SoundService.instance.loadSkin(id);
+    await MusicService.instance.loadSkin(id);
+    if (!mounted) return;
+    setState(() => _switching = false);
+    widget.onSkinChanged(id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final store = SkinStoreService.instance;
+    final active = AssetLibrary.instance.skinId;
+    return Column(
+      children: [
+        GridView.count(
+          crossAxisCount: widget.crossAxisCount,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: widget.crossAxisCount >= 4 ? 1.0 : 0.85,
+          children: [
+            for (final skin in kSkins)
+              SkinCard(
+                skin: skin,
+                preview: _previews[skin.id],
+                highlighted: skin.id == active,
+                unlocked: store.isUnlocked(skin.id),
+                buying: store.pendingSkinId == skin.id,
+                price: store.priceFor(skin.id),
+                onTap: () => _select(skin.id),
+              ),
+          ],
+        ),
+        if (store.supported)
+          TextButton(
+            onPressed: store.restore,
+            child: const Text(
+              'RESTORE PURCHASES',
+              style: TextStyle(
+                color: Colors.white38,
+                fontSize: 12,
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
