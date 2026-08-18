@@ -1,7 +1,11 @@
 # Changelog
 
+## [18/08/2026]
+- Skin shop embedded in ComCenter: the selector's skin grid (shared `SkinCard` + new `SkinShopSection`) now also sits at the bottom of the shop page — switching or buying a skin re-themes ComCenter and the paused game immediately, return to gameplay stays behind Continue Mission
+- IAP product IDs are bundle-prefixed (`com.ol1n.kiran.skin_<id>`) — App Store product IDs live in a single global namespace, bare `skin_*` IDs risk being taken; `SkinStore.storekit` updated to match
+
 ## [31/07/2026]
-- Per-skin in-app purchases: only Default (Kiran 2026), Galaga and Geometry Wars ship free; the remaining 11 skins are non-consumable IAPs (`skin_<id>`) bought directly in the skin selector — locked cards show a lock + localized price, tap/confirm starts the purchase, Restore Purchases button included
+- Per-skin in-app purchases: only Default (Kiran 2026), Galaga and Geometry Wars ship free; the remaining 11 skins are non-consumable IAPs (`com.ol1n.kiran.skin_<id>`) bought directly in the skin selector — locked cards show a lock + localized price, tap/confirm starts the purchase, Restore Purchases button included
 - Existing installs are grandfathered (all skins stay unlocked after update); desktop builds keep everything unlocked
 - Added `ios/SkinStore.storekit` for local StoreKit testing without App Store Connect
 
