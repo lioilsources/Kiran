@@ -1,6 +1,7 @@
 # Changelog
 
 ## [18/08/2026]
+- Fix: skin cards in the ComCenter SKINS section rendered as gray garbage after switching a skin — previews are now dropped and re-loaded across the switch (loadSkin disposes Flame's image cache under them)
 - Skin shop embedded in ComCenter: the selector's skin grid (shared `SkinCard` + new `SkinShopSection`) now also sits at the bottom of the shop page — switching or buying a skin re-themes ComCenter and the paused game immediately, return to gameplay stays behind Continue Mission
 - IAP product IDs are bundle-prefixed (`com.ol1n.kiran.skin_<id>`) — App Store product IDs live in a single global namespace, bare `skin_*` IDs risk being taken; `SkinStore.storekit` updated to match
 
