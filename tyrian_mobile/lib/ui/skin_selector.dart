@@ -461,14 +461,25 @@ class _SkinShopSectionState extends State<SkinShopSection> {
       return;
     }
     if (id == AssetLibrary.instance.skinId) return;
-    setState(() => _switching = true);
+    // Drop the preview references before switching: loadSkin() clears Flame's
+    // image cache, which disposes these ui.Images, and painting a disposed
+    // image corrupts the cards. The full-screen selector never hits this —
+    // it unmounts right after switching; this section stays on screen.
+    setState(() {
+      _switching = true;
+      _previews = {};
+    });
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     await MusicService.instance.loadSkin(id);
+    final previews = await AssetLibrary.instance.loadPreviews();
     if (!mounted) return;
-    setState(() => _switching = false);
+    setState(() {
+      _previews = previews;
+      _switching = false;
+    });
     widget.onSkinChanged(id);
   }
 
