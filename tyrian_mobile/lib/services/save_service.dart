@@ -25,6 +25,7 @@ class SaveService {
     required double genMax,
     required double genPower,
     required int level,
+    required int nextWeaponLevel,
     required List<Map<String, dynamic>> weapons,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,6 +41,11 @@ class SaveService {
       'genMax': genMax,
       'genPower': genPower,
       'level': level,
+      // Weapon tier used to be derived from score on load. Now that a death
+      // keeps the run going, an unlock has to be permanent even when the
+      // derivation would come out lower (the ComCenter cheat, a future score
+      // reset). Absent in v2 saves — load falls back to the score derivation.
+      'nextWeaponLevel': nextWeaponLevel,
       'weapons': weapons,
     };
     await prefs.setString(_keyGameState, jsonEncode(state));

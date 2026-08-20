@@ -196,6 +196,7 @@ class Vessel extends PositionComponent
         'shieldMax': shieldMax,
         'genMax': genMax,
         'genPower': genPower,
+        'nextWeaponLevel': nextWeaponLevel,
         'weapons': devices.map((d) => d.toJson()).toList(),
       };
 
@@ -211,13 +212,17 @@ class Vessel extends PositionComponent
     shield = (state['shield'] as num?)?.toDouble() ?? shieldMax;
     genMax = (state['genMax'] as num?)?.toDouble() ?? genMax;
     genPower = (state['genPower'] as num?)?.toDouble() ?? genPower;
-    // Weapon unlock tier is score-derived (VB6 WepLevScores) — recompute so it
-    // stays correct even though SaveService doesn't persist it directly.
+    // Weapon unlock tier: derive from score (VB6 WepLevScores), then take
+    // whichever is higher — the persisted tier or the derivation. An unlock is
+    // permanent, so a save written before the field existed still upgrades
+    // correctly, and a cheat-granted tier is never silently revoked.
     nextWeaponLevel = 0;
     while (nextWeaponLevel < wepLevScores.length &&
         score > wepLevScores[nextWeaponLevel]) {
       nextWeaponLevel++;
     }
+    final savedTier = (state['nextWeaponLevel'] as num?)?.toInt() ?? 0;
+    if (savedTier > nextWeaponLevel) nextWeaponLevel = savedTier;
 
     for (final d in devices) {
       d.clearProjectiles();

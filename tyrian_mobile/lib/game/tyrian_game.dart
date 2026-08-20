@@ -635,6 +635,7 @@ class TyrianGame extends FlameGame
       genMax: (m['genMax'] as num).toDouble(),
       genPower: (m['genPower'] as num).toDouble(),
       level: currentSectorIndex,
+      nextWeaponLevel: m['nextWeaponLevel'] as int,
       weapons: List<Map<String, dynamic>>.from(m['weapons'] as List),
     );
   }
@@ -657,6 +658,22 @@ class TyrianGame extends FlameGame
         .loadZoneBackgrounds(Sector.zoneForIndex(currentSectorIndex));
     parallaxBg.setLevel(Sector.levelForIndex(currentSectorIndex));
     return true;
+  }
+
+  /// Roguelike death: rewind to the first sector while keeping everything the
+  /// pilot earned — weapons, credits, cumulative score, upgraded stats and the
+  /// codename. Contrast [resetForNewGame], which wipes the vessel back to a
+  /// stock Bubble Gun and is only for starting over from nothing.
+  void restartRun() {
+    _clearActiveObjects();
+    currentSector?.removeFromParent();
+    currentSector = null;
+    currentSectorIndex = 0;
+    requestZoneBackgrounds(0);
+    parallaxBg.setLevel(1);
+    vessel.resetVessel();
+    vessel.resetPosition();
+    elapsed = 0;
   }
 
   /// Reset all game state for a fresh new game.
