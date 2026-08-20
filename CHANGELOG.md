@@ -1,6 +1,10 @@
 # Changelog
 
 ## [21/08/2026]
+- Enemy tally in the HUD is now a flat seven-segment LED readout with ghosted unlit segments — the rounded, drop-shadowed numeral was the one element breaking the HUD's segmented instrument look; the spawn pop animation is unchanged
+- The game canvas now survives a rendering error instead of going permanently black while the HUD keeps running (seen once on Android after a death redeploy) — the error is logged with a stack trace to the system log so a recurrence can be diagnosed
+
+## [21/08/2026]
 - Fix: finishing a sector advanced the game by ~120 sectors instead of 1 — level 2 was actually level 121, which made the game unplayable. Sector completion ran on every frame for the two seconds before the shop opened; it now fires once
 - Fix: the same loop paid the sector bonus ~120 times over (credits are wildly inflated in existing saves) and restarted the victory fanfare every 70ms, which is what made the audio sound broken
 - Fix: music re-sent an unchanged volume to all five soundtrack layers every frame — 300 platform calls a second for the whole run, audible as general audio stutter
