@@ -115,6 +115,15 @@ class TyrianGame extends FlameGame
   Sector? currentSector;
   int currentSectorIndex = 0;
 
+  /// Sector.complete is a one-way latch and the ComCenter only opens two
+  /// seconds later, so without this the whole end-of-sector block ran on every
+  /// frame of that window — ~120 times at 60fps, ~240 on a 120Hz display. That
+  /// paid the sector bonus and queued advanceToNextSector once per frame, so
+  /// finishing sector 1 landed the player at sector ~121 with ~120x the
+  /// credits, and restarted the victory fanfare every 70ms. Reset in
+  /// [loadSector], which is the only way a new sector begins.
+  bool _sectorCompleteFired = false;
+
   /// Any hull HP lost during the current sector — the "untouchable"
   /// achievement checks this on sector completion. Set by Vessel.
   bool sectorHullDamage = false;
@@ -370,6 +379,7 @@ class TyrianGame extends FlameGame
   }
 
   void loadSector(int index) {
+    _sectorCompleteFired = false;
     // Clean up previous sector
     _clearActiveObjects();
     currentSector?.removeFromParent();
@@ -512,8 +522,11 @@ class TyrianGame extends FlameGame
     // Immersive experiment: pan the zoomed-in camera to follow the vessel.
     _updateImmersiveCamera(dt);
 
-    // Check sector completion
-    if (currentSector != null && currentSector!.isComplete) {
+    // Check sector completion — once per sector, see _sectorCompleteFired.
+    if (currentSector != null &&
+        currentSector!.isComplete &&
+        !_sectorCompleteFired) {
+      _sectorCompleteFired = true;
       _onSectorComplete();
     }
 

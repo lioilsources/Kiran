@@ -188,11 +188,23 @@ class MusicService {
 
   // --- internals ------------------------------------------------------------
 
+  /// Last gain actually pushed to each theme player. setVolume is a platform
+  /// channel round trip, and duck recovery re-applies every theme every frame:
+  /// in combat an explosion re-ducks before the 0.6s recovery finishes, so
+  /// ducking is effectively always on and all five themes were being written
+  /// 60 times a second forever. Inaudible deltas are not worth that.
+  final List<double> _appliedGain = List.filled(config.musicTierCount, -1.0);
+
   void _applyTheme(int i) {
     if (i >= _themes.length) return;
     // Equal-power curve so a rising + falling pair sums to ~constant loudness.
     final gain =
         _muted ? 0.0 : sqrt(_vol[i]) * config.musicMasterVolume * _duck;
+    // 1/512 is well under one step of any platform's volume resolution.
+    if (i < _appliedGain.length) {
+      if ((gain - _appliedGain[i]).abs() < 0.002) return;
+      _appliedGain[i] = gain;
+    }
     _safe(() => _themes[i].setVolume(gain));
   }
 
