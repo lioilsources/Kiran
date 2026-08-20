@@ -1,6 +1,15 @@
 # Changelog
 
 ## [20/08/2026]
+- Roguelike run: dying no longer ends the game — the pilot keeps weapons, credits, cumulative score and upgraded stats, and is rewound to Sector 1 through the shop (only hull, shield and position reset)
+- Score is now cumulative across lives and permanently unlocks weapon tiers: the unlock level is persisted rather than re-derived from score, so it can never be silently revoked, and pressing PLAY no longer wipes a run that was resumed at startup
+- Two Game Center leaderboards — cumulative score and deepest level reached — submitted on death and on every sector completion. Score now posts the actual score; it used to post the spendable credit balance, so buying a weapon moved you *down* the board (new board `kiran_deepest` must be created in App Store Connect)
+- ComCenter STATS shows the score and the points remaining to the next weapon tier, which were invisible despite driving both progression and ranking
+- App is now named Kirian on iOS, macOS and Android — the device name did not match the store listing
+- Skins renamed to original descriptors in-game to match the store entries (e.g. "R-Type (1987)" → "Biomech Cruiser (1987)"); product IDs and asset paths unchanged
+- Fix: macOS release builds could join a co-op game but never host one — the sandboxed Release entitlements were missing `com.apple.security.network.server`
+
+## [20/08/2026]
 - Enemy deaths now match the weapon that killed them: bubble guns splash water, vulcan cannons shatter the enemy into heavy ice chunks, star guns set it burning with rising flames and embers, lasers discharge flickering lightning arcs, blasters implode into a magenta plasma nova — each with its own light flash; ramming, structures and boss phase transitions keep the generic explosion
 - The corpse itself reacts — Voronoi shards carry a per-weapon tint and physics (ice falls heavy without shrinking, fire fragments rise charred)
 - Co-op: clients finally see death effects at all — the host emits the explosion event it never sent, weapon family included; also fixes client shards frozen mid-air
