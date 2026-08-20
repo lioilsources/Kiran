@@ -1169,8 +1169,37 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             Text(vessel.totalDps.toStringAsFixed(1), style: _theme.styled(TextStyle(color: Colors.white70, fontSize: _fs(10)))),
           ],
         ),
+        const SizedBox(height: 4),
+        // Score survives death and never resets, so it doubles as the weapon
+        // unlock track and the leaderboard value — the player has to be able
+        // to see it and the next tier they are working toward.
+        Row(
+          children: [
+            Text('SCORE ', style: _theme.styled(TextStyle(color: _theme.accent, fontSize: _fs(10), fontWeight: FontWeight.bold))),
+            Text(fmtNum(vessel.score), style: _theme.styled(TextStyle(color: Colors.white70, fontSize: _fs(10)))),
+          ],
+        ),
+        if (_nextUnlockScore != null) ...[
+          const SizedBox(height: 2),
+          Row(
+            children: [
+              Text('NEXT WEAPON ', style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(9), fontWeight: FontWeight.bold))),
+              Text('${fmtNum(_nextUnlockScore! - vessel.score)} pts',
+                  style: _theme.styled(TextStyle(color: Colors.white54, fontSize: _fs(9)))),
+            ],
+          ),
+        ],
       ],
     );
+  }
+
+  /// Score needed for the next weapon tier, or null once everything is
+  /// unlocked. [Vessel.wepLevScores] is indexed by the tier being worked on.
+  int? get _nextUnlockScore {
+    final tier = vessel.nextWeaponLevel;
+    if (tier >= Vessel.wepLevScores.length) return null;
+    if (tier >= DevType.frontWeapons.length) return null;
+    return Vessel.wepLevScores[tier];
   }
 
   Widget _buildSlotList() {

@@ -17,7 +17,6 @@ import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
 import 'services/asset_library.dart';
 import 'services/leaderboard_service.dart';
-import 'services/save_service.dart';
 import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
@@ -72,6 +71,12 @@ enum _ScreenState { mainMenu, game }
 class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   late TyrianGame _game;
   _ScreenState _screen = _ScreenState.mainMenu;
+
+  /// True once a run exists that must not be wiped by pressing PLAY — either
+  /// resumed from disk at startup or started in this session. The roguelike
+  /// loop keeps weapons, credits and cumulative score across deaths, so the
+  /// only thing that may reset them is an explicit fresh start.
+  bool _runInProgress = false;
   bool _showComCenter = false;
 
   // Pause skin selector
@@ -111,6 +116,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       if (!resumed) {
         _game.vessel.newGame();
       }
+      _runInProgress = resumed;
       if (mounted) setState(() {});
     };
 
@@ -138,12 +144,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       // Must come before the await; the submit below can take seconds.
       if (mounted) setState(() {});
 
-      // Submit the run's score to the native leaderboard (Game Center / Play
-      // Games). No-op on Windows/Linux or when not signed in — there is no
-      // local table anymore. The _GameOverOverlay stays up; the player opens
-      // the leaderboard from its button if one is available.
+      // Submit to both native leaderboards (Game Center / Play Games). No-op
+      // on Windows/Linux or when not signed in — there is no local table
+      // anymore. The overlay stays up; the player opens the board from its
+      // button if one is available.
       AchievementService.instance.onGameOver();
-      await LeaderboardService.instance.submit(_game.vessel.credit);
+      await LeaderboardService.instance.submitScore(_game.vessel.score);
+      await LeaderboardService.instance
+          .submitDepth(AchievementService.instance.maxSectorLevel);
 
       if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
         _game.coopHost!.sendEvent(EventType.gameOver);
@@ -157,6 +165,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             _game.advanceToNextSector();
             _game.openComCenter();
             _game.saveProgress(); // persist advanced sector + current loadout
+            // Post progress now too: the run has no end, and both boards keep
+            // the player's best, so a session killed mid-run still counts.
+            LeaderboardService.instance.submitScore(_game.vessel.score);
+            LeaderboardService.instance
+                .submitDepth(AchievementService.instance.maxSectorLevel);
           } else {
             // P2: show waiting overlay while host shops
             setState(() => _clientWaiting = true);
@@ -276,7 +289,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _startAsAutoHost() async {
-    _game.resetForNewGame();
+    // Only a pilot with nothing to lose gets a clean slate. Resetting a run
+    // that already exists would wipe the weapons, credits and cumulative
+    // score the roguelike loop is built on — and cumulative score is what
+    // unlocks the higher weapon tiers.
+    if (!_runInProgress) _game.resetForNewGame();
+    _runInProgress = true;
 
     _autoHost = CoopHost();
     final port = await _autoHost!.start(_game.vessel.pilotName);
@@ -330,16 +348,34 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _autoHost = null;
   }
 
+  /// Solo death is not the end of the game. The pilot keeps weapons, credits
+  /// and cumulative score and is rewound to sector 1, landing in the shop so
+  /// the losses can be spent before the next attempt.
+  void _respawnAtFirstSector() {
+    _game.restartRun();
+    _game.state = GameState.comCenter;
+    _game.saveProgress();
+    if (mounted) {
+      setState(() {
+        _showComCenter = true;
+      });
+    }
+  }
+
   void _returnToMainMenu() async {
     _disposeAutoHost();
     await _game.disposeCoop();
-    // Run ended — discard saved progress so the next launch starts fresh
-    // (newGame() also assigns a new generated codename).
-    await SaveService.clearGameState();
-    _game.vessel.newGame();
-    _game.currentSectorIndex = 0;
-    _game.requestZoneBackgrounds(0);
-    _game.parallaxBg.setLevel(1);
+    // A run now survives death and app restarts, so this path — reachable only
+    // when a co-op peer drops — must not discard it. Reload the pilot's own
+    // save over whatever co-op mirrored into the vessel; only a pilot with no
+    // save at all gets a fresh codename and a stock loadout.
+    _runInProgress = await _game.loadProgress();
+    if (!_runInProgress) {
+      _game.vessel.newGame();
+      _game.currentSectorIndex = 0;
+      _game.requestZoneBackgrounds(0);
+      _game.parallaxBg.setLevel(1);
+    }
     _game.state = GameState.comCenter;
     if (mounted) {
       setState(() {
@@ -458,8 +494,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             if (_game.state == GameState.gameOver)
               _GameOverOverlay(
                 credit: _game.vessel.credit,
+                score: _game.vessel.score,
                 credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
-                onClose: _game.isCoop ? _returnToCoopComCenter : _returnToMainMenu,
+                onClose: _game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector,
               ),
           ],
 
@@ -557,13 +594,16 @@ class _FpsOverlayState extends State<_FpsOverlay> {
 /// Game over panel with gamepad/keyboard navigation.
 class _GameOverOverlay extends StatefulWidget {
   final int credit;
+  final int score;
   final int? credit2;
 
-  /// Leave the game-over screen (main menu solo, or ComCenter in co-op).
+  /// Leave the death screen — back to sector 1 via the shop (solo), or the
+  /// co-op ComCenter.
   final VoidCallback onClose;
 
   const _GameOverOverlay({
     required this.credit,
+    required this.score,
     this.credit2,
     required this.onClose,
   });
@@ -643,7 +683,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'GAME OVER',
+                'VESSEL LOST',
                 style: TextStyle(
                   color: Colors.red,
                   fontSize: 32,
@@ -652,6 +692,17 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                 ),
               ),
               const SizedBox(height: 8),
+              const Text(
+                'Rebuilding at Sector 1 — loadout and credits retained',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Score: ${fmtNum(widget.score)}',
+                style: const TextStyle(color: Colors.cyanAccent, fontSize: 18),
+              ),
+              const SizedBox(height: 4),
               Text(
                 'Credits: ${fmtNum(widget.credit)}',
                 style: const TextStyle(color: Colors.greenAccent, fontSize: 18),
@@ -695,7 +746,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                   backgroundColor: Colors.white24,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('CONTINUE'),
+                child: const Text('REDEPLOY'),
               ),
             ],
           ),

@@ -213,6 +213,9 @@ class AchievementService {
 
   /// [reachedLevel] is the LEVEL of the sector the player advanced to (parts
   /// of a level share it), not a raw sector index — see _onSectorComplete.
+  /// Deepest sector level ever reached — the depth leaderboard's value.
+  int get maxSectorLevel => _stats['max_sector'] ?? 0;
+
   void onSectorCompleted(int reachedLevel, {required bool tookHullDamage}) {
     _raise('max_sector', reachedLevel);
     if (!tookHullDamage) _bump('untouchable_sectors');

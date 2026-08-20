@@ -8,13 +8,13 @@
       "internalID": "8AA62FB6-1178-4EF1-9C44-2BCF6DF08CDC",
       "localizations": [
         {
-          "description": "Unlocks the Space Invaders (1978) skin",
-          "displayName": "Space Invaders Skin",
+          "description": "Unlocks the Monochrome Invader (1978) skin",
+          "displayName": "Monochrome Invader Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_space_invaders",
-      "referenceName": "Space Invaders Skin",
+      "referenceName": "Monochrome Invader Skin",
       "type": "NonConsumable"
     },
     {
@@ -23,13 +23,13 @@
       "internalID": "76C83A43-7B2B-4895-A15D-6A35D4B1906C",
       "localizations": [
         {
-          "description": "Unlocks the Asteroids (1979) skin",
-          "displayName": "Asteroids Skin",
+          "description": "Unlocks the Vector Wireframe (1979) skin",
+          "displayName": "Vector Wireframe Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_asteroids",
-      "referenceName": "Asteroids Skin",
+      "referenceName": "Vector Wireframe Skin",
       "type": "NonConsumable"
     },
     {
@@ -38,13 +38,13 @@
       "internalID": "D1120A52-F16B-4DA0-9486-27525C8144F5",
       "localizations": [
         {
-          "description": "Unlocks the River Raid (1982) skin",
-          "displayName": "River Raid Skin",
+          "description": "Unlocks the 8-Bit Canyon (1982) skin",
+          "displayName": "8-Bit Canyon Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_river_raid",
-      "referenceName": "River Raid Skin",
+      "referenceName": "8-Bit Canyon Skin",
       "type": "NonConsumable"
     },
     {
@@ -53,13 +53,13 @@
       "internalID": "E82A5EEE-82D9-4ACB-88CE-BA0D5E87311B",
       "localizations": [
         {
-          "description": "Unlocks the R-Type (1987) skin",
-          "displayName": "R-Type Skin",
+          "description": "Unlocks the Biomech Cruiser (1987) skin",
+          "displayName": "Biomech Cruiser Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_rtype",
-      "referenceName": "R-Type Skin",
+      "referenceName": "Biomech Cruiser Skin",
       "type": "NonConsumable"
     },
     {
@@ -68,13 +68,13 @@
       "internalID": "681A63B3-3103-460C-8581-ED9843FFD2E7",
       "localizations": [
         {
-          "description": "Unlocks the Blazing Lazers (1989) skin",
-          "displayName": "Blazing Lazers Skin",
+          "description": "Unlocks the 16-Bit Laser (1989) skin",
+          "displayName": "16-Bit Laser Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_blazing_lazers",
-      "referenceName": "Blazing Lazers Skin",
+      "referenceName": "16-Bit Laser Skin",
       "type": "NonConsumable"
     },
     {
@@ -83,13 +83,13 @@
       "internalID": "601DDC34-1DA3-4A0D-AB63-706F76FC0B4E",
       "localizations": [
         {
-          "description": "Unlocks the Tyrian DOS (1995) skin",
-          "displayName": "Tyrian DOS Skin",
+          "description": "Unlocks the Retro PC Pixel (1995) skin",
+          "displayName": "Retro PC Pixel Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_tyrian_dos",
-      "referenceName": "Tyrian DOS Skin",
+      "referenceName": "Retro PC Pixel Skin",
       "type": "NonConsumable"
     },
     {
@@ -98,13 +98,13 @@
       "internalID": "C71B5117-37FC-4EDB-A20B-8BA671A67E2D",
       "localizations": [
         {
-          "description": "Unlocks the Ikaruga (2001) skin",
-          "displayName": "Ikaruga Skin",
+          "description": "Unlocks the Dual-Polarity (2001) skin",
+          "displayName": "Dual-Polarity Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_ikaruga",
-      "referenceName": "Ikaruga Skin",
+      "referenceName": "Dual-Polarity Skin",
       "type": "NonConsumable"
     },
     {
@@ -113,13 +113,13 @@
       "internalID": "CFFA633C-DBD7-4BEB-881B-1285178C3FF0",
       "localizations": [
         {
-          "description": "Unlocks the Gradius V (2004) skin",
-          "displayName": "Gradius V Skin",
+          "description": "Unlocks the Chrome Fleet (2004) skin",
+          "displayName": "Chrome Fleet Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_gradius_v",
-      "referenceName": "Gradius V Skin",
+      "referenceName": "Chrome Fleet Skin",
       "type": "NonConsumable"
     },
     {
@@ -128,13 +128,13 @@
       "internalID": "8103A803-BD90-4C47-BF33-E4D7AB24ED4D",
       "localizations": [
         {
-          "description": "Unlocks the Luftrausers (2014) skin",
-          "displayName": "Luftrausers Skin",
+          "description": "Unlocks the Sepia Dogfight (2014) skin",
+          "displayName": "Sepia Dogfight Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_luftrausers",
-      "referenceName": "Luftrausers Skin",
+      "referenceName": "Sepia Dogfight Skin",
       "type": "NonConsumable"
     },
     {
@@ -143,13 +143,13 @@
       "internalID": "57CA839D-4C51-4B3F-95B3-D0F6F1BB1C51",
       "localizations": [
         {
-          "description": "Unlocks the Nuclear Throne (2015) skin",
-          "displayName": "Nuclear Throne Skin",
+          "description": "Unlocks the Wasteland Pixel (2015) skin",
+          "displayName": "Wasteland Pixel Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_nuclear_throne",
-      "referenceName": "Nuclear Throne Skin",
+      "referenceName": "Wasteland Pixel Skin",
       "type": "NonConsumable"
     },
     {
@@ -158,13 +158,13 @@
       "internalID": "1A63C207-CC5B-4884-A4CB-03B8B0D80639",
       "localizations": [
         {
-          "description": "Unlocks the Nex Machina (2017) skin",
-          "displayName": "Nex Machina Skin",
+          "description": "Unlocks the Neon Voxel (2017) skin",
+          "displayName": "Neon Voxel Skin",
           "locale": "en_US"
         }
       ],
       "productID": "com.ol1n.kiran.skin_nex_machina",
-      "referenceName": "Nex Machina Skin",
+      "referenceName": "Neon Voxel Skin",
       "type": "NonConsumable"
     }
   ],
