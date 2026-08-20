@@ -1,5 +1,10 @@
 # Changelog
 
+## [20/08/2026]
+- Enemy deaths now match the weapon that killed them: bubble guns splash water, vulcan cannons shatter the enemy into heavy ice chunks, star guns set it burning with rising flames and embers, lasers discharge flickering lightning arcs, blasters implode into a magenta plasma nova — each with its own light flash; ramming, structures and boss phase transitions keep the generic explosion
+- The corpse itself reacts — Voronoi shards carry a per-weapon tint and physics (ice falls heavy without shrinking, fire fragments rise charred)
+- Co-op: clients finally see death effects at all — the host emits the explosion event it never sent, weapon family included; also fixes client shards frozen mid-air
+
 ## [18/08/2026]
 - Fix: no flicker or card drift when switching skins in ComCenter — previews are decoded into their own cache outside Flame's (immune to loadSkin's cache clear, replaces the v2.5.1 drop-and-reload), and the switched card re-anchors into view after the re-themed layout settles
 - Fix: skin cards in the ComCenter SKINS section rendered as gray garbage after switching a skin — previews are now dropped and re-loaded across the switch (loadSkin disposes Flame's image cache under them)
