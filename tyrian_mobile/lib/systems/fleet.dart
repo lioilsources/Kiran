@@ -12,6 +12,8 @@ import '../entities/vessel.dart';
 import '../systems/path_system.dart';
 import '../systems/device.dart';
 import '../rendering/pixel_explosion_overlay.dart';
+import '../game/death_effect_config.dart';
+import '../net/protocol.dart';
 
 /// Ported from Fleet.cls — a wave/group of enemies.
 class Fleet extends Component with HasGameReference<TyrianGame> {
@@ -133,7 +135,24 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       if (h.isDead) {
         final cx = h.position.x + h.size.x / 2;
         final cy = h.position.y + h.size.y / 2;
-        game.addExplosion(cx, cy, 2);
+        final family = h.deathFamily;
+        if (family == null) {
+          game.addExplosion(cx, cy, 2);
+        } else {
+          game.deathEffects.spawn(family, cx, cy, h.size.x, h.size.y,
+              hitX: h.lastHitX, hitY: h.lastHitY);
+        }
+        // Mirror the death to the co-op client (which otherwise only sees the
+        // hostile vanish from the snapshot). Weapon family rides the free-form
+        // text field — no wire-format change, older clients ignore it.
+        if (game.coopRole == CoopRole.host &&
+            game.coopHost != null &&
+            game.coopHost!.hasClient) {
+          game.coopHost!.sendEvent(EventType.explosion,
+              x: cx,
+              y: cy,
+              text: family == null ? '' : '${family.name}:$id:${h.id}');
+        }
         // Spawn sprite shatter shards
         if (h.sprite != null) {
           game.shardPool.spawn(
@@ -145,6 +164,9 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
             h.size.x,
             h.size.y,
             h.spriteName,
+            family == null
+                ? defaultShardPreset
+                : deathEffectSpecs[family]!.shardPreset,
           );
 
           // Boss-tier hostiles get a pixel explosion shader effect

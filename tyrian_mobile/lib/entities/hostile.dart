@@ -6,6 +6,7 @@ import '../game/tyrian_game.dart';
 import '../systems/path_system.dart';
 import '../systems/fleet.dart';
 import '../systems/device.dart';
+import '../systems/weapon_family.dart';
 import '../services/asset_library.dart';
 import 'vessel.dart';
 
@@ -38,6 +39,11 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   int hit = 0; // Flash counter
   double lastHitX = 0;
   double lastHitY = 0;
+
+  /// Weapon family of the killing blow — drives the death effect. Null for
+  /// non-weapon deaths (path-destroy, off-field reap), which keep the generic
+  /// explosion.
+  WeaponFamily? deathFamily;
   int collisionDmg;
   PathSystem? trace;
   Device? weapon;
@@ -321,10 +327,17 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     }
   }
 
-  void takeDamage(int dmg, TyrianGame gameInstance, {Vessel? attacker}) {
+  void takeDamage(int dmg, TyrianGame gameInstance,
+      {Vessel? attacker, Device? source}) {
     hp -= dmg;
     if (hit == 0) hit = 2;
-    if (hp <= 0) hp = 0;
+    if (hp <= 0) {
+      hp = 0;
+      // Recorded only on the killing blow, so hp-zeroing that bypasses
+      // takeDamage (path-destroy, off-field reap) never inherits a stale
+      // weapon.
+      deathFamily = source == null ? null : weaponFamilyFromImgName(source.imgName);
+    }
   }
 
   // Rendering is handled by HostileBatchRenderer — this is intentionally empty.

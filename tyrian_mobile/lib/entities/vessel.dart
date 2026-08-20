@@ -458,7 +458,7 @@ class Vessel extends PositionComponent
             h.position.x, h.position.y, h.x2, h.y2)) {
           h.lastHitX = projectile.position.x + projectile.size.x / 2;
           h.lastHitY = projectile.position.y + projectile.size.y / 2;
-          h.takeDamage(d.damage, game, attacker: this);
+          h.takeDamage(d.damage, game, attacker: this, source: d);
           if (h.isDead) {
             fleet.onHostileKilled(h, game, attacker: this);
           }
@@ -484,7 +484,10 @@ class Vessel extends PositionComponent
   void _processBeamCollision(Device d) {
     // Beam hits closest enemy continuously
     if (closestEnemy != null && !closestEnemy!.isDead) {
-      closestEnemy!.takeDamage(d.damage, game, attacker: this);
+      final c = closestEnemy!.hostCenter;
+      closestEnemy!.lastHitX = c.x;
+      closestEnemy!.lastHitY = c.y;
+      closestEnemy!.takeDamage(d.damage, game, attacker: this, source: d);
       if (closestEnemy!.isDead) {
         closestEnemy!.parentFleet?.onHostileKilled(closestEnemy!, game, attacker: this);
       }

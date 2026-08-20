@@ -18,12 +18,15 @@ import '../rendering/offscreen_markers.dart';
 import '../entities/vessel.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
+import '../entities/death_effect.dart';
 import '../entities/collectable.dart';
 import '../entities/structure.dart';
 import '../entities/hostile.dart';
 import '../systems/sector.dart';
 import '../systems/fleet.dart';
 import '../systems/dev_type.dart';
+import '../systems/weapon_family.dart';
+import 'death_effect_config.dart';
 import '../entities/projectile.dart';
 import '../services/achievement_service.dart';
 import '../services/asset_library.dart';
@@ -106,6 +109,7 @@ class TyrianGame extends FlameGame
   final List<Collectable> activeCollectables = [];
   final ShardPool shardPool = ShardPool();
   late ExplosionRenderer explosionRenderer;
+  late DeathEffectRenderer deathEffects;
   final List<Projectile> enemyProjectiles = [];
 
   Sector? currentSector;
@@ -199,6 +203,9 @@ class TyrianGame extends FlameGame
 
     explosionRenderer = ExplosionRenderer();
     world.add(explosionRenderer);
+
+    deathEffects = DeathEffectRenderer();
+    world.add(deathEffects);
 
     vessel = Vessel();
     await vessel.init();
@@ -414,6 +421,7 @@ class TyrianGame extends FlameGame
     }
     activeCollectables.clear();
     explosionRenderer.clearAll();
+    deathEffects.clearAll();
     shardPool.clearAll();
     for (final p in [...enemyProjectiles]) {
       p.removeFromParent();
@@ -443,6 +451,7 @@ class TyrianGame extends FlameGame
         coopClient!.latestSnapshot = null;
       }
       super.update(dt);
+      shardPool.update(dt);
       _updateWorldShift(dt);
       return;
     }
@@ -987,6 +996,38 @@ class TyrianGame extends FlameGame
     explosionRenderer.acquire(x, y, size);
   }
 
+  /// Client-side death effect from a host explosion event. Empty/legacy text
+  /// degrades to the generic explosion. The hostile is looked up before the
+  /// removing snapshot lands (the event is sent mid-frame, the snapshot at
+  /// frame end, and snapshots apply deferred), so its sprite is still
+  /// available for shards; if it is already gone, particles-only.
+  void spawnRemoteDeathEffect(double x, double y, String text) {
+    if (text.isEmpty) {
+      addExplosion(x, y, 2);
+      return;
+    }
+    final parts = text.split(':');
+    final family = WeaponFamily.values.asNameMap()[parts[0]];
+    if (family == null) {
+      addExplosion(x, y, 2);
+      return;
+    }
+    Hostile? h;
+    if (parts.length >= 3) {
+      final fleetId = int.tryParse(parts[1]);
+      final hostileId = int.tryParse(parts[2]);
+      if (fleetId != null && hostileId != null) {
+        h = clientHostiles[fleetId * 1000 + hostileId];
+      }
+    }
+    deathEffects.spawn(family, x, y, h?.size.x ?? 40.0, h?.size.y ?? 40.0,
+        hitX: x, hitY: y);
+    if (h != null && h.sprite != null) {
+      shardPool.spawn(h.sprite!, x, y, x, y, h.size.x, h.size.y, h.spriteName,
+          deathEffectSpecs[family]!.shardPreset);
+    }
+  }
+
   void addCollectable(Collectable c) {
     activeCollectables.add(c);
     world.add(c);
@@ -1093,7 +1134,7 @@ class TyrianGame extends FlameGame
     client.onGameEvent = (eventType, x, y, text) {
       switch (eventType) {
         case EventType.explosion:
-          addExplosion(x, y, 2);
+          spawnRemoteDeathEffect(x, y, text);
         case EventType.message:
           showMessage(text);
         case EventType.sectorComplete:

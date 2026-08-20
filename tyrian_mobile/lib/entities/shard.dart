@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 
+import '../game/death_effect_config.dart';
 import '../services/asset_library.dart';
 
 /// Data for a single shard fragment (plain Dart, no Component).
@@ -17,6 +18,9 @@ class ShardData {
   double totalLife = 0;
   double scale = 1.0;
   double baseScale = 1.0;
+  ui.Color tint = const ui.Color(0xFFFFFFFF);
+  double gravity = 10;
+  bool shrink = true;
   bool active = false;
 }
 
@@ -37,24 +41,24 @@ class ShardPool {
   /// [spriteName] -- optional atlas sprite name for Voronoi fragment lookup
   void spawn(Sprite sprite, double deathX, double deathY,
       double hitX, double hitY, double spriteW, double spriteH,
-      [String? spriteName]) {
+      [String? spriteName, ShardPreset preset = defaultShardPreset]) {
     // Try Voronoi fragments first
     if (spriteName != null) {
       final fragInfos = AssetLibrary.instance.fragments[spriteName];
       if (fragInfos != null && fragInfos.isNotEmpty) {
         _spawnVoronoi(fragInfos, sprite, deathX, deathY, hitX, hitY,
-            spriteW, spriteH);
+            spriteW, spriteH, preset);
         return;
       }
     }
     // Fallback: quad-slice
-    _spawnQuadSlice(sprite, deathX, deathY, hitX, hitY, spriteW, spriteH);
+    _spawnQuadSlice(sprite, deathX, deathY, hitX, hitY, spriteW, spriteH, preset);
   }
 
   /// Spawn shards using pre-baked Voronoi fragments from the atlas.
   void _spawnVoronoi(List<FragmentInfo> frags, Sprite originalSprite,
       double deathX, double deathY, double hitX, double hitY,
-      double spriteW, double spriteH) {
+      double spriteW, double spriteH, ShardPreset preset) {
     final lib = AssetLibrary.instance;
     final originalSrc = originalSprite.src;
     final scaleX = spriteW / originalSrc.width;
@@ -76,13 +80,14 @@ class ShardPool {
       final cy = spriteTop + frag.seedY * scaleY;
 
       _initShard(shard, fragSprite.src, fragSprite.image,
-          cx, cy, deathX, deathY, scaleX);
+          cx, cy, deathX, deathY, scaleX, preset);
     }
   }
 
   /// Fallback: spawn 4 quadrant shards by slicing the sprite into quarters.
   void _spawnQuadSlice(Sprite sprite, double deathX, double deathY,
-      double hitX, double hitY, double spriteW, double spriteH) {
+      double hitX, double hitY, double spriteW, double spriteH,
+      ShardPreset preset) {
     final src = sprite.src;
     final image = sprite.image;
     final halfW = src.width / 2;
@@ -109,7 +114,7 @@ class ShardPool {
       if (shard == null) return;
 
       _initShard(shard, quadrants[i], image,
-          offsets[i][0], offsets[i][1], deathX, deathY, scaleX);
+          offsets[i][0], offsets[i][1], deathX, deathY, scaleX, preset);
     }
   }
 
@@ -117,7 +122,8 @@ class ShardPool {
   /// Shards fly outward from [deathX/Y] in all directions with heavy random
   /// variation so each explosion looks unique.
   void _initShard(ShardData shard, ui.Rect sourceRect, ui.Image image,
-      double cx, double cy, double deathX, double deathY, double scaleX) {
+      double cx, double cy, double deathX, double deathY, double scaleX,
+      ShardPreset preset) {
     // Base direction: from death center outward to fragment centroid
     var dx = cx - deathX;
     var dy = cy - deathY;
@@ -141,16 +147,16 @@ class ShardPool {
     final jdy = dx * sinJ + dy * cosJ;
 
     // Speed: wide range for variety (some fast, some slow)
-    final speed = 120.0 + _rng.nextDouble() * 200.0;
+    final speed = (120.0 + _rng.nextDouble() * 200.0) * preset.speedMult;
 
     // Perpendicular random kick for extra scatter
-    final perpSpeed = (_rng.nextDouble() - 0.5) * 160.0;
+    final perpSpeed = (_rng.nextDouble() - 0.5) * 160.0 * preset.speedMult;
 
     final vx = jdx * speed + (-jdy) * perpSpeed;
     final vy = jdy * speed + jdx * perpSpeed;
 
     // Life: longer so shards travel further and are more visible
-    final life = 0.5 + _rng.nextDouble() * 0.5;
+    final life = (0.5 + _rng.nextDouble() * 0.5) * preset.lifeMult;
 
     shard
       ..sourceRect = sourceRect
@@ -160,12 +166,15 @@ class ShardPool {
       ..vx = vx
       ..vy = vy
       ..rotation = _rng.nextDouble() * 2 * pi // random initial rotation
-      ..angularVel = (_rng.nextDouble() - 0.5) * 14 // faster spin
+      ..angularVel = (_rng.nextDouble() - 0.5) * 14 * preset.spinMult
       ..alpha = 1.0
       ..life = life
       ..totalLife = life
       ..baseScale = scaleX
       ..scale = scaleX
+      ..tint = preset.tint
+      ..gravity = preset.gravity
+      ..shrink = preset.shrink
       ..active = true;
   }
 
@@ -181,12 +190,13 @@ class ShardPool {
       if (!s.active) continue;
       s.x += s.vx * dt;
       s.y += s.vy * dt;
-      s.vy += 10 * dt; // very subtle gravity (space feel)
+      s.vy += s.gravity * dt; // default 10: very subtle gravity (space feel)
       s.rotation += s.angularVel * dt;
       s.life -= dt;
       final t = (s.life / s.totalLife).clamp(0.0, 1.0);
       s.alpha = t;
-      s.scale = s.baseScale * (0.5 + 0.5 * t); // shrink as fading
+      // Ice chunks keep their size while fading; everything else shrinks.
+      s.scale = s.shrink ? s.baseScale * (0.5 + 0.5 * t) : s.baseScale;
       if (s.life <= 0) s.active = false;
     }
   }

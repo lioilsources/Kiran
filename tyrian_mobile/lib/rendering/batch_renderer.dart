@@ -348,8 +348,7 @@ class ShardBatchRenderer extends Component
         cy,
         shard.scale,
         shard.rotation,
-        Color.fromARGB(
-            (shard.alpha * 255).round().clamp(0, 255), 255, 255, 255),
+        shard.tint.withAlpha((shard.alpha * 255).round().clamp(0, 255)),
       );
     }
 
