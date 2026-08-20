@@ -1611,7 +1611,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'PWR: +${gen.pwrGen.toStringAsFixed(2)}/fr',
+                  'PWR: +${(device?.pwrGen ?? gen.pwrGen).toStringAsFixed(2)}/fr',
                   style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
                   overflow: TextOverflow.ellipsis,
                 ),

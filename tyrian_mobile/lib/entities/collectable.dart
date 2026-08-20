@@ -106,9 +106,19 @@ class Collectable extends PositionComponent
           vessel.shieldRegen *= 1.025;
         }
       case CollType.generatorUpgrade:
-        // VB6: genPower ×1.255, genMax ×1.2
-        vessel.genPower *= 1.255;
-        vessel.genMax *= 1.2;
+        // Must go through the device (VB6 Collectable.cls:292 calls d.Upgrade).
+        // Raising vessel.genPower directly leaves device.pwrGen behind, and
+        // Device.upgrade *assigns* genPower from it — so the next shop purchase
+        // silently erased every pickup ever collected, while genMax kept
+        // compounding. The result was a huge tank refilling at the un-upgraded
+        // rate, i.e. a generator that cannot keep up.
+        final gen = vessel.getDevice(WeaponSlot.generator);
+        if (gen != null) {
+          gen.upgrade();
+        } else {
+          vessel.genPower *= config.upgPwrGenMultiplier;
+          vessel.genMax *= config.upgGenMaxMultiplier;
+        }
       case CollType.bonusCredit:
         vessel.credit += value;
       case CollType.none:

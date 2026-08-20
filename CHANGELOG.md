@@ -1,5 +1,12 @@
 # Changelog
 
+## [21/08/2026]
+- Fix: finishing a sector advanced the game by ~120 sectors instead of 1 — level 2 was actually level 121, which made the game unplayable. Sector completion ran on every frame for the two seconds before the shop opened; it now fires once
+- Fix: the same loop paid the sector bonus ~120 times over (credits are wildly inflated in existing saves) and restarted the victory fanfare every 70ms, which is what made the audio sound broken
+- Fix: music re-sent an unchanged volume to all five soundtrack layers every frame — 300 platform calls a second for the whole run, audible as general audio stutter
+- Fix: generator pickups were erased by the next shop purchase, leaving a large power capacity that refilled at the un-upgraded rate — the generator could never keep up. Pickups now upgrade the device itself
+- Fix: the generator card in the shop always showed the level-1 output (+4.35/fr) no matter how far it had been upgraded
+
 ## [20/08/2026]
 - Roguelike run: dying no longer ends the game — the pilot keeps weapons, credits, cumulative score and upgraded stats, and is rewound to Sector 1 through the shop (only hull, shield and position reset)
 - Score is now cumulative across lives and permanently unlocks weapon tiers: the unlock level is persisted rather than re-derived from score, so it can never be silently revoked, and pressing PLAY no longer wipes a run that was resumed at startup
