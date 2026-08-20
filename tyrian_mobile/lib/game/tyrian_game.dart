@@ -448,6 +448,27 @@ class TyrianGame extends FlameGame
     }
   }
 
+  /// One throwing component aborts the whole world render: update() keeps
+  /// running (HUD counters tick) while the canvas stays black — reported once
+  /// on Android after a death redeploy, unreproducible from code reading.
+  /// Catching here keeps the next frame trying instead of freezing black, and
+  /// the throttled print reaches adb logcat in release builds, so if it ever
+  /// happens again the stack finally names the culprit.
+  double _lastRenderErrorLog = 0;
+
+  @override
+  void render(Canvas canvas) {
+    try {
+      super.render(canvas);
+    } catch (e, st) {
+      if (elapsed - _lastRenderErrorLog > 5.0 || _lastRenderErrorLog == 0) {
+        _lastRenderErrorLog = elapsed == 0 ? 0.001 : elapsed;
+        // ignore: avoid_print
+        print('[RENDER] world render threw: $e\n$st');
+      }
+    }
+  }
+
   @override
   void update(double dt) {
     frameCount++;

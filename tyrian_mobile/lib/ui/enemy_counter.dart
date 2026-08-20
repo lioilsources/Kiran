@@ -92,20 +92,139 @@ class _EnemyCounterState extends State<EnemyCounter>
             child: Opacity(opacity: 0.55 + 0.45 * t.clamp(0.0, 1.0), child: child),
           );
         },
-        child: Text(
-          '$_count',
-          textAlign: TextAlign.right,
-          style: const TextStyle(
-            color: Colors.redAccent,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            height: 1.0,
-            shadows: [
-              Shadow(color: Colors.black, offset: Offset(2, 2), blurRadius: 5),
-            ],
-          ),
+        child: SevenSegmentDisplay(
+          value: _count,
+          height: 30,
+          color: Colors.redAccent,
         ),
       ),
     );
   }
+}
+
+/// Flat seven-segment numeral, like a retro LED readout. The rest of the HUD
+/// is flat and segmented (see HealthBar); the previous rounded, drop-shadowed
+/// Text numeral was the one element that broke that language. Unlit segments
+/// are painted as faint ghosts — the signature of a real segment display, and
+/// what makes the numeral read as an instrument rather than text.
+class SevenSegmentDisplay extends StatelessWidget {
+  final int value;
+  final double height;
+  final Color color;
+
+  const SevenSegmentDisplay({
+    super.key,
+    required this.value,
+    required this.height,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final digits = '$value';
+    final digitW = height * 0.58;
+    final gap = height * 0.14;
+    return CustomPaint(
+      size: Size(
+          digits.length * digitW + (digits.length - 1) * gap, height),
+      painter: _SevenSegmentPainter(digits, color, digitW, gap),
+    );
+  }
+}
+
+class _SevenSegmentPainter extends CustomPainter {
+  final String digits;
+  final Color color;
+  final double digitW;
+  final double gap;
+
+  _SevenSegmentPainter(this.digits, this.color, this.digitW, this.gap);
+
+  /// Segment bits per digit, classic layout:
+  ///  -a-
+  /// f   b
+  ///  -g-
+  /// e   c
+  ///  -d-
+  /// Bit order: a b c d e f g.
+  static const _glyphs = <int>[
+    0x7E, // 0: abcdef
+    0x30, // 1: bc
+    0x6D, // 2: abdeg
+    0x79, // 3: abcdg
+    0x33, // 4: bcfg
+    0x5B, // 5: acdfg
+    0x5F, // 6: acdefg
+    0x70, // 7: abc
+    0x7F, // 8: all
+    0x7B, // 9: abcdfg
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final lit = Paint()..color = color;
+    // The ghost is what sells the LED look; 11% is visible against the HUD
+    // scrim without competing with the lit segments.
+    final ghost = Paint()..color = color.withAlpha(28);
+
+    var x = 0.0;
+    for (final ch in digits.codeUnits) {
+      final d = ch - 0x30;
+      final mask = (d >= 0 && d <= 9) ? _glyphs[d] : 0;
+      _paintDigit(canvas, x, size.height, mask, lit, ghost);
+      x += digitW + gap;
+    }
+  }
+
+  void _paintDigit(Canvas canvas, double x0, double h, int mask,
+      Paint lit, Paint ghost) {
+    final w = digitW;
+    final t = h * 0.13; // segment thickness
+    final half = t / 2;
+
+    // Segment centrelines; lengths shrink slightly for the inter-segment gap.
+    void hseg(double yc, bool on) =>
+        _hex(canvas, x0 + w / 2, yc, (w - t) * 0.92, t, true, on ? lit : ghost);
+    void vseg(double xc, double y0, double y1, bool on) => _hex(canvas,
+        x0 + xc, (y0 + y1) / 2, (y1 - y0 - t * 0.16) * 0.92, t, false,
+        on ? lit : ghost);
+
+    hseg(half, mask & 0x40 != 0); // a
+    vseg(w - half, half, h / 2, mask & 0x20 != 0); // b
+    vseg(w - half, h / 2, h - half, mask & 0x10 != 0); // c
+    hseg(h - half, mask & 0x08 != 0); // d
+    vseg(half, h / 2, h - half, mask & 0x04 != 0); // e
+    vseg(half, half, h / 2, mask & 0x02 != 0); // f
+    hseg(h / 2, mask & 0x01 != 0); // g
+  }
+
+  /// One segment: a hexagon with 45° chamfered ends, the canonical LED shape.
+  void _hex(Canvas canvas, double xc, double yc, double len, double t,
+      bool horizontal, Paint paint) {
+    final half = len / 2;
+    final ht = t / 2;
+    final path = Path();
+    if (horizontal) {
+      path
+        ..moveTo(xc - half, yc)
+        ..lineTo(xc - half + ht, yc - ht)
+        ..lineTo(xc + half - ht, yc - ht)
+        ..lineTo(xc + half, yc)
+        ..lineTo(xc + half - ht, yc + ht)
+        ..lineTo(xc - half + ht, yc + ht);
+    } else {
+      path
+        ..moveTo(xc, yc - half)
+        ..lineTo(xc + ht, yc - half + ht)
+        ..lineTo(xc + ht, yc + half - ht)
+        ..lineTo(xc, yc + half)
+        ..lineTo(xc - ht, yc + half - ht)
+        ..lineTo(xc - ht, yc - half + ht);
+    }
+    canvas.drawPath(path..close(), paint);
+  }
+
+  @override
+  bool shouldRepaint(_SevenSegmentPainter old) =>
+      old.digits != digits || old.color != color || old.digitW != digitW;
 }
