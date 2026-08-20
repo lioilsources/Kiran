@@ -6,6 +6,12 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<!-- Co-op hosting binds a listening socket (CoopHost.start -> ServerSocket.bind).
+	     The sandbox denies that without this key, so release builds could join a
+	     game but never host one. It was only ever set in DebugProfile.entitlements,
+	     which is why hosting worked while developing and not in a shipped build. -->
+	<key>com.apple.security.network.server</key>
+	<true/>
 	<key>com.apple.security.device.bluetooth</key>
 	<true/>
 	<key>com.apple.security.device.usb</key>
