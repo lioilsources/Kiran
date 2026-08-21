@@ -83,6 +83,7 @@ flutter:
     - assets/skins/default/ui/
     - assets/skins/default/sfx/
     - assets/skins/default/music/
+    - assets/skins/default/backgrounds/
     - assets/skins/default/atlas.png
     - assets/skins/default/atlas.json
     - assets/skins/geometry_wars/sprites/
