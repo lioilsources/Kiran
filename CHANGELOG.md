@@ -1,6 +1,12 @@
 # Changelog
 
 ## [21/08/2026]
+- Every skin now has its own artwork for all seven zones: the sky shifts from cold and calm at the frontier through teal and amber to crimson as you push deeper. Previously only two skins of fourteen did this — the rest reused one background everywhere, and the default skin had no background art at all
+- The default skin's ship is animated for the first time (its thruster pulses like every other skin's) and now matches the rest of its own artwork instead of being the last piece of legacy pixel art
+- Fix: power-up icons showed as opaque squares in five skins (Blazing Lazers had all four affected), and an asteroid in Ikaruga carried a dark plate behind it
+- Despite 154 new background layers, the app is about 26 MB smaller — the flat backgrounds they replace were heavier than the entire new set
+
+## [21/08/2026]
 - Fix: power-up drops in the default skin had no artwork — they fell back to a plain coloured square with a letter. The five HUD icons the collectables use were the one asset the skin had never had generated; they now exist, and the same icons return to the HUD and shop
 - Fix: the default skin's boss rendered as an opaque red rectangle — the shipped sprite was a bare texture rather than a ship, and predated sprite supersampling
 - Fix: the Star Gun projectile in the default skin was a grey box with a white cross — a placeholder that was never replaced; it is now a proper energy star
