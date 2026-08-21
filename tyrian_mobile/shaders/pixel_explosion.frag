@@ -56,10 +56,15 @@ void main() {
   // Fade out over time
   color.a *= 1.0 - uTime;
 
-  // Hot tint at start → cold at end
+  // Hot tint at start → cold at end. Flutter composites PREMULTIPLIED alpha,
+  // so the glow has to be scaled by alpha: adding it flat lit up the sprite's
+  // fully transparent margin too (rgb > 0 at a == 0 reads as additive light),
+  // which flashed the whole bounding box orange on the first frames of a boss
+  // death — brightest at uTime 0, where heat is 1.0.
   float heat = max(0.0, 1.0 - uTime * 2.0);
-  color.rgb += vec3(heat * 0.4, heat * 0.15, 0.0); // orange-ish glow
-  color.rgb = min(color.rgb, vec3(1.0));
+  color.rgb += vec3(heat * 0.4, heat * 0.15, 0.0) * color.a;
+  // Clamp against alpha, not 1.0: rgb may never exceed a once premultiplied.
+  color.rgb = min(color.rgb, vec3(color.a));
 
   fragColor = color;
 }
