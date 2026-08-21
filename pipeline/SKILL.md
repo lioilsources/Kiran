@@ -167,6 +167,11 @@ go run ./cmd/postprocess -skin gradius_v -only falcon3 -variation 3
 #                         passed explicitly it overrides the record for whatever
 #                         this run processes, and is then recorded
 #   -root <dir>           where selections/ lives (default: .)
+#                         WARNING: any run with an explicit -variation writes to
+#                         this root's selections/ file for every asset it touches
+#                         — including a whole-skin preview/contact-sheet run with
+#                         no -only. Point -root at a scratch dir for anything that
+#                         isn't a real, intended choice.
 #   -size <px>            max dimension for sprites without reference size (default 128)
 #   -threshold <n>        bg removal color-distance threshold (default 60)
 #   -margin <n>           bg removal soft-edge ramp width px (default 20)

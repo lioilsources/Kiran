@@ -1,4 +1,5 @@
 {
+  "skin": "blazing_lazers",
   "assets": {
     "asteroid": 1,
     "asteroid1": 1,
@@ -22,9 +23,9 @@
     "falconxb": 1,
     "falconxt": 1,
     "icon_bomb": 1,
-    "icon_credit": 1,
+    "icon_credit": 4,
     "icon_gen": 1,
-    "icon_life": 1,
+    "icon_life": 3,
     "icon_shield": 1,
     "laser": 1,
     "layer_0": 1,
@@ -39,6 +40,5 @@
     "ui_card_bg": 1,
     "ui_tab_active": 1,
     "vulcan": 1
-  },
-  "skin": "blazing_lazers"
+  }
 }
