@@ -1,6 +1,13 @@
 # Changelog
 
 ## [21/08/2026]
+- Fix: power-up drops in the default skin had no artwork — they fell back to a plain coloured square with a letter. The five HUD icons the collectables use were the one asset the skin had never had generated; they now exist, and the same icons return to the HUD and shop
+- Fix: the default skin's boss rendered as an opaque red rectangle — the shipped sprite was a bare texture rather than a ship, and predated sprite supersampling
+- Fix: the Star Gun projectile in the default skin was a grey box with a white cross — a placeholder that was never replaced; it is now a proper energy star
+- Fix: enemies drawn side-on instead of facing the player — six in Chrome Fleet (2004) and one in Dual-Polarity (2001), re-picked from art that was already generated
+- Fix: boss explosions flashed an opaque orange rectangle over the whole sprite for the first frames
+
+## [21/08/2026]
 - Enemy tally in the HUD is now a flat seven-segment LED readout with ghosted unlit segments — the rounded, drop-shadowed numeral was the one element breaking the HUD's segmented instrument look; the spawn pop animation is unchanged
 - The game canvas now survives a rendering error instead of going permanently black while the HUD keeps running (seen once on Android after a death redeploy) — the error is logged with a stack trace to the system log so a recurrence can be diagnosed
 
