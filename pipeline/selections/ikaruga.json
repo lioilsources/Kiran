@@ -1,5 +1,4 @@
 {
-  "skin": "ikaruga",
   "assets": {
     "asteroid": 2,
     "asteroid1": 1,
@@ -28,8 +27,20 @@
     "icon_life": 4,
     "icon_shield": 1,
     "laser": 1,
-    "layer_0": 1,
-    "layer_1": 1,
+    "layer_0_z0": 1,
+    "layer_0_z1": 1,
+    "layer_0_z2": 1,
+    "layer_0_z3": 1,
+    "layer_0_z4": 1,
+    "layer_0_z5": 1,
+    "layer_0_z6": 1,
+    "layer_1_z0": 1,
+    "layer_1_z1": 1,
+    "layer_1_z2": 1,
+    "layer_1_z3": 1,
+    "layer_1_z4": 1,
+    "layer_1_z5": 1,
+    "layer_1_z6": 1,
     "layer_2": 1,
     "layer_3": 1,
     "preview": 1,
@@ -40,5 +51,6 @@
     "ui_card_bg": 1,
     "ui_tab_active": 1,
     "vulcan": 1
-  }
+  },
+  "skin": "ikaruga"
 }
