@@ -27,6 +27,21 @@ type Config struct {
 	TargetSize  int    // max dimension in px (default 128)
 	BgThreshold int    // color distance threshold (default 60)
 	BgMargin    int    // soft-edge ramp width (default 20)
+
+	// Sel records which variation each asset was built from. Assets absent
+	// from it fall back to Variation, so an unrecorded skin behaves exactly as
+	// before. Nil is valid and means "nothing recorded".
+	Sel *Selections
+	// Only restricts the run to a single asset name. Without it, fixing one
+	// bad sprite re-derived every asset in the skin from the same variation —
+	// which is how good art got clobbered while chasing a bad one.
+	Only string
+}
+
+// variationFor resolves the variation to build an asset from: its recorded
+// choice, else the run-wide default.
+func (c Config) variationFor(asset string) int {
+	return c.Sel.For(asset, c.Variation)
 }
 
 // DefaultConfig returns a Config with sensible defaults. The threshold/margin
@@ -84,6 +99,9 @@ func Run(cfg Config) error {
 		bgComplete := true
 
 		for _, asset := range manifest.Assets {
+			if cfg.Only != "" && asset.Name != cfg.Only {
+				continue
+			}
 			switch {
 			case asset.Type == "sfx":
 				// SFX handled separately by processSfx(); skip here.
@@ -175,14 +193,19 @@ func Run(cfg Config) error {
 		}
 	}
 
-	// Process SFX: convert MP3 → OGG with volume normalization
-	if err := processSfx(cfg); err != nil {
-		fmt.Printf("Warning: SFX processing: %v\n", err)
-	}
+	// Audio has no variations, so a single-asset image re-pick has no business
+	// re-encoding the whole soundtrack — that is minutes of ffmpeg and a churned
+	// git diff for nothing.
+	if cfg.Only == "" {
+		// Process SFX: convert MP3 → OGG with volume normalization
+		if err := processSfx(cfg); err != nil {
+			fmt.Printf("Warning: SFX processing: %v\n", err)
+		}
 
-	// Process music: convert MP3 → OGG with music-grade loudness normalization
-	if err := processMusic(cfg); err != nil {
-		fmt.Printf("Warning: music processing: %v\n", err)
+		// Process music: convert MP3 → OGG with music-grade loudness normalization
+		if err := processMusic(cfg); err != nil {
+			fmt.Printf("Warning: music processing: %v\n", err)
+		}
 	}
 
 	fmt.Printf("Postprocessed skin %s → %s\n", filepath.Base(cfg.SkinDir), cfg.OutputDir)
@@ -194,7 +217,7 @@ func processAsset(cfg Config, asset skin.ManifestAsset, outDir string) error {
 }
 
 func processNamedAsset(cfg Config, asset skin.ManifestAsset, outDir, gameName string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -220,7 +243,7 @@ func normalizeSprite(rgba *image.NRGBA, gameName string, targetSize int) *image.
 }
 
 func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, frameCount int) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -291,7 +314,7 @@ func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) erro
 
 // processUiBg handles the ComCenter background — opaque full-screen art, exact resize.
 func processUiBg(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -308,7 +331,7 @@ func processUiBg(cfg Config, asset skin.ManifestAsset, outDir string) error {
 // processOpaqueUiSprite handles ComCenter panel sprites (button, card, tab):
 // opaque, exact resize to reference dimensions, no background removal.
 func processOpaqueUiSprite(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -331,7 +354,7 @@ const (
 )
 
 func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -495,6 +518,24 @@ func savePNG(path string, img image.Image) error {
 	}
 	defer f.Close()
 	return png.Encode(f, img)
+}
+
+// ManifestAssetNames lists the image assets a skin's manifest declares, in
+// manifest order. Audio entries are excluded: they have no variations, so
+// recording a variant choice for them would be meaningless.
+func ManifestAssetNames(skinDir string) ([]string, error) {
+	m, err := readManifest(skinDir)
+	if err != nil {
+		return nil, err
+	}
+	var out []string
+	for _, a := range m.Assets {
+		if a.Type == "sfx" || a.Type == "music" {
+			continue
+		}
+		out = append(out, a.Name)
+	}
+	return out, nil
 }
 
 func readManifest(skinDir string) (*skin.Manifest, error) {
