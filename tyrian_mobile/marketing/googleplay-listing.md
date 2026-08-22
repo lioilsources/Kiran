@@ -242,3 +242,33 @@ Send me the **Play Games App ID** and the **two leaderboard IDs** and I will:
 
 Uploading the current `app-release.aab` before that works fine — the game plays
 correctly, only leaderboards and achievements stay silent.
+
+---
+
+## 8. Where the upload-ready images are
+
+`tyrian_mobile/marketing/play-assets/` — all validated against Play's limits
+(min 320px, max 3840px, aspect ratio never steeper than 1:2).
+
+| Console field | File |
+|---|---|
+| App icon | `icon_512.png` |
+| Feature graphic | `feature_graphic_1024x500.png` |
+| Phone screenshots | `phone/` (4) |
+| 7-inch tablet | `tablet7/` (4) |
+| 10-inch tablet | `tablet10/` (4) |
+
+Two things worth knowing about how these were made:
+
+- The iOS screenshots are 1125×2436, i.e. 1:2.17 — **steeper than Play allows**,
+  so they could not be uploaded as-is. Three are re-cut to Play's canonical
+  1080×1920 by `ol1n.now`'s own `make screenshots` (center-crop), and
+  `kirian_comcenter` is instead padded to 1218×2436, because the crop cut its
+  CONTINUE MISSION button off the bottom.
+- `ol1n.now/scripts/resize-screenshots.sh` already knows Play's phone size
+  (`PLAY_PHONE=1080x1920`) but keys store output off the *platform folder*, and
+  Kirian only had `screenshots/raw/mobile/ios/`. Adding `.../android/` makes it
+  emit Play sizes on every run. It has no Play tablet target — those two folders
+  were produced by hand.
+- The feature graphic did not exist in any form; it is composed from game art
+  (zone-5 background, `vessel_2`, Avenir Next Condensed wordmark).
