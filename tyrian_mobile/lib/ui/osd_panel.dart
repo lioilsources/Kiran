@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game/tyrian_game.dart';
+import '../game/platform_config.dart' as platform;
 import 'credits_wave.dart';
 import 'enemy_counter.dart';
 import '../entities/vessel.dart';
@@ -11,6 +12,12 @@ import 'skin_painter.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
+/// Desktop monitors are 1080p+ where the phone-tuned sizes read as a sticker;
+/// one multiplier lifts fonts, bars and paddings together (Steam plan, Fix 8).
+final double _osdScale = platform.isDesktop ? 1.5 : 1.0;
+
+double _sc(num v) => v * _osdScale;
+
 class OsdPanel extends StatelessWidget {
   final TyrianGame game;
   final VoidCallback? onMuteToggle;
@@ -40,13 +47,13 @@ class OsdPanel extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: indent),
       child: SizedBox(
-        width: 130,
+        width: _sc(130),
         child: HealthBar(
           label: label,
           value: val,
           maxValue: max,
           color: color,
-          height: 8,
+          height: _sc(8),
           icon: _statIcon(iconKey),
           segments: 5,
         ),
@@ -84,9 +91,9 @@ class OsdPanel extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
                     sector.caption,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white70,
-                      fontSize: 11,
+                      fontSize: _sc(11),
                     ),
                   ),
                 ),
@@ -128,11 +135,11 @@ class OsdPanel extends StatelessWidget {
               Row(
                 children: [
                   if (game.state == GameState.paused)
-                    const Text(
+                    Text(
                       'PAUSED',
                       style: TextStyle(
                         color: Colors.cyanAccent,
-                        fontSize: 13,
+                        fontSize: _sc(13),
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                       ),
@@ -152,11 +159,11 @@ class OsdPanel extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: Colors.orangeAccent.withAlpha(100)),
                             ),
-                            child: const Text(
+                            child: Text(
                               'SKIN',
                               style: TextStyle(
                                 color: Colors.orangeAccent,
-                                fontSize: 10,
+                                fontSize: _sc(10),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -204,9 +211,9 @@ class OsdPanel extends StatelessWidget {
                           ),
                           child: Text(
                             game.state == GameState.paused ? 'RESUME' : 'PAUSE',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 10,
+                              fontSize: _sc(10),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -240,7 +247,7 @@ class OsdPanel extends StatelessWidget {
                     : (playerLabel == 'P2'
                         ? const Color(0xFF00FF80)
                         : Colors.cyanAccent),
-                fontSize: 9,
+                fontSize: _sc(9),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -260,9 +267,9 @@ class OsdPanel extends StatelessWidget {
     );
   }
 
-  static const _creditsStyle = TextStyle(
+  static final _creditsStyle = TextStyle(
     color: Colors.greenAccent,
-    fontSize: 11,
+    fontSize: _sc(11),
     fontWeight: FontWeight.bold,
   );
 
