@@ -482,7 +482,22 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           if (_game.isLoaded && _screen == _ScreenState.game) ...[
             // Dimming overlay when paused
             if (_game.state == GameState.paused && !_showPauseSkinSelector)
-              Container(color: Colors.black26),
+              _PauseMenu(
+                onResume: () {
+                  if (_game.state == GameState.paused) _game.togglePause();
+                  setState(() {});
+                },
+                onSkins: () {
+                  _game.skinSelectorOpen = true;
+                  setState(() => _showPauseSkinSelector = true);
+                },
+                onQuit: platform.isDesktop
+                    ? () async {
+                        await windowManager.destroy();
+                        exit(0);
+                      }
+                    : null,
+              ),
 
             // Boss HP bar (visible while a phased boss is on the field)
             if (!_showComCenter && !_clientWaiting &&
@@ -789,6 +804,146 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                 child: const Text('REDEPLOY'),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pause overlay: Resume / Skins / sound toggles / Quit, navigable by pad and
+/// keyboard, tappable on touch. Replaces the bare dim Container — a pad-only
+/// player previously had nothing to interact with while paused (Steam Fix 6);
+/// the OSD strip stays for touch muscle memory.
+class _PauseMenu extends StatefulWidget {
+  final VoidCallback onResume;
+  final VoidCallback onSkins;
+  final Future<void> Function()? onQuit;
+
+  const _PauseMenu({required this.onResume, required this.onSkins, this.onQuit});
+
+  @override
+  State<_PauseMenu> createState() => _PauseMenuState();
+}
+
+class _PauseMenuState extends State<_PauseMenu> {
+  final _focusNode = FocusNode();
+  final GamepadInput _gamepad = GamepadInput();
+  Timer? _pollTimer;
+  int _index = 0;
+  bool _prevUp = false, _prevDown = false, _prevConfirm = false, _prevBack = false;
+
+  List<(String, VoidCallback)> get _items => [
+        ('RESUME', widget.onResume),
+        ('SKINS', widget.onSkins),
+        (SoundService.instance.muted ? 'SOUND: OFF' : 'SOUND: ON',
+            () => setState(SoundService.instance.toggleMute)),
+        (MusicService.instance.muted ? 'MUSIC: OFF' : 'MUSIC: ON',
+            () => setState(MusicService.instance.toggleMute)),
+        if (widget.onQuit != null) ('QUIT TO DESKTOP', () => widget.onQuit!()),
+      ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (platform.isDesktop) {
+      _pollTimer = Timer.periodic(
+          const Duration(milliseconds: 16), (_) => _pollGamepad());
+    }
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _pollGamepad() async {
+    await _gamepad.poll();
+    if (!mounted) return;
+    final gp = _gamepad.primary;
+    final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
+    final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
+    final confirm = gp.buttonB;
+    final back = gp.buttonA || gp.back;
+    if (up && !_prevUp) setState(() => _index = (_index - 1).clamp(0, _items.length - 1));
+    if (down && !_prevDown) setState(() => _index = (_index + 1).clamp(0, _items.length - 1));
+    if (confirm && !_prevConfirm) _items[_index].$2();
+    if (back && !_prevBack) widget.onResume();
+    _prevUp = up;
+    _prevDown = down;
+    _prevConfirm = confirm;
+    _prevBack = back;
+  }
+
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final k = event.logicalKey;
+    if (k == LogicalKeyboardKey.arrowUp) {
+      setState(() => _index = (_index - 1).clamp(0, _items.length - 1));
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.arrowDown) {
+      setState(() => _index = (_index + 1).clamp(0, _items.length - 1));
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.space) {
+      _items[_index].$2();
+      return KeyEventResult.handled;
+    }
+    // Escape reaches TyrianGame's own handler, which resumes — don't eat it.
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = _items;
+    return Positioned.fill(
+      child: Focus(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: _onKey,
+        child: Container(
+          color: Colors.black54,
+          alignment: Alignment.center,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+            decoration: BoxDecoration(
+              color: const Color(0xEE0a0a1e),
+              border: Border.all(color: Colors.cyanAccent.withAlpha(120)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('PAUSED',
+                    style: TextStyle(
+                      color: Colors.cyanAccent,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 6,
+                    )),
+                const SizedBox(height: 24),
+                for (int i = 0; i < items.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: InkWell(
+                      onTap: items[i].$2,
+                      child: Text(
+                        items[i].$1,
+                        style: TextStyle(
+                          color: i == _index ? Colors.cyanAccent : Colors.white70,
+                          fontSize: 18,
+                          fontWeight:
+                              i == _index ? FontWeight.bold : FontWeight.normal,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

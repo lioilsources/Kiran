@@ -917,11 +917,13 @@ class TyrianGame extends FlameGame
     }
     _prevPauseKey = pauseKb;
 
-    // ── Skin selector: Start/Option opens it, auto-pauses game ──
+    // ── Gamepad pause (Start/Option) ──
+    // Plain pause toggle; the pause menu overlay in main.dart offers Skins,
+    // mute and Quit from there. Previously Start force-opened the skin
+    // selector, so a pad had no way to simply pause (Steam plan, Fix 6).
     final skinGp = gamepadInput.primary.pause; // Start = Option on PS, Menu on Xbox
     if (skinGp && !_prevSkinGp && !skinSelectorOpen) {
-      if (state == GameState.playing) togglePause();
-      if (state == GameState.paused) onSkinRequested?.call();
+      if (state == GameState.playing || state == GameState.paused) togglePause();
     }
     _prevSkinGp = skinGp;
 
