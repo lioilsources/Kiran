@@ -24,11 +24,17 @@ class ComCenterScreen extends StatefulWidget {
   final VoidCallback onStart;
   final VoidCallback? onJoinIp;
 
+  /// Start hosting a co-op game. Hosting is opt-in from here — it used to
+  /// start on every PLAY, spamming the LAN and popping the Windows firewall
+  /// prompt behind the fullscreen window for purely solo players.
+  final VoidCallback? onHost;
+
   const ComCenterScreen({
     super.key,
     required this.game,
     required this.onStart,
     this.onJoinIp,
+    this.onHost,
   });
 
   @override
@@ -1768,6 +1774,47 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             ),
           Row(
             children: [
+              if (widget.onHost != null &&
+                  game.coopRole == CoopRole.none &&
+                  game.vessel2 == null) ...[
+                GestureDetector(
+                  onTap: () {
+                    widget.onHost!();
+                    setState(() {});
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: _theme.accent.withAlpha(150)),
+                      borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                    ),
+                    child: Text(
+                      'HOST',
+                      style: _theme.styled(TextStyle(
+                        color: _theme.accent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
+                      )),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              if (game.coopRole == CoopRole.host && game.vessel2 == null) ...[
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Text(
+                    'HOSTING  ${game.hostIp ?? ''}',
+                    style: _theme.styled(TextStyle(
+                      color: _theme.accentDim,
+                      fontSize: 11,
+                      letterSpacing: 1,
+                    )),
+                  ),
+                ),
+              ],
               if (showJoin) ...[
                 GestureDetector(
                   onTap: widget.onJoinIp,

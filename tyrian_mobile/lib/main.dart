@@ -326,6 +326,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     );
   }
 
+  /// PLAY: single-player, no sockets. Hosting used to start unconditionally
+  /// here, which meant every solo launch bound a TCP listener and broadcast on
+  /// the LAN — and on Windows popped a firewall prompt hidden behind the
+  /// fullscreen window (Steam plan, Fix 7). Hosting is opt-in via the HOST
+  /// button in ComCenter, which calls [_startHosting].
   Future<void> _startAsAutoHost() async {
     // Only a pilot with nothing to lose gets a clean slate. Resetting a run
     // that already exists would wipe the weapons, credits and cumulative
@@ -333,6 +338,18 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     // unlocks the higher weapon tiers.
     if (!_runInProgress) _game.resetForNewGame();
     _runInProgress = true;
+
+    if (mounted) {
+      setState(() {
+        _screen = _ScreenState.game;
+        _showComCenter = true;
+      });
+    }
+  }
+
+  /// Start hosting a co-op game on demand (ComCenter HOST button).
+  Future<void> _startHosting() async {
+    if (_autoHost != null || _game.coopHost != null) return; // already hosting
 
     _autoHost = CoopHost();
     final port = await _autoHost!.start(_game.vessel.pilotName);
@@ -350,12 +367,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _autoDiscovery = CoopDiscovery();
     await _autoDiscovery!.startBroadcast(port, _game.vessel.pilotName);
 
-    if (mounted) {
-      setState(() {
-        _screen = _ScreenState.game;
-        _showComCenter = true;
-      });
-    }
+    if (mounted) setState(() {});
   }
 
   Future<void> _joinAsClient(String ip, int port) async {
@@ -539,6 +551,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 game: _game,
                 onStart: _onComCenterStart,
                 onJoinIp: _showManualIpDialog,
+                onHost: _startHosting,
               ),
 
             // Client waiting overlay (P2)
