@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.tyrianvb" "\0"
-            VALUE "FileDescription", "tyrian_mobile" "\0"
+            VALUE "CompanyName", "ol1n" "\0"
+            VALUE "FileDescription", "Kirian" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "tyrian_mobile" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.tyrianvb. All rights reserved." "\0"
-            VALUE "OriginalFilename", "tyrian_mobile.exe" "\0"
-            VALUE "ProductName", "tyrian_mobile" "\0"
+            VALUE "InternalName", "kirian" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 ol1n. All rights reserved." "\0"
+            VALUE "OriginalFilename", "kirian.exe" "\0"
+            VALUE "ProductName", "Kirian" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

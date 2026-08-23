@@ -52,7 +52,7 @@ jobs:
         run: |
           set -e
           APP_DIR="tyrian_mobile"
-          APP_NAME="Kiran"
+          APP_NAME="Kirian"
           BUNDLE="$APP_DIR/build/linux/x64/release/bundle"
           BIN=$(grep -m1 'set(BINARY_NAME' "$APP_DIR/linux/CMakeLists.txt" | sed -E 's/.*"([^"]+)".*/\1/')
           echo "Binary: $BIN"
@@ -71,7 +71,7 @@ jobs:
           Name=$APP_NAME
           Exec=$BIN
           Icon=$APP_NAME
-          Categories=Utility;
+          Categories=Game;ArcadeGame;
           Terminal=false
           EOF
           cp "AppDir/$APP_NAME.desktop" "AppDir/usr/share/applications/$APP_NAME.desktop"

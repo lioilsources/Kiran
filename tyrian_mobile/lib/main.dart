@@ -30,7 +30,7 @@ void main() async {
 
   if (platform.isDesktop) {
     await windowManager.ensureInitialized();
-    await windowManager.setTitle('Tyrian');
+    await windowManager.setTitle('Kirian');
     await windowManager.setFullScreen(true);
   } else {
     SystemChrome.setPreferredOrientations([
@@ -49,7 +49,7 @@ class TyrianApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tyrian',
+      title: 'Kirian',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,

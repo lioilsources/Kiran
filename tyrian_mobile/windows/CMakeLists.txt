@@ -1,6 +1,6 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
-project(tyrian_mobile LANGUAGES CXX)
+project(kirian LANGUAGES CXX)
 
 # just_audio_windows uses <experimental/coroutine>, which recent MSVC removed
 # (error STL1011). Silence it for all targets (incl. plugins) until the plugin
@@ -9,7 +9,7 @@ add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "tyrian_mobile")
+set(BINARY_NAME "kirian")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
