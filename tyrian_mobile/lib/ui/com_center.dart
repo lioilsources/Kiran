@@ -42,6 +42,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   // Weapon selection
   int _selectedWeaponIndex = 0;
+
+  /// Desktop weapon-list scroll + per-card keys so gamepad focus can call
+  /// Scrollable.ensureVisible — same pattern as SkinSelector._scrollToFocus.
+  /// Without it the pad selection walks off-screen with no way back.
+  final ScrollController _weaponScroll = ScrollController();
+  final Map<int, GlobalKey> _weaponCardKeys = {};
   int _sectionIndex = 0; // 0=front, 1=side, 2=gen
 
   // Side slot target for buy (LB/RB gamepad or tap →L/→R)
@@ -70,6 +76,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   bool _prevUp = false, _prevDown = false;
   bool _prevLeft = false, _prevRight = false;
   bool _prevConfirm = false, _prevStart = false, _prevBack = false;
+  bool _prevSell = false;
   bool _prevLb = false, _prevRb = false;
   final FocusNode _focusNode = FocusNode();
 
@@ -118,6 +125,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   @override
   void dispose() {
+    _weaponScroll.dispose();
     _bgAnim.dispose();
     _pollTimer?.cancel();
     _focusNode.dispose();
@@ -137,6 +145,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final left = gp.dpadLeft || GamepadInput.deadzone(gp.leftStickX) < -0.5;
     final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
     final confirm = gp.buttonB;
+    final sell = gp.buttonX || gp.buttonY;
     final start = gp.start;
     final back = gp.back;
     final lb = gp.leftShoulder;
@@ -148,6 +157,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     if (left && !_prevLeft && _showingSide) setState(() => _targetSideSlot = WeaponSlot.leftGun);
     if (right && !_prevRight && _showingSide) setState(() => _targetSideSlot = WeaponSlot.rightGun);
     if (confirm && !_prevConfirm) _confirmAction();
+    // X/Y = sell — previously keyboard-only (Delete/Backspace), which left a
+    // pad-only Steam Deck player unable to sell anything (Steam plan, Fix 6).
+    if (sell && !_prevSell) _sellAction();
     if ((start && !_prevStart) || (back && !_prevBack)) widget.onStart();
     // LB/RB: switch between Front / Side / Generator tabs
     if (lb && !_prevLb) _switchSection((_sectionIndex - 1).clamp(0, 2));
@@ -155,7 +167,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
     _prevUp = up; _prevDown = down;
     _prevLeft = left; _prevRight = right;
-    _prevConfirm = confirm; _prevStart = start;
+    _prevConfirm = confirm;
+    _prevSell = sell; _prevStart = start;
     _prevBack = back;
     _prevLb = lb; _prevRb = rb;
   }
@@ -165,6 +178,19 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     if (weapons.isEmpty) return;
     setState(() {
       _selectedWeaponIndex = (_selectedWeaponIndex + delta).clamp(0, weapons.length - 1);
+    });
+    _scrollWeaponIntoView();
+  }
+
+  void _scrollWeaponIntoView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final ctx = _weaponCardKeys[_selectedWeaponIndex]?.currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(ctx,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          alignment: 0.5);
     });
   }
 
@@ -370,12 +396,17 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               children: [
                 _buildHeader(),
                 if (platform.isDesktop)
+                  // Two real columns: outfitting on the left, the skin picker
+                  // filling the right — previously the right ~2/3 of a 1080p
+                  // screen was a blank Expanded (Steam plan, Fix 5). SKINS no
+                  // longer sits under the OUTFITTING header: in a paid build
+                  // skins are a cosmetic picker, not merchandise (Fix 9/de-store).
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(
-                          width: 460,
+                          width: 560,
                           child: Column(
                             children: [
                               if (_cheatsEnabled) _buildCheatBar(),
@@ -387,30 +418,37 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                                     const EdgeInsets.symmetric(horizontal: 12),
                                 child: _buildSlotList(),
                               ),
-                              _sectionHeader('SHOP'),
+                              _sectionHeader('OUTFITTING'),
                               _buildSectionTabs(),
                               Container(height: 1, color: _theme.accent.withAlpha(30)),
                               Expanded(
                                 child: SingleChildScrollView(
+                                  controller: _weaponScroll,
                                   padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      _buildActiveSection(),
-                                      _sectionHeader('SKINS'),
-                                      SkinShopSection(
-                                        crossAxisCount: 4,
-                                        onSkinChanged: _onSkinChanged,
-                                      ),
-                                    ],
-                                  ),
+                                  child: _buildActiveSection(),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         Container(width: 1, color: _theme.accent.withAlpha(30)),
-                        const Expanded(child: SizedBox.shrink()),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _sectionHeader('SKINS'),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.all(12),
+                                  child: SkinShopSection(
+                                    crossAxisCount: 5,
+                                    onSkinChanged: _onSkinChanged,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   )
@@ -607,6 +645,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       children: [
         for (int i = 0; i < weapons.length; i++)
           Padding(
+            key: _weaponCardKeys.putIfAbsent(i, () => GlobalKey()),
             padding: const EdgeInsets.only(bottom: 8),
             child: _buildWeaponCard(weapons[i], i),
           ),
@@ -1723,8 +1762,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
-                '[OPTIONS / B]  Continue mission     [LB / RB]  Side slot L / R',
-                style: TextStyle(color: _theme.accentDim.withAlpha(120), fontSize: 9),
+                '[B] Buy/Upgrade   [X/Y] Sell   [LB/RB] Tabs   [OPTIONS] Continue mission',
+                style: TextStyle(color: _theme.accentDim.withAlpha(120), fontSize: 12),
               ),
             ),
           Row(
