@@ -1,0 +1,139 @@
+# Builds Windows + Linux and pushes both depots to Steam's `beta` branch.
+#
+# Runs only when the Steam secrets exist (the `deploy` job is skipped
+# otherwise), so this workflow is safe to merge before the Steamworks account
+# is set up. Required secrets:
+#   STEAM_APP_ID          — numeric app id from Steamworks
+#   STEAM_BUILD_USERNAME  — dedicated build account (Edit App Metadata +
+#                           Publish App Changes only)
+#   STEAM_CONFIG_VDF      — base64 of config/config.vdf after a local
+#                           `steamcmd +login <user>` (Steam Guard handshake)
+#
+# Depot layout (Steamworks defaults): <APPID+1> = windows, <APPID+2> = linux.
+# Every tag lands on the password-protected `beta` branch; promotion to
+# `default` is done by hand in Steamworks — Valve requires an interactive
+# confirmation to set the live branch, do not try to automate it.
+name: Steam Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      releaseBranch:
+        description: 'Steam branch to set live on'
+        required: false
+        default: 'beta'
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Build Windows depot
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.x'
+          channel: stable
+          cache: true
+
+      - run: flutter config --enable-windows-desktop
+
+      - name: Install dependencies
+        working-directory: tyrian_mobile
+        run: flutter pub get
+
+      - name: Stamp version from tag
+        shell: bash
+        working-directory: tyrian_mobile
+        run: |
+          BASE="${GITHUB_REF_NAME#v}"
+          echo "$BASE" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' || BASE=$(grep '^version:' pubspec.yaml | sed -E 's/^version: ([0-9.]+).*/\1/')
+          sed -i -E "s/^version: .*/version: ${BASE}+${GITHUB_RUN_NUMBER}/" pubspec.yaml
+
+      - name: Build Windows (release)
+        working-directory: tyrian_mobile
+        run: flutter build windows --release
+        env:
+          CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: steam-depot-windows
+          path: tyrian_mobile/build/windows/x64/runner/Release/
+          if-no-files-found: error
+
+  build-linux:
+    name: Build Linux depot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.x'
+          channel: stable
+          cache: true
+
+      - name: Install Linux build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev pkg-config cmake clang
+
+      - run: flutter config --enable-linux-desktop
+
+      - name: Install dependencies
+        working-directory: tyrian_mobile
+        run: flutter pub get
+
+      - name: Stamp version from tag
+        working-directory: tyrian_mobile
+        run: |
+          BASE="${GITHUB_REF_NAME#v}"
+          echo "$BASE" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' || BASE=$(grep '^version:' pubspec.yaml | sed -E 's/^version: ([0-9.]+).*/\1/')
+          sed -i -E "s/^version: .*/version: ${BASE}+${GITHUB_RUN_NUMBER}/" pubspec.yaml
+
+      - name: Build Linux (release)
+        working-directory: tyrian_mobile
+        run: flutter build linux --release
+
+      # Steam launches the raw bundle binary directly (launch option: kirian);
+      # the AppImage from release-linux.yml is for direct download only.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: steam-depot-linux
+          path: tyrian_mobile/build/linux/x64/release/bundle/
+          if-no-files-found: error
+
+  deploy:
+    name: Push depots to Steam (beta)
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    # Skip cleanly until the Steamworks secrets are configured.
+    if: ${{ vars.STEAM_DEPLOY_ENABLED == 'true' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: steam-depot-windows
+          path: steam-build/windows
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: steam-depot-linux
+          path: steam-build/linux
+
+      - uses: game-ci/steam-deploy@v3
+        with:
+          username: ${{ secrets.STEAM_BUILD_USERNAME }}
+          configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
+          appId: ${{ secrets.STEAM_APP_ID }}
+          buildDescription: ${{ github.ref_name }} (run ${{ github.run_number }})
+          rootPath: steam-build
+          depot1Path: windows
+          depot2Path: linux
+          releaseBranch: ${{ inputs.releaseBranch || 'beta' }}
