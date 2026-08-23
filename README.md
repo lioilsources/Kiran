@@ -1,33 +1,38 @@
-# Kiran
+# Kirian
 
-A cross-platform 2D vertical-scrolling space shooter — a mobile remake of the classic DOS game Tyrian, ported from the original TyrianVB (VB6/Win32).
+A cross-platform 2D vertical-scrolling space shooter with a roguelike loop —
+inspired by the classic vertical shooters of the 90s. Dying rewinds you to
+Sector 1 with everything you earned; only your hull resets.
 
 ## Platforms
 
 | Platform | Status |
 |----------|--------|
-| iOS | Supported |
-| Android | Supported |
-| macOS | Partial (landscape + gamepad in progress) |
-| Windows | Partial (landscape + gamepad in progress) |
+| iOS | Live on the App Store |
+| Android | Closed testing on Google Play |
+| Windows | Supported (landscape, gamepad) |
+| Linux | Supported (landscape, gamepad) |
+| macOS | Supported (landscape, gamepad) |
 
 ## Features
 
-- **7 sectors** (levels 1–6 scripted, 7+ procedurally random)
+- **Roguelike run** — death keeps weapons, credits and cumulative score; score permanently unlocks weapon tiers
+- **18 hand-authored sectors** across six zones (~60 s each), then procedural sectors without a ceiling
 - **12 enemy types** from basic fighters to end-game bosses
 - **8 weapons** across 4 primary and 4 secondary slots, upgradeable through combat economy
-- **13 visual skins** — each with theme-specific sprites, sounds, parallax backgrounds, and post-process shaders (Nuclear Throne, Luftrausers, Nex Machina, Tyrian DOS, Gradius V, R-Type, Blazing Lazers, Galaga, Space Invaders, Geometry Wars, Ikaruga, Asteroids, Default)
+- **Weapon-typed destruction** — enemies die by the weapon that killed them: water, ice, fire, lightning, plasma
+- **14 visual skins** — each an original take on a different era of the genre (Monochrome Invader, Vector Wireframe, Arcade Formation, 8-Bit Canyon, Biomech Cruiser, 16-Bit Laser, Retro PC Pixel, Dual-Polarity, Neon Grid, Chrome Fleet, Sepia Dogfight, Wasteland Pixel, Neon Voxel, Kiran) with theme-specific sprites, sounds, per-zone parallax backgrounds, and post-process shaders
 - **GPU shader pipeline** — vignette, bloom, CRT scanlines, chromatic aberration, dissolve, pixel explosion
 - **Sprite destruction system** — Voronoi fragmentation with radial shard physics
-- **ComCenter shop** — buy and upgrade weapons between sectors
-- **Network co-op** — 2-player online multiplayer
+- **ComCenter** — buy and upgrade weapons between sectors
+- **Network co-op** — 2-player over local Wi-Fi, automatic discovery
 - **Gamepad support** — PS4 / Xbox analog + buttons on desktop
 
 ## Tech Stack
 
 - [Flutter](https://flutter.dev) + [Flame](https://flame-engine.org) ^1.35.1 game engine
 - Custom GLSL fragment shaders via Flutter `FragmentProgram`
-- Go asset pipeline (`pipeline/`) — sprite generation, atlas packing, SFX via Grok Image API / ElevenLabs
+- Go asset pipeline (`pipeline/`) — sprite/background generation via ComfyUI (Flux), SFX/music via ElevenLabs
 
 ## Build
 
@@ -46,29 +51,30 @@ flutter run -d macos
 
 ## Asset Pipeline
 
-Regenerate sprites, backgrounds, and SFX for a skin, then rebuild the texture atlas.
+Regenerate sprites, backgrounds, and SFX for a skin, then rebuild the texture
+atlas. See `pipeline/SKILL.md` for the full reference.
 
-### 1. Generate images (Flux via ol1n / ComfyUI backend)
+### 1. Generate images (ComfyUI / Flux)
 
 ```bash
 cd pipeline
 
 # All assets for one skin
-go run ./cmd/generate -skin asteroids -backend ol1n
-
-# ComfyUI variant
-go run ./cmd/generate -skin asteroids -backend comfyui -comfyui-workflow flux
+go run ./cmd/generate -skin asteroids
 
 # Only backgrounds
-go run ./cmd/generate -skin asteroids -backend ol1n -asset-type background
+go run ./cmd/generate -skin asteroids -asset-type background
 
 # Dry-run (print prompts, no API calls)
-go run ./cmd/generate -skin asteroids -backend ol1n -dry-run
+go run ./cmd/generate -skin asteroids -dry-run
 ```
 
-Key flags: `-n 4` (variations per asset), `-workers 3`, `-resolution 1k|2k`
+Key flags: `-n 4` (variations per asset), `-force` (regenerate existing)
 
-Available skin IDs: `space_invaders`, `galaga`, `asteroids`, `geometry_wars`, `ikaruga`, `nuclear_throne`, `luftrausers`, `nex_machina`, `tyrian_dos`, `gradius_v`, `rtype`, `river_raid`, `blazing_lazers`
+Available skin IDs: `space_invaders`, `galaga`, `asteroids`, `geometry_wars`,
+`ikaruga`, `nuclear_throne`, `luftrausers`, `nex_machina`, `tyrian_dos`,
+`gradius_v`, `rtype`, `river_raid`, `blazing_lazers`, `default`
+(directory ids are historical and do not match the display names above)
 
 ### 2. Postprocess (pick variation, resize, bg removal → game assets)
 
@@ -76,12 +82,14 @@ Available skin IDs: `space_invaders`, `galaga`, `asteroids`, `geometry_wars`, `i
 go run ./cmd/postprocess -skin asteroids
 # output goes to ../tyrian_mobile/assets/skins/asteroids/
 
-# Pick a different variation
-go run ./cmd/postprocess -skin asteroids -variation 2
+# Re-pick ONE asset without touching the rest of the skin
+go run ./cmd/postprocess -skin asteroids -only falcon3 -variation 2
 
 # Tune bg removal
 go run ./cmd/postprocess -skin asteroids -threshold 30 -margin 15 -size 128
 ```
+
+The chosen variation per asset is recorded in `pipeline/selections/<skin>.json`.
 
 ### 3. Rebuild texture atlas
 
