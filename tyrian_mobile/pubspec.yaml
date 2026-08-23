@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   flame: ^1.35.1
   just_audio: ^0.9.40
+  # Kept as a rollback for media_kit on Windows (see main.dart's
+  # JustAudioMediaKit.ensureInitialized). Once a clean-VM audio test passes,
+  # this and the coroutine define in windows/CMakeLists.txt can both go.
   just_audio_windows: ^0.2.2
   shared_preferences: ^2.5.4
   google_fonts: ^8.0.2
@@ -43,6 +46,9 @@ dependencies:
   window_manager: ^0.4.3
   games_services: ^4.1.1
   in_app_purchase: ^3.2.0
+  just_audio_media_kit: ^2.1.0
+  media_kit_libs_linux: ^1.2.1
+  media_kit_libs_windows_audio: ^1.0.9
 
 dev_dependencies:
   flutter_test:

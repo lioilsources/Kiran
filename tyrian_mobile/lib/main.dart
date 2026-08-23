@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
@@ -29,6 +30,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (platform.isDesktop) {
+    // Route just_audio through media_kit (libmpv) on Linux and Windows.
+    // Linux has no other backend at all — without this the game is silent on
+    // Steam Deck. Windows nominally has just_audio_windows, but that decodes
+    // through Media Foundation, which only handles our .ogg assets when the
+    // removable "Web Media Extensions" store pack happens to be installed.
+    // One backend removes the codec lottery. macOS/iOS/Android keep their
+    // native just_audio implementations (App Store builds are unaffected).
+    JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Kirian');
     await windowManager.setFullScreen(true);
