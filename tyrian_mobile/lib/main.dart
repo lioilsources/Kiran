@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 import 'game/platform_config.dart' as platform;
@@ -40,7 +41,12 @@ void main() async {
     JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Kirian');
-    await windowManager.setFullScreen(true);
+    // Fullscreen by default, but honour a windowed preference saved by the
+    // F11/Alt+Enter toggle — before this there was no way out of fullscreen.
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('fullscreen') ?? true) {
+      await windowManager.setFullScreen(true);
+    }
   } else {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -102,6 +108,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (platform.isDesktop) {
+      HardwareKeyboard.instance.addHandler(_handleGlobalKey);
+    }
     _game = TyrianGame();
     _setupGameCallbacks();
     // Achievements piggyback on the leaderboard's sign-in, so init them after
@@ -213,6 +222,23 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
   }
 
+  /// F11 or Alt+Enter toggles fullscreen anywhere — menu, shop, mid-game.
+  /// Registered on HardwareKeyboard so it works regardless of widget focus.
+  bool _handleGlobalKey(KeyEvent event) {
+    if (event is! KeyDownEvent) return false;
+    final isToggle = event.logicalKey == LogicalKeyboardKey.f11 ||
+        (HardwareKeyboard.instance.isAltPressed &&
+            event.logicalKey == LogicalKeyboardKey.enter);
+    if (!isToggle) return false;
+    () async {
+      final fs = await windowManager.isFullScreen();
+      await windowManager.setFullScreen(!fs);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('fullscreen', !fs);
+    }();
+    return true;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
@@ -227,6 +253,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    if (platform.isDesktop) {
+      HardwareKeyboard.instance.removeHandler(_handleGlobalKey);
+    }
     WidgetsBinding.instance.removeObserver(this);
     _disposeAutoHost();
     _game.disposeCoop();
@@ -442,10 +471,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
           // Main menu with skin selector
           if (_game.isLoaded && _screen == _ScreenState.mainMenu)
-            SkinSelector(onPlay: () {
-              _game.refreshSprites();
-              _startAsAutoHost();
-            }),
+            SkinSelector(
+                showQuit: true,
+                onPlay: () {
+                  _game.refreshSprites();
+                  _startAsAutoHost();
+                }),
 
           // Game screen overlays
           if (_game.isLoaded && _screen == _ScreenState.game) ...[

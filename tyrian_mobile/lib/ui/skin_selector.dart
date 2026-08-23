@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io' show exit;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/asset_library.dart';
@@ -18,7 +20,13 @@ class SkinSelector extends StatefulWidget {
   final VoidCallback onPlay;
   final VoidCallback? onDiscard;
 
-  const SkinSelector({super.key, required this.onPlay, this.onDiscard});
+  /// Show a QUIT entry under the grid. Only the desktop main menu sets this:
+  /// phones have a home button, and the pause-time selector must not offer a
+  /// second, confusing exit.
+  final bool showQuit;
+
+  const SkinSelector(
+      {super.key, required this.onPlay, this.onDiscard, this.showQuit = false});
 
   @override
   State<SkinSelector> createState() => _SkinSelectorState();
@@ -107,15 +115,40 @@ class _SkinSelectorState extends State<SkinSelector> {
     widget.onPlay();
   }
 
+  bool get _hasQuit => widget.showQuit && platform.isDesktop;
+
+  /// Pseudo focus index for the QUIT entry, one past the skin grid.
+  int get _quitIndex => kSkins.length;
+
+  Future<void> _quit() async {
+    await windowManager.destroy();
+    exit(0);
+  }
+
   void _moveFocus(int dx, int dy) {
     if (_loading) return;
     final cols = platform.isLandscape ? 4 : 2;
     final count = kSkins.length;
+
+    // QUIT sits below the grid: down from the last row lands on it, up from it
+    // returns to the last row. Left/right on it stay put.
+    if (_focusIndex == _quitIndex) {
+      if (dy < 0) {
+        setState(() => _focusIndex = count - 1);
+        _scrollToFocus();
+      }
+      return;
+    }
+
     int row = _focusIndex ~/ cols;
     int col = _focusIndex % cols;
+    final maxRow = (count - 1) ~/ cols;
+    if (_hasQuit && dy > 0 && row == maxRow) {
+      setState(() => _focusIndex = _quitIndex);
+      return;
+    }
     col += dx;
     row += dy;
-    final maxRow = (count - 1) ~/ cols;
     col = col.clamp(0, cols - 1);
     row = row.clamp(0, maxRow);
     final newIndex = (row * cols + col).clamp(0, count - 1);
@@ -130,6 +163,7 @@ class _SkinSelectorState extends State<SkinSelector> {
   void _scrollToFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      if (_focusIndex >= _cardKeys.length) return; // QUIT entry has no card
       final ctx = _cardKeys[_focusIndex].currentContext;
       if (ctx == null) return;
       Scrollable.ensureVisible(ctx,
@@ -158,7 +192,13 @@ class _SkinSelectorState extends State<SkinSelector> {
     if (right && !_prevRight) _moveFocus(1, 0);
     if (up && !_prevUp) _moveFocus(0, -1);
     if (down && !_prevDown) _moveFocus(0, 1);
-    if (confirm && !_prevConfirm) _selectAndPlay(kSkins[_focusIndex].id);
+    if (confirm && !_prevConfirm) {
+      if (_focusIndex == _quitIndex) {
+        _quit();
+      } else {
+        _selectAndPlay(kSkins[_focusIndex].id);
+      }
+    }
     if (discard && !_prevDiscard) widget.onDiscard?.call();
 
     _prevLeft = left;
@@ -190,7 +230,15 @@ class _SkinSelectorState extends State<SkinSelector> {
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
-      _selectAndPlay(kSkins[_focusIndex].id);
+      if (_focusIndex == _quitIndex) {
+        _quit();
+      } else {
+        _selectAndPlay(kSkins[_focusIndex].id);
+      }
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.escape && _hasQuit) {
+      _quit();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -240,6 +288,37 @@ class _SkinSelectorState extends State<SkinSelector> {
                         ),
                       ),
               ),
+              if (_hasQuit)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: InkWell(
+                    onTap: _quit,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _focusIndex == _quitIndex
+                              ? Colors.cyanAccent
+                              : Colors.white24,
+                          width: _focusIndex == _quitIndex ? 2 : 1,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'QUIT',
+                        style: TextStyle(
+                          color: _focusIndex == _quitIndex
+                              ? Colors.cyanAccent
+                              : Colors.white54,
+                          fontSize: 14,
+                          letterSpacing: 4,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               if (SkinStoreService.instance.supported)
                 TextButton(
                   onPressed: SkinStoreService.instance.restore,
