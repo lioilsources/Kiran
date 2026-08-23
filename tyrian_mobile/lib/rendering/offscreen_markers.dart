@@ -16,6 +16,11 @@ import '../game/tyrian_game.dart';
 ///
 /// Lives in `camera.viewport`, not in `world`, so it draws in fixed
 /// viewport-sized coordinates regardless of the viewfinder's zoom and pan.
+/// NOTE(landscape): the maths below assumes the portrait field
+/// (config.gameWidth x gameHeight) while the landscape viewport swaps the
+/// dimensions. This is dormant, not broken: in landscape the camera shows the
+/// whole field at zoom 1, so no enemy is ever off-screen and render() draws
+/// nothing. If landscape ever gets a zoomed camera, revisit this first.
 class OffscreenEnemyMarkers extends Component
     with HasGameReference<TyrianGame> {
   /// Per-edge counts: left, right, up, down.

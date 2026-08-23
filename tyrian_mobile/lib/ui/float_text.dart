@@ -1,6 +1,9 @@
+import 'dart:math' show pi;
+
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
+import '../game/platform_config.dart' as platform;
 
 /// Ported from FloatText.cls — floating text that drifts upward and fades.
 /// Used for "Complete", "Game Over", weapon unlock messages, etc.
@@ -31,12 +34,24 @@ class FloatText extends PositionComponent {
       return;
     }
     if (!stationary) {
-      position.y -= driftSpeed * dt;
+      // Screen-up drift. In landscape the camera is rotated +90 CCW (game up
+      // renders as screen right), so screen-up corresponds to game -X.
+      if (platform.isLandscape) {
+        position.x -= driftSpeed * dt;
+      } else {
+        position.y -= driftSpeed * dt;
+      }
     }
   }
 
   @override
   void render(Canvas canvas) {
+    // Counter the landscape camera rotation (+90 CCW) so glyphs read upright.
+    // The canvas origin is this component's position, which the paint below
+    // treats as the text centre, so rotating about the origin is exact.
+    if (platform.isLandscape) {
+      canvas.rotate(-pi / 2);
+    }
     final alpha = ((1.0 - _elapsed / duration) * 255).round().clamp(0, 255);
     final textPainter = TextPainter(
       text: TextSpan(

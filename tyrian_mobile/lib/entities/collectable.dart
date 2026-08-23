@@ -1,6 +1,9 @@
+import 'dart:math' show pi;
+
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
+import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
@@ -133,6 +136,14 @@ class Collectable extends PositionComponent
   void render(Canvas canvas) {
     // Banking world shift — render-only; pickup AABB uses logic positions
     canvas.translate(game.worldShiftX, 0);
+
+    // Counter the landscape camera rotation so the icon and its label read
+    // upright; rotate about the sprite centre so the pickup stays in place.
+    if (platform.isLandscape) {
+      canvas.translate(size.x / 2, size.y / 2);
+      canvas.rotate(-pi / 2);
+      canvas.translate(-size.x / 2, -size.y / 2);
+    }
 
     if (_sprite != null) {
       _sprite!.render(canvas, size: size);
