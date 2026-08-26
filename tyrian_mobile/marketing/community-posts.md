@@ -1,23 +1,67 @@
 # Community posts — Kirian launch
 
-English, ready to paste. Verified against the live store listing
-(https://apps.apple.com/us/app/kirian/id6774868017, $0.99, v2.7.4).
+English, ready to paste. Written for the **free** model: the game is free,
+the default look plus two skins are unlocked, the other eleven are $0.99 each
+(verified in `lib/services/skin_registry.dart` — three entries have no
+productId).
 
-Publishing notes:
-- Confirm the price is intentional ($0.99 + optional cosmetic IAP). If it
-  flips to free, update the price lines in both Reddit posts.
-- HN WILL ask about rights to the original VB6 game. Have a one-sentence
-  provenance answer ready before posting; the Show HN text says "fan-made
-  VB6 remake" and no more.
-- Post order: r/shmups (small, sharp feedback) → r/iosgaming → Show HN
-  (weekday morning US time) → r/gamedev postmortem a few days later.
-- One community per day; answer every comment in the first 2 hours.
+## Before you post — three blockers
 
+1. **The App Store still says $0.99.** Verified live via the iTunes lookup
+   API. Every post below says "free". Change the price in App Store Connect
+   and wait for it to propagate before posting anything, or the first
+   commenter calls it a lie.
+2. **Decide what to say about the original author** — see the provenance
+   section below. The default text credits him without personal detail. Do
+   not upgrade to a more revealing variant without asking him about that
+   specific disclosure.
+3. **Steam differs on purpose.** Steam is planned as a paid title with all
+   14 skins included; mobile is free with per-skin purchases. That is a normal
+   cross-platform split, but expect someone to ask — the honest answer is
+   "no in-app purchases on Steam, you get everything".
 
+## Provenance — the part that needs a real decision
+
+The original VB6 game is a friend's work, written recently, with his
+permission and a 50/50 revenue split. He also wrote it while incarcerated,
+which is the actual reason the stack is a decade out of date.
+
+That last fact is a strong story hook and it is also **his** private
+information. Agreeing to the port is not agreeing to have his incarceration
+posted to a permanently-indexed forum where the comments will absolutely ask
+which prison and what for. It can follow him into parole hearings, job
+applications and everything after.
+
+So: **ask him specifically about this**, separately from the port agreement,
+and let him say no without friction. Three levels, pick after that
+conversation:
+
+- **A — omit (default, used in the posts below).** "A friend wrote the
+  original in VB6." No explanation of the stack. Costs you a good hook,
+  costs him nothing.
+- **B — vague.** "He wrote it somewhere with no internet and a decade-old
+  toolchain, which is why it's VB6." True, gives the stack a reason,
+  identifies nothing. Best value if he is uneasy about specifics.
+- **C — explicit.** Only with his clear yes. If used, say it once, plainly,
+  and do not make it the headline — a title that leads with prison gets the
+  game read as a novelty act instead of a game.
+
+Practical, separate from publishing: **check how he can actually receive
+money** before revenue starts flowing. Incarceration commonly complicates
+bank accounts, and some facilities restrict earning outside income. Sort the
+mechanics of the 50/50 split now, in writing, rather than after the first
+payout lands.
+
+## Posting order
+
+r/shmups (small, sharp feedback) → r/iosgaming → Show HN (weekday morning US
+time) → r/gamedev postmortem a few days later. One community per day; answer
+every comment in the first two hours — that window decides whether a post
+grows or dies.
 
 ## r/iosgaming
 
-**Title:** [DEV] I made a roguelike shmup where enemies die differently depending on which weapon killed them — $0.99, no ads, no IAP-gated gameplay
+**Title:** [DEV] I made a roguelike shmup where enemies die differently depending on which weapon killed them — free, no ads, nothing gated behind a paywall
 
 Kirian is a vertical arcade shooter built on one idea I haven't seen on mobile:
 death is not the end. You keep every weapon, every credit, every point — and
@@ -36,8 +80,9 @@ Other things that matter here:
   sound (one per era of the genre, from monochrome arcade to neon voxel)
 - 2-player co-op over local Wi-Fi — no accounts, no servers
 - Controller support, Game Center leaderboards
-- $0.99 once. No ads, no subscriptions, no consumables. (Skins beyond the
-  three included ones are optional one-time cosmetic purchases.)
+- Free, no ads, no subscriptions, no energy timers, no consumables. Three
+  looks are included; the other eleven skins are $0.99 each, one-time, purely
+  cosmetic. Every sector, weapon and mode is in the free game.
 
 App Store: https://apps.apple.com/us/app/kirian/id6774868017
 
@@ -66,7 +111,7 @@ implosion. Voronoi-fragmented sprite destruction underneath.
 without a ceiling. Bosses every fifth level past that. Local Wi-Fi co-op.
 Controller support. 14 full visual themes, one per era of the genre.
 
-iOS now ($0.99, no ads), Android in testing, Steam (Win + Deck) in the works.
+iOS now (free, no ads), Android in testing, Steam (Win + Deck) in the works.
 
 App Store: https://apps.apple.com/us/app/kirian/id6774868017
 
@@ -80,8 +125,9 @@ bullet readability and the generator economy.
 Kirian is a vertical arcade shooter, now live on the App Store, with Android
 and Steam in the pipeline. Two parts of the journey might interest HN:
 
-The port. The game began as a fan-made VB6/Win32 remake of a classic 90s DOS
-shooter. First step was getting the original running on 64-bit Office VBA
+The port. The original is not mine — a friend wrote a VB6/Win32 shooter, and
+we agreed I would port it and split revenue evenly. First step was getting
+his original running on 64-bit Office VBA
 (LongPtr conversions, GDI+ declarations) just to have a reference
 implementation I could observe. Then I ported the logic to Flutter + Flame,
 keeping the original combat values — enemy HP, weapon damage, shop prices —
@@ -105,7 +151,8 @@ heuristic because a 95%-opacity test passes solid rocks; and one sprite
 shipped that came from no generated variation at all, which is what pushed me
 to make the pipeline reproducible.
 
-App Store: https://apps.apple.com/us/app/kirian/id6774868017
+Free on the App Store (three skins included, the rest optional cosmetics):
+https://apps.apple.com/us/app/kirian/id6774868017
 
 Happy to go deep on any of it.
 
@@ -146,4 +193,4 @@ wartime-sky themes came out right because the wording never said "space".
 
 Happy to share spec formats, the bg-removal approach (flood-fill from
 borders + soft edge margin), or the atlas/Voronoi tooling. Game context:
-roguelike vertical shmup, Flutter/Flame, live on iOS, Steam in progress.
+roguelike vertical shmup, Flutter/Flame, free on iOS, Steam in progress.
