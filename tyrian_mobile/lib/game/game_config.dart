@@ -118,7 +118,11 @@ const double musicMasterVolume = 0.45;
 // Sidechain duck: explosions momentarily push the music down to this factor,
 // recovering linearly over the given time. This is what makes an explosion
 // read as loud — the files themselves are already normalised to the ceiling.
-const double musicDuckFloor = 0.35;
+// Only large explosions (hpMax > 5000 kills) duck the music. Ducking every
+// kill at a 0.35 floor made the melody pump audibly in dense combat — dips
+// chained faster than the recovery, so the bed spent whole waves crawling up
+// and down. A rarer, shallower dip reads as an accent instead of a wobble.
+const double musicDuckFloor = 0.6;
 const double musicDuckRecoverSeconds = 0.6;
 const double musicMaxIntroSeconds = 20.0;  // hard cap: hand over to tiers even if intro never reports completion
 

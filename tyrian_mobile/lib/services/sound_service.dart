@@ -175,10 +175,12 @@ class SoundService {
     if (last != null && now - last < _minRetrigger.inMilliseconds) return;
     _lastPlayMs[event] = now;
 
-    // Explosions duck the music bed so the crack lands on top of it instead
-    // of inside it — the files are already normalised to the ceiling, so this
-    // is the only lever that makes them read louder.
-    if (event == SfxEvent.explosionLarge || event == SfxEvent.explosionSmall) {
+    // Big explosions duck the music bed so the crack lands on top of it
+    // instead of inside it — the files are already normalised to the ceiling,
+    // so this is the only lever that makes them read louder. Small explosions
+    // deliberately don't: every routine kill dipping the bed made the melody
+    // pump in dense combat (dips chained faster than the 0.6s recovery).
+    if (event == SfxEvent.explosionLarge) {
       MusicService.instance.duck();
     }
 
