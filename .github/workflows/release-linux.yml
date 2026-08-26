@@ -93,7 +93,8 @@ jobs:
         with:
           files: |
             Kiran-${{ github.ref_name }}-Linux.tar.gz
-            Kiran-${{ github.ref_name }}-x86_64.AppImage
+            Kirian-${{ github.ref_name }}-x86_64.AppImage
+          fail_on_unmatched_files: true
           name: Kiran ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           draft: false
