@@ -49,6 +49,9 @@ dependencies:
   just_audio_media_kit: ^2.1.0
   media_kit_libs_linux: ^1.2.1
   media_kit_libs_windows_audio: ^1.0.9
+  # Ogg Opus decoding on iOS < 18.4 (CoreAudio has no Ogg support there);
+  # registered at runtime only on those versions — see main.dart.
+  media_kit_libs_ios_audio: ^1.1.4
 
 dev_dependencies:
   flutter_test:

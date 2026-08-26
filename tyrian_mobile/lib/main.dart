@@ -27,6 +27,17 @@ import 'net/coop_client.dart';
 import 'net/discovery.dart';
 import 'net/protocol.dart';
 
+/// True on iOS releases older than 18.4 — the first version whose CoreAudio
+/// opens Ogg containers. Parses "Version 17.5 (Build 21F90)"; on any parse
+/// surprise we claim the decoder exists and stay on the native backend.
+bool _iosLacksOggDecoder() {
+  final m = RegExp(r'(\d+)\.(\d+)').firstMatch(Platform.operatingSystemVersion);
+  if (m == null) return false;
+  final major = int.parse(m.group(1)!);
+  final minor = int.parse(m.group(2)!);
+  return major < 18 || (major == 18 && minor < 4);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -36,8 +47,8 @@ void main() async {
     // Steam Deck. Windows nominally has just_audio_windows, but that decodes
     // through Media Foundation, which only handles our .ogg assets when the
     // removable "Web Media Extensions" store pack happens to be installed.
-    // One backend removes the codec lottery. macOS/iOS/Android keep their
-    // native just_audio implementations (App Store builds are unaffected).
+    // One backend removes the codec lottery. macOS/Android keep their
+    // native just_audio implementations.
     JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Kirian');
@@ -48,6 +59,14 @@ void main() async {
       await windowManager.setFullScreen(true);
     }
   } else {
+    if (Platform.isIOS && _iosLacksOggDecoder()) {
+      // Apple's CoreAudio only learned to open Ogg containers in iOS 18.4;
+      // every asset here is Ogg Opus, so on older iOS all of them fail to
+      // load and SoundService trips its failure breaker into total silence
+      // (first seen on an iPad stuck on 17.x). Route those devices through
+      // the same libmpv backend the desktop builds use; 18.4+ stays native.
+      JustAudioMediaKit.ensureInitialized(iOS: true);
+    }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
