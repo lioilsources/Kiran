@@ -44,7 +44,7 @@ func main() {
 	flag.Parse()
 
 	if *sfxMode {
-		runSfxGeneration(*skinID, *outDir, *dryRun)
+		runSfxGeneration(*skinID, *outDir, *dryRun, *force)
 		return
 	}
 
@@ -191,7 +191,7 @@ func loadEnvFile(path string) {
 	}
 }
 
-func runSfxGeneration(skinID, outDir string, dryRun bool) {
+func runSfxGeneration(skinID, outDir string, dryRun bool, force bool) {
 	apiKey := os.Getenv("ELEVENLABS_API_KEY")
 	if apiKey == "" && !dryRun {
 		fmt.Fprintln(os.Stderr, "Error: ELEVENLABS_API_KEY is required for SFX generation (or use -dry-run)")
@@ -237,15 +237,17 @@ func runSfxGeneration(skinID, outDir string, dryRun bool) {
 
 		for _, spec := range sfxgen.SfxSpecs {
 			outPath := filepath.Join(sfxDir, spec.Name+".mp3")
-			if _, err := os.Stat(outPath); err == nil {
-				fmt.Printf("  [skip] %s (exists)\n", spec.Name)
-				skipped++
-				continue
-			}
-
 			prompt := sfxgen.BuildSfxPrompt(s.SfxStyle, spec)
+
+			// Print before the exists check, so -dry-run shows what *would* be
+			// sent even for a skin that has already been generated once.
 			if dryRun {
 				fmt.Printf("  [dry] %s: %s\n", spec.Name, prompt)
+				continue
+			}
+			if _, err := os.Stat(outPath); err == nil && !force {
+				fmt.Printf("  [skip] %s (exists)\n", spec.Name)
+				skipped++
 				continue
 			}
 
