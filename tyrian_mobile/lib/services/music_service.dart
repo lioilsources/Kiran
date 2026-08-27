@@ -250,6 +250,11 @@ class MusicService {
     }
     _themes.clear();
     _vol.clear();
+    // The gain cache belongs to the players that just died. Left behind, it
+    // makes _applyTheme skip the very first write to each *new* player — and
+    // a fresh AudioPlayer starts at volume 1.0, so after a skin change every
+    // tier came up at full blast at once instead of silent.
+    _appliedGain.fillRange(0, _appliedGain.length, -1.0);
   }
 
   void _safe(FutureOr<void> Function() action) {
