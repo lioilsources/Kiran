@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   flame: ^1.35.1
   just_audio: ^0.9.40
+  # Direct dependency because main() configures the one shared session and
+  # MusicService owns interruption handling — see their comments.
+  audio_session: ^0.1.25
   # Kept as a rollback for media_kit on Windows (see main.dart's
   # JustAudioMediaKit.ensureInitialized). Once a clean-VM audio test passes,
   # this and the coroutine define in windows/CMakeLists.txt can both go.
@@ -46,7 +49,10 @@ dependencies:
   window_manager: ^0.4.3
   games_services: ^4.1.1
   in_app_purchase: ^3.2.0
-  just_audio_media_kit: ^2.1.0
+  # Vendored copy of 2.1.0 with a two-line seek fix for sub-second clips —
+  # see packages/just_audio_media_kit/VENDORED.md.
+  just_audio_media_kit:
+    path: packages/just_audio_media_kit
   media_kit_libs_linux: ^1.2.1
   media_kit_libs_windows_audio: ^1.0.9
   # Ogg Opus decoding on iOS < 18.4 (CoreAudio has no Ogg support there);

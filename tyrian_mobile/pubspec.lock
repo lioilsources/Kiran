@@ -26,7 +26,7 @@ packages:
     source: hosted
     version: "2.13.0"
   audio_session:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: audio_session
       sha256: "2b7fff16a552486d078bfc09a8cde19f426dc6d6329262b684182597bec5b1ac"
@@ -307,10 +307,9 @@ packages:
   just_audio_media_kit:
     dependency: "direct main"
     description:
-      name: just_audio_media_kit
-      sha256: f3cf04c3a50339709e87e90b4e841eef4364ab4be2bdbac0c54cc48679f84d23
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/just_audio_media_kit"
+      relative: true
+    source: path
     version: "2.1.0"
   just_audio_platform_interface:
     dependency: transitive
