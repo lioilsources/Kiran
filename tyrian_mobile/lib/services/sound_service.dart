@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:just_audio/just_audio.dart';
@@ -25,7 +26,28 @@ class SoundService {
   static final instance = SoundService._();
   SoundService._();
 
-  static const _poolSize = 3;
+  /// Players kept per event. Three lets fast weapons overlap cleanly.
+  ///
+  /// On the libmpv backend every player is a separate mpv instance holding
+  /// its own AudioUnit, and an A10 iPad runs out well before 3 x 10 SFX plus
+  /// the music bed — so that backend gets a leaner pool. The 70ms retrigger
+  /// floor means two players still cover any realistic firing rate.
+  static int get _poolSize => leanPools ? 2 : 3;
+
+  /// Set for backends where each player costs a real audio device — see
+  /// [MusicService.manualLoop], set from the same place in main().
+  static bool leanPools = false;
+
+  /// How long one setAsset may take before we stop waiting on it.
+  ///
+  /// This is a patience limit, never a verdict on the file. On an A10 iPad the
+  /// first libmpv instances take seconds to come up (that backend is what iOS
+  /// below 18.4 falls back to — see main.dart), and the old 2s budget expired
+  /// on precisely the first sound of the pool: fire_bullet and fire_beam, the
+  /// two most-played sounds in the game, went silent for the whole session
+  /// while everything loaded after them worked. Timeouts no longer blacklist
+  /// a path, so play() picks it up again once the backend is warm.
+  static const _loadTimeout = Duration(seconds: 10);
 
   final _rnd = Random();
 
@@ -78,6 +100,20 @@ class SoundService {
     SfxEvent.gameOver: 'game_over',
   };
 
+  /// A pooled one-shot player that keeps its hands off the audio session.
+  ///
+  /// just_audio's default is for *every* player to call `setActive(true)` on
+  /// the shared session on each play() and to subscribe to interruptions.
+  /// Across this pool that is thirty players activating the session several
+  /// times a second during a firefight; on iOS the session answers with
+  /// interruptions, and the music bed — a different player, but the same
+  /// session — got paused with nothing to resume it. The session is owned
+  /// once, centrally, in main().
+  AudioPlayer _newPlayer() => AudioPlayer(
+        handleInterruptions: false,
+        handleAudioSessionActivation: false,
+      );
+
   /// Load mute state from prefs. Call once at app start.
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -93,12 +129,17 @@ class SoundService {
     _disabled = false;
     _ready = false;
 
-    // Dispose old players
-    for (final pool in _pools.values) {
-      for (final player in pool) {
-        player.dispose();
-      }
-    }
+    // Dispose old players — and *wait* for them. Unawaited, thirty teardowns
+    // ran concurrently with the thirty fresh players created right below, so
+    // for a moment the process held twice the audio devices it needs. On the
+    // iOS 17 iPad that was enough to take the whole output down: the music
+    // bed, mid-playback on its own players, went silent while every Dart-side
+    // field still read playing/ready, and only a manual resume brought it
+    // back. Old devices go away before new ones are asked for.
+    await Future.wait([
+      for (final pool in _pools.values)
+        for (final player in pool) player.dispose(),
+    ]);
     _pools.clear();
     _poolIndex.clear();
 
@@ -110,7 +151,7 @@ class SoundService {
       // Create player pool for this event
       final players = <AudioPlayer>[];
       for (int i = 0; i < _poolSize; i++) {
-        players.add(AudioPlayer());
+        players.add(_newPlayer());
       }
       _pools[entry.key] = players;
       _poolIndex[entry.key] = 0;
@@ -147,8 +188,13 @@ class SoundService {
     try {
       // Only preload the first player; others load lazily on play().
       // Volume/speed are set per-play in _playPlayer, not here.
-      await pool[0].setAsset(path).timeout(const Duration(seconds: 2));
+      await pool[0].setAsset(path).timeout(_loadTimeout);
       return true;
+    } on TimeoutException catch (e) {
+      // Slow, not broken. Leave the path playable: the lazy setAsset in
+      // _playPlayer will try it again against a warmed-up backend.
+      audioLogFailure('sfx preload timed out (kept for retry)', path, e);
+      return false;
     } catch (e) {
       _failedPaths.add(path);
       audioLogFailure('sfx preload', path, e);
@@ -157,7 +203,7 @@ class SoundService {
         final fallback = 'assets/skins/default/sfx/${_eventFileNames[event]}.ogg';
         _paths[event] = fallback;
         try {
-          await pool[0].setAsset(fallback).timeout(const Duration(seconds: 2));
+          await pool[0].setAsset(fallback).timeout(_loadTimeout);
           return true;
         } catch (e) {
           _failedPaths.add(fallback);
@@ -219,7 +265,7 @@ class SoundService {
     try {
       // If player has no source yet, set it first
       if (player.audioSource == null) {
-        await player.setAsset(path).timeout(const Duration(seconds: 2));
+        await player.setAsset(path).timeout(_loadTimeout);
       }
       // Per-play variation: base mix ± volume jitter so consecutive shots
       // aren't machine-stamped. NOTE: no setSpeed() here — changing playback
@@ -230,9 +276,24 @@ class SoundService {
       final vol =
           (_baseVolume(event) * (1 + _jitter(_volumeJitter))).clamp(0.0, 1.0);
       player.setVolume(vol);
+      // A one-shot that ran to the end is `completed`, but just_audio still
+      // reports it as `playing`, and play() is a no-op on a playing player.
+      // The native iOS/Android backends happen to resume on the seek alone;
+      // libmpv (iOS < 18.4, Linux, Windows) parks at EOF paused and needs
+      // the play() to actually go through — without this pause every pool
+      // player fired exactly once per session and then went silent, most
+      // frequent sounds first. Only done when completed: pausing a player
+      // that is mid-clip would restart the audio track on every retrigger.
+      if (player.processingState == ProcessingState.completed) {
+        await player.pause();
+      }
       await player.seek(Duration.zero);
       player.play();
       _failCount = 0;
+    } on TimeoutException catch (e) {
+      // Neither blacklist nor breaker fuel — a slow cold load on an old
+      // device says nothing about whether the asset is playable.
+      audioLogFailure('sfx play timed out (kept for retry)', path, e);
     } catch (e) {
       _failedPaths.add(path);
       audioLogFailure('sfx play', path, e);

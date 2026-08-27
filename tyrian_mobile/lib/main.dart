@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 import 'game/platform_config.dart' as platform;
@@ -51,6 +52,8 @@ void main() async {
     // One backend removes the codec lottery. macOS/Android keep their
     // native just_audio implementations.
     JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
+    MusicService.manualLoop = true; // libmpv has no working loop — see the field
+    SoundService.leanPools = true; // one audio device per player on this backend
     audioLog('${Platform.operatingSystem} '
         '${Platform.operatingSystemVersion} — backend: media_kit (libmpv)');
     await windowManager.ensureInitialized();
@@ -70,6 +73,8 @@ void main() async {
       // the same libmpv backend the desktop builds use; 18.4+ stays native.
       try {
         JustAudioMediaKit.ensureInitialized(iOS: true);
+        MusicService.manualLoop = true; // libmpv has no working loop
+        SoundService.leanPools = true; // one audio device per player here
         audioLog('iOS ${Platform.operatingSystemVersion} — no CoreAudio Ogg '
             'demuxer, backend: media_kit (libmpv)');
       } catch (e) {
@@ -88,6 +93,22 @@ void main() async {
       DeviceOrientation.portraitDown,
     ]);
   }
+  // One audio session for the whole game, configured and activated once.
+  // Every AudioPlayer is built with handleAudioSessionActivation:false, so
+  // this is the only place that touches it — thirty-six players each calling
+  // setActive() on their own play() thrashed the session hard enough that iOS
+  // interrupted playback and left the music paused (iPad, iOS 17).
+  try {
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.music());
+    await session.setActive(true);
+    audioLog('audio session configured (music) and active');
+  } catch (e) {
+    // A session we cannot configure is not a reason to refuse to start; the
+    // platform default is what the game used to run on anyway.
+    audioLog('audio session setup FAILED (${e.runtimeType}: $e)');
+  }
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   runApp(const TyrianApp());
