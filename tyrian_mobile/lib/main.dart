@@ -18,6 +18,7 @@ import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
 import 'services/asset_library.dart';
+import 'services/audio_log.dart';
 import 'services/leaderboard_service.dart';
 import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
@@ -50,6 +51,8 @@ void main() async {
     // One backend removes the codec lottery. macOS/Android keep their
     // native just_audio implementations.
     JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
+    audioLog('${Platform.operatingSystem} '
+        '${Platform.operatingSystemVersion} — backend: media_kit (libmpv)');
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Kirian');
     // Fullscreen by default, but honour a windowed preference saved by the
@@ -65,7 +68,20 @@ void main() async {
       // load and SoundService trips its failure breaker into total silence
       // (first seen on an iPad stuck on 17.x). Route those devices through
       // the same libmpv backend the desktop builds use; 18.4+ stays native.
-      JustAudioMediaKit.ensureInitialized(iOS: true);
+      try {
+        JustAudioMediaKit.ensureInitialized(iOS: true);
+        audioLog('iOS ${Platform.operatingSystemVersion} — no CoreAudio Ogg '
+            'demuxer, backend: media_kit (libmpv)');
+      } catch (e) {
+        // If libmpv cannot come up, the game still has to start: the native
+        // backend leaves the device silent, which is exactly where it was
+        // before this fix — a crash on the splash screen would be worse.
+        audioLog('iOS ${Platform.operatingSystemVersion} — media_kit init '
+            'FAILED (${e.runtimeType}: $e), falling back to native');
+      }
+    } else {
+      audioLog('${Platform.operatingSystem} '
+          '${Platform.operatingSystemVersion} — backend: native');
     }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

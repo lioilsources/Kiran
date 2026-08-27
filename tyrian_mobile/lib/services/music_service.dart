@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../game/game_config.dart' as config;
+import 'audio_log.dart';
 
 /// Adaptive soundtrack playback with per-skin music packs.
 ///
@@ -63,17 +64,20 @@ class MusicService {
         _introPlaying = false;
       }
     });
-    await _setAssetWithFallback(_intro!, 'intro');
+    var ok = 0;
+    if (await _setAssetWithFallback(_intro!, 'intro')) ok++;
 
     for (int i = 0; i < _tierCount; i++) {
       final p = AudioPlayer();
       await p.setLoopMode(LoopMode.one);
-      await _setAssetWithFallback(p, 'theme_${i + 1}');
+      if (await _setAssetWithFallback(p, 'theme_${i + 1}')) ok++;
       _themes.add(p);
       _vol.add(0.0);
     }
 
     _ready = !_disabled;
+    audioLog('music skin=$skinId — $ok/${_tierCount + 1} loaded'
+        '${_disabled ? ', DISABLED' : ''}');
   }
 
   /// Begin a sector: play the heroic intro and (re)start the theme loops muted,
@@ -208,25 +212,31 @@ class MusicService {
     _safe(() => _themes[i].setVolume(gain));
   }
 
-  Future<void> _setAssetWithFallback(AudioPlayer player, String name) async {
+  /// Returns true if [player] ended up with a source, from the skin or from
+  /// the `default` fallback.
+  Future<bool> _setAssetWithFallback(AudioPlayer player, String name) async {
     final skinPath = 'assets/skins/$_skinId/music/$name.ogg';
     final defaultPath = 'assets/skins/default/music/$name.ogg';
+    final wanted = _skinId == 'default' ? defaultPath : skinPath;
     try {
-      await player
-          .setAsset(_skinId == 'default' ? defaultPath : skinPath)
-          .timeout(const Duration(seconds: 3));
-      return;
-    } catch (_) {
+      await player.setAsset(wanted).timeout(const Duration(seconds: 3));
+      return true;
+    } catch (e) {
+      audioLogFailure('music load', wanted, e);
       if (_skinId != 'default') {
         try {
           await player.setAsset(defaultPath).timeout(const Duration(seconds: 3));
-          return;
-        } catch (_) {}
+          return true;
+        } catch (e) {
+          audioLogFailure('music load fallback', defaultPath, e);
+        }
       }
       _failCount++;
       if (_failCount >= _tierCount) {
         _disabled = true;
+        audioLog('music DISABLED after $_failCount load failures');
       }
+      return false;
     }
   }
 
@@ -245,7 +255,12 @@ class MusicService {
   void _safe(FutureOr<void> Function() action) {
     try {
       final r = action();
-      if (r is Future) r.catchError((_) {});
-    } catch (_) {}
+      if (r is Future) {
+        r.catchError((Object e) => audioLogFailure('music playback',
+            'skin=$_skinId', e));
+      }
+    } catch (e) {
+      audioLogFailure('music playback', 'skin=$_skinId', e);
+    }
   }
 }

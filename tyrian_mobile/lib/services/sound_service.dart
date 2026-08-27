@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'audio_log.dart';
 import 'music_service.dart';
 
 enum SfxEvent {
@@ -122,31 +123,48 @@ class SoundService {
   }
 
   Future<void> _preloadAll() async {
+    var ok = 0;
+    var failed = 0;
     for (final entry in _paths.entries) {
       if (!_ready) return; // skin changed mid-preload
-      await _preload(entry.key, entry.value);
+      if (await _preload(entry.key, entry.value)) {
+        ok++;
+      } else {
+        failed++;
+      }
     }
+    // The one line that says whether this device can decode our assets at
+    // all: on an iOS build without an Ogg demuxer every single one fails.
+    audioLog('sfx skin=$_skinId — $ok/${ok + failed} preloaded'
+        '${failed > 0 ? ', $failed failed' : ''}');
   }
 
-  Future<void> _preload(SfxEvent event, String path) async {
+  /// Returns true if [event] ended up with a playable source (either [path]
+  /// or the default-skin fallback).
+  Future<bool> _preload(SfxEvent event, String path) async {
     final pool = _pools[event];
-    if (pool == null) return;
+    if (pool == null) return false;
     try {
       // Only preload the first player; others load lazily on play().
       // Volume/speed are set per-play in _playPlayer, not here.
       await pool[0].setAsset(path).timeout(const Duration(seconds: 2));
+      return true;
     } catch (e) {
       _failedPaths.add(path);
+      audioLogFailure('sfx preload', path, e);
       // Try default fallback
       if (_skinId != 'default') {
         final fallback = 'assets/skins/default/sfx/${_eventFileNames[event]}.ogg';
         _paths[event] = fallback;
         try {
           await pool[0].setAsset(fallback).timeout(const Duration(seconds: 2));
-        } catch (_) {
+          return true;
+        } catch (e) {
           _failedPaths.add(fallback);
+          audioLogFailure('sfx preload fallback', fallback, e);
         }
       }
+      return false;
     }
   }
 
@@ -215,12 +233,13 @@ class SoundService {
       await player.seek(Duration.zero);
       player.play();
       _failCount = 0;
-    } catch (_) {
+    } catch (e) {
       _failedPaths.add(path);
+      audioLogFailure('sfx play', path, e);
       _failCount++;
       if (_failCount >= 5) {
         _disabled = true;
-        print('SoundService: too many failures, audio disabled');
+        audioLog('sfx DISABLED after $_failCount consecutive failures');
       }
     }
   }
