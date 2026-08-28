@@ -342,6 +342,19 @@ class TyrianGame extends FlameGame
     for (final p in enemyProjectiles) {
       p.refreshSprite();
     }
+    // Pickups are fetched once at spawn and were never on this list, so any
+    // still falling kept a Sprite whose image loadSkin had just disposed.
+    // Drawing that throws, the world render catch swallows it, and the game
+    // ran on as a black screen with a live HUD until the pickup scrolled off
+    // — which is why a pause/resume seemed to "fix" it. Reported on the iPad
+    // after a switch to the default skin from the pause menu.
+    for (final c in activeCollectables) {
+      c.refreshSprite();
+    }
+    // Shards snapshot the dying entity's Sprite (image + source rect) at spawn
+    // and cannot be re-pointed at the new atlas, so drop them. A skin switch
+    // is already a full stall; nobody misses a second of debris.
+    shardPool.clearAll();
 
     // Reconfigure shaders for new skin
     final skinId = AssetLibrary.instance.skinId;

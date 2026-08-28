@@ -45,6 +45,14 @@ class Collectable extends PositionComponent
 
   @override
   Future<void> onLoad() async {
+    refreshSprite();
+  }
+
+  /// Re-fetch the icon. Called on load and again after a skin change: the
+  /// switch disposes every cached image, and a pickup still on screen would
+  /// otherwise draw from a dead one — which throws, and one throwing
+  /// component blacks out the whole world render.
+  void refreshSprite() {
     _sprite = AssetLibrary.instance.getIcon(_iconNameForType());
   }
 
