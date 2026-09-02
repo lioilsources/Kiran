@@ -131,6 +131,15 @@ class Device {
   /// Port of Device.Create — fire weapon, create projectile or activate beam
   void fire(double vesselX, double vesselY, double vesselXm, double vesselWidth,
       Component world, {double fireRateMult = 1.0}) {
+    // The generator is not a gun. It sits in the same devices list as the
+    // weapons (Vessel.equipWeapon) and Vessel.update fires that list without
+    // looking at slots, so without this it went off every ten seconds: a
+    // fireBullet click, one unit of the power it had just generated spent,
+    // and an invisible 10-damage projectile — invisible because its imgName
+    // pointed at a 'generator' sprite no skin has ever contained, leaving
+    // Projectile._loadSprite on its 6x12 fallback hitbox.
+    if (slot == WeaponSlot.generator) return;
+
     if (cd > 0) return;
 
     // Check power
