@@ -109,6 +109,9 @@ class _SkinSelectorState extends State<SkinSelector> {
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
+    // loadSkin re-points the game's live entities itself (see
+    // AssetLibrary.onSkinAssetsChanged) — it must not wait for the audio
+    // below, which can spend tens of seconds in setAsset timeouts.
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     await MusicService.instance.loadSkin(id);
@@ -548,6 +551,9 @@ class _SkinShopSectionState extends State<SkinShopSection> {
     setState(() => _switching = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
+    // As in _selectAndPlay: the graphics swap re-points the game on its own.
+    // onSkinChanged below is only the ComCenter's re-theme, so it is safe for
+    // it to sit behind the audio and the mounted check — the ship is not.
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     await MusicService.instance.loadSkin(id);

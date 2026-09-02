@@ -64,6 +64,19 @@ class AssetLibrary {
   String get skinId => _skinId;
 
   /// Switch to a different skin. Clears all caches and reloads.
+  /// Called right after a skin's assets have been swapped.
+  ///
+  /// loadSkin disposes every cached image before decoding the new atlas, which
+  /// leaves every live entity holding a Sprite backed by a dead image until
+  /// something re-points it. That used to be the job of a UI callback three
+  /// awaits downstream — behind two audio loads that can take tens of seconds
+  /// on a cold backend, and behind a `if (!mounted) return` — so closing the
+  /// ComCenter mid-switch left the player's ship drawing from a disposed
+  /// image, which throws and aborts the world render at that component.
+  /// TyrianGame registers refreshSprites here so the swap and the re-point are
+  /// one step and no UI path can skip or delay it.
+  void Function()? onSkinAssetsChanged;
+
   Future<void> loadSkin(String skinId) async {
     _sprites.clear();
     _images.clear();
@@ -85,6 +98,9 @@ class AssetLibrary {
     Flame.images.clearCache();
     _skinId = skinId;
     await loadAll();
+    // Before anything else can await: every live entity is still pointing at
+    // the images clearCache() just disposed.
+    onSkinAssetsChanged?.call();
   }
 
   /// Skin previews, decoded once for the app's lifetime. Deliberately NOT in

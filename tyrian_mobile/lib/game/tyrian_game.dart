@@ -237,6 +237,12 @@ class TyrianGame extends FlameGame
     state = GameState.comCenter;
     vessel.visible = false;
     musicDirector = MusicDirector(this);
+
+    // Re-point every live entity the instant a skin's atlas is swapped.
+    // Registered last, because refreshSprites touches `vessel` and the
+    // parallax, which only exist by this point.
+    AssetLibrary.instance.onSkinAssetsChanged = refreshSprites;
+
     isLoaded = true;
     onLoaded?.call();
   }
