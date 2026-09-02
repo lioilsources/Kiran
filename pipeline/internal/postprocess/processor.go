@@ -709,12 +709,19 @@ func processMusic(cfg Config) error {
 			continue
 		}
 
-		// ffmpeg: music-grade loudnorm + convert to OGG/Opus at a higher bitrate
+		// ffmpeg: music-grade loudnorm, then Opus at 96k.
+		//
+		// 128k asked for (and VBR delivered ~152k) on material that does not
+		// need it: this is a looping game bed under gunfire and explosions,
+		// mixed at 0.45 master and ducked further on every big hit. Opus at
+		// 96k stereo is transparent for that, and across 84 tracks it is the
+		// difference between 52 MB and 33 MB of install — the largest single
+		// item left in the bundle after the atlas work.
 		cmd := exec.Command("ffmpeg", "-y",
 			"-i", srcPath,
 			"-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
 			"-c:a", "libopus",
-			"-b:a", "128k",
+			"-b:a", "96k",
 			dstPath,
 		)
 		if output, err := cmd.CombinedOutput(); err != nil {
