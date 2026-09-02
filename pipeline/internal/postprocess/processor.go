@@ -27,6 +27,9 @@ type Config struct {
 	TargetSize  int    // max dimension in px (default 128)
 	BgThreshold int    // color distance threshold (default 60)
 	BgMargin    int    // soft-edge ramp width (default 20)
+	// PaletteDescription is the skin's own palette, used to rescue overlay
+	// layers the generator returned grey. Empty disables the rescue.
+	PaletteDescription string
 
 	// Sel records which variation each asset was built from. Assets absent
 	// from it fall back to Variation, so an unrecorded skin behaves exactly as
@@ -347,7 +350,19 @@ func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) erro
 	if opaque {
 		out = resized
 	} else {
-		out = AlphaFromLuminance(resized, bgAlphaBlack, bgAlphaWhite)
+		keyed := AlphaFromLuminance(resized, bgAlphaBlack, bgAlphaWhite)
+		// An overlay that came back grey lost its palette in generation, not in
+		// composition; see RecolourOverlay for why the hue is imposed here
+		// rather than argued with the model. Loud, because a skin whose overlays
+		// keep needing this has a background prompt worth rewriting.
+		if sat := meanSaturationOpaque(keyed); sat < overlayGreyMax {
+			if pal := PaletteFromDescription(cfg.PaletteDescription); len(pal) >= 3 {
+				fmt.Printf("  [overlay] %s came back grey (saturation %.2f) — recoloured to the skin palette\n",
+					asset.Name, sat)
+				keyed = RecolourOverlay(keyed, pal)
+			}
+		}
+		out = keyed
 	}
 
 	outPath := filepath.Join(bgDir, asset.Name+".webp")

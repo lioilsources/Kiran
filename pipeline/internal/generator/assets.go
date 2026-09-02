@@ -65,10 +65,19 @@ var structureSpecs = []struct{ name, directive string }{
 // that the key erased outright — one layer came back 100% transparent. The
 // elements have to be explicitly luminous, and the scene words have to be
 // explicitly banned, or the model reaches for a horizon every time.
+//
+// The last clause is load-bearing for the same reason the rest is. "Bright" and
+// "luminous" with no hue attached mean white to the model: measured on the v3
+// batch, layer_2 came back #8D8D8D on the four-shade green handheld and
+// #75706C on the neon vector skin. Naming the palette in a later sentence does
+// not reach the elements — the constraint has to sit on the elements
+// themselves, in the same breath as the word bright.
 const isolatedOnBlack = "The elements float in an empty pure black void with " +
 	"nothing behind them — no horizon, no ground, no terrain, no landscape, " +
 	"no skyline, no planet surface. Every element is bright and clearly " +
-	"separated from the black; the background stays pure flat black everywhere"
+	"separated from the black; the background stays pure flat black everywhere. " +
+	"Each element glows in one of the colours listed above, at full saturation, " +
+	"as if lit from within by that colour"
 
 // backgroundLayers describe the four parallax planes. Layers 1-3 are composited
 // over layer_0 with alpha derived by chroma key, hence isolatedOnBlack; layer_0
@@ -139,9 +148,19 @@ var backgroundZones = []struct {
 
 // Fillers for the shared layers, which are reused under every zone and so must
 // commit to none of them.
+//
+// sharedDangerMood used to read "the base palette held neutral, mid-tone, no
+// strong colour cast". It meant "add no sector-specific cast"; the model read
+// it as "be grey", and next to isolatedOnBlack's "bright" that won outright.
+// Measured on the v3 batch: layer_2 came back #868686 on the four-shade green
+// handheld and #585554 on the neon vector skin, while the same layer on
+// space_invaders is #41AA37 and on luftrausers #B88A60 — the older skins
+// survived only because their base palette is loud enough to outshout it.
+// It now says what it always meant: hold the skin's own palette, refuse the
+// zone's. Shipped skins are unaffected — generation skips assets that exist.
 const (
 	sharedZoneDesc   = "generic mid-territory, no distinctive landmarks — ambient detail that must sit believably over any sector of this setting"
-	sharedDangerMood = "the base palette held neutral, mid-tone, no strong colour cast — must read over both cold and hot backdrops"
+	sharedDangerMood = "stay on the base palette exactly as described above, at mid intensity — take none of the sector-specific colour shifts, but never fall back to grey or white: every element keeps the palette's own hues"
 )
 
 // AssetsForSkin returns all asset specs needed for a given skin.
@@ -263,8 +282,8 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		Resolution:  "2k",
 	})
 	for _, uiSpec := range []struct{ name, assetType, aspect string }{
-		{"ui_card_bg",    "ui_card_bg",    "1:1"},
-		{"ui_button",     "ui_button",     "4:1"},
+		{"ui_card_bg", "ui_card_bg", "1:1"},
+		{"ui_button", "ui_button", "4:1"},
 	} {
 		specs = append(specs, AssetSpec{
 			Name:        uiSpec.name,

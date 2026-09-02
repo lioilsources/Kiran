@@ -440,8 +440,28 @@ ať to není 10× ruční práce.
       má shader preset i UI téma a že product ID odpovídá ID skinu
 - [x] `river_raid` doplněn do `shader_config.dart` — chyběl a tiše padal na
       výchozí konfiguraci; zapsán explicitně tak, aby se vzhled nezměnil
-- [ ] Batch 1 generování (`solar_striker`, `tempest`, `star_fox`)
-- [ ] Flutter registrace — **až po vygenerování assetů**: řádky v `pubspec.yaml`
-      ukazující na neexistující adresáře rozbijí build
+- [x] Batch 1 generování (`solar_striker`, `tempest`, `star_fox`) — 2026-09-02.
+      Odchylky od 6.1: `cmd/tune` neběžel, preview vzniklo flux workflow místo
+      Pony+LoRA, variace 2 místo 4. Tři pozadí `tempestu` spadla na 15min
+      timeout ComfyUI a byla dogenerována.
+- [x] Flutter registrace — `kSkins` chronologicky, 18 řádků v `pubspec.yaml`,
+      3 produkty v `SkinStore.storekit`. 95 testů prochází.
+- [x] **Brána po batchi 1 — 4.3 img2img: NO-GO.** Sdílená STYLE pole a výběr
+      variant udržely konzistenci uvnitř skinu srovnatelně se 14 stávajícími.
+      Nestavět; ušetří ½–1 den.
+- [x] **Brána po batchi 1 — 4.2 vrstvy 1–3: potvrzeno, opraveno u kořene.**
+      Vrstvy 2 a 3 vyšly u všech tří nových skinů neutrálně šedé
+      (`solar_striker` `#868686`, `tempest` `#585554`), zatímco stejná vrstva
+      u `space_invaders` je `#41AA37` a u `luftrausers` `#B88A60`. Příčinou
+      nebyl slabý prompt, ale `sharedDangerMood`, který vrstvám bez zóny
+      přímo předepisoval „no strong colour cast". Přeformulován; `LayerOverride`
+      tedy **není potřeba** a do `SkinDef` se nepřidává.
 - [ ] Batch 2, 3
-- [ ] Měření velikosti, `SKINS.md`, storekit, IAP v ASC/Play, `version: 3.0.0`
+- [x] Měření velikosti — assety 135 → **159 MB** za tři skiny (~8 MB/skin).
+      Zbylých sedm ≈ +60 MB → ~220 MB, tedy **přes 200MB strop** pro stažení
+      na mobilních datech. On-demand placené skiny přestávají být volitelné.
+- [x] `version: 3.0.0`, storekit sandbox produkty
+- [ ] `SKINS.md`, IAP v ASC/Play
+- [ ] Rozlišitelnost palet — viz `24-REPORT-rozlisitelnost-skinu.md`. Z nových
+      skinů nekoliduje žádný; dvě zbývající kolize jsou mezi vydanými
+      (`gradius_v`+`ikaruga`, `default`+`geometry_wars`) a řeší se shader tintem.

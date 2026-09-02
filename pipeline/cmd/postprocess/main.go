@@ -76,21 +76,24 @@ func main() {
 		// one-off can be dialled in from the command line before it is written
 		// down in the definition.
 		bgThreshold := *threshold
-		if !thresholdSet {
-			if def, ok := skin.GetSkin(id); ok && def.BgThreshold > 0 {
+		var paletteDesc string
+		if def, ok := skin.GetSkin(id); ok {
+			paletteDesc = def.PaletteDescription
+			if !thresholdSet && def.BgThreshold > 0 {
 				bgThreshold = def.BgThreshold
 			}
 		}
 
 		cfg := postprocess.Config{
-			SkinDir:     filepath.Join(*input, id),
-			OutputDir:   filepath.Join(*output, id),
-			Variation:   *variation,
-			Only:        *only,
-			Sel:         sel,
-			TargetSize:  *size,
-			BgThreshold: bgThreshold,
-			BgMargin:    *margin,
+			SkinDir:            filepath.Join(*input, id),
+			OutputDir:          filepath.Join(*output, id),
+			Variation:          *variation,
+			Only:               *only,
+			Sel:                sel,
+			TargetSize:         *size,
+			BgThreshold:        bgThreshold,
+			BgMargin:           *margin,
+			PaletteDescription: paletteDesc,
 		}
 
 		// An explicit -variation is an instruction, not a default: it wins over

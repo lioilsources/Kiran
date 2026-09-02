@@ -50,7 +50,8 @@ No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"background": `Seamless tileable {{.SceneNoun}} background for a vertical scrolling shooter.
 {{if .ZoneDesc}}This sector: {{.ZoneDesc}}. Render it within the setting above — do not abandon the setting.
-{{end}}Layer: {{.LayerDesc}}.
+{{end}}Colours — every element in this image is drawn in these and only these: {{.PaletteDescription}}.
+Layer: {{.LayerDesc}}.
 Style: {{.StyleKeywords}}.
 Base palette: {{.BackgroundMood}}.{{if .DangerMood}} Palette shift: {{.DangerMood}}.{{end}}
 Must tile seamlessly top to bottom — the top edge must continue the bottom edge exactly.
