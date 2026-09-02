@@ -54,6 +54,11 @@ class ShaderConfig {
       tintR: 1.0, tintG: 0.9, tintB: 0.75,
       saturation: 0.85,
     ),
+    // river_raid had no entry and silently took the bare default. Spelled out
+    // rather than invented: this reproduces exactly what it has always
+    // rendered, so the skin does not change, while
+    // skin_registry_consistency_test can now demand an entry for every skin.
+    'river_raid': ShaderConfig(),
     'galaga': ShaderConfig(
       vignetteRadius: 0.92, vignetteSoft: 0.15,
       bloomEnabled: true, bloomStrength: 0.5, bloomThreshold: 0.8,

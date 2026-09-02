@@ -399,12 +399,49 @@ ať to není 10× ruční práce.
 
 ---
 
-## 7. Otevřená rozhodnutí (pro uživatele)
+## 7. Rozhodnutí (schváleno 2026-09-02)
 
-1. **ID skinů**: neutrální (`neon_tube`…) podle návrhu, nebo herní názvy
-   (`tempest`…) jako u starých? Product ID se pak nedají změnit.
-2. **Zaxxon** jen jako shading/pozadí (top-down silueta) — OK?
-3. Všech 10 jako placené 0.99, free tier zůstává 3 skiny — OK?
-4. Velikost bundlu: udělat 5.1 body 1+2 v rámci v3.0, PAD/ODR až v3.1?
-5. Img2img referenční workflow (4.3): rozhodnout až po batchi 1.
-6. Boss segmenty a bank-frames lodi z draftu = engine features, do v3 nepatří.
+1. **ID skinů: herní názvy**, konzistentně se stávajícími (`rtype`, `gradius_v`).
+   Product ID `com.ol1n.kiran.skin_<id>` jsou tím dané a **nepřejmenovatelné**:
+   `tempest`, `zaxxon`, `twinbee`, `fantasy_zone`, `abadox`, `solar_striker`,
+   `axelay`, `thunder_force`, `star_fox`, `lords_of_thunder`.
+   Zobrazované názvy zůstávají generické popisy s rokem podle kap. 1.1.
+2. **Zaxxon** = izometrie jen v shadingu a pozadí, silueta top-down. Slovo
+   *isometric* není ve `StyleKeywords`, jen v `SceneNoun`/`BackgroundMood`.
+3. **Všech 10 placených à $0.99**, free tier zůstává 3 skiny (24 celkem).
+4. **Velikost: nejdřív generovat, pak měřit.** Přepočet na aktuální stav po
+   v2.9 (plán výše počítal s předoptimalizačními čísly): bundlované assety jsou
+   **93,8 MB / 14 skinů = 6,7 MB na skin**, takže +10 skinů = **+67 MB → 161 MB**
+   (IPA odhadem ~180 MB), pod limitem 200 MB. Opatření z kap. 5.1 (WebP pro
+   `comcenter_bg`/`preview`, hudba na 80k) se sáhne jen když reálné měření
+   po vygenerování ukáže, že je to těsné.
+5. Img2img referenční workflow (4.3): rozhodnout po batchi 1.
+6. Boss segmenty a bank-frames lodi = engine features, mimo v3.
+
+### 7.1 Mapování na původní draft
+
+| Draft | `id` | `SkinDef.Name` | Zobrazený název |
+|---|---|---|---|
+| Tempest | `tempest` | Neon Tube | Neon Tube Vector (1981) |
+| Zaxxon | `zaxxon` | Iso Fortress | Isometric Fortress (1982) |
+| TwinBee | `twinbee` | Chibi Squadron | Chibi Squadron (1985) |
+| Fantasy Zone | `fantasy_zone` | Candy Drift | Candy Surreal (1986) |
+| Abadox | `abadox` | Flesh Maze | Organic Nightmare (1989) |
+| Solar Striker | `solar_striker` | Pocket Mono | Handheld Monochrome (1990) |
+| Axelay | `axelay` | Mode-7 Steel | Mode-7 Steel (1992) |
+| Thunder Force IV | `thunder_force` | FM Thunder | FM Thunder (1992) |
+| Star Fox | `star_fox` | Flat Polygon | Flat Polygon (1993) |
+| Lords of Thunder | `lords_of_thunder` | Metal Knight | Metal Knight (1993) |
+
+## 8. Stav implementace
+
+- [x] `definitions.go` — 10 záznamů, `go build` + `-dry-run` ověřeno (47 specs × 4 variace na skin)
+- [x] `test/skin_registry_consistency_test.dart` — hlídá, že každý skin v `kSkins`
+      má shader preset i UI téma a že product ID odpovídá ID skinu
+- [x] `river_raid` doplněn do `shader_config.dart` — chyběl a tiše padal na
+      výchozí konfiguraci; zapsán explicitně tak, aby se vzhled nezměnil
+- [ ] Batch 1 generování (`solar_striker`, `tempest`, `star_fox`)
+- [ ] Flutter registrace — **až po vygenerování assetů**: řádky v `pubspec.yaml`
+      ukazující na neexistující adresáře rozbijí build
+- [ ] Batch 2, 3
+- [ ] Měření velikosti, `SKINS.md`, storekit, IAP v ASC/Play, `version: 3.0.0`
