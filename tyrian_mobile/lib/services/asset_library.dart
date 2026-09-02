@@ -77,7 +77,6 @@ class AssetLibrary {
     _atlasRects.clear();
     _fragments.clear();
     _loaded = false;
-    _placeholder = null;
     _manifest = null;
     // Clear Flame's image cache so it reloads from the new paths. This disposes
     // the atlas too, which every live Sprite references — correct for a skin
@@ -146,51 +145,6 @@ class AssetLibrary {
       await _loadIcons();
       _loaded = true;
       return;
-    }
-
-    // Fallback: individual PNG loading (existing code)
-    String p(String name) => 'skins/$_skinId/sprites/$name.png';
-
-    // Player — animated vessel frames (fall back to single vessel.png)
-    _vesselFrames.clear();
-    for (int i = 0; i < 6; i++) {
-      final loaded = await _tryLoad('vessel_$i', p('vessel_$i'));
-      if (loaded) _vesselFrames.add(_sprites['vessel_$i']!);
-    }
-    if (_vesselFrames.isEmpty) {
-      await _load('vessel', p('vessel'));
-    }
-
-    // Enemies — falcon variants
-    await _load('falcon', p('falcon'));
-    for (int i = 1; i <= 6; i++) {
-      await _load('falcon$i', p('falcon$i'));
-    }
-    await _load('falconx', p('falconx'));
-    await _load('falconx2', p('falconx2'));
-    await _load('falconx3', p('falconx3'));
-    await _load('falconxb', p('falconxb'));
-    await _load('falconxt', p('falconxt'));
-    await _load('bouncer', p('bouncer'));
-    // Boss sprite — optional per skin, Boss falls back to bouncer when absent
-    await _tryLoad('rododendron', p('rododendron'));
-
-    // Structures
-    await _load('asteroid', p('asteroid'));
-    await _load('asteroid1', p('asteroid1'));
-    await _load('asteroid2', p('asteroid2'));
-    await _load('asteroid3', p('asteroid3'));
-
-    // Projectiles
-    await _load('bubble', p('bubble'));
-    await _load('vulcan', p('vulcan'));
-    await _load('blaster', p('blaster'));
-    await _load('laser', p('laser'));
-    await _load('starg', p('starg'));
-
-    // Explosions (4 variations)
-    for (int i = 1; i <= 4; i++) {
-      await _load('explosion$i', p('explosion$i'));
     }
 
     // Background layers (optional — only AI skins have them)
@@ -277,16 +231,28 @@ class AssetLibrary {
   }
 
   /// Try to load a pre-built texture atlas for the current skin.
-  /// Returns true if the atlas was loaded successfully, false otherwise.
+  ///
+  /// The atlas is the only source of sprites now that sprites/ is no longer
+  /// bundled, so a failure here would mean an invisible game: unlike audio,
+  /// there is no per-sprite fallback to the default skin — getSprite just
+  /// returns null. Retrying with the default skin's atlas turns that into
+  /// "the game looks like default", which a player can recover from.
   Future<bool> _tryLoadAtlas() async {
+    if (await _tryLoadAtlasFor(_skinId)) return true;
+    if (_skinId == 'default') return false;
+    print('Atlas missing for $_skinId — falling back to the default skin');
+    return _tryLoadAtlasFor('default');
+  }
+
+  Future<bool> _tryLoadAtlasFor(String skinId) async {
     try {
       // Load atlas image
-      final img = await _tryLoadImage('skins/$_skinId/atlas.png');
+      final img = await _tryLoadImage('skins/$skinId/atlas.png');
       if (img == null) return false;
 
       // Load atlas JSON
       final jsonStr =
-          await rootBundle.loadString('assets/skins/$_skinId/atlas.json');
+          await rootBundle.loadString('assets/skins/$skinId/atlas.json');
       final json = jsonDecode(jsonStr) as Map<String, dynamic>;
       final frames = json['frames'] as Map<String, dynamic>;
 
@@ -340,32 +306,6 @@ class AssetLibrary {
     }
   }
 
-  Future<void> _load(String name, String path) async {
-    try {
-      final image = await Flame.images.load(path);
-      _images[name] = image;
-      final sprite = Sprite(image);
-      sprite.paint.filterQuality = config.spriteFilterQuality;
-      _sprites[name] = sprite;
-    } catch (e) {
-      print('Asset load failed [$name]: $e');
-    }
-  }
-
-  /// Like _load but returns false on failure (no error log).
-  Future<bool> _tryLoad(String name, String path) async {
-    try {
-      final image = await Flame.images.load(path);
-      _images[name] = image;
-      final sprite = Sprite(image);
-      sprite.paint.filterQuality = config.spriteFilterQuality;
-      _sprites[name] = sprite;
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
   /// Returns true if the asset at [path] (relative to assets/) is in the bundle.
   /// Caches the manifest across calls within the same loadAll() invocation.
   Future<bool> _assetExists(String path) async {
@@ -393,16 +333,4 @@ class AssetLibrary {
 
   ui.Image? getImage(String name) => _images[name];
 
-  /// Get sprite or a colored rectangle placeholder
-  Sprite getOrPlaceholder(String name) {
-    return _sprites[name] ?? _createPlaceholder();
-  }
-
-  static Sprite? _placeholder;
-  Sprite _createPlaceholder() {
-    if (_placeholder != null) return _placeholder!;
-    // Use any loaded image as fallback; if none, this will be handled at render
-    _placeholder = _sprites.values.isNotEmpty ? _sprites.values.first : null;
-    return _placeholder ?? Sprite(Flame.images.fromCache('skins/$_skinId/sprites/vessel.png'));
-  }
 }

@@ -20,7 +20,6 @@ class SkinInfo {
   const SkinInfo(this.id, this.name, {this.pixelArt = false, this.productId});
 
   String get previewPath => 'skins/$id/ui/preview.png';
-  String spritePath(String name) => 'skins/$id/sprites/$name.png';
 
   ShaderConfig get shaderConfig =>
       ShaderConfig.defaults[id] ?? const ShaderConfig();
