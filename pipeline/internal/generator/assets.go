@@ -28,8 +28,12 @@ var bulletSpecs = []struct{ name, directive string }{
 // proportion words (small, narrow, wide, bulky, large, oversized) are deliberately
 // avoided: every enemy is normalized to a uniform square reference footprint in
 // postprocess, so non-square art would just get letterboxed and render small.
+// No plain "falcon" and no "bouncer": HostType maps to falcon1..6 and the
+// falconx family, and the boss is always rododendron (Boss.spriteName's
+// bouncer fallback is unreachable — pack_atlas.dart now fails the build if a
+// skin lacks rododendron). Generating them cost 4 diffusion runs per skin and
+// a slice of every atlas for art nothing ever drew.
 var enemySpecs = []struct{ name, directive string }{
-	{"falcon", "standard fighter, angular wings"},
 	{"falcon1", "scout fighter, swept-back wings"},
 	{"falcon2", "armored interceptor, reinforced hull plates"},
 	{"falcon3", "bomber variant, visible weapon pods"},
@@ -41,7 +45,6 @@ var enemySpecs = []struct{ name, directive string }{
 	{"falconx3", "experimental mark IV, heavily armed, prominent cannons"},
 	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
-	{"bouncer", "agile drone, spherical body, unpredictable movement design"},
 	{"rododendron", "boss dreadnought, layered armor plating, dominating silhouette, ornate command superstructure"},
 }
 
@@ -156,14 +159,9 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		Resolution:  "1k",
 	})
 
-	// Explosion
-	specs = append(specs, AssetSpec{
-		Name:        "explosion",
-		AssetType:   "explosion",
-		OutputDir:   "sprites",
-		AspectRatio: "1:1",
-		Resolution:  "1k",
-	})
+	// No explosion sheet: entities/explosion.dart draws them procedurally, so
+	// the four 720x720 frames postprocess used to slice out of it were a
+	// quarter of every atlas that nothing ever sampled.
 
 	// Projectiles (match game imgNames)
 	for _, b := range bulletSpecs {
@@ -267,7 +265,6 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 	for _, uiSpec := range []struct{ name, assetType, aspect string }{
 		{"ui_card_bg",    "ui_card_bg",    "1:1"},
 		{"ui_button",     "ui_button",     "4:1"},
-		{"ui_tab_active", "ui_tab_active", "4:1"},
 	} {
 		specs = append(specs, AssetSpec{
 			Name:        uiSpec.name,

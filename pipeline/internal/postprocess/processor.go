@@ -23,7 +23,7 @@ import (
 type Config struct {
 	SkinDir     string // input: pipeline output/assets/skins/{id}
 	OutputDir   string // output: tyrian_mobile/assets/skins/{id}
-	Variation   int    // which _v{N} to pick (default 1; explosion always uses 1-4)
+	Variation   int    // which _v{N} to pick (default 1)
 	TargetSize  int    // max dimension in px (default 128)
 	BgThreshold int    // color distance threshold (default 60)
 	BgMargin    int    // soft-edge ramp width (default 20)
@@ -111,13 +111,6 @@ func Run(cfg Config) error {
 				// Music handled separately by processMusic(); skip here.
 				continue
 
-			case asset.Name == "explosion":
-				// Special: load v1-v4 → explosion1-explosion4.png
-				if err := processExplosions(cfg, asset, spritesDir); err != nil {
-					imgErr = fmt.Errorf("process explosion: %w", err)
-					continue
-				}
-
 			case asset.Name == "ship_frames":
 				// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
 				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
@@ -163,7 +156,7 @@ func Run(cfg Config) error {
 					continue
 				}
 
-			case asset.Type == "ui_card_bg" || asset.Type == "ui_button" || asset.Type == "ui_tab_active":
+			case asset.Type == "ui_card_bg" || asset.Type == "ui_button":
 				// ComCenter panel sprites — opaque, exact resize, no bg removal
 				if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
 					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
@@ -281,30 +274,6 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 	}
 	for f, out := range FitFramesToCanvas(frames, refW, refH) {
 		outPath := filepath.Join(outDir, fmt.Sprintf("vessel_%d.png", f))
-		if err := savePNG(outPath, out); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	available := asset.Variations
-	if available < 1 {
-		available = 1
-	}
-	for frame := 1; frame <= 4; frame++ {
-		v := ((frame - 1) % available) + 1
-		srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, v)
-		img, err := loadJPEG(srcPath)
-		if err != nil {
-			return fmt.Errorf("load explosion v%d: %w", v, err)
-		}
-
-		rgba := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
-		out := normalizeSprite(rgba, fmt.Sprintf("explosion%d", frame), cfg.TargetSize)
-
-		outPath := filepath.Join(outDir, fmt.Sprintf("explosion%d.png", frame))
 		if err := savePNG(outPath, out); err != nil {
 			return err
 		}
@@ -556,10 +525,6 @@ func ListSpriteNames(manifest *skin.Manifest) []string {
 	var names []string
 	for _, a := range manifest.Assets {
 		switch {
-		case a.Name == "explosion":
-			for i := 1; i <= 4; i++ {
-				names = append(names, fmt.Sprintf("explosion%d", i))
-			}
 		case a.Type == "background":
 			continue
 		case a.Type == "hud_icon" || a.Name == "preview":

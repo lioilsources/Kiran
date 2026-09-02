@@ -26,7 +26,6 @@ var referenceSizes = map[string][2]int{
 	"vessel": {114, 84},
 
 	// Enemies
-	"falcon":   {68, 68},
 	"falcon1":  {68, 68},
 	"falcon2":  {68, 68},
 	"falcon3":  {68, 68},
@@ -38,7 +37,6 @@ var referenceSizes = map[string][2]int{
 	"falconx3": {102, 102},
 	"falconxb": {122, 122},
 	"falconxt": {134, 134},
-	"bouncer":  {128, 142},
 
 	// Boss
 	"rododendron": {256, 256},
@@ -56,14 +54,9 @@ var referenceSizes = map[string][2]int{
 	"bubble":  {60, 58},
 
 	// Background stars
-	"star":  {30, 30},
 	"starg": {24, 24},
 
 	// Explosions (all four frames share the original size)
-	"explosion1": {180, 180},
-	"explosion2": {180, 180},
-	"explosion3": {180, 180},
-	"explosion4": {180, 180},
 }
 
 // ReferenceSize returns the canonical (width, height) for a game sprite name and
@@ -83,7 +76,6 @@ var uiSizes = map[string][2]int{
 	"comcenter_bg":  {512, 1024},
 	"ui_card_bg":    {192, 192},
 	"ui_button":     {512, 128},
-	"ui_tab_active": {256, 64},
 }
 
 // UiSize returns the exact (width, height) for a ComCenter UI sprite.

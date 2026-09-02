@@ -20,7 +20,6 @@ func TestGameName_Mapping(t *testing.T) {
 		wantOk   bool
 	}{
 		{"ship_frames", "vessel", true},
-		{"explosion", "explosion", true},
 		{"falcon", "falcon", true},
 		{"falcon1", "falcon1", true},
 		{"falconx", "falconx", true},
@@ -72,7 +71,6 @@ func TestRun_SyntheticSkin(t *testing.T) {
 		},
 		Assets: []skin.ManifestAsset{
 			{Name: "ship_frames", Type: "ship", Dir: "sprites", Variations: 4},
-			{Name: "explosion", Type: "explosion", Dir: "sprites", Variations: 4},
 			{Name: "falcon", Type: "enemy", Dir: "sprites", Variations: 4},
 			{Name: "laser", Type: "bullet", Dir: "sprites", Variations: 4},
 			{Name: "preview", Type: "preview", Dir: "ui", Variations: 4},
@@ -129,10 +127,6 @@ func TestRun_SyntheticSkin(t *testing.T) {
 		"sprites/vessel_1.png",
 		"sprites/vessel_2.png",
 		"sprites/vessel_3.png",
-		"sprites/explosion1.png",  // explosion v1
-		"sprites/explosion2.png",  // explosion v2
-		"sprites/explosion3.png",  // explosion v3
-		"sprites/explosion4.png",  // explosion v4
 		"sprites/falcon.png",      // falcon
 		"sprites/laser.png",       // laser
 		"ui/preview.png",          // preview
@@ -150,7 +144,6 @@ func TestListSpriteNames(t *testing.T) {
 	m := &skin.Manifest{
 		Assets: []skin.ManifestAsset{
 			{Name: "ship_frames", Type: "ship"},
-			{Name: "explosion", Type: "explosion"},
 			{Name: "falcon", Type: "enemy"},
 			{Name: "layer_0", Type: "background"},
 			{Name: "icon_life", Type: "hud_icon"},
@@ -159,7 +152,7 @@ func TestListSpriteNames(t *testing.T) {
 	}
 
 	names := ListSpriteNames(m)
-	expected := []string{"vessel", "explosion1", "explosion2", "explosion3", "explosion4", "falcon"}
+	expected := []string{"vessel", "falcon"}
 	if len(names) != len(expected) {
 		t.Fatalf("got %d names, want %d: %v", len(names), len(expected), names)
 	}

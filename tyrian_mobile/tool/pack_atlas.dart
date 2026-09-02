@@ -16,8 +16,14 @@ import 'package:image/image.dart' as img;
 /// Default number of Voronoi seed points per fragmentable sprite.
 const int kDefaultFragmentCount = 6;
 
-/// 1 px padding between sprites to prevent texture bleeding.
-const int kPadding = 1;
+/// Padding between sprites, in pixels.
+///
+/// 1 px was enough while the atlas was PNG. It is not enough for lossy WebP:
+/// VP8 subsamples chroma 4:2:0 over 16x16 macroblocks, so colour leaks across
+/// a 1 px gutter and Flame's srcRect sampling shows it as a fringe. 4 px keeps
+/// every sprite inside its own chroma neighbourhood, and dropping the dead
+/// frames freed far more area than this costs.
+const int kPadding = 4;
 
 /// Minimum atlas dimension (power of 2).
 const int kMinSize = 512;
@@ -28,6 +34,10 @@ const int kMinSize = 512;
 /// next power of 2 of the actually-used area, so non-supersampled skins remain
 /// small (e.g. 512).
 const int kMaxSize = 4096;
+
+/// Basename of a sprite file without its .png extension.
+String _spriteNameOf(File f) =>
+    f.uri.pathSegments.last.replaceAll(RegExp(r'\.png$', caseSensitive: false), '');
 
 /// A loaded sprite ready for packing.
 class _SpriteEntry {
@@ -43,12 +53,37 @@ class _PlacedSprite {
   _PlacedSprite(this.name, this.x, this.y, this.w, this.h);
 }
 
+/// Every sprite name the game can ever ask [AssetLibrary] for.
+///
+/// The packer used to take whatever sat in sprites/, which is how a quarter of
+/// every atlas came to be occupied by art nothing loads: four 720x720
+/// explosion frames (explosions are drawn procedurally in
+/// entities/explosion.dart), a plain `falcon` no HostType maps to, a `star`
+/// the procedural starfield never needed, and `bouncer` — reachable only
+/// through Boss's fallback, which no shipped skin can hit because they all
+/// carry rododendron.
+///
+/// Keep this in step with: Hostile._spriteNameForType, Boss.spriteName,
+/// Structure (sector_parts.dart), DevType.imgName, and Vessel._loadFrames.
+const Set<String> kUsedSprites = {
+  'vessel_0', 'vessel_1', 'vessel_2', 'vessel_3', 'vessel_4', 'vessel_5',
+  'falcon1', 'falcon2', 'falcon3', 'falcon4', 'falcon5', 'falcon6',
+  'falconx', 'falconx2', 'falconx3', 'falconxb', 'falconxt',
+  'rododendron',
+  'asteroid', 'asteroid1', 'asteroid2', 'asteroid3',
+  'bubble', 'vulcan', 'blaster', 'laser', 'starg',
+};
+
 /// Returns true if the sprite name is fragmentable (enemies + structures).
+///
+/// `rododendron` is on the list now: it was missing, so the boss — the most
+/// watched death in the game — silently fell back to the four-quad slice in
+/// shard.dart while every trash mob shattered properly.
 bool _isFragmentable(String name) {
   final lower = name.toLowerCase();
   return lower.startsWith('falcon') ||
       lower.startsWith('falconx') ||
-      lower.startsWith('bouncer') ||
+      lower.startsWith('rododendron') ||
       lower.startsWith('asteroid');
 }
 
@@ -238,12 +273,33 @@ Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
     return false;
   }
 
-  // Collect all PNGs
-  final pngFiles = spritesDir
+  // Collect the PNGs the game actually uses. Anything else on disk is a
+  // leftover: packing it costs atlas area, download size, and — because the
+  // atlas is a single GPU texture — resident VRAM for every player.
+  final allPngs = spritesDir
       .listSync()
       .whereType<File>()
       .where((f) => f.path.toLowerCase().endsWith('.png'))
       .toList();
+  final pngFiles = allPngs
+      .where((f) => kUsedSprites.contains(_spriteNameOf(f)))
+      .toList();
+  final skipped = allPngs.length - pngFiles.length;
+  if (skipped > 0) {
+    final names = allPngs
+        .map(_spriteNameOf)
+        .where((n) => !kUsedSprites.contains(n))
+        .toList()
+      ..sort();
+    print('  [$skinId] skipping $skipped unused sprite(s): ${names.join(', ')}');
+  }
+  // Boss.spriteName falls back to 'bouncer' when rododendron is absent, and
+  // bouncer is no longer packed. Catch that here rather than shipping a skin
+  // whose boss is invisible.
+  if (!pngFiles.any((f) => _spriteNameOf(f) == 'rododendron')) {
+    print('  [$skinId] ERROR: no rododendron.png — the boss would not render.');
+    return false;
+  }
 
   if (pngFiles.isEmpty) {
     print('  [$skinId] No PNG files found — skipping.');
