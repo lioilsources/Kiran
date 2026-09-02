@@ -246,8 +246,14 @@ class AssetLibrary {
 
   Future<bool> _tryLoadAtlasFor(String skinId) async {
     try {
-      // Load atlas image
-      final img = await _tryLoadImage('skins/$skinId/atlas.png');
+      // WebP first, PNG second: the candidate-list idiom the backgrounds
+      // already use. It lets a single skin sit on PNG — a rollback if one
+      // atlas ever compresses badly — without touching this code.
+      ui.Image? img;
+      for (final key in ['skins/$skinId/atlas.webp', 'skins/$skinId/atlas.png']) {
+        img = await _tryLoadImage(key);
+        if (img != null) break;
+      }
       if (img == null) return false;
 
       // Load atlas JSON

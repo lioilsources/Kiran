@@ -5,6 +5,14 @@
 /// atlas image using shelf-packing, and writes atlas.png + atlas.json.
 ///
 /// Run via: dart run tool/pack_atlas.dart
+///
+/// The atlas ships as WebP; the PNG is only cwebp's input and is deleted.
+/// Pass --keep-png to leave it in place so tool/verify_atlas.dart can measure
+/// what the lossy step cost:
+///
+///   dart run tool/pack_atlas.dart --keep-png
+///   dart run tool/verify_atlas.dart
+///   rm assets/skins/*/atlas.png
 library;
 
 import 'dart:convert';
@@ -264,6 +272,9 @@ List<_PlacedSprite>? _shelfPack(
 }
 
 /// Pack a single skin's sprites into an atlas.
+/// Keep atlas.png next to atlas.webp so verify_atlas.dart can diff them.
+bool _keepPng = false;
+
 Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
   final spritesDir =
       Directory('${skinsRoot.path}${Platform.pathSeparator}$skinId${Platform.pathSeparator}sprites');
@@ -408,12 +419,41 @@ Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
     img.compositeImage(atlas, src, dstX: p.x, dstY: p.y);
   }
 
-  // Write atlas.png
+  // Write atlas.webp (via cwebp — package:image ships a WebP decoder but no
+  // encoder). The Go pipeline already shells out the same way for background
+  // art, see pipeline/internal/postprocess/processor.go saveWebP.
+  //
+  // -near_lossless, NOT plain lossy. Lossy WebP is VP8: DCT plus 4:2:0 chroma,
+  // which is built for photographs and mangles small flat-colour sprites. At
+  // q92 the `default` skin's vulcan bullet — the projectile on screen more
+  // than any other art in the game — came back at 17/255 error with its flat
+  // bands smeared into gradients. near_lossless is VP8L: no DCT, no chroma
+  // subsampling, 0.5/255 on that same sprite and indistinguishable from the
+  // PNG at 8x zoom. It costs 24.4 MB against lossy's 12.1 MB across the 14
+  // atlases, down from 52.3 MB of PNG. Run tool/verify_atlas.dart after any
+  // change here.
   final skinDir =
       Directory('${skinsRoot.path}${Platform.pathSeparator}$skinId');
   final atlasPng = File('${skinDir.path}${Platform.pathSeparator}atlas.png');
+  final atlasWebp = File('${skinDir.path}${Platform.pathSeparator}atlas.webp');
   final pngBytes = img.encodePng(atlas);
   atlasPng.writeAsBytesSync(pngBytes);
+
+  final cwebp = Process.runSync('cwebp', [
+    '-quiet',
+    '-near_lossless', '60',
+    '-m', '6',
+    '-metadata', 'none',
+    atlasPng.path,
+    '-o', atlasWebp.path,
+  ]);
+  if (cwebp.exitCode != 0) {
+    print('  [$skinId] ERROR: cwebp failed (brew install webp): '
+        '${cwebp.stderr}');
+    return false;
+  }
+  // The PNG is scratch: it exists only as cwebp's input and is not bundled.
+  if (!_keepPng) atlasPng.deleteSync();
 
   // Write atlas.json
   final frames = <String, dynamic>{};
@@ -457,7 +497,9 @@ int _nextPow2(int v) {
   return v;
 }
 
-void main() async {
+void main(List<String> args) async {
+  _keepPng = args.contains('--keep-png');
+
   // Determine project root (script is in tool/)
   final scriptFile = File(Platform.script.toFilePath());
   final projectRoot = scriptFile.parent.parent;
