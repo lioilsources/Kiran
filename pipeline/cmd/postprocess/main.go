@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"tyrian-pipeline/internal/postprocess"
+	"tyrian-pipeline/internal/skin"
 )
 
 func main() {
@@ -25,9 +26,13 @@ func main() {
 	// `-only starg` run would silently rewrite that asset's recorded choice to
 	// the flag's default of 1.
 	variationSet := false
+	thresholdSet := false
 	flag.Visit(func(f *flag.Flag) {
-		if f.Name == "variation" {
+		switch f.Name {
+		case "variation":
 			variationSet = true
+		case "threshold":
+			thresholdSet = true
 		}
 	})
 
@@ -66,6 +71,17 @@ func main() {
 			continue
 		}
 
+		// A skin whose palette sits close to the plate the model draws it on
+		// carries its own key threshold; a typed -threshold still wins, so a
+		// one-off can be dialled in from the command line before it is written
+		// down in the definition.
+		bgThreshold := *threshold
+		if !thresholdSet {
+			if def, ok := skin.GetSkin(id); ok && def.BgThreshold > 0 {
+				bgThreshold = def.BgThreshold
+			}
+		}
+
 		cfg := postprocess.Config{
 			SkinDir:     filepath.Join(*input, id),
 			OutputDir:   filepath.Join(*output, id),
@@ -73,7 +89,7 @@ func main() {
 			Only:        *only,
 			Sel:         sel,
 			TargetSize:  *size,
-			BgThreshold: *threshold,
+			BgThreshold: bgThreshold,
 			BgMargin:    *margin,
 		}
 

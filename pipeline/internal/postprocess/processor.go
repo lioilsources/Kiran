@@ -216,7 +216,7 @@ func processNamedAsset(cfg Config, asset skin.ManifestAsset, outDir, gameName st
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	rgba := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
+	rgba := KeySprite(img, cfg.BgThreshold, cfg.BgMargin, gameName)
 	out := normalizeSprite(rgba, gameName, cfg.TargetSize)
 
 	outPath := filepath.Join(outDir, gameName+".png")
@@ -263,7 +263,7 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 		numFrames = 6
 	}
 
-	ship := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
+	ship := KeySprite(img, cfg.BgThreshold, cfg.BgMargin, asset.Name)
 	frames := SynthesizeGlowFrames(ship, numFrames, shipGlowMinGain, shipGlowMaxGain, shipGlowLumGamma)
 
 	// Normalize all frames together so the animation keeps a steady size and

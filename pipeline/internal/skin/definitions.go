@@ -34,6 +34,17 @@ type SkinDef struct {
 	SpriteSize int
 	FrameCount int
 
+	// BgThreshold overrides the colour distance the sprite chroma key treats as
+	// background. Zero means the pipeline default of 60.
+	//
+	// The default assumes a background clearly outside the skin's palette. A
+	// narrow-palette skin breaks that assumption: solar_striker is four shades of
+	// Game Boy green, so the model puts pale green sprites on a pale green plate
+	// and the key eats them. Measured across its asteroids and bubble at the
+	// default, between 15% and 50% of each was consumed — a chunk bitten out of
+	// every pale round object — and it comes back whole at 22.
+	BgThreshold int
+
 	// Post-process shader
 	PostProcess PostProcessEffect
 
@@ -498,12 +509,15 @@ var Registry = map[string]SkinDef{
 		BossDirective:      "A large four-shade pixel-art warship boss centered in frame, chunky armored silhouette, symmetrical, readable at low resolution",
 		SpriteSize:         16,
 		FrameCount:         6,
-		PostProcess:        EffectScanlines,
-		GoogleFont:         "Press Start 2P",
-		SfxStyle:           "4-channel handheld chip, sharp square-wave blips, short noise bursts, tiny speaker lo-fi",
-		MusicStyle:         "Classic 1990 handheld four-channel chiptune. Two sharp square-wave voices, a wave-channel bass and noise-channel drums, tight, catchy and propulsive",
-		MusicTempo:         "144 BPM",
-		MusicKey:           "A minor",
+		// Four shades of green leave the sprite barely further from its
+		// background plate than the default key's tolerance; see BgThreshold.
+		BgThreshold: 22,
+		PostProcess: EffectScanlines,
+		GoogleFont:  "Press Start 2P",
+		SfxStyle:    "4-channel handheld chip, sharp square-wave blips, short noise bursts, tiny speaker lo-fi",
+		MusicStyle:  "Classic 1990 handheld four-channel chiptune. Two sharp square-wave voices, a wave-channel bass and noise-channel drums, tight, catchy and propulsive",
+		MusicTempo:  "144 BPM",
+		MusicKey:    "A minor",
 		// Hex codes confuse Pony's tag parser; plain colour words hold the
 		// four-shade look on the preview render.
 		PonyPaletteDescription: "dark green, olive, pale green, four shade monochrome",
