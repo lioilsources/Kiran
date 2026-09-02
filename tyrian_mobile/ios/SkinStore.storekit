@@ -166,6 +166,51 @@
       "productID": "com.ol1n.kiran.skin_nex_machina",
       "referenceName": "Neon Voxel Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "4490E4B2-AEAF-5043-8F30-89CD50F3E409",
+      "localizations": [
+        {
+          "description": "Unlocks the Neon Tube (1981) skin",
+          "displayName": "Neon Tube Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_tempest",
+      "referenceName": "Neon Tube Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "8C761D4E-B226-59B0-9D14-2F62DEE4C900",
+      "localizations": [
+        {
+          "description": "Unlocks the Pocket Mono (1990) skin",
+          "displayName": "Pocket Mono Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_solar_striker",
+      "referenceName": "Pocket Mono Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "946CD108-1D55-5867-9606-128E145BA637",
+      "localizations": [
+        {
+          "description": "Unlocks the Flat Polygon (1993) skin",
+          "displayName": "Flat Polygon Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_star_fox",
+      "referenceName": "Flat Polygon Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},

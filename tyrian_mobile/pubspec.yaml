@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.9.1
+version: 3.0.0
 
 environment:
   sdk: ^3.11.1
@@ -121,6 +121,12 @@ flutter:
     - assets/skins/galaga/backgrounds/
     - assets/skins/galaga/atlas.webp
     - assets/skins/galaga/atlas.json
+    - assets/skins/tempest/ui/
+    - assets/skins/tempest/sfx/
+    - assets/skins/tempest/music/
+    - assets/skins/tempest/backgrounds/
+    - assets/skins/tempest/atlas.webp
+    - assets/skins/tempest/atlas.json
     - assets/skins/asteroids/ui/
     - assets/skins/asteroids/sfx/
     - assets/skins/asteroids/music/
@@ -175,6 +181,18 @@ flutter:
     - assets/skins/blazing_lazers/backgrounds/
     - assets/skins/blazing_lazers/atlas.webp
     - assets/skins/blazing_lazers/atlas.json
+    - assets/skins/solar_striker/ui/
+    - assets/skins/solar_striker/sfx/
+    - assets/skins/solar_striker/music/
+    - assets/skins/solar_striker/backgrounds/
+    - assets/skins/solar_striker/atlas.webp
+    - assets/skins/solar_striker/atlas.json
+    - assets/skins/star_fox/ui/
+    - assets/skins/star_fox/sfx/
+    - assets/skins/star_fox/music/
+    - assets/skins/star_fox/backgrounds/
+    - assets/skins/star_fox/atlas.webp
+    - assets/skins/star_fox/atlas.json
     - assets/skins/river_raid/ui/
     - assets/skins/river_raid/sfx/
     - assets/skins/river_raid/music/
