@@ -146,8 +146,10 @@ func Run(cfg Config) error {
 				}
 
 			case asset.Name == "preview":
-				// Copy preview to ui/preview.png
-				if err := processAsset(cfg, asset, uiDir); err != nil {
+				// Opaque, like the ComCenter plate: the preview is a framed
+				// illustration on the store card, so keying its background out
+				// would punch a hole in the card rather than isolate a sprite.
+				if err := processUiBg(cfg, asset, uiDir); err != nil {
 					imgErr = fmt.Errorf("process preview: %w", err)
 					continue
 				}

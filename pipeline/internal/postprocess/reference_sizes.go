@@ -73,9 +73,15 @@ func ReferenceSize(gameName string) (int, int, bool) {
 // These are NOT multiplied by SupersampleFactor — they are Flutter widget
 // assets rendered at UI resolution, not game-world sprites.
 var uiSizes = map[string][2]int{
-	"comcenter_bg":  {512, 1024},
-	"ui_card_bg":    {192, 192},
-	"ui_button":     {512, 128},
+	"comcenter_bg": {512, 1024},
+	"ui_card_bg":   {192, 192},
+	"ui_button":    {512, 128},
+	// The store card and the skin selector both draw preview.png as a filled
+	// tile, so it is opaque art at card resolution — not a keyed sprite. It was
+	// missing here, which sent it down the sprite path instead: the v3 batch
+	// came out chroma-keyed and downscaled to 128px against the 512px opaque
+	// previews every shipped skin has.
+	"preview": {512, 512},
 }
 
 // UiSize returns the exact (width, height) for a ComCenter UI sprite.
