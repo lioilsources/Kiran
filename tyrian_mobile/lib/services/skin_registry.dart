@@ -26,6 +26,12 @@ class SkinInfo {
 }
 
 /// Bundle ID of the app, prefixed onto every IAP product ID.
+///
+/// The id is normally `$_iapPrefix.skin_<skin id>`, but that is a convention
+/// rather than a rule: App Store Connect reserves a product id permanently the
+/// first time it is saved and never releases it, so an id lost to a mistyped
+/// entry forces its skin onto a different one. See burnedProductIds in
+/// test/skin_registry_consistency_test.dart for the ones that happened.
 const _iapPrefix = 'com.ol1n.kiran';
 
 // Free tier: default + the two skins most visually distinct from it

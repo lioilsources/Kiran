@@ -30,10 +30,23 @@ void main() {
         reason: 'these skins fall through to the default ComCenter theme');
   });
 
+  // App Store Connect reserves a product id permanently the moment it is first
+  // saved, and deleting the product does not give it back. An id burned by a
+  // mistyped entry — wrong type, wrong price, a typo — is gone for that app
+  // forever, so the skin has to ship under a different one. Each exception
+  // records why, because the deviation is otherwise indistinguishable from a
+  // typo and someone will 'fix' it back to the dead id.
+  const burnedProductIds = <String, String>{
+    'fantasy_zone': 'com.ol1n.kiran.skin_candy_drift',
+    // skin_fantasy_zone was saved as Consumable by mistake; deleting it did
+    // not release the id. Renamed to the skin's public name, Candy Drift.
+  };
+
   test('paid skins use the canonical product id', () {
     for (final s in kSkins) {
       if (s.productId == null) continue;
-      expect(s.productId, 'com.ol1n.kiran.skin_${s.id}',
+      final want = burnedProductIds[s.id] ?? 'com.ol1n.kiran.skin_${s.id}';
+      expect(s.productId, want,
           reason: 'product ids can never be renamed once published');
     }
   });
