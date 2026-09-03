@@ -5,20 +5,39 @@ the default look plus two skins are unlocked, the other eleven are $0.99 each
 (verified in `lib/services/skin_registry.dart` — three entries have no
 productId).
 
-## Before you post — three blockers
+## Status — checked 2026-09-03 against the live listing
 
-1. **The App Store still says $0.99.** Verified live via the iTunes lookup
-   API. Every post below says "free". Change the price in App Store Connect
-   and wait for it to propagate before posting anything, or the first
-   commenter calls it a lie.
-2. **Decide what to say about the original author** — see the provenance
-   section below. The default text credits him without personal detail. Do
-   not upgrade to a more revealing variant without asking him about that
-   specific disclosure.
-3. **Steam differs on purpose.** Steam is planned as a paid title with all
-   14 skins included; mobile is free with per-skin purchases. That is a normal
-   cross-platform split, but expect someone to ask — the honest answer is
-   "no in-app purchases on Steam, you get everything".
+Via the iTunes lookup API, `id6774868017`:
+
+| | |
+|---|---|
+| Live version | **2.7.4**, released 2026-08-22 |
+| Price | **Free** — the old $0.99 blocker is cleared |
+| Download | **255 MB** |
+| Minimum iOS | **15.0** |
+| Ratings | **0** |
+
+## Before you post — the one blocker that is left
+
+**Do not launch on 2.7.4.** Two independent reasons, either one enough:
+
+1. **It is silent.** The audio fix for iOS below 18.4 landed in 2.8.1–2.8.3.
+   The app's minimum is iOS 15.0, so every user from iOS 15 through 18.3
+   downloads a game with no music, no weapons and no explosions. With zero
+   ratings on the listing, the first reviews the campaign generates are the
+   only reviews there are.
+2. **It cannot be downloaded on cellular.** 255 MB is over Apple's 200 MB
+   limit, and a link posted to Reddit is opened on a phone. 2.9.1 is under
+   120 MB.
+
+Both are fixed in **2.9.1**, which is Waiting for Review. The schedule below
+starts the day it flips to Ready for Distribution — call that Day 0.
+
+**Launch on 2.9.1, not on 3.x.** The three v3 skins are worth having, but
+their in-app purchases have never been reviewed, and pairing a first-time IAP
+review with a launch campaign puts an unpredictable Apple queue on the
+critical path. 14 skins is not a weak hand. Ship v3 afterwards as a second
+beat with its own, smaller post.
 
 ## Provenance — the part that needs a real decision
 
@@ -54,10 +73,20 @@ payout lands.
 
 ## Posting order
 
-r/shmups (small, sharp feedback) → r/iosgaming → Show HN (weekday morning US
-time) → r/gamedev postmortem a few days later. One community per day; answer
-every comment in the first two hours — that window decides whether a post
-grows or dies.
+Day 0 is the day 2.9.1 shows **Ready for Distribution** in App Store Connect.
+Do not count on the review date — start the clock when it actually flips.
+
+| When | Where | Why then |
+|---|---|---|
+| Day 0 | nothing | Verify the live version really is 2.9.1 via the iTunes lookup, on a real phone, on cellular. A campaign pointed at a stale CDN entry is worse than no campaign. |
+| Day 1, Tue, 15:00 CEST | **r/shmups** | Small and sharp. It is the rehearsal: whatever the genre heads catch here, you fix or have an answer for before the bigger rooms. |
+| Day 2, Wed, 15:00 CEST | **r/iosgaming** | 09:00 ET, the US morning. This is the volume driver and the one most likely to convert to installs. |
+| Day 3, Thu, 15:00 CEST | **Show HN** | 09:00 ET. Tue–Thu morning is the window; Monday competes with the weekend backlog and Friday dies by afternoon. Highest ceiling and highest variance of the four. |
+| Day 8, following Tue | **r/gamedev** | The postmortem needs distance from the launch posts or it reads as the same promotion twice. By then you also have real numbers to put in it. |
+
+One community per day, never two. **Block the two hours after each post** —
+that window decides whether it grows or dies, and a post you cannot babysit
+is a post worth delaying to a day you can.
 
 ## r/iosgaming
 
@@ -194,3 +223,41 @@ wartime-sky themes came out right because the wording never said "space".
 Happy to share spec formats, the bg-removal approach (flood-fill from
 borders + soft edge margin), or the atlas/Voronoi tooling. Game context:
 roguelike vertical shmup, Flutter/Flame, free on iOS, Steam in progress.
+
+## Comments you will get, and answers worth deciding before you need them
+
+The two-hour window after posting is not the time to think these through.
+
+**"This is AI slop."** The single most likely hostile reply on HN and
+r/gamedev, and the Show HN post invites it by leading with the pipeline.
+Do not get defensive and do not oversell the tooling. The true answer is
+small and holds: this is one person porting a friend's game, and the
+alternative to a generated art pipeline was not hand-drawn art — it was one
+art style, or none. The engineering being discussed is the pipeline, not a
+claim that the output beats an artist. If someone says they dislike the look,
+that is taste and it is theirs; agreeing costs nothing.
+
+**"Isn't this just <trademarked shmup>?"** Somebody will name the game the
+original was modelled on, and answering honestly in the moment means putting
+that trademark next to a link to your store page, in public, permanently
+indexed. Apple already made you rename every skin under guideline 5.2.1, and
+Steam applies the same scrutiny. The public READMEs were rewritten to say
+"inspired by classic vertical shooters of the 90s" for exactly this reason —
+**hold that line in comments too.** Talking about the genre and the era is
+free; naming the title is not. Decide your wording now, not at reply time.
+
+**"Flutter for games? Really?"** Friendly and frequent. Have the numbers
+ready rather than the adjective: 60–120 Hz, GLSL fragment shaders through
+FragmentProgram, a texture atlas per skin, and the honest limits — no web
+target, and audio needed a vendored backend to decode Ogg Opus on older iOS.
+Admitting a rough edge buys more credibility here than a clean pitch.
+
+**"$0.99 per skin, so it's nickel-and-diming."** Answer with what is *not*
+gated: every sector, weapon, mode, co-op and leaderboard is in the free game,
+the skins change nothing but how it looks, and there are no ads, no
+subscription, no energy and no consumables. Say it once and move on.
+
+**"Who actually wrote this?"** See the provenance section. Whatever level you
+agreed with him — A, B or C — write the sentence out in advance and use that
+sentence. Improvising this one in a comment box is how a private detail gets
+published by accident.
