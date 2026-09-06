@@ -28,13 +28,18 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Kirian uses Bluetooth to find a nearby player for local co-op when you are not on the same Wi-Fi.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Kirian uses Bluetooth to find a nearby player for local co-op when you are not on the same Wi-Fi.</string>
 	<key>NSBonjourServices</key>
 	<array>
-		<string>_tyriancoop._udp</string>
 		<string>_tyriancoop._tcp</string>
+		<string>_kirian-coop._tcp</string>
+		<string>_kirian-coop._udp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Tyrian uses local network for co-op multiplayer</string>
+	<string>Kirian looks for co-op games hosted on your Wi-Fi or on nearby devices, and lets other players find yours.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Kiran does not use the microphone. This permission is required by the audio framework.</string>
 	<key>UIApplicationSceneManifest</key>

@@ -89,6 +89,9 @@ class TyrianGame extends FlameGame
   /// Callback when a client joins (for UI notification)
   VoidCallback? onClientJoined;
 
+  /// Callback when the client drops — the seat is free again.
+  VoidCallback? onClientLeft;
+
   /// All active (visible) vessels for collision iteration
   List<Vessel> get allVessels => [
         vessel,
@@ -1157,6 +1160,7 @@ class TyrianGame extends FlameGame
     host.onClientDisconnected = () {
       vessel2?.visible = false;
       showMessage('Player 2 disconnected');
+      onClientLeft?.call();
     };
   }
 
@@ -1511,6 +1515,7 @@ class TyrianGame extends FlameGame
     coopClient = null;
     coopRole = CoopRole.none;
     onClientJoined = null;
+    onClientLeft = null;
 
     if (vessel2 != null) {
       vessel2!.removeFromParent();

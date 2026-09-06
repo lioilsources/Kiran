@@ -2,15 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'channel.dart';
 import 'protocol.dart';
 
-/// TCP server for co-op host. Manages a single client connection.
+/// Co-op host: one seat, filled over whatever transport delivered the
+/// client — the TCP listener this class runs on the LAN, or a Multipeer
+/// session handed in through [attach]. The game only ever sees the seat.
 class CoopHost {
   static const int defaultPort = 5743;
 
   ServerSocket? _server;
-  Socket? _client;
-  final MessageFramer _framer = MessageFramer();
+  CoopChannel? _client;
+  StreamSubscription<Uint8List>? _clientSub;
+  MessageFramer _framer = MessageFramer();
 
   int get port => _server?.port ?? 0;
   bool get hasClient => _client != null;
@@ -23,34 +27,36 @@ class CoopHost {
   void Function()? onClientReady;
   void Function(int action, int slot, String weaponName)? onShopAction;
 
-  String _hostPilotName = 'Host';
+  /// Sent back in the lobby handshake so the client can show who it joined.
+  String hostPilotName = 'Host';
 
-  /// Start listening on fixed port (fallback to random if busy)
+  /// Start the LAN listener on the fixed port (random if busy).
   Future<int> start(String hostPilotName) async {
-    _hostPilotName = hostPilotName;
+    this.hostPilotName = hostPilotName;
     try {
       _server = await ServerSocket.bind(InternetAddress.anyIPv4, defaultPort);
     } catch (_) {
       _server = await ServerSocket.bind(InternetAddress.anyIPv4, 0);
     }
-    _server!.listen(_onConnection);
+    _server!.listen((socket) => attach(SocketChannel(socket)));
     print('Host: TCP server on port ${_server!.port}');
     return _server!.port;
   }
 
-  void _onConnection(Socket socket) {
+  /// Seat a client that arrived over any transport. The seat is single:
+  /// a second arrival is closed straight away.
+  void attach(CoopChannel channel) {
     if (_client != null) {
-      // Only one client allowed
-      socket.destroy();
+      channel.close();
       return;
     }
-
-    print('Host: client connected from ${socket.remoteAddress.address}');
-    _client = socket;
-    socket.setOption(SocketOption.tcpNoDelay, true);
-
-    socket.listen(
-      (data) => _onData(Uint8List.fromList(data)),
+    print('Host: client attached (${channel.label})');
+    _client = channel;
+    // A fresh framer per client: the old one may hold half a frame from a
+    // peer that dropped mid-message, and there is no way to flush it.
+    _framer = MessageFramer();
+    _clientSub = channel.data.listen(
+      _onData,
       onDone: _onClientDone,
       onError: (_) => _onClientDone(),
       cancelOnError: false,
@@ -69,7 +75,7 @@ class CoopHost {
           case MsgType.lobbyHandshake:
             final hs = decodeLobbyHandshake(payload);
             // Send our handshake back
-            _client?.add(encodeLobbyHandshake(_hostPilotName));
+            _client?.send(encodeLobbyHandshake(hostPilotName));
             await onClientConnected?.call(hs.pilotName);
 
           case MsgType.readySignal:
@@ -86,30 +92,34 @@ class CoopHost {
   }
 
   void _onClientDone() {
+    if (_client == null) return;
+    _clientSub = null;
     _client = null;
-    _framer.addData(Uint8List(0)); // Reset framer
     onClientDisconnected?.call();
   }
 
   /// Send a pre-encoded framed message to the client
   void send(Uint8List framedMessage) {
-    _client?.add(framedMessage);
+    _client?.send(framedMessage);
   }
 
   /// Send game state snapshot (already framed by protocol.dart)
   void sendSnapshot(Uint8List framedSnapshot) {
-    _client?.add(framedSnapshot);
+    _client?.send(framedSnapshot);
   }
 
   /// Send a game event to client
   void sendEvent(int eventType, {double x = 0, double y = 0, String text = ''}) {
-    _client?.add(encodeGameEvent(eventType, x: x, y: y, text: text));
+    _client?.send(encodeGameEvent(eventType, x: x, y: y, text: text));
   }
 
-  /// Shut down server and disconnect client
+  /// Shut down the listener and drop the client
   Future<void> dispose() async {
-    _client?.destroy();
+    final client = _client;
     _client = null;
+    await _clientSub?.cancel();
+    _clientSub = null;
+    await client?.close();
     await _server?.close();
     _server = null;
   }

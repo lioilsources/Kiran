@@ -15,6 +15,7 @@ import 'systems/sector.dart';
 import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
 import 'ui/format.dart';
+import 'ui/join_dialog.dart';
 import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
@@ -24,6 +25,9 @@ import 'services/leaderboard_service.dart';
 import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
+import 'package:multipeer_coop/multipeer_coop.dart';
+
+import 'net/channel.dart';
 import 'net/coop_host.dart';
 import 'net/coop_client.dart';
 import 'net/discovery.dart';
@@ -156,6 +160,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   // Auto-host state (active from ComCenter through gameplay)
   CoopHost? _autoHost;
   CoopDiscovery? _autoDiscovery;
+  // Nearby (Multipeer) players who accepted the host's advertisement
+  StreamSubscription<MultipeerEvent>? _nearbySub;
 
   // Client waiting overlay (P2 waiting for host to start)
   bool _clientWaiting = false;
@@ -343,43 +349,53 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     return '?';
   }
 
-  void _showManualIpDialog() {
-    final controller = TextEditingController();
-    showDialog(
+  /// JOIN: one list of the hosts found on this Wi-Fi (Bonjour) and nearby
+  /// (Multipeer, Apple devices with no network in common); tap to connect.
+  /// Typing an IP is still there underneath for networks where mDNS does
+  /// not get through.
+  void _showJoinDialog() {
+    final discovery = CoopDiscovery();
+    Future<void>? joining;
+    showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Connect to host', style: TextStyle(color: Colors.cyanAccent)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.url,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          decoration: const InputDecoration(
-            hintText: '192.168.x.x',
-            hintStyle: TextStyle(color: Colors.white38),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('CANCEL', style: TextStyle(color: Colors.white54)),
-          ),
-          TextButton(
-            onPressed: () {
-              final ip = controller.text.trim();
-              if (ip.isNotEmpty) {
-                Navigator.pop(ctx);
-                _joinAsClient(ip, CoopHost.defaultPort);
-              }
-            },
-            child: const Text('CONNECT', style: TextStyle(color: Colors.cyanAccent)),
-          ),
-        ],
+      builder: (ctx) => JoinDialog(
+        discovery: discovery,
+        pilotName: _game.vessel.pilotName,
+        onJoin: (host) {
+          Navigator.pop(ctx);
+          joining = _joinHost(host, discovery);
+        },
       ),
-    );
+    ).whenComplete(() async {
+      // A nearby join must keep browsing until the session is up — Multipeer
+      // drops an invitation whose browser is gone — so dispose after it.
+      await joining;
+      await discovery.dispose();
+    });
+  }
+
+  Future<void> _joinHost(CoopHostInfo host, CoopDiscovery discovery) async {
+    if (!host.isNearby) return _joinAsClient(host.address, host.port);
+    // We are the one inviting: the host-side seat listener must not grab
+    // this peer as if it were our client.
+    _nearbySub?.cancel();
+    _nearbySub = null;
+    print('Joining nearby ${host.name}');
+    final channel = await discovery.connectNearby(host.peerId!);
+    if (channel == null) {
+      // Seat taken or peer gone — same fallback as a failed TCP connect
+      if (mounted) await _startAsAutoHost();
+      return;
+    }
+    _game.resetForNewGame();
+    final client = CoopClient()..attach(channel, _game.vessel.pilotName);
+    await _game.setupCoopClient(client);
+    if (mounted) {
+      setState(() {
+        _screen = _ScreenState.game;
+        _clientWaiting = true;
+      });
+    }
   }
 
   /// PLAY: single-player, no sockets. Hosting used to start unconditionally
@@ -414,14 +430,43 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game.hostIp = await _getLocalIp();
     print('Host: local IP = ${_game.hostIp}, TCP port = $port');
 
-    // Wire up client-joined notification for UI
+    // Advertise over Bonjour while the seat is free. The host takes one
+    // client, so the service is withdrawn the moment one connects and comes
+    // back if it drops — a joiner never picks a full game from the list.
+    final discovery = _autoDiscovery = CoopDiscovery();
+    final pilotName = _game.vessel.pilotName;
+    Future<void> advertise() async {
+      try {
+        await discovery.advertise(port, pilotName);
+      } catch (e) {
+        // Bonjour refused — local-network permission denied, no Avahi on
+        // Linux. Hosting still works; the IP in ComCenter is the fallback.
+        print('Host: Bonjour advertise failed: $e');
+      }
+    }
+
     _game.onClientJoined = () {
+      discovery.stopAdvertising();
+      if (mounted) setState(() {});
+    };
+    _game.onClientLeft = () {
+      if (_autoDiscovery == discovery) advertise();
       if (mounted) setState(() {});
     };
 
-    // Start UDP broadcast
-    _autoDiscovery = CoopDiscovery();
-    await _autoDiscovery!.startBroadcast(port, _game.vessel.pilotName);
+    // A nearby player who took the advertisement shows up as a connected
+    // Multipeer peer; seat them exactly like a TCP client.
+    if (MultipeerCoop.isSupported) {
+      final host = _autoHost!;
+      _nearbySub?.cancel();
+      _nearbySub = MultipeerCoop.instance.events.listen((e) {
+        if (e is MultipeerPeerStateChanged &&
+            e.state == MultipeerPeerState.connected) {
+          host.attach(MultipeerChannel(MultipeerCoop.instance, e.id, e.name));
+        }
+      });
+    }
+    await advertise();
 
     if (mounted) setState(() {});
   }
@@ -448,8 +493,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   void _disposeAutoHost() {
+    _nearbySub?.cancel();
+    _nearbySub = null;
     _autoDiscovery?.dispose();
     _autoDiscovery = null;
+    // Leaving co-op altogether: drop the Multipeer session on either side.
+    if (MultipeerCoop.isSupported) {
+      MultipeerCoop.instance.disconnect().catchError((Object _) {});
+    }
     // Don't dispose _autoHost here — it's owned by _game.coopHost after setupAutoHost
     _autoHost = null;
   }
@@ -606,7 +657,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ComCenterScreen(
                 game: _game,
                 onStart: _onComCenterStart,
-                onJoinIp: _showManualIpDialog,
+                onJoin: _showJoinDialog,
                 onHost: _startHosting,
               ),
 
