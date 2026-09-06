@@ -13,6 +13,13 @@ import FlutterMacOS
 ///
 /// Peers are handed to Dart as opaque ids ("<displayName>#<hash>"): MCPeerID
 /// is not serialisable, and two pilots may share a display name.
+///
+/// Threading: the advertiser, browser and session each call their delegate
+/// on a private queue of their own. Everything here — the peer map, the
+/// event sink, the session — is touched on the main queue only, so every
+/// delegate method hops there first. The first version mutated the peer
+/// dictionary straight from those queues, which is a data race that shows up
+/// as a crash after a while, not at once.
 public class MultipeerCoopPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   /// Bonjour service type; must be listed in NSBonjourServices as both
   /// `_kirian-coop._tcp` and `_kirian-coop._udp` (MC uses both).
@@ -91,6 +98,10 @@ public class MultipeerCoopPlugin: NSObject, FlutterPlugin, FlutterStreamHandler 
         result(FlutterError(code: "no_peer", message: "unknown peer or no session", details: nil))
         return
       }
+      guard session.connectedPeers.contains(peer) else {
+        result(FlutterError(code: "not_connected", message: "peer is not connected", details: nil))
+        return
+      }
       do {
         try session.send(data.data, toPeers: [peer], with: .reliable)
         result(nil)
@@ -111,7 +122,11 @@ public class MultipeerCoopPlugin: NSObject, FlutterPlugin, FlutterStreamHandler 
     if session != nil { return }
     let peer = MCPeerID(displayName: String(name.prefix(63)))
     myPeer = peer
-    let s = MCSession(peer: peer, securityIdentity: nil, encryptionPreference: .required)
+    // `.optional` rather than `.required`: encryption is negotiated when both
+    // sides have it (every supported OS does), and `.required` has a history
+    // of sessions that report connecting and then drop between OS versions.
+    // Nothing secret crosses this link — it is game input and snapshots.
+    let s = MCSession(peer: peer, securityIdentity: nil, encryptionPreference: .optional)
     s.delegate = self
     session = s
   }
@@ -122,21 +137,26 @@ public class MultipeerCoopPlugin: NSObject, FlutterPlugin, FlutterStreamHandler 
     advertiser = nil
     browser?.stopBrowsingForPeers()
     browser = nil
+    session?.delegate = nil
     session?.disconnect()
     session = nil
     myPeer = nil
     peers.removeAll()
   }
 
+  /// Main queue only.
   private func id(for peer: MCPeerID) -> String {
     let key = "\(peer.displayName)#\(peer.hash)"
-    peers[key] = peer
+    if peers[key] == nil { peers[key] = peer }
     return key
   }
 
-  /// Delegate callbacks arrive on private queues; the event sink is main-thread only.
   private func emit(_ event: [String: Any]) {
-    DispatchQueue.main.async { self.sink?(event) }
+    sink?(event)
+  }
+
+  private func onMain(_ work: @escaping () -> Void) {
+    if Thread.isMainThread { work() } else { DispatchQueue.main.async(execute: work) }
   }
 
   // MARK: FlutterStreamHandler
@@ -155,28 +175,32 @@ public class MultipeerCoopPlugin: NSObject, FlutterPlugin, FlutterStreamHandler 
 extension MultipeerCoopPlugin: MCNearbyServiceAdvertiserDelegate {
   public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID,
                          withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-    // One seat: accept only while advertising and nobody is connected.
-    let free = accepting && (session?.connectedPeers.isEmpty ?? false)
-    _ = id(for: peerID)
-    invitationHandler(free, free ? session : nil)
+    onMain {
+      // One seat: accept only while advertising and nobody is connected.
+      let free = self.accepting && (self.session?.connectedPeers.isEmpty ?? false)
+      _ = self.id(for: peerID)
+      invitationHandler(free, free ? self.session : nil)
+    }
   }
 
   public func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
-    emit(["type": "error", "message": "advertise: \(error.localizedDescription)"])
+    onMain { self.emit(["type": "error", "message": "advertise: \(error.localizedDescription)"]) }
   }
 }
 
 extension MultipeerCoopPlugin: MCNearbyServiceBrowserDelegate {
   public func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
-    emit(["type": "found", "id": id(for: peerID), "name": peerID.displayName, "info": info ?? [:]])
+    onMain {
+      self.emit(["type": "found", "id": self.id(for: peerID), "name": peerID.displayName, "info": info ?? [:]])
+    }
   }
 
   public func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-    emit(["type": "lost", "id": id(for: peerID)])
+    onMain { self.emit(["type": "lost", "id": self.id(for: peerID)]) }
   }
 
   public func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
-    emit(["type": "error", "message": "browse: \(error.localizedDescription)"])
+    onMain { self.emit(["type": "error", "message": "browse: \(error.localizedDescription)"]) }
   }
 }
 
@@ -188,11 +212,15 @@ extension MultipeerCoopPlugin: MCSessionDelegate {
     case .connecting: name = "connecting"
     default: name = "disconnected"
     }
-    emit(["type": "state", "id": id(for: peerID), "name": peerID.displayName, "state": name])
+    onMain {
+      self.emit(["type": "state", "id": self.id(for: peerID), "name": peerID.displayName, "state": name])
+    }
   }
 
   public func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-    emit(["type": "data", "id": id(for: peerID), "data": FlutterStandardTypedData(bytes: data)])
+    onMain {
+      self.emit(["type": "data", "id": self.id(for: peerID), "data": FlutterStandardTypedData(bytes: data)])
+    }
   }
 
   public func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {}

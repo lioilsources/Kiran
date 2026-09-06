@@ -1,5 +1,10 @@
 # Changelog
 
+## [06/09/2026] — 3.2.0
+- Seven new skins: Iso Fortress (1982), Chibi Squadron (1985), Candy Drift (1986), Flesh Maze (1989), Mode-7 Steel (1992), FM Thunder (1992), Metal Knight (1993) — 24 in all. Each has its own ships, enemies, boss, backgrounds for all seven zones, HUD, shop art and sound effects; their soundtracks follow, until then they play the default one
+- Co-op nearby: a host that was visible but would not connect now says so — and why: iOS switches peer-to-peer Wi-Fi off while a Personal Hotspot is on, so nearby play needs the hotspot off on both devices (or both on the same Wi-Fi). Before this the joiner silently became a host instead
+- Co-op nearby: the native link handled Multipeer callbacks on their own background queues while sharing state — a data race that can bring the host down a while into a session. Everything now runs on the main queue; encryption is negotiated rather than required, which has a record of dropping sessions between OS versions
+
 ## [06/09/2026] — 3.1.0
 - Co-op without a shared Wi-Fi: iPhone, iPad and Mac now find each other nearby over Bluetooth and peer-to-peer Wi-Fi (Apple Multipeer Connectivity), the way AirDrop does — HOST on one, JOIN on the other, no network in common needed. Same-Wi-Fi hosts and nearby hosts sit in the one JOIN list; nearby ones are marked. Apple-only by nature: Android and Windows keep the Wi-Fi path, and an iPhone↔Android pair still needs a Personal Hotspot
 - Co-op: the host and client no longer know what carries them — a TCP socket or a Multipeer session feed the same message pipe, so the game protocol is untouched. The old framer-reset bug (a client dropping mid-message could poison the next client's stream) went with it

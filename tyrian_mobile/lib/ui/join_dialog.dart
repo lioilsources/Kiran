@@ -80,7 +80,7 @@ class _JoinDialogState extends State<JoinDialog> {
   Widget build(BuildContext context) {
     final hosts = widget.discovery.hosts;
     final nearbyHint = MultipeerCoop.isSupported
-        ? 'Same Wi-Fi works on every device; iPhone, iPad and Mac also find each other nearby without one.'
+        ? 'Same Wi-Fi works on every device. iPhone, iPad and Mac also find each other nearby without one — with Personal Hotspot off on both.'
         : 'Both players must be on the same Wi-Fi — a Personal Hotspot works too.';
     return AlertDialog(
       backgroundColor: Colors.grey[900],

@@ -374,6 +374,30 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     });
   }
 
+  void _showNearbyJoinFailed(String hostName) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text('Could not connect to $hostName',
+            style: const TextStyle(color: Colors.cyanAccent)),
+        content: const Text(
+          'The host was visible but the link did not come up.\n\n'
+          'Nearby play needs peer-to-peer Wi-Fi, which iOS turns off while a '
+          'Personal Hotspot is on — switch the hotspot off on both devices and '
+          'try again, or put both devices on the same Wi-Fi.',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK', style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _joinHost(CoopHostInfo host, CoopDiscovery discovery) async {
     if (!host.isNearby) return _joinAsClient(host.address, host.port);
     // We are the one inviting: the host-side seat listener must not grab
@@ -383,8 +407,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     print('Joining nearby ${host.name}');
     final channel = await discovery.connectNearby(host.peerId!);
     if (channel == null) {
-      // Seat taken or peer gone — same fallback as a failed TCP connect
-      if (mounted) await _startAsAutoHost();
+      // Not the TCP path's silent auto-host fallback: a nearby host that was
+      // visible but would not connect almost always means peer-to-peer Wi-Fi
+      // is off — iOS disables it while a Personal Hotspot is on — and the
+      // player needs to hear that, not find themselves hosting.
+      if (mounted) _showNearbyJoinFailed(host.name);
       return;
     }
     _game.resetForNewGame();
