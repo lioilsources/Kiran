@@ -3,6 +3,9 @@ PODS:
   - games_services (4.1.0):
     - Flutter
     - FlutterMacOS
+  - multipeer_coop (0.1.0):
+    - Flutter
+    - FlutterMacOS
   - screen_retriever_macos (0.0.1):
     - FlutterMacOS
   - window_manager (0.2.0):
@@ -11,6 +14,7 @@ PODS:
 DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
   - games_services (from `Flutter/ephemeral/.symlinks/plugins/games_services/darwin`)
+  - multipeer_coop (from `Flutter/ephemeral/.symlinks/plugins/multipeer_coop/darwin`)
   - screen_retriever_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
 
@@ -19,6 +23,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
   games_services:
     :path: Flutter/ephemeral/.symlinks/plugins/games_services/darwin
+  multipeer_coop:
+    :path: Flutter/ephemeral/.symlinks/plugins/multipeer_coop/darwin
   screen_retriever_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos
   window_manager:
@@ -27,6 +33,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
   games_services: 8aa980ccea64d485465d20f770031c97b87cc5c1
+  multipeer_coop: cc09760d5fcb52f96a94638c48d4f2237ac5b7d5
   screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
   window_manager: 1d01fa7ac65a6e6f83b965471b1a7fdd3f06166c
 

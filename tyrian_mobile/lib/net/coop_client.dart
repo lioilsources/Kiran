@@ -2,14 +2,18 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'channel.dart';
 import 'protocol.dart';
 
-/// TCP client for co-op. Connects to a host, sends input, receives snapshots.
+/// Co-op client: sends input, receives snapshots — over a [CoopChannel] of
+/// any kind. [connect] opens the LAN one itself; a Multipeer channel is
+/// handed in through [attach] once the session is up.
 class CoopClient {
-  Socket? _socket;
+  CoopChannel? _channel;
+  StreamSubscription<Uint8List>? _sub;
   final MessageFramer _framer = MessageFramer();
 
-  bool get isConnected => _socket != null;
+  bool get isConnected => _channel != null;
 
   // Latest snapshot received from host (client reads this each frame)
   GameSnapshot? latestSnapshot;
@@ -20,29 +24,31 @@ class CoopClient {
   void Function(int eventType, double x, double y, String text)? onGameEvent;
   void Function(Uint8List payload)? onShopState;
 
-  /// Connect to host at given IP and port
+  /// Connect to a host on the LAN.
   Future<bool> connect(String host, int port, String pilotName) async {
     print('Client: connecting to $host:$port');
     try {
-      _socket = await Socket.connect(host, port,
+      final socket = await Socket.connect(host, port,
           timeout: const Duration(seconds: 5));
-      _socket!.setOption(SocketOption.tcpNoDelay, true);
-
-      _socket!.listen(
-        (data) => _onData(Uint8List.fromList(data)),
-        onDone: _onDone,
-        onError: (_) => _onDone(),
-        cancelOnError: false,
-      );
-
-      // Send handshake
-      _socket!.add(encodeLobbyHandshake(pilotName));
-      print('Client: connected');
+      attach(SocketChannel(socket), pilotName);
       return true;
     } catch (e) {
       print('Client: connect failed: $e');
       return false;
     }
+  }
+
+  /// Use an already-open channel and introduce ourselves.
+  void attach(CoopChannel channel, String pilotName) {
+    _channel = channel;
+    _sub = channel.data.listen(
+      _onData,
+      onDone: _onDone,
+      onError: (_) => _onDone(),
+      cancelOnError: false,
+    );
+    channel.send(encodeLobbyHandshake(pilotName));
+    print('Client: connected (${channel.label})');
   }
 
   void _onData(Uint8List data) {
@@ -71,28 +77,33 @@ class CoopClient {
   }
 
   void _onDone() {
-    _socket = null;
+    if (_channel == null) return;
+    _sub = null;
+    _channel = null;
     onDisconnected?.call();
   }
 
   /// Send player input to host (called every frame)
   void sendInput(double dx, double dy, bool fire) {
-    _socket?.add(encodeClientInput(dx, dy, fire));
+    _channel?.send(encodeClientInput(dx, dy, fire));
   }
 
   /// Send ready signal to host
   void sendReady() {
-    _socket?.add(encodeReadySignal());
+    _channel?.send(encodeReadySignal());
   }
 
   /// Send shop action to host
   void sendShopAction(int action, String weaponName, int slot) {
-    _socket?.add(encodeShopAction(action, weaponName, slot));
+    _channel?.send(encodeShopAction(action, weaponName, slot));
   }
 
   /// Disconnect from host
   Future<void> dispose() async {
-    _socket?.destroy();
-    _socket = null;
+    final channel = _channel;
+    _channel = null;
+    await _sub?.cancel();
+    _sub = null;
+    await channel?.close();
   }
 }

@@ -1,0 +1,22 @@
+name: multipeer_coop
+description: Apple Multipeer Connectivity transport for Kirian co-op — nearby discovery and a reliable byte channel over peer-to-peer Wi-Fi and Bluetooth, no shared network needed.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: MultipeerCoopPlugin
+        sharedDarwinSource: true
+      macos:
+        pluginClass: MultipeerCoopPlugin
+        sharedDarwinSource: true

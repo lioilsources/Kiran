@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 3.0.4
+version: 3.1.0
 
 environment:
   sdk: ^3.11.1
@@ -64,6 +64,10 @@ dependencies:
   # bonsoir 7.1.4 allows ^7.1.2, and a Dart 3.12 machine locks 7.1.3 — pin
   # the transitive plugin too, or the lockfile carries the same failure to CI.
   bonsoir_android: 7.1.2
+  # Apple Multipeer Connectivity for co-op with no shared Wi-Fi — local
+  # plugin, iOS + macOS only; see packages/multipeer_coop.
+  multipeer_coop:
+    path: packages/multipeer_coop
 
 dev_dependencies:
   flutter_test:

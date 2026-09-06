@@ -1,19 +1,29 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:multipeer_coop/multipeer_coop.dart';
 
 import '../net/coop_host.dart';
 import '../net/discovery.dart';
 
-/// Lists the co-op hosts Bonjour finds on the local network; tapping one
-/// connects. The joiner needs nothing from the host but the same Wi-Fi.
+/// One list of every co-op host the device can reach: players on the same
+/// Wi-Fi (Bonjour) and, on iPhone, iPad and Mac, players nearby with no
+/// network in common (Multipeer). Tapping one connects.
 ///
-/// Typing an address stays available underneath for what Bonjour cannot
-/// reach: a denied local-network permission, a router that keeps mDNS from
-/// crossing between clients, Linux without Avahi.
+/// Typing an address stays available underneath for what neither path
+/// covers: a denied permission, a router that keeps mDNS from crossing
+/// between clients, Linux without Avahi.
 class JoinDialog extends StatefulWidget {
   final CoopDiscovery discovery;
-  final void Function(String address, int port) onConnect;
+  final String pilotName;
+  final void Function(CoopHostInfo host) onJoin;
 
-  const JoinDialog({super.key, required this.discovery, required this.onConnect});
+  const JoinDialog({
+    super.key,
+    required this.discovery,
+    required this.pilotName,
+    required this.onJoin,
+  });
 
   @override
   State<JoinDialog> createState() => _JoinDialogState();
@@ -21,7 +31,9 @@ class JoinDialog extends StatefulWidget {
 
 class _JoinDialogState extends State<JoinDialog> {
   final _ip = TextEditingController();
+  Timer? _slowTimer;
   bool _manual = false;
+  bool _slow = false;
   String? _error;
 
   @override
@@ -30,12 +42,17 @@ class _JoinDialogState extends State<JoinDialog> {
     widget.discovery.onHostsChanged = () {
       if (mounted) setState(() {});
     };
+    // Every failure gets a visible reason: after a few empty seconds say
+    // what discovery needs, instead of spinning forever.
+    _slowTimer = Timer(const Duration(seconds: 6), () {
+      if (mounted) setState(() => _slow = true);
+    });
     _browse();
   }
 
   Future<void> _browse() async {
     try {
-      await widget.discovery.browse();
+      await widget.discovery.browse(widget.pilotName);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -47,6 +64,7 @@ class _JoinDialogState extends State<JoinDialog> {
 
   @override
   void dispose() {
+    _slowTimer?.cancel();
     widget.discovery.onHostsChanged = null;
     _ip.dispose();
     super.dispose();
@@ -54,12 +72,16 @@ class _JoinDialogState extends State<JoinDialog> {
 
   void _connectTyped() {
     final ip = _ip.text.trim();
-    if (ip.isNotEmpty) widget.onConnect(ip, CoopHost.defaultPort);
+    if (ip.isEmpty) return;
+    widget.onJoin(CoopHostInfo(name: ip, address: ip, port: CoopHost.defaultPort));
   }
 
   @override
   Widget build(BuildContext context) {
     final hosts = widget.discovery.hosts;
+    final nearbyHint = MultipeerCoop.isSupported
+        ? 'Same Wi-Fi works on every device; iPhone, iPad and Mac also find each other nearby without one.'
+        : 'Both players must be on the same Wi-Fi — a Personal Hotspot works too.';
     return AlertDialog(
       backgroundColor: Colors.grey[900],
       title: const Text('Join co-op', style: TextStyle(color: Colors.cyanAccent)),
@@ -70,21 +92,23 @@ class _JoinDialogState extends State<JoinDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (hosts.isEmpty && _error == null)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: Colors.cyanAccent),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Looking for hosts on this Wi-Fi…',
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                        _slow
+                            ? 'No hosts yet. $nearbyHint'
+                            : 'Looking for hosts on this Wi-Fi and nearby…',
+                        style: const TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ),
                   ],
@@ -92,7 +116,7 @@ class _JoinDialogState extends State<JoinDialog> {
               ),
             for (final host in hosts)
               InkWell(
-                onTap: () => widget.onConnect(host.address, host.port),
+                onTap: () => widget.onJoin(host),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
@@ -111,7 +135,9 @@ class _JoinDialogState extends State<JoinDialog> {
                               ),
                             ),
                             Text(
-                              '${host.address}:${host.port}',
+                              host.isNearby
+                                  ? 'Nearby · Bluetooth / peer-to-peer Wi-Fi'
+                                  : '${host.address}:${host.port} · same Wi-Fi',
                               style: const TextStyle(
                                   color: Colors.white38, fontSize: 12),
                             ),

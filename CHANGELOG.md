@@ -1,5 +1,11 @@
 # Changelog
 
+## [06/09/2026] — 3.1.0
+- Co-op without a shared Wi-Fi: iPhone, iPad and Mac now find each other nearby over Bluetooth and peer-to-peer Wi-Fi (Apple Multipeer Connectivity), the way AirDrop does — HOST on one, JOIN on the other, no network in common needed. Same-Wi-Fi hosts and nearby hosts sit in the one JOIN list; nearby ones are marked. Apple-only by nature: Android and Windows keep the Wi-Fi path, and an iPhone↔Android pair still needs a Personal Hotspot
+- Co-op: the host and client no longer know what carries them — a TCP socket or a Multipeer session feed the same message pipe, so the game protocol is untouched. The old framer-reset bug (a client dropping mid-message could poison the next client's stream) went with it
+- Co-op: when JOIN finds nothing for a few seconds it now says what discovery needs instead of spinning forever
+- iOS asks for Bluetooth on the first HOST/JOIN; both prompts (Local Network, Bluetooth) must be allowed on both devices
+
 ## [06/09/2026]
 - Co-op: JOIN now lists the hosts on your Wi-Fi by pilot name — tap one to connect, no IP to type. Discovery is Bonjour, so it works on iOS 13+ (the iPad on 17 and the iPhone on 26 that could not find each other), macOS, Android and Windows without any special entitlement. The old UDP beacon needed Apple's multicast entitlement, which the app never had, so on iOS it silently never left the phone — which is why the join screen ended up asking for an address nobody could see
 - Co-op: a host is listed only while its seat is free — the advertisement goes away when a player connects and comes back if they drop

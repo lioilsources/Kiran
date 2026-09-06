@@ -5,11 +5,15 @@ PODS:
     - FlutterMacOS
   - media_kit_libs_ios_audio (1.0.4):
     - Flutter
+  - multipeer_coop (0.1.0):
+    - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - games_services (from `.symlinks/plugins/games_services/darwin`)
   - media_kit_libs_ios_audio (from `.symlinks/plugins/media_kit_libs_ios_audio/ios`)
+  - multipeer_coop (from `.symlinks/plugins/multipeer_coop/darwin`)
 
 EXTERNAL SOURCES:
   Flutter:
@@ -18,11 +22,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/games_services/darwin"
   media_kit_libs_ios_audio:
     :path: ".symlinks/plugins/media_kit_libs_ios_audio/ios"
+  multipeer_coop:
+    :path: ".symlinks/plugins/multipeer_coop/darwin"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   games_services: 8aa980ccea64d485465d20f770031c97b87cc5c1
   media_kit_libs_ios_audio: 905e6323b72e65c63ab9262b2e473f52c024a3a8
+  multipeer_coop: cc09760d5fcb52f96a94638c48d4f2237ac5b7d5
 
 PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
 
