@@ -1,0 +1,12 @@
+skin_id: twinbee
+workflow: flux
+asset_name: comcenter_bg
+# Hand-written, not tuned by cmd/tune. The template's "chibi anime, cute mecha"
+# style keywords pull a crowd of child pilots into every variation of this one
+# asset — twelve out of twelve across three rolls, "no characters" included. The
+# scene words stay, the character-inducing style words go.
+positive: >-
+  Mid-80s cheerful cartoon shooter background — a bright daytime sky seen over the empty rail of a toy-like spaceship observation deck. Fluffy white cumulus clouds, rolling green hills and tiny toy towns far below, a few candy-coloured planets and sparkling stars above; the upper half is a deep twilight blue so the middle of the image stays dark and calm for text and UI panels laid over it. Bold clean outlines, glossy toy-like cel shading, cheerful primary colours cherry red #FF3040, sky blue #40A0FF, sunshine yellow #FFE040, white #FFFFFF, mint #60E0A0 on pale sky #C8E8FF. Empty scene, nobody aboard — no people, no characters, no pilots, no faces, no mascots, no robots, no text, no HUD, no ship in the foreground. Portrait aspect ratio 1:2.
+score: 0
+iters: 0
+updated_at: "2026-09-06T14:45:00Z"

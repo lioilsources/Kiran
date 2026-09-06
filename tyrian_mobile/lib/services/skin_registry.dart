@@ -49,6 +49,8 @@ const kSkins = [
       pixelArt: true, productId: '$_iapPrefix.skin_river_raid'),
   SkinInfo('zaxxon', 'Iso Fortress (1982)',
       pixelArt: true, productId: '$_iapPrefix.skin_zaxxon'),
+  SkinInfo('twinbee', 'Chibi Squadron (1985)',
+      productId: '$_iapPrefix.skin_twinbee'),
   SkinInfo('rtype', 'Biomech Cruiser (1987)', productId: '$_iapPrefix.skin_rtype'),
   SkinInfo('blazing_lazers', '16-Bit Laser (1989)',
       productId: '$_iapPrefix.skin_blazing_lazers'),

@@ -256,6 +256,21 @@
       "productID": "com.ol1n.kiran.skin_thunder_force",
       "referenceName": "FM Thunder Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "B96BFC09-5045-4929-9898-E8F94473F030",
+      "localizations": [
+        {
+          "description": "Unlocks the Chibi Squadron (1985) skin",
+          "displayName": "Chibi Squadron Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_twinbee",
+      "referenceName": "Chibi Squadron Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},
