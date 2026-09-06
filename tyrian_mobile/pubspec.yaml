@@ -235,6 +235,12 @@ flutter:
     - assets/skins/abadox/backgrounds/
     - assets/skins/abadox/atlas.webp
     - assets/skins/abadox/atlas.json
+    - assets/skins/lords_of_thunder/ui/
+    - assets/skins/lords_of_thunder/sfx/
+    - assets/skins/lords_of_thunder/music/
+    - assets/skins/lords_of_thunder/backgrounds/
+    - assets/skins/lords_of_thunder/atlas.webp
+    - assets/skins/lords_of_thunder/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

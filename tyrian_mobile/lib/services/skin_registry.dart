@@ -68,6 +68,8 @@ const kSkins = [
       pixelArt: true, productId: '$_iapPrefix.skin_thunder_force'),
   SkinInfo('star_fox', 'Flat Polygon (1993)',
       productId: '$_iapPrefix.skin_star_fox'),
+  SkinInfo('lords_of_thunder', 'Metal Knight (1993)',
+      productId: '$_iapPrefix.skin_lords_of_thunder'),
   SkinInfo('tyrian_dos', 'Retro PC Pixel (1995)',
       pixelArt: true, productId: '$_iapPrefix.skin_tyrian_dos'),
   SkinInfo('ikaruga', 'Dual-Polarity (2001)', productId: '$_iapPrefix.skin_ikaruga'),

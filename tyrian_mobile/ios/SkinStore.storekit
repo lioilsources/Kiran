@@ -301,6 +301,21 @@
       "productID": "com.ol1n.kiran.skin_abadox",
       "referenceName": "Flesh Maze Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "5D617E5C-26A6-4199-B140-D0AE2E8C01AB",
+      "localizations": [
+        {
+          "description": "Unlocks the Metal Knight (1993) skin",
+          "displayName": "Metal Knight Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_lords_of_thunder",
+      "referenceName": "Metal Knight Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},
