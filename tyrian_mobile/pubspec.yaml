@@ -205,6 +205,12 @@ flutter:
     - assets/skins/zaxxon/backgrounds/
     - assets/skins/zaxxon/atlas.webp
     - assets/skins/zaxxon/atlas.json
+    - assets/skins/axelay/ui/
+    - assets/skins/axelay/sfx/
+    - assets/skins/axelay/music/
+    - assets/skins/axelay/backgrounds/
+    - assets/skins/axelay/atlas.webp
+    - assets/skins/axelay/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

@@ -54,6 +54,8 @@ const kSkins = [
       productId: '$_iapPrefix.skin_blazing_lazers'),
   SkinInfo('solar_striker', 'Pocket Mono (1990)',
       pixelArt: true, productId: '$_iapPrefix.skin_solar_striker'),
+  SkinInfo('axelay', 'Mode-7 Steel (1992)',
+      pixelArt: true, productId: '$_iapPrefix.skin_axelay'),
   SkinInfo('star_fox', 'Flat Polygon (1993)',
       productId: '$_iapPrefix.skin_star_fox'),
   SkinInfo('tyrian_dos', 'Retro PC Pixel (1995)',

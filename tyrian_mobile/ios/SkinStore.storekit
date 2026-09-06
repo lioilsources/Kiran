@@ -226,6 +226,21 @@
       "productID": "com.ol1n.kiran.skin_zaxxon",
       "referenceName": "Iso Fortress Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "C29A2A79-0BAE-407E-8B2C-5BFBFB53407B",
+      "localizations": [
+        {
+          "description": "Unlocks the Mode-7 Steel (1992) skin",
+          "displayName": "Mode-7 Steel Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_axelay",
+      "referenceName": "Mode-7 Steel Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},
