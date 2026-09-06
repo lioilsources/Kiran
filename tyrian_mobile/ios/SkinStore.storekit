@@ -211,6 +211,21 @@
       "productID": "com.ol1n.kiran.skin_star_fox",
       "referenceName": "Flat Polygon Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "A3487779-FCF9-4DEB-916B-0C3237CF7B4F",
+      "localizations": [
+        {
+          "description": "Unlocks the Iso Fortress (1982) skin",
+          "displayName": "Iso Fortress Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_zaxxon",
+      "referenceName": "Iso Fortress Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},

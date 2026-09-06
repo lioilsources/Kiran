@@ -199,6 +199,12 @@ flutter:
     - assets/skins/river_raid/backgrounds/
     - assets/skins/river_raid/atlas.webp
     - assets/skins/river_raid/atlas.json
+    - assets/skins/zaxxon/ui/
+    - assets/skins/zaxxon/sfx/
+    - assets/skins/zaxxon/music/
+    - assets/skins/zaxxon/backgrounds/
+    - assets/skins/zaxxon/atlas.webp
+    - assets/skins/zaxxon/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
