@@ -87,7 +87,8 @@ Rich atmospheric composition: nebulae, distant planets, star fields, or alien la
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing.
 The central area of the image must be naturally dark so that text and UI panels overlaid on top remain readable.
-No text, no HUD elements, no UI widgets, no ship in foreground. Portrait aspect ratio 1:2.`,
+No text, no HUD elements, no UI widgets, no ship in foreground.
+No people, no characters, no pilots, no faces, no mascots — the deck is empty, the view is the scene outside. Portrait aspect ratio 1:2.`,
 
 	"ui_card_bg": `A sci-fi game inventory card panel surface texture.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
