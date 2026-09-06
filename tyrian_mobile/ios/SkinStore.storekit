@@ -241,6 +241,21 @@
       "productID": "com.ol1n.kiran.skin_axelay",
       "referenceName": "Mode-7 Steel Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "0915BFD2-5382-46C2-8E82-53B0596EFB86",
+      "localizations": [
+        {
+          "description": "Unlocks the FM Thunder (1992) skin",
+          "displayName": "FM Thunder Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_thunder_force",
+      "referenceName": "FM Thunder Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},

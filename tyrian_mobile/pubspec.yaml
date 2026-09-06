@@ -211,6 +211,12 @@ flutter:
     - assets/skins/axelay/backgrounds/
     - assets/skins/axelay/atlas.webp
     - assets/skins/axelay/atlas.json
+    - assets/skins/thunder_force/ui/
+    - assets/skins/thunder_force/sfx/
+    - assets/skins/thunder_force/music/
+    - assets/skins/thunder_force/backgrounds/
+    - assets/skins/thunder_force/atlas.webp
+    - assets/skins/thunder_force/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
