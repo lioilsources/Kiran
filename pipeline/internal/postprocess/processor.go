@@ -98,8 +98,12 @@ func Run(cfg Config) error {
 		// Background base names written this run, used to prune superseded files.
 		// bgComplete stays true only if every background in the manifest landed;
 		// a partial run must not prune the fallback art it failed to replace.
+		// A -only run is partial by construction: the loop below never reaches
+		// the other layers, so nothing would flip this to false, and rule 2 of
+		// pruneStaleBackgrounds would then delete the fifteen layers the re-pick
+		// did not touch.
 		bgWritten := map[string]bool{}
-		bgComplete := true
+		bgComplete := cfg.Only == ""
 
 		for _, asset := range manifest.Assets {
 			if cfg.Only != "" && asset.Name != cfg.Only {
