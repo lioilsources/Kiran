@@ -22,7 +22,7 @@ import 'skin_selector.dart' show SkinShopSection;
 class ComCenterScreen extends StatefulWidget {
   final TyrianGame game;
   final VoidCallback onStart;
-  final VoidCallback? onJoinIp;
+  final VoidCallback? onJoin;
 
   /// Start hosting a co-op game. Hosting is opt-in from here — it used to
   /// start on every PLAY, spamming the LAN and popping the Windows firewall
@@ -33,7 +33,7 @@ class ComCenterScreen extends StatefulWidget {
     super.key,
     required this.game,
     required this.onStart,
-    this.onJoinIp,
+    this.onJoin,
     this.onHost,
   });
 
@@ -1752,7 +1752,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   Widget _buildBottomBar() {
     final label = game.currentSectorIndex == 0 ? 'START MISSION' : 'CONTINUE MISSION';
-    final showJoin = widget.onJoinIp != null &&
+    final showJoin = widget.onJoin != null &&
         game.coopRole != CoopRole.client &&
         game.vessel2 == null;
 
@@ -1806,7 +1806,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 Padding(
                   padding: const EdgeInsets.only(right: 12),
                   child: Text(
-                    'HOSTING  ${game.hostIp ?? ''}',
+                    // The name a joiner sees in their host list; the IP for a
+                    // manual connect stays in the credit row above.
+                    'HOSTING as ${game.vessel.pilotName}',
                     style: _theme.styled(TextStyle(
                       color: _theme.accentDim,
                       fontSize: 11,
@@ -1817,7 +1819,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ],
               if (showJoin) ...[
                 GestureDetector(
-                  onTap: widget.onJoinIp,
+                  onTap: widget.onJoin,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(

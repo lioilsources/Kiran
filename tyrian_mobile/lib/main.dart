@@ -15,6 +15,7 @@ import 'systems/sector.dart';
 import 'input/gamepad_input.dart';
 import 'ui/com_center.dart';
 import 'ui/format.dart';
+import 'ui/join_dialog.dart';
 import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
@@ -343,43 +344,21 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     return '?';
   }
 
-  void _showManualIpDialog() {
-    final controller = TextEditingController();
-    showDialog(
+  /// JOIN: list the hosts Bonjour finds on this Wi-Fi, connect on tap. The
+  /// dialog owns the browse for as long as it is open; typing an IP is still
+  /// there underneath for networks where mDNS does not get through.
+  void _showJoinDialog() {
+    final discovery = CoopDiscovery();
+    showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Connect to host', style: TextStyle(color: Colors.cyanAccent)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.url,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          decoration: const InputDecoration(
-            hintText: '192.168.x.x',
-            hintStyle: TextStyle(color: Colors.white38),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('CANCEL', style: TextStyle(color: Colors.white54)),
-          ),
-          TextButton(
-            onPressed: () {
-              final ip = controller.text.trim();
-              if (ip.isNotEmpty) {
-                Navigator.pop(ctx);
-                _joinAsClient(ip, CoopHost.defaultPort);
-              }
-            },
-            child: const Text('CONNECT', style: TextStyle(color: Colors.cyanAccent)),
-          ),
-        ],
+      builder: (ctx) => JoinDialog(
+        discovery: discovery,
+        onConnect: (address, port) {
+          Navigator.pop(ctx);
+          _joinAsClient(address, port);
+        },
       ),
-    );
+    ).whenComplete(discovery.dispose);
   }
 
   /// PLAY: single-player, no sockets. Hosting used to start unconditionally
@@ -414,14 +393,30 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game.hostIp = await _getLocalIp();
     print('Host: local IP = ${_game.hostIp}, TCP port = $port');
 
-    // Wire up client-joined notification for UI
+    // Advertise over Bonjour while the seat is free. The host takes one
+    // client, so the service is withdrawn the moment one connects and comes
+    // back if it drops — a joiner never picks a full game from the list.
+    final discovery = _autoDiscovery = CoopDiscovery();
+    final pilotName = _game.vessel.pilotName;
+    Future<void> advertise() async {
+      try {
+        await discovery.advertise(port, pilotName);
+      } catch (e) {
+        // Bonjour refused — local-network permission denied, no Avahi on
+        // Linux. Hosting still works; the IP in ComCenter is the fallback.
+        print('Host: Bonjour advertise failed: $e');
+      }
+    }
+
     _game.onClientJoined = () {
+      discovery.stopAdvertising();
       if (mounted) setState(() {});
     };
-
-    // Start UDP broadcast
-    _autoDiscovery = CoopDiscovery();
-    await _autoDiscovery!.startBroadcast(port, _game.vessel.pilotName);
+    _game.onClientLeft = () {
+      if (_autoDiscovery == discovery) advertise();
+      if (mounted) setState(() {});
+    };
+    await advertise();
 
     if (mounted) setState(() {});
   }
@@ -606,7 +601,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ComCenterScreen(
                 game: _game,
                 onStart: _onComCenterStart,
-                onJoinIp: _showManualIpDialog,
+                onJoin: _showJoinDialog,
                 onHost: _startHosting,
               ),
 

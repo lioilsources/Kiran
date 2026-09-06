@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 3.0.1
+version: 3.0.2
 
 environment:
   sdk: ^3.11.1
@@ -58,6 +58,7 @@ dependencies:
   # Ogg Opus decoding on iOS < 18.4 (CoreAudio has no Ogg support there);
   # registered at runtime only on those versions — see main.dart.
   media_kit_libs_ios_audio: ^1.1.4
+  bonsoir: ^7.1.5
 
 dev_dependencies:
   flutter_test:

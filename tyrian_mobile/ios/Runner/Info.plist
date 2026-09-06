@@ -30,11 +30,10 @@
 	<true/>
 	<key>NSBonjourServices</key>
 	<array>
-		<string>_tyriancoop._udp</string>
 		<string>_tyriancoop._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Tyrian uses local network for co-op multiplayer</string>
+	<string>Kirian looks for co-op games hosted on your Wi-Fi and lets other players find yours.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Kiran does not use the microphone. This permission is required by the audio framework.</string>
 	<key>UIApplicationSceneManifest</key>
