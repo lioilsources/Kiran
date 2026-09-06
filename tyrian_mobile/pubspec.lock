@@ -37,10 +37,10 @@ packages:
     dependency: "direct main"
     description:
       name: bonsoir
-      sha256: "20fed01e4616e625f4bafd9007ff899d231d8d79bebc8564853fa1e3570294a6"
+      sha256: "86a8f55539d29c17ac2cb8a16698978aaa9e7c5d14139fb2234dad33b6ecfc33"
       url: "https://pub.dev"
     source: hosted
-    version: "7.1.5"
+    version: "7.1.4"
   bonsoir_android:
     dependency: transitive
     description:

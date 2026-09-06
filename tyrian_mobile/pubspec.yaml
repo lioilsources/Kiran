@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 3.0.2
+version: 3.0.3
 
 environment:
   sdk: ^3.11.1
@@ -58,7 +58,9 @@ dependencies:
   # Ogg Opus decoding on iOS < 18.4 (CoreAudio has no Ogg support there);
   # registered at runtime only on those versions — see main.dart.
   media_kit_libs_ios_audio: ^1.1.4
-  bonsoir: ^7.1.5
+  # Pinned: 7.1.5 pulls bonsoir_android 7.1.3, which needs Dart 3.12, and the
+  # macOS/Linux/Windows release workflows pin Flutter 3.41 (Dart 3.11).
+  bonsoir: 7.1.4
 
 dev_dependencies:
   flutter_test:
