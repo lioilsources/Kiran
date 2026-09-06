@@ -456,7 +456,23 @@ ať to není 10× ruční práce.
       nebyl slabý prompt, ale `sharedDangerMood`, který vrstvám bez zóny
       přímo předepisoval „no strong colour cast". Přeformulován; `LayerOverride`
       tedy **není potřeba** a do `SkinDef` se nepřidává.
-- [ ] Batch 2, 3
+- [x] Batch 2 (`zaxxon`, `axelay`, `thunder_force`) — 2026-09-06, na
+      exkluzivním ComfyUI: 1k assety ~40 min/skin, 2k pozadí **21 min/skin**
+      (ne 3 h jako v batchi 1 na sdíleném boxu). Odchylky od 6.1 stejné jako
+      v batchi 1 (bez `cmd/tune`, preview přes flux, pozadí ve 2 variacích).
+      Náhled i ComCenter pozadí `zaxxonu` přegenerovány (`-force`) — všechny
+      čtyři původní varianty měly zapečený text. `thunder_force` (modrá na
+      modré) `BgThreshold` **nepotřebuje**; padá na mraky zapečené do podložky,
+      ne na key. Výběry v `selections/<id>.json` mají důvody v commitech.
+- [x] Nalezená a opravená vada pipeline: `postprocess -only <vrstva>` mazal
+      ostatních 15 vrstev pozadí (prune bral částečný běh za kompletní).
+- [ ] **Hudba batche 2 a 3 čeká na kredit Eleven Music** (`insufficient_credits`
+      2026-09-06 13:07). SFX všech sedmi skinů hotové; hudba jen `zaxxon` 5/6.
+      Po dobití `generate -music -skin <id>` po jednom skinu — šest tracků
+      naráz končí na 429. Do té doby hraje přes fallback v `MusicService`
+      výchozí soundtrack.
+- [ ] Batch 3 (`twinbee`, `fantasy_zone`, `abadox`, `lords_of_thunder`) —
+      generování spuštěno 2026-09-06 13:47, zřetězeno za batch 2.
 - [x] Měření velikosti — assety 135 → **159 MB** za tři skiny (~8 MB/skin).
       Zbylých sedm ≈ +60 MB → ~220 MB, tedy **přes 200MB strop** pro stažení
       na mobilních datech. On-demand placené skiny přestávají být volitelné.
