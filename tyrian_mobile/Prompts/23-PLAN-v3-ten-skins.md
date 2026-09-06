@@ -471,8 +471,32 @@ ať to není 10× ruční práce.
       Po dobití `generate -music -skin <id>` po jednom skinu — šest tracků
       naráz končí na 429. Do té doby hraje přes fallback v `MusicService`
       výchozí soundtrack.
-- [ ] Batch 3 (`twinbee`, `fantasy_zone`, `abadox`, `lords_of_thunder`) —
-      generování spuštěno 2026-09-06 13:47, zřetězeno za batch 2.
+- [x] Batch 3 (`twinbee`, `fantasy_zone`, `abadox`, `lords_of_thunder`) —
+      2026-09-06, generování 13:47–18:10, commity 0530b39 / 469cae9 /
+      0c572d9 / 4b24c99. **Všech deset skinů je v repu** (24 celkem).
+      Poznatky, které se vracely:
+      - **Jednobarevné palety potřebují `BgThreshold`** v definici skinu:
+        `fantasy_zone` 25 (pastel na smetanové), `abadox` 35 (červená na
+        červené) — k `solar_striker` 22. Přeměřovat sweepem 60/40/30/22 přes
+        celou sadu, ne odhadem.
+      - **ComCenter pozadí u ilustrativních stylů táhne postavy** i po
+        doplnění „no people" do šablony (39bcf35): `twinbee` 12/12 dětských
+        pilotů, `lords_of_thunder` 4/4 rytířů. Funguje ručně psaný sidecar
+        `tuned/<id>/flux/comcenter_bg.yaml` (scéna zůstane, slova táhnoucí
+        postavy pryč), `-tuned-dir tuned`; `positive` psát jako blokový
+        skalár, holý končí na prvním ` #RRGGBB`.
+      - „Painted manga cover art" (`lords_of_thunder`) maluje do rohů podložek
+        podpisy — vyřazovat výběrem, key je nechá jako cizí glyfy.
+      - Výchozí v1 u pozadí stačí zřídka: překryvové vrstvy (`layer_1+`)
+        často vyjdou jako celá krajina se zemí, vybírat ty řídké na černé.
+- [x] Měření po batchi 3: `assets/skins` 215 MB, z toho 70 MB `sprites/`
+      mastery mimo bundle → **~145 MB bundlovaných** za 24 skinů bez hudby
+      šesti z nich (+~15 MB) → ~160 MB, pod limitem 200 MB. Opatření z 5.1
+      netřeba.
+- [ ] Uzavření v3.0 podle 6.2: `SKINS.md` (24 témat + galerie), `README.md`,
+      `AGENTS.md`, `CHANGELOG.md`, App Store Connect / Play Console produkty
+      (`fantasy_zone` jako `skin_candy_drift`, `abadox` s ratingem
+      Horror/Fear Themes), review screenshoty do `marketing/iap/`.
 - [x] Měření velikosti — assety 135 → **159 MB** za tři skiny (~8 MB/skin).
       Zbylých sedm ≈ +60 MB → ~220 MB, tedy **přes 200MB strop** pro stažení
       na mobilních datech. On-demand placené skiny přestávají být volitelné.
