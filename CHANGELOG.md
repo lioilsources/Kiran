@@ -1,5 +1,8 @@
 # Changelog
 
+## [06/09/2026] — 3.2.1
+- iOS releases now ship the debug symbols of the build alongside the IPA. Without them every app frame in a TestFlight crash report is a bare address — the archive that holds them only existed for the length of the CI job and was thrown away
+
 ## [06/09/2026] — 3.2.0
 - Seven new skins: Iso Fortress (1982), Chibi Squadron (1985), Candy Drift (1986), Flesh Maze (1989), Mode-7 Steel (1992), FM Thunder (1992), Metal Knight (1993) — 24 in all. Each has its own ships, enemies, boss, backgrounds for all seven zones, HUD, shop art and sound effects; their soundtracks follow, until then they play the default one
 - Co-op nearby: a host that was visible but would not connect now says so — and why: iOS switches peer-to-peer Wi-Fi off while a Personal Hotspot is on, so nearby play needs the hotspot off on both devices (or both on the same Wi-Fi). Before this the joiner silently became a host instead

@@ -115,6 +115,26 @@ jobs:
             -exportOptionsPlist tyrian_mobile/ios/ExportOptions.plist \
             -exportPath $RUNNER_TEMP/ipa
 
+      # A crash report from a release build is unreadable without the debug
+      # symbols of that exact binary, and the archive lives in RUNNER_TEMP for
+      # the length of the job only — so every app frame in every TestFlight
+      # crash so far symbolicated to a bare address. Ship the dSYMs with the
+      # build they belong to; Xcode's Organizer and `atos` both take them.
+      #
+      # A missing dSYM warns instead of failing: the IPA is what the release is
+      # for, and the same reasoning as the ordering below applies — nothing
+      # secondary may cost us the artifact.
+      - name: Package dSYMs
+        run: |
+          if [ -z "$(ls -A $RUNNER_TEMP/Runner.xcarchive/dSYMs 2>/dev/null)" ]; then
+            echo "::warning::archive holds no dSYMs — check DEBUG_INFORMATION_FORMAT for Release"
+            exit 0
+          fi
+          mkdir -p $RUNNER_TEMP/dsyms
+          ditto -c -k --sequesterRsrc --keepParent \
+            $RUNNER_TEMP/Runner.xcarchive/dSYMs \
+            $RUNNER_TEMP/dsyms/Kirian-${{ github.ref_name }}-iOS-dSYMs.zip
+
       # Publish the artifact before handing it to Apple. The upload below talks
       # to a service that fails on its own schedule — v2.3.3 died on an altool
       # "Defaults.properties couldn't be opened" after a perfectly good build,
@@ -123,7 +143,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ runner.temp }}/ipa/*.ipa
+          files: |
+            ${{ runner.temp }}/ipa/*.ipa
+            ${{ runner.temp }}/dsyms/*.zip
           name: Kiran ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
