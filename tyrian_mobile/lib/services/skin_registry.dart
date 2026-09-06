@@ -58,6 +58,8 @@ const kSkins = [
   SkinInfo('rtype', 'Biomech Cruiser (1987)', productId: '$_iapPrefix.skin_rtype'),
   SkinInfo('blazing_lazers', '16-Bit Laser (1989)',
       productId: '$_iapPrefix.skin_blazing_lazers'),
+  SkinInfo('abadox', 'Flesh Maze (1989)',
+      pixelArt: true, productId: '$_iapPrefix.skin_abadox'),
   SkinInfo('solar_striker', 'Pocket Mono (1990)',
       pixelArt: true, productId: '$_iapPrefix.skin_solar_striker'),
   SkinInfo('axelay', 'Mode-7 Steel (1992)',

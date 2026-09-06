@@ -229,6 +229,12 @@ flutter:
     - assets/skins/fantasy_zone/backgrounds/
     - assets/skins/fantasy_zone/atlas.webp
     - assets/skins/fantasy_zone/atlas.json
+    - assets/skins/abadox/ui/
+    - assets/skins/abadox/sfx/
+    - assets/skins/abadox/music/
+    - assets/skins/abadox/backgrounds/
+    - assets/skins/abadox/atlas.webp
+    - assets/skins/abadox/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

@@ -286,6 +286,21 @@
       "productID": "com.ol1n.kiran.skin_candy_drift",
       "referenceName": "Candy Drift Skin (1986)",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "CEB6F777-318B-4988-A1EE-629E67FAA9E1",
+      "localizations": [
+        {
+          "description": "Unlocks the Flesh Maze (1989) skin",
+          "displayName": "Flesh Maze Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_abadox",
+      "referenceName": "Flesh Maze Skin",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},
