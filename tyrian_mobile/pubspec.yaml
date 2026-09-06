@@ -223,6 +223,12 @@ flutter:
     - assets/skins/twinbee/backgrounds/
     - assets/skins/twinbee/atlas.webp
     - assets/skins/twinbee/atlas.json
+    - assets/skins/fantasy_zone/ui/
+    - assets/skins/fantasy_zone/sfx/
+    - assets/skins/fantasy_zone/music/
+    - assets/skins/fantasy_zone/backgrounds/
+    - assets/skins/fantasy_zone/atlas.webp
+    - assets/skins/fantasy_zone/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

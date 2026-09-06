@@ -51,6 +51,10 @@ const kSkins = [
       pixelArt: true, productId: '$_iapPrefix.skin_zaxxon'),
   SkinInfo('twinbee', 'Chibi Squadron (1985)',
       productId: '$_iapPrefix.skin_twinbee'),
+  // Product id is not skin_fantasy_zone: that one was burned in App Store
+  // Connect — see burnedProductIds in the registry consistency test.
+  SkinInfo('fantasy_zone', 'Candy Drift (1986)',
+      productId: '$_iapPrefix.skin_candy_drift'),
   SkinInfo('rtype', 'Biomech Cruiser (1987)', productId: '$_iapPrefix.skin_rtype'),
   SkinInfo('blazing_lazers', '16-Bit Laser (1989)',
       productId: '$_iapPrefix.skin_blazing_lazers'),

@@ -271,6 +271,21 @@
       "productID": "com.ol1n.kiran.skin_twinbee",
       "referenceName": "Chibi Squadron Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "AE67281A-2B7D-47E3-BDC0-2477C7135D21",
+      "localizations": [
+        {
+          "description": "Unlocks the Candy Drift (1986) skin",
+          "displayName": "Candy Drift Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_candy_drift",
+      "referenceName": "Candy Drift Skin (1986)",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},
