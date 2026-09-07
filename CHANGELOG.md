@@ -1,5 +1,10 @@
 # Changelog
 
+## [07/09/2026] — 3.3.0
+- The six skins that shipped without a soundtrack have one at last: Flesh Maze, Mode-7 Steel, Candy Drift, Metal Knight, FM Thunder and Chibi Squadron each get an intro and five combat themes written for their own era — chiptune horror, Mode-7 orchestra, FM console rock. Since 3.2.0 they had been borrowing the default skin's music track by track. Iso Fortress, which had everything but its boss theme, is complete too
+- Music is now generated on our own machine instead of a metered service, which is the only reason the gap could be closed — those six skins had been waiting on credit that never arrived
+- Fix: Galaga Ace's five looping themes dropped into silence at the end of every pass and then snapped back to full volume. They were never seamless loops, only tracks that faded out; the new recordings hold their level across the seam
+
 ## [06/09/2026] — 3.2.1
 - iOS releases now ship the debug symbols of the build alongside the IPA. Without them every app frame in a TestFlight crash report is a bare address — the archive that holds them only existed for the length of the CI job and was thrown away
 

@@ -59,7 +59,26 @@ go run ./cmd/generate -skin rtype -dry-run
 
 Output: `output/assets/skins/<skin_id>/<subdir>/<asset>_v{1..N}.jpg` + `manifest.json`
 
-## Stage 2 — Generate SFX
+## Stage 2 — Generate SFX and music
+
+Audio goes through **`cmd/audiogen`** and `assets/audio/manifest.yaml`, which
+carry the prompt, seed and model of all 384 assets so any of them can be
+regenerated exactly. Default provider is the local AiStack service (ACE-Step 1.5
+for music, MOSS-SoundEffect v2.0 for SFX) — both output normalised, seamlessly
+looping OGG. Full workflow: `docs/AUDIO.md`.
+
+```bash
+go run ./cmd/audiogen -init                    # refresh manifest from skin defs
+go run ./cmd/audiogen                          # generate what is missing
+go run ./cmd/audiogen -only all -skin galaga   # regenerate one skin
+go run ./cmd/audiogen -qa -only all            # check without generating
+```
+
+### Legacy: direct ElevenLabs path
+
+`cmd/generate -sfx` / `-music` still work, but they write unnormalised `.mp3`
+into `output/` and record no seed, so their output cannot be reproduced. Use
+them only to recreate something historical.
 
 ```bash
 # All skins with SfxStyle defined

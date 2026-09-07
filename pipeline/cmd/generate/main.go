@@ -32,8 +32,12 @@ func main() {
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
-	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
-	musicMode := flag.Bool("music", false, "Generate adaptive music via Eleven Music instead of images")
+	// Legacy audio cesta. Produkční generování jede přes cmd/audiogen, které
+	// čte manifest, zaznamenává seed a nechá službu udělat post-processing;
+	// tyhle dva režimy píšou nenormalizované .mp3 bez seedu. Zůstávají kvůli
+	// reprodukci historických assetů — viz docs/AUDIO.md.
+	sfxMode := flag.Bool("sfx", false, "LEGACY: SFX přímo z ElevenLabs (produkce: cmd/audiogen)")
+	musicMode := flag.Bool("music", false, "LEGACY: hudba přímo z Eleven Music (produkce: cmd/audiogen)")
 	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI job")
 	comfyWorkflow := flag.String("comfyui-workflow", "flux", "ComfyUI workflow: flux or pony")
 	comfyCheckpoint := flag.String("comfyui-checkpoint", "", "Override checkpoint name in ComfyUI workflow node 4")
