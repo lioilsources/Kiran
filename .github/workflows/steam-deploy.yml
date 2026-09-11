@@ -127,6 +127,11 @@ jobs:
           name: steam-depot-linux
           path: steam-build/linux
 
+      # upload-artifact keeps no file modes — every file comes back 644, so
+      # without this the Linux depot ships a `kirian` Steam cannot execute.
+      - name: Restore executable bit on the Linux binary
+        run: chmod +x steam-build/linux/kirian
+
       - uses: game-ci/steam-deploy@v3
         with:
           username: ${{ secrets.STEAM_BUILD_USERNAME }}
