@@ -11,8 +11,8 @@ import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
-import 'systems/sector.dart';
 import 'input/gamepad_input.dart';
+import 'ui/campaign_map.dart';
 import 'ui/com_center.dart';
 import 'ui/format.dart';
 import 'ui/join_dialog.dart';
@@ -153,6 +153,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   /// only thing that may reset them is an explicit fresh start.
   bool _runInProgress = false;
   bool _showComCenter = false;
+  bool _showCampaignMap = false;
 
   // Pause skin selector
   bool _showPauseSkinSelector = false;
@@ -229,9 +230,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       // anymore. The overlay stays up; the player opens the board from its
       // button if one is available.
       AchievementService.instance.onGameOver();
-      await LeaderboardService.instance.submitScore(_game.vessel.score);
-      await LeaderboardService.instance
-          .submitDepth(AchievementService.instance.maxSectorLevel);
+      // The boards rank endless runs; a campaign score is a different game.
+      if (_game.mode == GameMode.endless) {
+        await LeaderboardService.instance.submitScore(_game.vessel.score);
+        await LeaderboardService.instance
+            .submitDepth(AchievementService.instance.maxSectorLevel);
+      }
 
       if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
         _game.coopHost!.sendEvent(EventType.gameOver);
@@ -240,20 +244,25 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
     _game.onSectorComplete = () {
       Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          if (_game.coopRole != CoopRole.client) {
-            _game.advanceToNextSector();
-            _game.openComCenter();
-            _game.saveProgress(); // persist advanced sector + current loadout
-            // Post progress now too: the run has no end, and both boards keep
-            // the player's best, so a session killed mid-run still counts.
-            LeaderboardService.instance.submitScore(_game.vessel.score);
-            LeaderboardService.instance
-                .submitDepth(AchievementService.instance.maxSectorLevel);
-          } else {
-            // P2: show waiting overlay while host shops
-            setState(() => _clientWaiting = true);
-          }
+        if (!mounted) return;
+        if (_game.mode == GameMode.campaign) {
+          _game.completeCampaignNode();
+          _game.saveProgress();
+          setState(() => _showCampaignMap = true);
+          return;
+        }
+        if (_game.coopRole != CoopRole.client) {
+          _game.advanceToNextSector();
+          _game.openComCenter();
+          _game.saveProgress(); // persist advanced sector + current loadout
+          // Post progress now too: the run has no end, and both boards keep
+          // the player's best, so a session killed mid-run still counts.
+          LeaderboardService.instance.submitScore(_game.vessel.score);
+          LeaderboardService.instance
+              .submitDepth(AchievementService.instance.maxSectorLevel);
+        } else {
+          // P2: show waiting overlay while host shops
+          setState(() => _clientWaiting = true);
         }
       });
     };
@@ -431,6 +440,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   /// fullscreen window (Steam plan, Fix 7). Hosting is opt-in via the HOST
   /// button in ComCenter, which calls [_startHosting].
   Future<void> _startAsAutoHost() async {
+    // Coming back from the campaign the vessel holds campaign state, so the
+    // endless run is reloaded from its own save first.
+    if (_game.mode == GameMode.campaign) {
+      _runInProgress = await _game.enterEndless();
+    }
     // Only a pilot with nothing to lose gets a clean slate. Resetting a run
     // that already exists would wipe the weapons, credits and cumulative
     // score the roguelike loop is built on — and cumulative score is what
@@ -546,6 +560,50 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// CAMPAIGN from the main menu: the campaign's own vessel and save, then
+  /// the node map.
+  Future<void> _startCampaign() async {
+    await _game.enterCampaign();
+    if (!mounted) return;
+    setState(() {
+      _screen = _ScreenState.game;
+      _showComCenter = false;
+      _showCampaignMap = true;
+    });
+  }
+
+  void _launchCampaignNode(int index) {
+    _game.launchCampaignNode(index);
+    setState(() {
+      _showCampaignMap = false;
+      _showComCenter = true;
+    });
+  }
+
+  /// Campaign death: the same node again, via the shop.
+  void _retryCampaignNode() {
+    _game.retryNode();
+    _game.saveProgress();
+    if (mounted) setState(() => _showComCenter = true);
+  }
+
+  /// MAIN MENU from the pause menu or the campaign map. Drops the current
+  /// mission (progress since the last save, as a death would) and returns to
+  /// the skin grid, from where either mode can be entered.
+  Future<void> _quitToMainMenu() async {
+    _disposeAutoHost();
+    await _game.disposeCoop();
+    _game.abandonMission();
+    if (!mounted) return;
+    setState(() {
+      _screen = _ScreenState.mainMenu;
+      _showComCenter = false;
+      _showCampaignMap = false;
+      _showPauseSkinSelector = false;
+      _clientWaiting = false;
+    });
+  }
+
   void _returnToMainMenu() async {
     _disposeAutoHost();
     await _game.disposeCoop();
@@ -596,7 +654,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     // advanceToNextSector has almost certainly finished — this is the backstop
     // for when it has not. Costs a single microtask when already loaded.
     await AssetLibrary.instance
-        .loadZoneBackgrounds(Sector.zoneForIndex(_game.currentSectorIndex));
+        .loadZoneBackgrounds(_game.zoneForIndex(_game.currentSectorIndex));
     if (!mounted) return;
     if (_game.currentSector == null) {
       _game.startGame();
@@ -622,7 +680,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 onPlay: () {
                   _game.refreshSprites();
                   _startAsAutoHost();
-                }),
+                },
+                onCampaign: _startCampaign),
 
           // Game screen overlays
           if (_game.isLoaded && _screen == _ScreenState.game) ...[
@@ -637,6 +696,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   _game.skinSelectorOpen = true;
                   setState(() => _showPauseSkinSelector = true);
                 },
+                onMainMenu: _quitToMainMenu,
                 onQuit: platform.isDesktop
                     ? () async {
                         await windowManager.destroy();
@@ -646,12 +706,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
 
             // Boss HP bar (visible while a phased boss is on the field)
-            if (!_showComCenter && !_clientWaiting &&
+            if (!_showComCenter && !_showCampaignMap && !_clientWaiting &&
                 _game.state != GameState.gameOver)
               BossHealthBar(game: _game),
 
             // OSD HUD
-            if (!_showComCenter && !_clientWaiting &&
+            if (!_showComCenter && !_showCampaignMap && !_clientWaiting &&
                 _game.state != GameState.gameOver)
               OsdPanel(
                 game: _game,
@@ -679,13 +739,24 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 },
               ),
 
-            // ComCenter (host/solo only — P2 never sees this)
+            // ComCenter (host/solo only — P2 never sees this). The campaign is
+            // single-player: co-op mirrors hostiles by type only, which a
+            // composite boss cannot survive, so JOIN/HOST are withheld there.
             if (_showComCenter)
               ComCenterScreen(
                 game: _game,
                 onStart: _onComCenterStart,
-                onJoin: _showJoinDialog,
-                onHost: _startHosting,
+                onJoin:
+                    _game.mode == GameMode.campaign ? null : _showJoinDialog,
+                onHost: _game.mode == GameMode.campaign ? null : _startHosting,
+              ),
+
+            // Campaign node map (between missions)
+            if (_showCampaignMap)
+              CampaignMapScreen(
+                game: _game,
+                onLaunch: _launchCampaignNode,
+                onBack: _quitToMainMenu,
               ),
 
             // Client waiting overlay (P2)
@@ -698,7 +769,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 credit: _game.vessel.credit,
                 score: _game.vessel.score,
                 credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
-                onClose: _game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector,
+                subtitle: _game.mode == GameMode.campaign
+                    ? 'Mission failed — loadout and credits retained. Retry from the Com Center.'
+                    : 'Rebuilding at Sector 1 — loadout and credits retained',
+                onClose: _game.mode == GameMode.campaign
+                    ? _retryCampaignNode
+                    : (_game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector),
               ),
           ],
 
@@ -799,14 +875,18 @@ class _GameOverOverlay extends StatefulWidget {
   final int score;
   final int? credit2;
 
-  /// Leave the death screen — back to sector 1 via the shop (solo), or the
-  /// co-op ComCenter.
+  /// What happens next — the endless rewind or the campaign retry.
+  final String subtitle;
+
+  /// Leave the death screen — back to sector 1 via the shop (solo), the
+  /// co-op ComCenter, or the same campaign node.
   final VoidCallback onClose;
 
   const _GameOverOverlay({
     required this.credit,
     required this.score,
     this.credit2,
+    required this.subtitle,
     required this.onClose,
   });
 
@@ -894,10 +974,10 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Rebuilding at Sector 1 — loadout and credits retained',
+              Text(
+                widget.subtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 13),
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
               const SizedBox(height: 10),
               Text(
@@ -965,9 +1045,14 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
 class _PauseMenu extends StatefulWidget {
   final VoidCallback onResume;
   final VoidCallback onSkins;
+  final VoidCallback? onMainMenu;
   final Future<void> Function()? onQuit;
 
-  const _PauseMenu({required this.onResume, required this.onSkins, this.onQuit});
+  const _PauseMenu(
+      {required this.onResume,
+      required this.onSkins,
+      this.onMainMenu,
+      this.onQuit});
 
   @override
   State<_PauseMenu> createState() => _PauseMenuState();
@@ -987,6 +1072,7 @@ class _PauseMenuState extends State<_PauseMenu> {
             () => setState(SoundService.instance.toggleMute)),
         (MusicService.instance.muted ? 'MUSIC: OFF' : 'MUSIC: ON',
             () => setState(MusicService.instance.toggleMute)),
+        if (widget.onMainMenu != null) ('MAIN MENU', () => widget.onMainMenu!()),
         if (widget.onQuit != null) ('QUIT TO DESKTOP', () => widget.onQuit!()),
       ];
 

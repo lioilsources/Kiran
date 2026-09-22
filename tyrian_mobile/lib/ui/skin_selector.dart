@@ -20,13 +20,22 @@ class SkinSelector extends StatefulWidget {
   final VoidCallback onPlay;
   final VoidCallback? onDiscard;
 
+  /// Adds a CAMPAIGN entry under the grid — the main menu's way into the
+  /// campaign with whatever skin is currently loaded. Absent in the pause-time
+  /// selector.
+  final VoidCallback? onCampaign;
+
   /// Show a QUIT entry under the grid. Only the desktop main menu sets this:
   /// phones have a home button, and the pause-time selector must not offer a
   /// second, confusing exit.
   final bool showQuit;
 
   const SkinSelector(
-      {super.key, required this.onPlay, this.onDiscard, this.showQuit = false});
+      {super.key,
+      required this.onPlay,
+      this.onDiscard,
+      this.onCampaign,
+      this.showQuit = false});
 
   @override
   State<SkinSelector> createState() => _SkinSelectorState();
@@ -119,26 +128,52 @@ class _SkinSelectorState extends State<SkinSelector> {
   }
 
   bool get _hasQuit => widget.showQuit && platform.isDesktop;
+  bool get _hasCampaign => widget.onCampaign != null;
 
-  /// Pseudo focus index for the QUIT entry, one past the skin grid.
-  int get _quitIndex => kSkins.length;
+  /// Pseudo focus indices for the entries under the grid: CAMPAIGN first,
+  /// then QUIT, each one past the last.
+  int get _campaignIndex => kSkins.length;
+  int get _quitIndex => kSkins.length + (_hasCampaign ? 1 : 0);
+
+  /// The entries below the grid, top to bottom.
+  List<int> get _footer => [
+        if (_hasCampaign) _campaignIndex,
+        if (_hasQuit) _quitIndex,
+      ];
 
   Future<void> _quit() async {
     await windowManager.destroy();
     exit(0);
   }
 
+  /// Confirm on whatever has focus: a skin card plays, the footer entries
+  /// do their own thing.
+  void _activateFocus() {
+    if (_hasQuit && _focusIndex == _quitIndex) {
+      _quit();
+    } else if (_hasCampaign && _focusIndex == _campaignIndex) {
+      widget.onCampaign!();
+    } else {
+      _selectAndPlay(kSkins[_focusIndex].id);
+    }
+  }
+
   void _moveFocus(int dx, int dy) {
     if (_loading) return;
     final cols = platform.isLandscape ? 4 : 2;
     final count = kSkins.length;
+    final footer = _footer;
 
-    // QUIT sits below the grid: down from the last row lands on it, up from it
-    // returns to the last row. Left/right on it stay put.
-    if (_focusIndex == _quitIndex) {
+    // The footer is a vertical list below the grid: down from the last row
+    // lands on its first entry, up from that entry returns to the last row.
+    // Left/right on it stay put.
+    final fi = footer.indexOf(_focusIndex);
+    if (fi >= 0) {
       if (dy < 0) {
-        setState(() => _focusIndex = count - 1);
-        _scrollToFocus();
+        setState(() => _focusIndex = fi == 0 ? count - 1 : footer[fi - 1]);
+        if (fi == 0) _scrollToFocus();
+      } else if (dy > 0 && fi + 1 < footer.length) {
+        setState(() => _focusIndex = footer[fi + 1]);
       }
       return;
     }
@@ -146,8 +181,8 @@ class _SkinSelectorState extends State<SkinSelector> {
     int row = _focusIndex ~/ cols;
     int col = _focusIndex % cols;
     final maxRow = (count - 1) ~/ cols;
-    if (_hasQuit && dy > 0 && row == maxRow) {
-      setState(() => _focusIndex = _quitIndex);
+    if (footer.isNotEmpty && dy > 0 && row == maxRow) {
+      setState(() => _focusIndex = footer.first);
       return;
     }
     col += dx;
@@ -195,13 +230,7 @@ class _SkinSelectorState extends State<SkinSelector> {
     if (right && !_prevRight) _moveFocus(1, 0);
     if (up && !_prevUp) _moveFocus(0, -1);
     if (down && !_prevDown) _moveFocus(0, 1);
-    if (confirm && !_prevConfirm) {
-      if (_focusIndex == _quitIndex) {
-        _quit();
-      } else {
-        _selectAndPlay(kSkins[_focusIndex].id);
-      }
-    }
+    if (confirm && !_prevConfirm) _activateFocus();
     if (discard && !_prevDiscard) widget.onDiscard?.call();
 
     _prevLeft = left;
@@ -233,11 +262,7 @@ class _SkinSelectorState extends State<SkinSelector> {
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
-      if (_focusIndex == _quitIndex) {
-        _quit();
-      } else {
-        _selectAndPlay(kSkins[_focusIndex].id);
-      }
+      _activateFocus();
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.escape && _hasQuit) {
@@ -291,6 +316,37 @@ class _SkinSelectorState extends State<SkinSelector> {
                         ),
                       ),
               ),
+              if (_hasCampaign)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: InkWell(
+                    onTap: () => widget.onCampaign!(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _focusIndex == _campaignIndex
+                              ? Colors.cyanAccent
+                              : Colors.cyanAccent.withAlpha(110),
+                          width: _focusIndex == _campaignIndex ? 2 : 1,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'CAMPAIGN',
+                        style: TextStyle(
+                          color: _focusIndex == _campaignIndex
+                              ? Colors.cyanAccent
+                              : Colors.cyanAccent.withAlpha(200),
+                          fontSize: 14,
+                          letterSpacing: 4,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               if (_hasQuit)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),

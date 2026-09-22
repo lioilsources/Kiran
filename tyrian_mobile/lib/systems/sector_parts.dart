@@ -954,3 +954,93 @@ void _l6p3(Sector s) {
   f3.addWeapon(50, 210);
   s.fleets.add(f3);
 }
+
+// ═══════════════════ Level 7 — Deep Core (campaign only) ═══════════════════
+// Theme: the approach to the core — X-II wolfpacks, then an X-III phalanx.
+// HP total 96,480. Not in the endless table; see Sector._campaignExtraParts.
+
+/// I — wolfpack lanes crossing a swarm. Dominant falconx2 / linear.
+void _l7p1(Sector s) {
+  final w = config.gameWidth;
+  final h = config.gameHeight;
+  final hs = config.gameHeight / config.scrHeight;
+
+  final f0 = Fleet.create(
+    id: 0, enterTime: 1, caption: '',
+    hostType: HostType.falconx2, count: 8, bonus: CollType.frontWepUpgrade,
+    triggerSteps: 45, durationSec: 16, bonusMoney: 6000,
+    srcX: w - 120, srcY: -45 * hs, dstX: 120, dstY: h + 5,
+  );
+  f0.addWeapon(48, 230);
+  s.fleets.add(f0);
+  final f1 = Fleet.create(
+    id: 1, enterTime: 10, caption: '',
+    hostType: HostType.falcon6, count: 18, bonus: CollType.bonusCredit,
+    triggerSteps: 16, durationSec: 12, bonusMoney: 5000,
+    srcX: 80, srcY: -45 * hs, dstX: w - 80, dstY: h + 5,
+    pathType: PathType.cosinus, amplitude: 140, cycles: 6,
+  );
+  f1.addWeapon(42, 280);
+  s.fleets.add(f1);
+  final f2 = Fleet.create(
+    id: 2, enterTime: 20, caption: '',
+    hostType: HostType.falconx, count: 10, bonus: CollType.generatorUpgrade,
+    triggerSteps: 30, durationSec: 14, bonusMoney: 5000,
+    srcX: -60, srcY: 200 * hs, dstX: w + 60, dstY: 240 * hs,
+    pathType: PathType.sinus, amplitude: 60 * hs, cycles: 6,
+  );
+  f2.addWeapon(45, 240);
+  s.fleets.add(f2);
+  final f3 = Fleet.create(
+    id: 3, enterTime: 30, caption: '',
+    hostType: HostType.falconx2, count: 8, bonus: CollType.shieldUpgrade,
+    triggerSteps: 45, durationSec: 16, bonusMoney: 6000,
+    srcX: 120, srcY: -45 * hs, dstX: w - 120, dstY: h + 5,
+  );
+  f3.addWeapon(48, 230);
+  s.fleets.add(f3);
+}
+
+/// II — X-III phalanx around a parked X-II line. Dominant falconx3 / sinCos.
+void _l7p2(Sector s) {
+  final w = config.gameWidth;
+  final h = config.gameHeight;
+  final hs = config.gameHeight / config.scrHeight;
+
+  final f0 = Fleet.create(
+    id: 0, enterTime: 1, caption: '',
+    hostType: HostType.falcon5, count: 16, bonus: CollType.bonusCredit,
+    triggerSteps: 18, durationSec: 13, bonusMoney: 5000,
+    srcX: -60, srcY: -150 * hs, dstX: w + 60, dstY: h + 150,
+    pathType: PathType.sinCos, amplitude: 160 * hs, cycles: 5,
+  );
+  f0.addWeapon(44, 280);
+  s.fleets.add(f0);
+  final f1 = Fleet.create(
+    id: 1, enterTime: 12, caption: '',
+    hostType: HostType.falconx3, count: 6, bonus: CollType.frontWepUpgrade,
+    triggerSteps: 50, durationSec: 15, bonusMoney: 8000,
+    srcX: w + 80, srcY: -150 * hs, dstX: -80, dstY: h + 150,
+    pathType: PathType.sinCos, amplitude: 200 * hs, cycles: 6,
+  );
+  f1.addWeapon(52, 210);
+  s.fleets.add(f1);
+  final f2 = Fleet.create(
+    id: 2, enterTime: 24, caption: '',
+    hostType: HostType.falconx2, count: 6, bonus: CollType.healthUpgrade,
+    triggerSteps: 40, durationSec: 9, bonusMoney: 6000,
+    srcX: w + 60, srcY: 120 * hs, dstX: 80, dstY: 120 * hs,
+    defaultPathAction: PathAction.freezeFleet,
+  );
+  f2.addWeapon(46, 200);
+  s.fleets.add(f2);
+  final f3 = Fleet.create(
+    id: 3, enterTime: 34, caption: '',
+    hostType: HostType.falconx3, count: 6, bonus: CollType.shieldUpgrade,
+    triggerSteps: 50, durationSec: 16, bonusMoney: 8000,
+    srcX: 80, srcY: -45 * hs, dstX: w - 80, dstY: h + 5,
+    pathType: PathType.cosinus, amplitude: 120, cycles: 5,
+  );
+  f3.addWeapon(52, 200);
+  s.fleets.add(f3);
+}

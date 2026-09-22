@@ -64,4 +64,36 @@ class SaveService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyGameState);
   }
+
+  // ── Campaign ──
+  //
+  // The campaign keeps its own key with its own version, so a campaign
+  // session never rewrites the endless run's save and neither format has to
+  // migrate when the other changes.
+
+  static const _keyCampaignState = 'campaign_state';
+  static const int campaignSaveVersion = 1;
+
+  static Future<void> saveCampaignState(Map<String, dynamic> state) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        _keyCampaignState,
+        jsonEncode({
+          'campaignSaveVersion': campaignSaveVersion,
+          ...state,
+        }));
+  }
+
+  /// Returns null when no campaign has been started.
+  static Future<Map<String, dynamic>?> loadCampaignState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_keyCampaignState);
+    if (jsonStr == null) return null;
+    return jsonDecode(jsonStr) as Map<String, dynamic>;
+  }
+
+  static Future<void> clearCampaignState() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyCampaignState);
+  }
 }

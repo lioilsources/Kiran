@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 import '../rendering/bg_zones.dart';
@@ -131,17 +130,32 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     // Every 5th level gets a phased boss as its final wave. Starts at level 10
     // so the hand-authored parts (levels 1-6) stay untouched.
     if (s.level % 5 == 0 && s.level >= 10) {
-      _addBossWave(s, game);
+      final n = s.level ~/ 5 - 1; // boss ordinal: level 10 → 1, 15 → 2, ...
+      addBossWave(s,
+          ordinal: n,
+          dps: max(game.vessel.lastMaxDps, 100.0),
+          ttk: 20.0 + 3.0 * n, // target time-to-kill grows forever
+          hpFloor: 10000 + 5000 * n);
     }
     return s;
   }
 
   /// Build a hand-authored part without a game instance. The boss wave and
   /// procedural paths are unreachable for these indices, which is what makes
-  /// every part's content assertable in plain unit tests.
-  @visibleForTesting
-  static Sector buildPart(int index) {
-    final p = _parts[index];
+  /// every part's content assertable in plain unit tests — and what lets the
+  /// campaign reuse the parts as its nodes.
+  static Sector buildPart(int index) => _build(_parts[index]);
+
+  static int get partCount => _parts.length;
+
+  /// Campaign-only parts, past the endless table. Kept out of [_parts] so the
+  /// endless index↔level mapping, its saves and its content tests never move.
+  static Sector buildCampaignExtra(int index) =>
+      _build(_campaignExtraParts[index]);
+
+  static int get campaignExtraCount => _campaignExtraParts.length;
+
+  static Sector _build(_Part p) {
     final s = Sector(caption: p.caption, level: p.level, sectorBonus: p.bonus);
     p.build(s);
     return s;
@@ -170,6 +184,11 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     _Part(6, 'Industry Zone I', 7000, _l6p1),
     _Part(6, 'Industry Zone II', 8000, _l6p2),
     _Part(6, 'Industry Zone III', 10000, _l6p3),
+  ];
+
+  static const List<_Part> _campaignExtraParts = [
+    _Part(7, 'Deep Core I', 12000, _l7p1),
+    _Part(7, 'Deep Core II', 15000, _l7p2),
   ];
 
   /// VB6 difficulty level for a sector index. Past the authored parts, each
@@ -213,21 +232,25 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     return 1 + ((level - dmgGrowLevel + 1) * dmgGrow);
   }
 
-  /// Append a phased boss as the sector's final wave (every 5th level >= 10).
+  /// Append a phased boss as the sector's final wave.
   ///
-  /// Stats scale without bound with the boss ordinal n (level 10 → 1, 15 → 2,
-  /// ...): HP is rubber-banded to the player's peak DPS via a growing target
-  /// time-to-kill, weapon damage follows the VB6 dcf curve with a boss premium,
-  /// and cadence tightens toward a floor. Kill credit is a bounded bounty
-  /// (creditOverride) so the DPS-scaled HP can't inflate the economy.
-  static void _addBossWave(Sector s, TyrianGame game) {
-    final n = s.level ~/ 5 - 1; // boss ordinal: level 10 → 1, 15 → 2, ...
+  /// Endless calls this on every 5th level >= 10, the campaign on its boss
+  /// nodes. Stats scale without bound with the boss [ordinal] (1, 2, ...): HP
+  /// is rubber-banded to the player's [dps] via the target time-to-kill [ttk]
+  /// (never below [hpFloor]), weapon damage follows the VB6 dcf curve with a
+  /// boss premium, and cadence tightens toward a floor. Kill credit is a
+  /// bounded bounty (creditOverride) so the DPS-scaled HP can't inflate the
+  /// economy.
+  static void addBossWave(Sector s,
+      {required int ordinal,
+      required double dps,
+      required double ttk,
+      required int hpFloor}) {
+    final n = ordinal;
     final w = config.gameWidth;
     final h = config.gameHeight;
 
-    final dps = max(game.vessel.lastMaxDps, 100.0);
-    final ttk = 20.0 + 3.0 * n; // target time-to-kill grows forever
-    final bossHp = max((dps * ttk).round(), 10000 + 5000 * n);
+    final bossHp = max((dps * ttk).round(), hpFloor);
     final dcf = _damageCoefficient(s.level);
     final bossDmg = (9 * 5.555 * dcf * 1.5).round().clamp(30, 9999);
     final recharge = (130 - 6 * n).clamp(40, 130);

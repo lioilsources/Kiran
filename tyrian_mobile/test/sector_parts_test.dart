@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tyrian_mobile/entities/hostile.dart';
 import 'package:tyrian_mobile/game/game_config.dart' as config;
-import 'package:tyrian_mobile/systems/fleet.dart';
-import 'package:tyrian_mobile/systems/path_system.dart';
 import 'package:tyrian_mobile/systems/sector.dart';
+
+import 'support/part_rules.dart';
 
 /// Design-rule enforcement for the 18 hand-authored parts (v2.4.0).
 ///
@@ -11,7 +11,8 @@ import 'package:tyrian_mobile/systems/sector.dart';
 /// scripts, enforced variety, a VB6-anchored economy, and the authoring
 /// conventions the engine silently depends on (fleet ordering, bare-seconds
 /// durations). A failure here means a part drifted from the design, not that
-/// the engine broke.
+/// the engine broke. The rule helpers live in support/part_rules.dart so the
+/// campaign's extra parts are held to the same contracts.
 void main() {
   const partCount = 18;
 
@@ -19,20 +20,6 @@ void main() {
   /// economy the shop prices were tuned against. Parts must land within ±20%.
   const vb6LevelHp = {1: 21020, 2: 31640, 3: 59000, 4: 61000, 5: 76200, 6: 97120};
   const levelBonus = {1: 5000, 2: 7500, 3: 10000, 4: 15000, 5: 20000, 6: 25000};
-
-  const bossTier = {HostType.falconxb, HostType.falconxt, HostType.bouncer};
-
-  double fleetDuration(Fleet f) =>
-      (f.path.nodes.length + (f.extraPath?.nodes.length ?? 0)) / 40.0;
-
-  double scriptEnd(Sector s) {
-    var end = 0.0;
-    for (final f in s.fleets) {
-      final e = f.enterTime + f.count * f.triggerInterval + fleetDuration(f);
-      if (e > end) end = e;
-    }
-    return end + config.delayOnComplete;
-  }
 
   List<Sector> buildAll() =>
       [for (var i = 0; i < partCount; i++) Sector.buildPart(i)];
@@ -64,23 +51,6 @@ void main() {
   });
 
   test('adjacent parts never share their dominant type or shape', () {
-    HostType domType(Sector s) {
-      final hp = <HostType, int>{};
-      for (final f in s.fleets) {
-        hp[f.hostType] =
-            (hp[f.hostType] ?? 0) + f.count * Hostile.getHpMax(f.hostType);
-      }
-      return hp.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
-    }
-
-    PathType domShape(Sector s) {
-      final wgt = <PathType, double>{};
-      for (final f in s.fleets) {
-        wgt[f.pathType] = (wgt[f.pathType] ?? 0) + f.count * fleetDuration(f);
-      }
-      return wgt.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
-    }
-
     final all = buildAll();
     for (var i = 1; i < all.length; i++) {
       expect(domType(all[i]), isNot(domType(all[i - 1])),
@@ -142,24 +112,7 @@ void main() {
 
   test('estimated peak concurrency stays under 32', () {
     for (final s in buildAll()) {
-      var peak = 0.0;
-      final end = scriptEnd(s);
-      for (var t = 0.0; t <= end; t += 0.5) {
-        var alive = 0.0;
-        for (final f in s.fleets) {
-          if (t < f.enterTime) continue;
-          final spawned =
-              ((t - f.enterTime) / f.triggerInterval + 1).clamp(0, f.count.toDouble());
-          double exited = 0;
-          if (f.defaultPathAction == PathAction.destroy) {
-            final dur = fleetDuration(f);
-            exited = ((t - f.enterTime - dur) / f.triggerInterval + 1)
-                .clamp(0, f.count.toDouble());
-          }
-          alive += spawned - exited;
-        }
-        if (alive > peak) peak = alive;
-      }
+      final peak = peakConcurrency(s);
       expect(peak, lessThanOrEqualTo(32),
           reason: '${s.caption} peaks at ${peak.round()} concurrent');
     }
