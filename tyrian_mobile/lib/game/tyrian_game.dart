@@ -15,6 +15,7 @@ import '../input/gamepad_input.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
+import '../rendering/bg_zones.dart';
 import '../entities/vessel.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
@@ -23,6 +24,7 @@ import '../entities/collectable.dart';
 import '../entities/structure.dart';
 import '../entities/hostile.dart';
 import '../systems/sector.dart';
+import '../systems/campaign.dart';
 import '../systems/fleet.dart';
 import '../systems/dev_type.dart';
 import '../systems/weapon_family.dart';
@@ -46,6 +48,11 @@ import '../services/save_service.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
+
+/// Endless is the roguelike run; campaign is the node map with its own vessel
+/// and save. Everything keyed on a sector index — level, art zone, which
+/// content loads, where progress is written — dispatches on this.
+enum GameMode { endless, campaign }
 
 class TyrianGame extends FlameGame
     with DragCallbacks, TapCallbacks, KeyboardEvents {
@@ -117,6 +124,18 @@ class TyrianGame extends FlameGame
 
   Sector? currentSector;
   int currentSectorIndex = 0;
+
+  GameMode mode = GameMode.endless;
+  CampaignState? campaign;
+
+  /// VB6 difficulty level of a sector index in the current mode. The campaign
+  /// tables its own levels: Sector.levelForIndex would read node 19 as the
+  /// second procedural level (8) and pay the max-level bounty for it.
+  int levelForIndex(int index) => mode == GameMode.campaign
+      ? Campaign.levelForNode(index)
+      : Sector.levelForIndex(index);
+
+  int zoneForIndex(int index) => BgZones.forLevel(levelForIndex(index));
 
   /// Sector.complete is a one-way latch and the ComCenter only opens two
   /// seconds later, so without this the whole end-of-sector block ran on every
@@ -329,7 +348,7 @@ class TyrianGame extends FlameGame
     vessel2?.refreshSprite();
     // Covers a skin change made from the main menu, before any sector loaded.
     requestZoneBackgrounds(currentSectorIndex);
-    parallaxBg.setLevel(Sector.levelForIndex(currentSectorIndex));
+    parallaxBg.setLevel(levelForIndex(currentSectorIndex));
     parallaxBg.loadLayers();
 
     // Refresh all live entities
@@ -406,7 +425,9 @@ class TyrianGame extends FlameGame
     _clearActiveObjects();
     currentSector?.removeFromParent();
 
-    currentSector = Sector.create(index, this);
+    currentSector = mode == GameMode.campaign
+        ? Campaign.buildNode(index, this)
+        : Sector.create(index, this);
     if (currentSector != null) {
       world.add(currentSector!);
     }
@@ -414,7 +435,7 @@ class TyrianGame extends FlameGame
     // Difficulty level, not sector index — several sectors can share a level.
     // lvlNum feeds the max-level weapon payout (sectorLevel * 125000 in
     // Device), so paying it out per index would inflate the economy.
-    final level = currentSector?.level ?? Sector.levelForIndex(index);
+    final level = currentSector?.level ?? levelForIndex(index);
     vessel.lvlNum = level;
     if (vessel2 != null) vessel2!.lvlNum = level;
     requestZoneBackgrounds(index);
@@ -430,8 +451,7 @@ class TyrianGame extends FlameGame
   /// Takes a sector index and resolves the art zone here, so every caller can
   /// keep passing the index it already has.
   void requestZoneBackgrounds(int sectorIndex) {
-    unawaited(
-        AssetLibrary.instance.loadZoneBackgrounds(Sector.zoneForIndex(sectorIndex)));
+    unawaited(AssetLibrary.instance.loadZoneBackgrounds(zoneForIndex(sectorIndex)));
   }
 
   void _clearActiveObjects() {
@@ -630,6 +650,20 @@ class TyrianGame extends FlameGame
   }
 
   void _onSectorComplete() {
+    SoundService.instance.play(SfxEvent.sectorComplete);
+    MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
+
+    if (mode == GameMode.campaign) {
+      // The first clear pays the sector bonus; a replay for stars earns only
+      // what it shoots down, or the bonus would be farmable. Endless
+      // achievements and the depth board stay out of the campaign entirely.
+      if (!(campaign?.isCompleted(currentSectorIndex) ?? false)) {
+        vessel.credit += currentSector!.sectorBonus;
+      }
+      onSectorComplete?.call();
+      return;
+    }
+
     AchievementService.instance.onSectorCompleted(
       // Level of the sector the player advances to — with three parts per
       // level, finishing Inner Zone II must not claim "reached sector 3".
@@ -638,8 +672,6 @@ class TyrianGame extends FlameGame
       Sector.levelForIndex(currentSectorIndex + 1),
       tookHullDamage: sectorHullDamage,
     );
-    SoundService.instance.play(SfxEvent.sectorComplete);
-    MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
     vessel.credit += currentSector!.sectorBonus;
     if (vessel2 != null) vessel2!.credit += currentSector!.sectorBonus;
 
@@ -672,13 +704,19 @@ class TyrianGame extends FlameGame
   /// generate random sectors (handled by Sector.create).
   void jumpToSector(int index) {
     if (index < 0) return;
+    if (mode == GameMode.campaign && index >= Campaign.nodeCount) return;
     loadSector(index);
   }
 
   /// Persist the player's between-sector progress (credits, weapons, stats,
   /// pilot name, current sector). Fire-and-forget from the ComCenter.
+  ///
+  /// Dispatches on [mode] first: the ComCenter and main.dart call this from
+  /// a dozen places, and every one of them would otherwise write the campaign
+  /// vessel over the endless run's save.
   Future<void> saveProgress() async {
     if (coopRole == CoopRole.client) return; // client mirrors host, never owns state
+    if (mode == GameMode.campaign) return _saveCampaignProgress();
     final m = vessel.toSaveMap();
     await SaveService.saveGameState(
       pilotName: m['pilotName'] as String,
@@ -741,6 +779,91 @@ class TyrianGame extends FlameGame
     requestZoneBackgrounds(0);
     parallaxBg.setLevel(1);
     vessel.newGame();
+    elapsed = 0;
+  }
+
+  // ── Campaign ──
+
+  Future<void> _saveCampaignProgress() async {
+    final c = campaign;
+    if (c == null) return;
+    c.vessel = vessel.toSaveMap();
+    await SaveService.saveCampaignState(c.toJson());
+  }
+
+  /// Switch to the campaign: its own vessel and progress, restored from the
+  /// campaign save or started from a stock ship. The endless vessel state is
+  /// simply replaced — it lives in its own save and returns via
+  /// [enterEndless].
+  Future<void> enterCampaign() async {
+    _leaveMission();
+    mode = GameMode.campaign;
+    final saved = await SaveService.loadCampaignState();
+    if (saved == null) {
+      // newGame() also rolls a fresh codename; the pilot is the same person.
+      final name = vessel.pilotName;
+      vessel.newGame();
+      vessel.pilotName = name;
+      campaign = CampaignState(vessel: vessel.toSaveMap());
+    } else {
+      campaign = CampaignState.fromJson(saved);
+      vessel.loadFromSave(campaign!.vessel);
+    }
+    currentSectorIndex = campaign!.currentNode;
+    requestZoneBackgrounds(currentSectorIndex);
+    parallaxBg.setLevel(levelForIndex(currentSectorIndex));
+    state = GameState.comCenter;
+  }
+
+  /// Back to the endless run. Returns whether a saved run was restored; with
+  /// nothing restored the caller starts from stock via [resetForNewGame].
+  Future<bool> enterEndless() async {
+    _leaveMission();
+    mode = GameMode.endless;
+    campaign = null;
+    return loadProgress();
+  }
+
+  /// Build a campaign node and open the shop in front of it; the ComCenter's
+  /// START then resumes into the already-built sector.
+  void launchCampaignNode(int index) {
+    currentSectorIndex = index;
+    loadSector(index);
+    vessel.resetPosition();
+    openComCenter();
+  }
+
+  /// Campaign death: the same node again, through the shop, keeping what the
+  /// attempt earned. No rewind — that is the endless loop's rule.
+  void retryNode() {
+    _leaveMission();
+    loadSector(currentSectorIndex);
+    vessel.resetVessel();
+    vessel.resetPosition();
+    state = GameState.comCenter;
+  }
+
+  /// Record the cleared node and open the next; the map takes over.
+  void completeCampaignNode({Set<String> starsEarned = const {}}) {
+    campaign?.markCompleted(currentSectorIndex, starsEarned: starsEarned);
+    _leaveMission();
+    state = GameState.comCenter;
+  }
+
+  /// Leave whatever is on the field, for the main menu or a mode switch.
+  /// Progress since the last save is dropped, exactly as a death drops it.
+  void abandonMission() {
+    _leaveMission();
+    vessel.resetVessel();
+    MusicService.instance.setPaused(false);
+    MusicService.instance.stop();
+    state = GameState.comCenter;
+  }
+
+  void _leaveMission() {
+    _clearActiveObjects();
+    currentSector?.removeFromParent();
+    currentSector = null;
     elapsed = 0;
   }
 

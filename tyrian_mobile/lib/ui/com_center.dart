@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
-import '../systems/sector.dart';
 import 'credits_wave.dart';
 import 'format.dart';
 import '../game/platform_config.dart' as platform;
@@ -1057,7 +1056,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           ? CustomPaint(painter: _ShipPreviewPainter(sprite))
           : Center(
               child: Text(
-                'Lv ${Sector.levelForIndex(game.currentSectorIndex)}',
+                'Lv ${game.levelForIndex(game.currentSectorIndex)}',
                 style: _theme.styled(TextStyle(
                   color: _theme.accent,
                   fontSize: 18,
@@ -1107,7 +1106,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              'Lv ${Sector.levelForIndex(game.currentSectorIndex)}',
+              'Lv ${game.levelForIndex(game.currentSectorIndex)}',
               style: const TextStyle(
                   color: Colors.cyanAccent,
                   fontSize: 12,
@@ -1751,7 +1750,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   Widget _buildBottomBar() {
-    final label = game.currentSectorIndex == 0 ? 'START MISSION' : 'CONTINUE MISSION';
+    final label = game.mode == GameMode.campaign
+        ? 'LAUNCH MISSION'
+        : (game.currentSectorIndex == 0 ? 'START MISSION' : 'CONTINUE MISSION');
     final showJoin = widget.onJoin != null &&
         game.coopRole != CoopRole.client &&
         game.vessel2 == null;
