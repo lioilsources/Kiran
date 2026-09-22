@@ -244,6 +244,19 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     hostiles.add(h);
     game.world.add(h);
 
+    // A composite boss brings its pieces up with it, synchronously: they must
+    // exist before the first bounds update, and building them here rather
+    // than from the boss's own update keeps this list from being mutated
+    // mid-sweep. They live in `hostiles` like any other enemy, so collision,
+    // bounds and depletion need no special case.
+    if (h is Boss) {
+      for (final part in h.createParts()) {
+        part.parentFleet = this;
+        hostiles.add(part);
+        game.world.add(part);
+      }
+    }
+
     // Debug: log fleet spawn info
     if (kDebugMode && _spawned == 0) {
       final first = clonedPath.nodes.first;
@@ -284,7 +297,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     // Add score and credit to the vessel that got the kill
     final target = attacker ?? gameInstance.vessel;
     target.addScore(h.hpMax);
-    target.credit += creditOverride ?? h.hpMax;
+    target.credit += h.creditValue ?? creditOverride ?? h.hpMax;
   }
 
   void _spawnBonus() {

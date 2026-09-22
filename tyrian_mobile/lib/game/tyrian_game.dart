@@ -189,6 +189,10 @@ class TyrianGame extends FlameGame
     return null;
   }
 
+  /// That boss's pieces, dead ones included — the HP bar shows one pip each
+  /// so the player can see what is still bolted on.
+  List<BossPart> get activeBossParts => activeBoss?.parts ?? const [];
+
   /// Adaptive-music director — created in onLoad, ticked while playing.
   MusicDirector? musicDirector;
 

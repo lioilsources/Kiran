@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../entities/boss.dart';
 import '../entities/vessel.dart';
 import '../game/tyrian_game.dart';
 import '../rendering/bg_zones.dart';
@@ -329,12 +330,15 @@ abstract final class Campaign {
     final n = node.bossOrdinal;
     if (n != null) {
       // Shorter target time-to-kill than the endless boss: a boss node should
-      // still feel like a minute-long session, not a siege.
+      // still feel like a minute-long session, not a siege. The pieces carry
+      // HP of their own on top of the core's, so the core's own target stays
+      // deliberately modest.
       Sector.addBossWave(s,
           ordinal: n,
           dps: max(poweredDps(game.vessel), 100.0),
           ttk: 15.0 + 4.0 * n,
-          hpFloor: 6000 + 4000 * n);
+          hpFloor: 6000 + 4000 * n,
+          parts: bossPartsForOrdinal(n));
     }
     return s;
   }

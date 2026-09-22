@@ -45,6 +45,11 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   /// explosion.
   WeaponFamily? deathFamily;
   int collisionDmg;
+
+  /// Kill payout, when it must not follow [hpMax]. Boss parts use it: their
+  /// fleet's creditOverride is the whole boss's bounty, and paying that per
+  /// piece would hand out five bounties for one boss.
+  int? creditValue;
   PathSystem? trace;
   Device? weapon;
   Fleet? parentFleet;
@@ -56,6 +61,12 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   final double _depthPhase = Random().nextDouble() * 2 * pi; // desync per enemy
 
   bool get isDead => hp <= 0;
+
+  /// Whether the off-field safety net may reap this hostile. False for
+  /// anything carried by another entity rather than by a path of its own — a
+  /// boss part has no trace, so the net would read it as parked and kill it
+  /// during the boss's entrance or at the far end of a strafe.
+  bool get reapWhenStranded => true;
 
   /// Seconds this hostile has been stranded outside the play field with no way
   /// back. Reset the moment it is in-field or still flying a path.
@@ -221,7 +232,8 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     // off-field on the way in (sector 3's swarm starts at -180,-180), so the
     // timer only arms once the hostile is parked or cycling, i.e. its path can
     // never carry it back.
-    final stranded = (trace == null || trace!.current == null || trace!.cycled) &&
+    final stranded = reapWhenStranded &&
+        (trace == null || trace!.current == null || trace!.cycled) &&
         !inPlayField(position.x, position.y, size.x, size.y);
     if (stranded) {
       _offFieldTime += dt;

@@ -41,6 +41,13 @@ var referenceSizes = map[string][2]int{
 	// Boss
 	"rododendron": {256, 256},
 
+	// Boss parts — bolted onto the core, so they read as pieces of it rather
+	// than as ships: roughly a third of its footprint.
+	"boss_turret":   {96, 96},
+	"boss_shield":   {96, 96},
+	"boss_thruster": {96, 96},
+	"boss_cannon":   {96, 96},
+
 	// Structures / asteroids
 	"asteroid":  {84, 80},
 	"asteroid1": {88, 166},
