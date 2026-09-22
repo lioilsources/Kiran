@@ -5,6 +5,12 @@ Copy-paste source for App Store Connect. Every field is within Apple's limit
 deliberate: the skins were renamed away from trademarked titles to keep the
 listing clear of Guideline 5.2.1.
 
+**Localizations** (translated from this file, v2.7.0): [Japanese](appstore-listing-ja.md),
+[Portuguese (Brazil)](appstore-listing-pt-BR.md), [Korean](appstore-listing-ko.md),
+[Spanish](appstore-listing-es-ES.md), [German](appstore-listing-de-DE.md),
+[Italian](appstore-listing-it.md), [French](appstore-listing-fr-FR.md). If this
+file changes, those need re-syncing.
+
 ---
 
 ## App Name  (limit 30)
