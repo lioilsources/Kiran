@@ -8,6 +8,7 @@ import '../game/tyrian_game.dart';
 import '../input/gamepad_input.dart';
 import '../services/asset_library.dart';
 import '../systems/campaign.dart';
+import 'campaign_result.dart';
 import 'ui_theme.dart';
 
 /// The campaign's node list between missions: what is cleared, what is open,
@@ -247,53 +248,68 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
               width: focused ? 2 : 1,
             ),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 34,
-                child: Text(
-                  '${i + 1}'.padLeft(2, '0'),
-                  style: _theme.styled(TextStyle(
-                    color: edge,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  )),
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      node.caption,
+              Row(
+                children: [
+                  SizedBox(
+                    width: 34,
+                    child: Text(
+                      '${i + 1}'.padLeft(2, '0'),
                       style: _theme.styled(TextStyle(
-                        color: text,
-                        fontSize: 15,
+                        color: edge,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
                       )),
                     ),
-                    Text(
-                      'Level ${node.level}'
-                      '${node.isBoss ? ' · BOSS ${'I' * node.bossOrdinal!}' : ''}',
-                      style: _theme.styled(TextStyle(
-                        color: node.isBoss ? _theme.danger : _theme.textSecondary,
-                        fontSize: 11,
-                        letterSpacing: 1,
-                      )),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          node.caption,
+                          style: _theme.styled(TextStyle(
+                            color: text,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          )),
+                        ),
+                        Text(
+                          'Level ${node.level}'
+                          '${node.isBoss ? ' · BOSS ${'I' * node.bossOrdinal!}' : ''}',
+                          style: _theme.styled(TextStyle(
+                            color: node.isBoss
+                                ? _theme.danger
+                                : _theme.textSecondary,
+                            fontSize: 11,
+                            letterSpacing: 1,
+                          )),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    trailing,
+                    style: _theme.styled(TextStyle(
+                      color: edge,
+                      fontSize: done ? 14 : 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    )),
+                  ),
+                ],
               ),
-              Text(
-                trailing,
-                style: _theme.styled(TextStyle(
-                  color: edge,
-                  fontSize: done ? 14 : 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                )),
-              ),
+              // Briefing: the focused node shows what it asks for, so the
+              // pilot can shop for it before launching.
+              if (focused && open) ...[
+                const SizedBox(height: 8),
+                Divider(height: 1, color: _theme.accentDim.withAlpha(120)),
+                const SizedBox(height: 8),
+                ObjectiveLines.briefing(node.objectives, theme: _theme),
+              ],
             ],
           ),
         ),

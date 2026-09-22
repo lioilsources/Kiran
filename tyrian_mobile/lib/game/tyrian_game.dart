@@ -25,6 +25,7 @@ import '../entities/structure.dart';
 import '../entities/hostile.dart';
 import '../systems/sector.dart';
 import '../systems/campaign.dart';
+import '../systems/campaign_tracker.dart';
 import '../systems/fleet.dart';
 import '../systems/dev_type.dart';
 import '../systems/weapon_family.dart';
@@ -127,6 +128,13 @@ class TyrianGame extends FlameGame
 
   GameMode mode = GameMode.endless;
   CampaignState? campaign;
+
+  /// Counts objective progress through a campaign node. Null in endless, which
+  /// is what keeps the hooks in Fleet and Vessel free.
+  CampaignTracker? campaignTracker;
+
+  /// How the node that just finished was graded — read by the result card.
+  NodeResult? lastNodeResult;
 
   /// VB6 difficulty level of a sector index in the current mode. The campaign
   /// tables its own levels: Sector.levelForIndex would read node 19 as the
@@ -442,6 +450,7 @@ class TyrianGame extends FlameGame
     parallaxBg.setLevel(level);
     sectorHullDamage = false;
     elapsed = 0;
+    campaignTracker?.beginNode(index, credits: vessel.credit);
   }
 
   /// Fire-and-forget background zone swap. Deliberately not awaited: loadSector
@@ -654,10 +663,20 @@ class TyrianGame extends FlameGame
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
 
     if (mode == GameMode.campaign) {
-      // The first clear pays the sector bonus; a replay for stars earns only
-      // what it shoots down, or the bonus would be farmable. Endless
-      // achievements and the depth board stay out of the campaign entirely.
-      if (!(campaign?.isCompleted(currentSectorIndex) ?? false)) {
+      final node = kCampaignNodes[currentSectorIndex];
+      final result = campaignTracker!.evaluate(
+        node: node,
+        vessel: vessel,
+        hullDamage: sectorHullDamage,
+      );
+      lastNodeResult = result;
+      // The first successful clear pays the sector bonus; a replay for stars
+      // earns only what it shoots down, or the bonus would be farmable. A run
+      // that reached the end without its required tasks pays nothing — it did
+      // not clear the node. Endless achievements and the depth board stay out
+      // of the campaign entirely.
+      if (result.requiredMet &&
+          !(campaign?.isCompleted(currentSectorIndex) ?? false)) {
         vessel.credit += currentSector!.sectorBonus;
       }
       onSectorComplete?.call();
@@ -798,6 +817,8 @@ class TyrianGame extends FlameGame
   Future<void> enterCampaign() async {
     _leaveMission();
     mode = GameMode.campaign;
+    campaignTracker = CampaignTracker();
+    lastNodeResult = null;
     final saved = await SaveService.loadCampaignState();
     if (saved == null) {
       // newGame() also rolls a fresh codename; the pilot is the same person.
@@ -821,6 +842,8 @@ class TyrianGame extends FlameGame
     _leaveMission();
     mode = GameMode.endless;
     campaign = null;
+    campaignTracker = null;
+    lastNodeResult = null;
     return loadProgress();
   }
 
@@ -843,9 +866,14 @@ class TyrianGame extends FlameGame
     state = GameState.comCenter;
   }
 
-  /// Record the cleared node and open the next; the map takes over.
-  void completeCampaignNode({Set<String> starsEarned = const {}}) {
-    campaign?.markCompleted(currentSectorIndex, starsEarned: starsEarned);
+  /// Close out a finished node: a cleared one is recorded and opens the next,
+  /// a failed one leaves the campaign where it was. Either way the field is
+  /// cleared, because the result card takes the screen from here.
+  void finishCampaignNode(NodeResult result) {
+    if (result.requiredMet) {
+      campaign?.markCompleted(currentSectorIndex,
+          starsEarned: result.starsEarned);
+    }
     _leaveMission();
     state = GameState.comCenter;
   }

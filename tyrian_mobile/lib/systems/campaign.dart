@@ -4,6 +4,7 @@ import '../entities/vessel.dart';
 import '../game/tyrian_game.dart';
 import '../rendering/bg_zones.dart';
 import 'sector.dart';
+import 'weapon_family.dart';
 
 /// What an objective measures. Evaluation lives in campaign_tracker.dart;
 /// this file only describes the campaign as data.
@@ -26,20 +27,66 @@ enum ObjectiveKind {
 }
 
 /// One task on a campaign node. [required] tasks gate the next node; the rest
-/// earn a star. [params] are kind-specific (weapon name, slot, count…).
+/// earn a star. [amount] carries the kind's number (kills, percent, seconds)
+/// and [family] the weapon family for kill-by-weapon tasks.
 class ObjectiveSpec {
   final String id;
   final ObjectiveKind kind;
-  final Map<String, Object> params;
-  final bool required;
   final String text;
+  final bool required;
+  final int amount;
+  final WeaponFamily? family;
 
   const ObjectiveSpec(this.id, this.kind, this.text,
-      {this.params = const {}, this.required = false});
+      {this.required = false, this.amount = 0, this.family});
 
-  static const completeNode = ObjectiveSpec(
-      'complete', ObjectiveKind.completeNode, 'Clear the sector',
+  /// Clearing the sector at all — every node's first required task.
+  static const clear = ObjectiveSpec(
+      'clear', ObjectiveKind.completeNode, 'Clear the sector',
       required: true);
+
+  /// Shoot down [n] of them, rather than letting them fly past.
+  const ObjectiveSpec.kills(int n, {this.required = false})
+      : id = 'kills',
+        kind = ObjectiveKind.killsTotal,
+        text = 'Shoot down $n hostiles',
+        amount = n,
+        family = null;
+
+  /// Same, as a star — a higher bar than the required count.
+  const ObjectiveSpec.sweep(int n)
+      : id = 'sweep',
+        kind = ObjectiveKind.killsTotal,
+        text = 'Shoot down $n hostiles',
+        required = false,
+        amount = n,
+        family = null;
+
+  const ObjectiveSpec.untouched()
+      : id = 'untouched',
+        kind = ObjectiveKind.noHullDamage,
+        text = 'Take no hull damage',
+        required = false,
+        amount = 0,
+        family = null;
+
+  const ObjectiveSpec.hull(int percent)
+      : id = 'hull',
+        kind = ObjectiveKind.hpAbove,
+        text = 'Finish above $percent% hull',
+        required = false,
+        amount = percent,
+        family = null;
+
+  /// Kills whose final blow came from a given weapon family — the elemental
+  /// death effect is the feedback, so this teaches what each gun does.
+  const ObjectiveSpec.withWeapon(WeaponFamily f, int n, String weaponLabel,
+      {this.required = false})
+      : id = 'weapon',
+        kind = ObjectiveKind.killsWithFamily,
+        text = 'Kill $n with the $weaponLabel',
+        amount = n,
+        family = f;
 }
 
 class CampaignNode {
@@ -54,36 +101,147 @@ class CampaignNode {
   final List<ObjectiveSpec> objectives;
 
   const CampaignNode(this.index, this.caption, this.level,
-      {this.bossOrdinal, this.objectives = const [ObjectiveSpec.completeNode]});
+      {this.bossOrdinal, this.objectives = const [ObjectiveSpec.clear]});
 
   bool get isBoss => bossOrdinal != null;
   int get zone => BgZones.forLevel(level);
+
+  Iterable<ObjectiveSpec> get requiredObjectives =>
+      objectives.where((o) => o.required);
+  Iterable<ObjectiveSpec> get starObjectives =>
+      objectives.where((o) => !o.required);
 }
 
 /// The twenty nodes of the campaign, in play order. Nodes 0-17 are the
 /// eighteen hand-authored parts (levels 1-6); 18-19 are campaign-only level-7
 /// parts. Every fifth node ends with a boss.
+///
+/// Required tasks stay inside what the node itself hands the player — clearing
+/// it, and shooting down roughly half of what flies through — so no node can
+/// lock a pilot out of the campaign. The stars are the reach: an untouched
+/// run, a near-full hull, a full sweep. Loadout and shop tasks (buy a side
+/// gun, upgrade the generator) need the launch snapshot and land next.
 const List<CampaignNode> kCampaignNodes = [
-  CampaignNode(0, 'System Perimeter I', 1),
-  CampaignNode(1, 'System Perimeter II', 1),
-  CampaignNode(2, 'System Perimeter III', 1),
-  CampaignNode(3, 'Inner Zone I', 2),
-  CampaignNode(4, 'Inner Zone II', 2, bossOrdinal: 1),
-  CampaignNode(5, 'Inner Zone III', 2),
-  CampaignNode(6, 'Planet Perimeter I', 3),
-  CampaignNode(7, 'Planet Perimeter II', 3),
-  CampaignNode(8, 'Planet Perimeter III', 3),
-  CampaignNode(9, 'Planet Patrol I', 4, bossOrdinal: 2),
-  CampaignNode(10, 'Planet Patrol II', 4),
-  CampaignNode(11, 'Planet Patrol III', 4),
-  CampaignNode(12, 'Planet Orbit I', 5),
-  CampaignNode(13, 'Planet Orbit II', 5),
-  CampaignNode(14, 'Planet Orbit III', 5, bossOrdinal: 3),
-  CampaignNode(15, 'Industry Zone I', 6),
-  CampaignNode(16, 'Industry Zone II', 6),
-  CampaignNode(17, 'Industry Zone III', 6),
-  CampaignNode(18, 'Deep Core I', 7),
-  CampaignNode(19, 'Deep Core II', 7, bossOrdinal: 4),
+  CampaignNode(0, 'System Perimeter I', 1, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(22, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.withWeapon(WeaponFamily.bubble, 18, 'Bubble Gun'),
+  ]),
+  CampaignNode(1, 'System Perimeter II', 1, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(26, required: true),
+    ObjectiveSpec.hull(75),
+    ObjectiveSpec.sweep(46),
+  ]),
+  CampaignNode(2, 'System Perimeter III', 1, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(19, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.withWeapon(WeaponFamily.bubble, 24, 'Bubble Gun'),
+  ]),
+  CampaignNode(3, 'Inner Zone I', 2, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(28, required: true),
+    ObjectiveSpec.hull(60),
+    ObjectiveSpec.sweep(50),
+  ]),
+  CampaignNode(4, 'Inner Zone II', 2, bossOrdinal: 1, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(22, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.hull(50),
+  ]),
+  CampaignNode(5, 'Inner Zone III', 2, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(21, required: true),
+    ObjectiveSpec.hull(75),
+    ObjectiveSpec.sweep(37),
+  ]),
+  CampaignNode(6, 'Planet Perimeter I', 3, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(20, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.withWeapon(WeaponFamily.bubble, 26, 'Bubble Gun'),
+  ]),
+  CampaignNode(7, 'Planet Perimeter II', 3, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(26, required: true),
+    ObjectiveSpec.hull(60),
+    ObjectiveSpec.sweep(46),
+  ]),
+  CampaignNode(8, 'Planet Perimeter III', 3, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(22, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.sweep(40),
+  ]),
+  CampaignNode(9, 'Planet Patrol I', 4, bossOrdinal: 2, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(30, required: true),
+    ObjectiveSpec.hull(50),
+    ObjectiveSpec.sweep(55),
+  ]),
+  CampaignNode(10, 'Planet Patrol II', 4, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(18, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.sweep(32),
+  ]),
+  CampaignNode(11, 'Planet Patrol III', 4, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(24, required: true),
+    ObjectiveSpec.hull(60),
+    ObjectiveSpec.sweep(43),
+  ]),
+  CampaignNode(12, 'Planet Orbit I', 5, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(26, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.sweep(47),
+  ]),
+  CampaignNode(13, 'Planet Orbit II', 5, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(22, required: true),
+    ObjectiveSpec.hull(75),
+    ObjectiveSpec.sweep(40),
+  ]),
+  CampaignNode(14, 'Planet Orbit III', 5, bossOrdinal: 3, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(24, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.hull(50),
+  ]),
+  CampaignNode(15, 'Industry Zone I', 6, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(24, required: true),
+    ObjectiveSpec.hull(60),
+    ObjectiveSpec.sweep(43),
+  ]),
+  CampaignNode(16, 'Industry Zone II', 6, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(28, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.sweep(51),
+  ]),
+  CampaignNode(17, 'Industry Zone III', 6, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(16, required: true),
+    ObjectiveSpec.hull(75),
+    ObjectiveSpec.sweep(29),
+  ]),
+  CampaignNode(18, 'Deep Core I', 7, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(21, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.sweep(38),
+  ]),
+  CampaignNode(19, 'Deep Core II', 7, bossOrdinal: 4, objectives: [
+    ObjectiveSpec.clear,
+    ObjectiveSpec.kills(16, required: true),
+    ObjectiveSpec.untouched(),
+    ObjectiveSpec.hull(50),
+  ]),
 ];
 
 /// Persisted campaign progress plus the campaign vessel's save map. Kept

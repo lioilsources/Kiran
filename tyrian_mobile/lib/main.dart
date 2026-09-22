@@ -12,7 +12,9 @@ import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
 import 'input/gamepad_input.dart';
+import 'systems/campaign.dart';
 import 'ui/campaign_map.dart';
+import 'ui/campaign_result.dart';
 import 'ui/com_center.dart';
 import 'ui/format.dart';
 import 'ui/join_dialog.dart';
@@ -154,6 +156,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   bool _runInProgress = false;
   bool _showComCenter = false;
   bool _showCampaignMap = false;
+  bool _showCampaignResult = false;
 
   // Pause skin selector
   bool _showPauseSkinSelector = false;
@@ -246,9 +249,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       Future.delayed(const Duration(seconds: 2), () {
         if (!mounted) return;
         if (_game.mode == GameMode.campaign) {
-          _game.completeCampaignNode();
+          final result = _game.lastNodeResult;
+          if (result != null) _game.finishCampaignNode(result);
           _game.saveProgress();
-          setState(() => _showCampaignMap = true);
+          setState(() => _showCampaignResult = true);
           return;
         }
         if (_game.coopRole != CoopRole.client) {
@@ -576,6 +580,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game.launchCampaignNode(index);
     setState(() {
       _showCampaignMap = false;
+      _showCampaignResult = false;
       _showComCenter = true;
     });
   }
@@ -599,6 +604,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       _screen = _ScreenState.mainMenu;
       _showComCenter = false;
       _showCampaignMap = false;
+      _showCampaignResult = false;
       _showPauseSkinSelector = false;
       _clientWaiting = false;
     });
@@ -706,13 +712,13 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
 
             // Boss HP bar (visible while a phased boss is on the field)
-            if (!_showComCenter && !_showCampaignMap && !_clientWaiting &&
-                _game.state != GameState.gameOver)
+            if (!_showComCenter && !_showCampaignMap && !_showCampaignResult &&
+                !_clientWaiting && _game.state != GameState.gameOver)
               BossHealthBar(game: _game),
 
             // OSD HUD
-            if (!_showComCenter && !_showCampaignMap && !_clientWaiting &&
-                _game.state != GameState.gameOver)
+            if (!_showComCenter && !_showCampaignMap && !_showCampaignResult &&
+                !_clientWaiting && _game.state != GameState.gameOver)
               OsdPanel(
                 game: _game,
                 onMuteToggle: () => setState(() {}),
@@ -752,11 +758,26 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
 
             // Campaign node map (between missions)
-            if (_showCampaignMap)
+            if (_showCampaignMap && !_showCampaignResult)
               CampaignMapScreen(
                 game: _game,
                 onLaunch: _launchCampaignNode,
                 onBack: _quitToMainMenu,
+              ),
+
+            // Campaign end-of-node score sheet
+            if (_showCampaignResult && _game.lastNodeResult != null)
+              CampaignResultCard(
+                node: kCampaignNodes[_game.lastNodeResult!.nodeIndex],
+                result: _game.lastNodeResult!,
+                creditsEarned: _game.vessel.credit -
+                    (_game.campaignTracker?.creditsAtStart ?? 0),
+                onContinue: () => setState(() {
+                  _showCampaignResult = false;
+                  _showCampaignMap = true;
+                }),
+                onRetry: () =>
+                    _launchCampaignNode(_game.lastNodeResult!.nodeIndex),
               ),
 
             // Client waiting overlay (P2)

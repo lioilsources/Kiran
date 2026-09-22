@@ -50,6 +50,79 @@ void main() {
     expect(Sector.campaignExtraCount, Campaign.nodeCount - Sector.partCount);
   });
 
+  group('objectives can never lock a pilot out', () {
+    /// Kinds the tracker actually grades. A required task of any other kind
+    /// would be unmeetable, and the node would gate the campaign forever.
+    const graded = {
+      ObjectiveKind.completeNode,
+      ObjectiveKind.killsTotal,
+      ObjectiveKind.killsWithFamily,
+      ObjectiveKind.noHullDamage,
+      ObjectiveKind.hpAbove,
+    };
+
+    test('every node asks to be cleared, and asks it as a requirement', () {
+      for (final n in kCampaignNodes) {
+        expect(n.objectives.first.kind, ObjectiveKind.completeNode,
+            reason: n.caption);
+        expect(n.requiredObjectives, isNotEmpty, reason: n.caption);
+      }
+    });
+
+    test('required tasks only use kinds the tracker grades', () {
+      for (final n in kCampaignNodes) {
+        for (final o in n.requiredObjectives) {
+          expect(graded, contains(o.kind),
+              reason: '${n.caption}: required "${o.text}" cannot be met yet');
+        }
+      }
+    });
+
+    test('required kill counts stay well inside what the node sends', () {
+      // Hostiles can also leave down the bottom of the field, so a required
+      // count has to sit below the total with room to spare.
+      for (var i = 0; i < Campaign.nodeCount; i++) {
+        final node = kCampaignNodes[i];
+        var available = 0;
+        for (final f in Campaign.buildNodeContent(i).fleets) {
+          available += f.count;
+        }
+        for (final o in node.requiredObjectives) {
+          if (o.kind != ObjectiveKind.killsTotal) continue;
+          expect(o.amount, lessThanOrEqualTo((available * 0.6).floor()),
+              reason: '${node.caption}: needs ${o.amount} kills of $available');
+        }
+      }
+    });
+
+    test('star kill counts stay reachable at all', () {
+      for (var i = 0; i < Campaign.nodeCount; i++) {
+        final node = kCampaignNodes[i];
+        var available = 0;
+        for (final f in Campaign.buildNodeContent(i).fleets) {
+          available += f.count;
+        }
+        for (final o in node.starObjectives) {
+          if (o.kind != ObjectiveKind.killsTotal &&
+              o.kind != ObjectiveKind.killsWithFamily) {
+            continue;
+          }
+          expect(o.amount, lessThanOrEqualTo(available),
+              reason: '${node.caption}: star "${o.text}" of $available');
+        }
+      }
+    });
+
+    test('every node offers at least one star and a stable set of ids', () {
+      for (final n in kCampaignNodes) {
+        expect(n.starObjectives, isNotEmpty, reason: n.caption);
+        final ids = n.objectives.map((o) => o.id).toList();
+        expect(ids.toSet().length, ids.length,
+            reason: '${n.caption} repeats an objective id');
+      }
+    });
+  });
+
   test('every node carries its caption and level', () {
     for (var i = 0; i < Campaign.nodeCount; i++) {
       final s = Campaign.buildNodeContent(i);
