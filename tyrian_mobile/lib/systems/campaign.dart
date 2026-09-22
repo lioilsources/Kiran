@@ -4,6 +4,7 @@ import '../entities/boss.dart';
 import '../entities/vessel.dart';
 import '../game/tyrian_game.dart';
 import '../rendering/bg_zones.dart';
+import 'dev_type.dart';
 import 'sector.dart';
 import 'weapon_family.dart';
 
@@ -341,6 +342,30 @@ abstract final class Campaign {
           parts: bossPartsForOrdinal(n));
     }
     return s;
+  }
+
+  /// Weapon tier a boss of this ordinal hands over. The last boss lands on
+  /// the top tier the shop has, so it opens nothing new — by then the whole
+  /// catalogue is on sale and the fight is the reward.
+  static int tierForBossOrdinal(int ordinal) =>
+      min(ordinal, DevType.frontWeapons.length - 1);
+
+  /// Open the next weapon tier for beating a campaign boss, and say what
+  /// opened. Null when nothing did.
+  ///
+  /// Endless earns tiers by cumulative score (`Vessel.wepLevScores`), a curve
+  /// a campaign never approaches: a full twenty-node run banks around 500k
+  /// against a second threshold of 4M, so a campaign pilot would fly the whole
+  /// way on the starting Bubble Gun. Bosses carry that progression instead.
+  /// The tier lives on the vessel and is only ever raised, so replaying a boss
+  /// neither re-announces nor revokes anything.
+  static String? applyBossUnlock(CampaignNode node, Vessel v) {
+    final ordinal = node.bossOrdinal;
+    if (ordinal == null) return null;
+    final tier = tierForBossOrdinal(ordinal);
+    if (tier <= v.nextWeaponLevel) return null;
+    v.nextWeaponLevel = tier;
+    return '${DevType.frontWeapons[tier].name} · ${DevType.sideWeapons[tier].name}';
   }
 
   /// DPS of the weapons the generator can actually sustain. `Vessel.totalDps`

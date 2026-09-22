@@ -97,6 +97,9 @@ class CampaignResultCard extends StatefulWidget {
   final NodeResult result;
   final int creditsEarned;
 
+  /// Weapons this node's boss just opened in the shop, if any.
+  final String? unlocked;
+
   /// Back to the map — only offered once the node is actually cleared.
   final VoidCallback onContinue;
   final VoidCallback onRetry;
@@ -106,6 +109,7 @@ class CampaignResultCard extends StatefulWidget {
     required this.node,
     required this.result,
     required this.creditsEarned,
+    this.unlocked,
     required this.onContinue,
     required this.onRetry,
   });
@@ -255,6 +259,48 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
                     ),
                   ],
                 ),
+                if (widget.unlocked != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: _theme.upgrade.withAlpha(28),
+                      borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                      border: Border.all(color: _theme.upgrade.withAlpha(150)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'WEAPON TIER UNLOCKED',
+                          style: _theme.styled(TextStyle(
+                            color: _theme.upgrade,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          )),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          widget.unlocked!,
+                          style: _theme.styled(TextStyle(
+                            color: _theme.textPrimary,
+                            fontSize: 14,
+                          )),
+                        ),
+                        Text(
+                          'On sale in the Com Center.',
+                          style: _theme.styled(TextStyle(
+                            color: _theme.textSecondary,
+                            fontSize: 11,
+                          )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (!cleared) ...[
                   const SizedBox(height: 10),
                   Text(

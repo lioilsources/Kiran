@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tyrian_mobile/entities/vessel.dart';
 import 'package:tyrian_mobile/game/game_config.dart' as config;
 import 'package:tyrian_mobile/systems/campaign.dart';
+import 'package:tyrian_mobile/systems/dev_type.dart';
 import 'package:tyrian_mobile/systems/sector.dart';
 
 import 'support/part_rules.dart';
@@ -216,6 +218,61 @@ void main() {
             reason: '${short[i].caption} fleet $j: durationSec leaked hs');
       }
     }
+  });
+
+  group('weapon tiers come from bosses, not from score', () {
+    // A campaign banks roughly 500k score over all twenty nodes against a
+    // second score threshold of 4M, so without this a campaign pilot would
+    // fly the whole way on the starting Bubble Gun.
+    CampaignNode bossNode(int ordinal) =>
+        kCampaignNodes.firstWhere((n) => n.bossOrdinal == ordinal);
+
+    test('each boss opens the next tier, in order', () {
+      final v = Vessel();
+      expect(v.nextWeaponLevel, 0, reason: 'a fresh pilot starts on bubbles');
+
+      expect(Campaign.applyBossUnlock(bossNode(1), v),
+          '${DevType.frontWeapons[1].name} · ${DevType.sideWeapons[1].name}');
+      expect(v.nextWeaponLevel, 1);
+
+      expect(Campaign.applyBossUnlock(bossNode(2), v), isNotNull);
+      expect(v.nextWeaponLevel, 2);
+
+      expect(Campaign.applyBossUnlock(bossNode(3), v), isNotNull);
+      expect(v.nextWeaponLevel, 3);
+    });
+
+    test('the last boss has no tier left to give', () {
+      final v = Vessel()..nextWeaponLevel = 3;
+      expect(Campaign.applyBossUnlock(bossNode(4), v), isNull);
+      expect(v.nextWeaponLevel, 3);
+      expect(Campaign.tierForBossOrdinal(4), DevType.frontWeapons.length - 1);
+    });
+
+    test('a plain node opens nothing', () {
+      final v = Vessel();
+      expect(Campaign.applyBossUnlock(kCampaignNodes[0], v), isNull);
+      expect(v.nextWeaponLevel, 0);
+    });
+
+    test('replaying a boss neither re-announces nor revokes', () {
+      final v = Vessel();
+      Campaign.applyBossUnlock(bossNode(2), v); // jumped straight to tier 2
+      expect(v.nextWeaponLevel, 2);
+
+      expect(Campaign.applyBossUnlock(bossNode(2), v), isNull);
+      expect(Campaign.applyBossUnlock(bossNode(1), v), isNull,
+          reason: 'an earlier boss must not pull the tier back down');
+      expect(v.nextWeaponLevel, 2);
+    });
+
+    test('every tier the bosses hand out is actually stocked by the shop', () {
+      for (final n in kCampaignNodes.where((n) => n.isBoss)) {
+        final tier = Campaign.tierForBossOrdinal(n.bossOrdinal!);
+        expect(tier, lessThan(DevType.frontWeapons.length));
+        expect(tier, lessThan(DevType.sideWeapons.length));
+      }
+    });
   });
 
   group('CampaignState', () {

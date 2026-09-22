@@ -136,6 +136,10 @@ class TyrianGame extends FlameGame
   /// How the node that just finished was graded — read by the result card.
   NodeResult? lastNodeResult;
 
+  /// Weapons a boss kill just opened up, for the result card to announce.
+  /// Null when the node opened nothing.
+  String? lastNodeUnlock;
+
   /// VB6 difficulty level of a sector index in the current mode. The campaign
   /// tables its own levels: Sector.levelForIndex would read node 19 as the
   /// second procedural level (8) and pay the max-level bounty for it.
@@ -674,14 +678,17 @@ class TyrianGame extends FlameGame
         hullDamage: sectorHullDamage,
       );
       lastNodeResult = result;
-      // The first successful clear pays the sector bonus; a replay for stars
-      // earns only what it shoots down, or the bonus would be farmable. A run
-      // that reached the end without its required tasks pays nothing — it did
-      // not clear the node. Endless achievements and the depth board stay out
-      // of the campaign entirely.
-      if (result.requiredMet &&
-          !(campaign?.isCompleted(currentSectorIndex) ?? false)) {
-        vessel.credit += currentSector!.sectorBonus;
+      lastNodeUnlock = null;
+      if (result.requiredMet) {
+        lastNodeUnlock = Campaign.applyBossUnlock(node, vessel);
+        // The first successful clear pays the sector bonus; a replay for stars
+        // earns only what it shoots down, or the bonus would be farmable. A
+        // run that reached the end without its required tasks pays nothing —
+        // it did not clear the node. Endless achievements and the depth board
+        // stay out of the campaign entirely.
+        if (!(campaign?.isCompleted(currentSectorIndex) ?? false)) {
+          vessel.credit += currentSector!.sectorBonus;
+        }
       }
       onSectorComplete?.call();
       return;
