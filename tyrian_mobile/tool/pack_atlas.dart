@@ -78,6 +78,10 @@ const Set<String> kUsedSprites = {
   'falcon1', 'falcon2', 'falcon3', 'falcon4', 'falcon5', 'falcon6',
   'falconx', 'falconx2', 'falconx3', 'falconxb', 'falconxt',
   'rododendron',
+  // Composite-boss parts. Absent from most skins for now — BossPart falls
+  // back to falconx3 until a skin's own art lands, so this stays lenient
+  // (unlike the rododendron check below, which hard-fails).
+  'boss_turret', 'boss_shield', 'boss_thruster', 'boss_cannon',
   'asteroid', 'asteroid1', 'asteroid2', 'asteroid3',
   'bubble', 'vulcan', 'blaster', 'laser', 'starg',
 };
@@ -92,6 +96,7 @@ bool _isFragmentable(String name) {
   return lower.startsWith('falcon') ||
       lower.startsWith('falconx') ||
       lower.startsWith('rododendron') ||
+      lower.startsWith('boss_') ||
       lower.startsWith('asteroid');
 }
 

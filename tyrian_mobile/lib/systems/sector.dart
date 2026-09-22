@@ -245,7 +245,8 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       {required int ordinal,
       required double dps,
       required double ttk,
-      required int hpFloor}) {
+      required int hpFloor,
+      List<PartKind> parts = const []}) {
     final n = ordinal;
     final w = config.gameWidth;
     final h = config.gameHeight;
@@ -286,6 +287,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
         ordinal: n,
         weapDamage: bossDmg,
         rechargeFrames: recharge,
+        parts: parts,
       ),
       hpOverride: bossHp,
       collisionDmgOverride: collisionDmg,

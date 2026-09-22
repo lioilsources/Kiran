@@ -46,6 +46,13 @@ var enemySpecs = []struct{ name, directive string }{
 	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
 	{"rododendron", "boss dreadnought, layered armor plating, dominating silhouette, ornate command superstructure"},
+	// Boss parts. Modules that bolt onto the dreadnought, not craft of their
+	// own: each is drawn as a detached component with a clear mounting face,
+	// so the assembled boss reads as one machine.
+	{"boss_turret", "detached weapon turret module, rotating gun mount on an armored collar, mounting flange"},
+	{"boss_shield", "detached shield generator pod, emitter dish ringed by coils, glowing projector core, mounting flange"},
+	{"boss_thruster", "detached engine module, exhaust bells and cooling fins, mounting flange"},
+	{"boss_cannon", "detached heavy cannon module, long barrel assembly with recoil housing, mounting flange"},
 }
 
 var structureSpecs = []struct{ name, directive string }{

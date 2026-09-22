@@ -311,6 +311,7 @@ class BossHealthBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final boss = game.activeBoss;
     if (boss == null) return const SizedBox.shrink();
+    final parts = game.activeBossParts;
 
     return Positioned(
       left: 0,
@@ -329,13 +330,48 @@ class BossHealthBar extends StatelessWidget {
               ],
             ),
           ),
-          child: HealthBar(
-            label: boss.caption,
-            value: boss.hp.toDouble(),
-            maxValue: boss.hpMax.toDouble(),
-            color: Colors.deepOrangeAccent,
-            height: 8,
-            segments: 20,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HealthBar(
+                label: boss.shielded ? '${boss.caption} — SHIELDED' : boss.caption,
+                value: boss.hp.toDouble(),
+                maxValue: boss.hpMax.toDouble(),
+                // A shielded core takes nothing: colour it as inert so the
+                // player looks for the pod instead of hammering the hull.
+                color: boss.shielded ? Colors.blueGrey : Colors.deepOrangeAccent,
+                height: 8,
+                segments: 20,
+              ),
+              // One pip per bolted-on piece, dimmed once it is gone.
+              if (parts.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (final p in parts)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3),
+                          child: Text(
+                            p.caption.toUpperCase(),
+                            style: TextStyle(
+                              color: p.isDead
+                                  ? Colors.white24
+                                  : Colors.orangeAccent,
+                              fontSize: 9,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.bold,
+                              decoration: p.isDead
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
       ),
