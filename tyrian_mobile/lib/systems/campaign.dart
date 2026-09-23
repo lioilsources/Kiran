@@ -38,9 +38,17 @@ class ObjectiveSpec {
   final bool required;
   final int amount;
   final WeaponFamily? family;
+  final WeaponSlot? slot;
+
+  /// Weapon this task wants in [slot], by `DevType.name`.
+  final String? weaponName;
 
   const ObjectiveSpec(this.id, this.kind, this.text,
-      {this.required = false, this.amount = 0, this.family});
+      {this.required = false,
+      this.amount = 0,
+      this.family,
+      this.slot,
+      this.weaponName});
 
   /// Clearing the sector at all — every node's first required task.
   static const clear = ObjectiveSpec(
@@ -53,7 +61,9 @@ class ObjectiveSpec {
         kind = ObjectiveKind.killsTotal,
         text = 'Shoot down $n hostiles',
         amount = n,
-        family = null;
+        family = null,
+        slot = null,
+        weaponName = null;
 
   /// Same, as a star — a higher bar than the required count.
   const ObjectiveSpec.sweep(int n)
@@ -62,7 +72,9 @@ class ObjectiveSpec {
         text = 'Shoot down $n hostiles',
         required = false,
         amount = n,
-        family = null;
+        family = null,
+        slot = null,
+        weaponName = null;
 
   const ObjectiveSpec.untouched()
       : id = 'untouched',
@@ -70,7 +82,9 @@ class ObjectiveSpec {
         text = 'Take no hull damage',
         required = false,
         amount = 0,
-        family = null;
+        family = null,
+        slot = null,
+        weaponName = null;
 
   const ObjectiveSpec.hull(int percent)
       : id = 'hull',
@@ -78,7 +92,9 @@ class ObjectiveSpec {
         text = 'Finish above $percent% hull',
         required = false,
         amount = percent,
-        family = null;
+        family = null,
+        slot = null,
+        weaponName = null;
 
   /// Kills whose final blow came from a given weapon family — the elemental
   /// death effect is the feedback, so this teaches what each gun does.
@@ -88,7 +104,110 @@ class ObjectiveSpec {
         kind = ObjectiveKind.killsWithFamily,
         text = 'Kill $n with the $weaponLabel',
         amount = n,
-        family = f;
+        family = f,
+        slot = null,
+        weaponName = null;
+
+  /// Kills landed by whatever sits in the side slots. Teaches that the side
+  /// guns are doing work, not decoration.
+  const ObjectiveSpec.withSideGuns(int n)
+      : id = 'sides',
+        kind = ObjectiveKind.killsWithSlot,
+        text = 'Kill $n with your side guns',
+        required = false,
+        amount = n,
+        family = null,
+        slot = WeaponSlot.leftGun,
+        weaponName = null;
+
+  /// Fly the node with a named gun mounted — read off the ship at launch, so
+  /// it is a shopping instruction rather than something to chase mid-flight.
+  /// A side slot accepts either side.
+  const ObjectiveSpec.flyWith(String weapon,
+      {this.required = false, WeaponSlot inSlot = WeaponSlot.frontGun})
+      : id = 'loadout',
+        kind = ObjectiveKind.equipInSlot,
+        text = inSlot == WeaponSlot.frontGun
+            ? 'Launch with the $weapon up front'
+            : 'Launch with the $weapon on a side mount',
+        amount = 0,
+        family = null,
+        slot = inSlot,
+        weaponName = weapon;
+
+  /// Any side gun at all, in either slot.
+  const ObjectiveSpec.armSides({this.required = false})
+      : id = 'sidearm',
+        kind = ObjectiveKind.ownsSideGun,
+        text = 'Buy a side gun in the Com Center',
+        amount = 0,
+        family = null,
+        slot = null,
+        weaponName = null;
+
+  /// A slot upgraded to at least [level] — the shop's other half.
+  const ObjectiveSpec.upgraded(WeaponSlot s, int level, String label,
+      {this.required = false})
+      : id = 'upgrade',
+        kind = ObjectiveKind.slotLevelAtLeast,
+        text = 'Upgrade your $label to level $level',
+        amount = level,
+        family = null,
+        slot = s,
+        weaponName = null;
+
+  /// Pickups caught — the drops a cleared fleet leaves behind.
+  const ObjectiveSpec.collect(int n)
+      : id = 'pickups',
+        kind = ObjectiveKind.collectPickups,
+        text = 'Catch $n pickups',
+        required = false,
+        amount = n,
+        family = null,
+        slot = null,
+        weaponName = null;
+
+  /// Fleets wiped to the last ship, which is what makes them drop at all.
+  const ObjectiveSpec.wipeFleets(int n, {this.required = false})
+      : id = 'fleets',
+        kind = ObjectiveKind.fleetBonuses,
+        text = 'Wipe $n whole formations',
+        amount = n,
+        family = null,
+        slot = null,
+        weaponName = null;
+
+  const ObjectiveSpec.noRam()
+      : id = 'noram',
+        kind = ObjectiveKind.noAsteroidRam,
+        text = 'Ram no asteroids',
+        required = false,
+        amount = 0,
+        family = null,
+        slot = null,
+        weaponName = null;
+
+  const ObjectiveSpec.under(int seconds)
+      : id = 'fast',
+        kind = ObjectiveKind.underTime,
+        text = 'Finish within ${seconds}s',
+        required = false,
+        amount = seconds,
+        family = null,
+        slot = null,
+        weaponName = null;
+
+  /// Shoot every bolted-on piece off the boss yourself. Pieces that die with
+  /// the core do not count, so this means dismantling it first.
+  const ObjectiveSpec.strip()
+      : id = 'strip',
+        kind = ObjectiveKind.allBossParts,
+        text = 'Destroy every boss part before the core',
+        required = false,
+        amount = 0,
+        family = null,
+        slot = null,
+        weaponName = null;
 }
 
 class CampaignNode {
@@ -134,115 +253,122 @@ const List<CampaignNode> kCampaignNodes = [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(26, required: true),
     ObjectiveSpec.hull(75),
-    ObjectiveSpec.sweep(46),
+    ObjectiveSpec.wipeFleets(2),
   ]),
   CampaignNode(2, 'System Perimeter III', 1, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(19, required: true),
+    ObjectiveSpec.armSides(required: true),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.withWeapon(WeaponFamily.bubble, 24, 'Bubble Gun'),
+    ObjectiveSpec.collect(3),
   ]),
   CampaignNode(3, 'Inner Zone I', 2, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(28, required: true),
     ObjectiveSpec.hull(60),
-    ObjectiveSpec.sweep(50),
+    ObjectiveSpec.withSideGuns(8),
   ]),
   CampaignNode(4, 'Inner Zone II', 2, bossOrdinal: 1, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(22, required: true),
+    ObjectiveSpec.strip(),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.hull(50),
   ]),
   CampaignNode(5, 'Inner Zone III', 2, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(21, required: true),
     ObjectiveSpec.hull(75),
-    ObjectiveSpec.sweep(37),
+    ObjectiveSpec.under(48),
   ]),
   CampaignNode(6, 'Planet Perimeter I', 3, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(20, required: true),
+    ObjectiveSpec.flyWith('Vulcan Cannon', required: true),
+    ObjectiveSpec.withWeapon(WeaponFamily.vulcan, 20, 'Vulcan Cannon'),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.withWeapon(WeaponFamily.bubble, 26, 'Bubble Gun'),
   ]),
   CampaignNode(7, 'Planet Perimeter II', 3, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(26, required: true),
-    ObjectiveSpec.hull(60),
-    ObjectiveSpec.sweep(46),
+    ObjectiveSpec.withSideGuns(12),
+    ObjectiveSpec.under(48),
   ]),
   CampaignNode(8, 'Planet Perimeter III', 3, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(22, required: true),
+    ObjectiveSpec.upgraded(WeaponSlot.generator, 3, 'generator', required: true),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.sweep(40),
+    ObjectiveSpec.collect(3),
   ]),
   CampaignNode(9, 'Planet Patrol I', 4, bossOrdinal: 2, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(30, required: true),
+    ObjectiveSpec.strip(),
     ObjectiveSpec.hull(50),
-    ObjectiveSpec.sweep(55),
   ]),
   CampaignNode(10, 'Planet Patrol II', 4, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(18, required: true),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.sweep(32),
+    ObjectiveSpec.wipeFleets(4),
   ]),
   CampaignNode(11, 'Planet Patrol III', 4, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(24, required: true),
-    ObjectiveSpec.hull(60),
-    ObjectiveSpec.sweep(43),
+    ObjectiveSpec.flyWith('Star Gun',
+        required: true, inSlot: WeaponSlot.leftGun),
+    ObjectiveSpec.withWeapon(WeaponFamily.starg, 15, 'Star Gun'),
+    ObjectiveSpec.untouched(),
   ]),
   CampaignNode(12, 'Planet Orbit I', 5, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(26, required: true),
-    ObjectiveSpec.untouched(),
-    ObjectiveSpec.sweep(47),
+    ObjectiveSpec.withSideGuns(18),
+    ObjectiveSpec.noRam(),
   ]),
   CampaignNode(13, 'Planet Orbit II', 5, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(22, required: true),
     ObjectiveSpec.hull(75),
-    ObjectiveSpec.sweep(40),
+    ObjectiveSpec.collect(3),
   ]),
   CampaignNode(14, 'Planet Orbit III', 5, bossOrdinal: 3, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(24, required: true),
+    ObjectiveSpec.strip(),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.hull(50),
   ]),
   CampaignNode(15, 'Industry Zone I', 6, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(24, required: true),
-    ObjectiveSpec.hull(60),
-    ObjectiveSpec.sweep(43),
+    ObjectiveSpec.under(50),
+    ObjectiveSpec.wipeFleets(3),
   ]),
   CampaignNode(16, 'Industry Zone II', 6, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(28, required: true),
-    ObjectiveSpec.untouched(),
-    ObjectiveSpec.sweep(51),
+    ObjectiveSpec.flyWith('Laser'),
+    ObjectiveSpec.withWeapon(WeaponFamily.laser, 20, 'Laser'),
   ]),
   CampaignNode(17, 'Industry Zone III', 6, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(16, required: true),
-    ObjectiveSpec.hull(75),
+    ObjectiveSpec.untouched(),
     ObjectiveSpec.sweep(29),
   ]),
   CampaignNode(18, 'Deep Core I', 7, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(21, required: true),
-    ObjectiveSpec.untouched(),
-    ObjectiveSpec.sweep(38),
+    // A star, not a requirement: the front gun may by now be a Laser, whose
+    // upgrades cost more than the rest of the campaign earns.
+    ObjectiveSpec.upgraded(WeaponSlot.frontGun, 3, 'front gun'),
+    ObjectiveSpec.hull(60),
   ]),
   CampaignNode(19, 'Deep Core II', 7, bossOrdinal: 4, objectives: [
     ObjectiveSpec.clear,
     ObjectiveSpec.kills(16, required: true),
+    ObjectiveSpec.strip(),
     ObjectiveSpec.untouched(),
-    ObjectiveSpec.hull(50),
   ]),
 ];
 

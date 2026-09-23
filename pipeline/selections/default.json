@@ -1,10 +1,15 @@
 {
+  "skin": "default",
   "assets": {
     "asteroid": 1,
     "asteroid1": 1,
     "asteroid2": 1,
     "asteroid3": 1,
     "blaster": 1,
+    "boss_cannon": 4,
+    "boss_shield": 2,
+    "boss_thruster": 1,
+    "boss_turret": 3,
     "bouncer": 1,
     "bubble": 1,
     "comcenter_bg": 1,
@@ -51,6 +56,5 @@
     "ui_card_bg": 1,
     "ui_tab_active": 1,
     "vulcan": 1
-  },
-  "skin": "default"
+  }
 }

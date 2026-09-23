@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,9 +12,28 @@ import '../systems/campaign.dart';
 import 'campaign_result.dart';
 import 'ui_theme.dart';
 
-/// The campaign's node list between missions: what is cleared, what is open,
-/// what is still locked. Tap (or confirm on) an open node to launch it via
-/// the ComCenter. Navigable by pad and keyboard like every other overlay.
+/// Vertical spacing between nodes on the route.
+const double _nodeGap = 96;
+
+/// Padding above the first node and below the last.
+const double _routePad = 70;
+
+/// Where node [i] sits on a canvas [size] wide and tall.
+///
+/// The route runs bottom to top: the first node is at the bottom of the
+/// scroll, deep space is up. X serpentines so the line has somewhere to bend,
+/// which is what makes it read as a route rather than a list.
+Offset _nodeCenter(int i, Size size) {
+  final y = size.height - _routePad - i * _nodeGap;
+  final x = size.width / 2 + sin(i * 0.9) * (size.width * 0.27);
+  return Offset(x, y);
+}
+
+double _routeHeight(int count) => _routePad * 2 + (count - 1) * _nodeGap;
+
+/// The campaign route between missions: what is cleared, what is open, what
+/// is still dark. Pick a node to read its briefing, then launch it through
+/// the Com Center.
 class CampaignMapScreen extends StatefulWidget {
   final TyrianGame game;
   final void Function(int nodeIndex) onLaunch;
@@ -34,12 +54,12 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
   late UiTheme _theme;
   late int _focus;
   final _focusNode = FocusNode();
-  final _rowKeys = List.generate(kCampaignNodes.length, (_) => GlobalKey());
+  final _scroll = ScrollController();
 
   final GamepadInput _gamepad = GamepadInput();
   Timer? _pollTimer;
   bool _prevUp = false, _prevDown = false;
-  // Start true so a button held while the map opens is not taken as a press.
+  // Start true so a button still held from the last mission is not a press.
   bool _prevConfirm = true, _prevBack = true;
 
   CampaignState get _state => widget.game.campaign ?? CampaignState();
@@ -53,12 +73,13 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
       _pollTimer = Timer.periodic(
           const Duration(milliseconds: 16), (_) => _pollGamepad());
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFocus());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFocus(false));
   }
 
   @override
   void dispose() {
     _pollTimer?.cancel();
+    _scroll.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -67,21 +88,40 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
     final next = (_focus + delta).clamp(0, kCampaignNodes.length - 1);
     if (next == _focus) return;
     setState(() => _focus = next);
-    _scrollToFocus();
+    _scrollToFocus(true);
   }
 
-  void _scrollToFocus() {
-    final ctx = _rowKeys[_focus].currentContext;
-    if (ctx == null) return;
-    Scrollable.ensureVisible(ctx,
-        alignment: 0.5,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut);
+  /// Keep the focused node near the middle of the viewport. The route is
+  /// painted bottom-up, so node 0 sits at the far end of the scroll extent.
+  void _scrollToFocus(bool animate) {
+    if (!_scroll.hasClients) return;
+    final viewport = _scroll.position.viewportDimension;
+    final total = max(_routeHeight(kCampaignNodes.length), viewport);
+    final target = (total - _routePad - _focus * _nodeGap - viewport / 2)
+        .clamp(0.0, _scroll.position.maxScrollExtent);
+    if (animate) {
+      _scroll.animateTo(target,
+          duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+    } else {
+      _scroll.jumpTo(target);
+    }
   }
 
-  void _launch(int index) {
-    if (!_state.isUnlocked(index)) return;
-    widget.onLaunch(index);
+  void _launchFocused() {
+    if (!_state.isUnlocked(_focus)) return;
+    widget.onLaunch(_focus);
+  }
+
+  /// Focus whichever node was tapped. Launching stays on its own button so a
+  /// stray tap on the route cannot throw the pilot into a mission.
+  void _tapAt(Offset local, Size canvas) {
+    for (var i = 0; i < kCampaignNodes.length; i++) {
+      final c = _nodeCenter(i, canvas);
+      if ((local - c).distance <= 30) {
+        setState(() => _focus = i);
+        return;
+      }
+    }
   }
 
   void _pollGamepad() async {
@@ -92,9 +132,10 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
     final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
     final confirm = gp.buttonB || gp.start;
     final back = gp.buttonA || gp.back;
-    if (up && !_prevUp) _moveFocus(-1);
-    if (down && !_prevDown) _moveFocus(1);
-    if (confirm && !_prevConfirm) _launch(_focus);
+    // Up the screen is forward along the route.
+    if (up && !_prevUp) _moveFocus(1);
+    if (down && !_prevDown) _moveFocus(-1);
+    if (confirm && !_prevConfirm) _launchFocused();
     if (back && !_prevBack) widget.onBack();
     _prevUp = up;
     _prevDown = down;
@@ -106,15 +147,15 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     final k = event.logicalKey;
     if (k == LogicalKeyboardKey.arrowUp || k == LogicalKeyboardKey.keyW) {
-      _moveFocus(-1);
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.arrowDown || k == LogicalKeyboardKey.keyS) {
       _moveFocus(1);
       return KeyEventResult.handled;
     }
+    if (k == LogicalKeyboardKey.arrowDown || k == LogicalKeyboardKey.keyS) {
+      _moveFocus(-1);
+      return KeyEventResult.handled;
+    }
     if (k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.space) {
-      _launch(_focus);
+      _launchFocused();
       return KeyEventResult.handled;
     }
     if (k == LogicalKeyboardKey.escape) {
@@ -127,12 +168,6 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
   @override
   Widget build(BuildContext context) {
     final state = _state;
-    final cleared = state.completed.length;
-    var stars = 0;
-    for (final s in state.stars.values) {
-      stars += s.length;
-    }
-
     return Focus(
       focusNode: _focusNode,
       autofocus: true,
@@ -142,20 +177,39 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [_theme.surfaceDark, Colors.black],
+            colors: [Colors.black, _theme.surfaceDark],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(cleared, stars),
+              _buildHeader(state),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                  itemCount: kCampaignNodes.length,
-                  itemBuilder: (_, i) => _buildRow(i, state),
+                child: LayoutBuilder(
+                  builder: (_, constraints) {
+                    final canvas = Size(
+                      constraints.maxWidth,
+                      max(_routeHeight(kCampaignNodes.length),
+                          constraints.maxHeight),
+                    );
+                    return SingleChildScrollView(
+                      controller: _scroll,
+                      child: GestureDetector(
+                        onTapUp: (d) => _tapAt(d.localPosition, canvas),
+                        child: CustomPaint(
+                          size: canvas,
+                          painter: _RoutePainter(
+                            theme: _theme,
+                            state: state,
+                            focus: _focus,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
+              _buildBriefing(state),
             ],
           ),
         ),
@@ -163,10 +217,13 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
     );
   }
 
-  Widget _buildHeader(int cleared, int stars) {
-    final pilot = widget.game.vessel.pilotName;
+  Widget _buildHeader(CampaignState state) {
+    var stars = 0;
+    for (final s in state.stars.values) {
+      stars += s.length;
+    }
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+      padding: const EdgeInsets.fromLTRB(4, 4, 16, 4),
       child: Row(
         children: [
           IconButton(
@@ -175,145 +232,276 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
             tooltip: 'Main menu',
           ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'CAMPAIGN',
-                  style: _theme.styled(TextStyle(
-                    color: _theme.accent,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 4,
-                  )),
-                ),
-                Text(
-                  '$pilot · $cleared/${kCampaignNodes.length} cleared'
-                  '${stars > 0 ? ' · ★ $stars' : ''}',
-                  style: _theme.styled(TextStyle(
-                    color: _theme.textSecondary,
-                    fontSize: 12,
-                    letterSpacing: 1,
-                  )),
-                ),
-              ],
+            child: Text(
+              'CAMPAIGN',
+              style: _theme.styled(TextStyle(
+                color: _theme.accent,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 4,
+              )),
             ),
+          ),
+          Text(
+            '${state.completed.length}/${kCampaignNodes.length}   ★ $stars',
+            style: _theme.styled(TextStyle(
+              color: _theme.textSecondary,
+              fontSize: 12,
+              letterSpacing: 1,
+            )),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildRow(int i, CampaignState state) {
-    final node = kCampaignNodes[i];
-    final done = state.isCompleted(i);
-    final open = state.isUnlocked(i);
-    final focused = i == _focus;
-    final stars = state.starsFor(i);
+  Widget _buildBriefing(CampaignState state) {
+    final node = kCampaignNodes[_focus];
+    final open = state.isUnlocked(_focus);
+    final done = state.isCompleted(_focus);
 
-    final Color edge;
-    final Color text;
-    if (done) {
-      edge = _theme.success;
-      text = _theme.textPrimary;
-    } else if (open) {
-      edge = _theme.accent;
-      text = _theme.textPrimary;
-    } else {
-      edge = _theme.accentDim;
-      text = _theme.textSecondary;
-    }
-
-    final String trailing;
-    if (done) {
-      trailing = stars > 0 ? '✓ ${'★' * stars}' : '✓';
-    } else if (open) {
-      trailing = '▶';
-    } else {
-      trailing = 'LOCKED';
-    }
-
-    return Padding(
-      key: _rowKeys[i],
-      padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: open ? () => _launch(i) : null,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: focused ? _theme.surfaceLight : _theme.surfaceMid,
-            borderRadius: BorderRadius.circular(_theme.cornerRadius),
-            border: Border.all(
-              color: focused ? _theme.accent : edge.withAlpha(140),
-              width: focused ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      decoration: BoxDecoration(
+        color: _theme.surfaceMid,
+        border: Border(top: BorderSide(color: _theme.accent.withAlpha(90))),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: 34,
-                    child: Text(
-                      '${i + 1}'.padLeft(2, '0'),
-                      style: _theme.styled(TextStyle(
-                        color: edge,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      )),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          node.caption,
-                          style: _theme.styled(TextStyle(
-                            color: text,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
-                          )),
-                        ),
-                        Text(
-                          'Level ${node.level}'
-                          '${node.isBoss ? ' · BOSS ${'I' * node.bossOrdinal!}' : ''}',
-                          style: _theme.styled(TextStyle(
-                            color: node.isBoss
-                                ? _theme.danger
-                                : _theme.textSecondary,
-                            fontSize: 11,
-                            letterSpacing: 1,
-                          )),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    trailing,
-                    style: _theme.styled(TextStyle(
-                      color: edge,
-                      fontSize: done ? 14 : 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    )),
-                  ),
-                ],
+              Expanded(
+                child: Text(
+                  '${_focus + 1}. ${node.caption}',
+                  style: _theme.styled(TextStyle(
+                    color: _theme.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  )),
+                ),
               ),
-              // Briefing: the focused node shows what it asks for, so the
-              // pilot can shop for it before launching.
-              if (focused && open) ...[
-                const SizedBox(height: 8),
-                Divider(height: 1, color: _theme.accentDim.withAlpha(120)),
-                const SizedBox(height: 8),
-                ObjectiveLines.briefing(node.objectives, theme: _theme),
-              ],
+              Text(
+                node.isBoss
+                    ? 'LEVEL ${node.level} · BOSS ${'I' * node.bossOrdinal!}'
+                    : 'LEVEL ${node.level}',
+                style: _theme.styled(TextStyle(
+                  color: node.isBoss ? _theme.danger : _theme.textSecondary,
+                  fontSize: 11,
+                  letterSpacing: 1,
+                )),
+              ),
             ],
           ),
-        ),
+          const SizedBox(height: 8),
+          if (open)
+            ObjectiveLines.briefing(node.objectives, theme: _theme)
+          else
+            Text(
+              'Locked. Clear the node before it.',
+              style: _theme.styled(TextStyle(
+                color: _theme.textSecondary,
+                fontSize: 12,
+              )),
+            ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: InkWell(
+              onTap: open ? _launchFocused : null,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 11),
+                decoration: BoxDecoration(
+                  color: open ? _theme.surfaceLight : Colors.transparent,
+                  borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                  border: Border.all(
+                    color: open ? _theme.accent : _theme.accentDim,
+                    width: open ? 2 : 1,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    open ? (done ? 'FLY AGAIN' : 'LAUNCH') : 'LOCKED',
+                    style: _theme.styled(TextStyle(
+                      color: open ? _theme.accent : _theme.textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 3,
+                    )),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+/// Draws the route: the line between nodes, a marker per node, and a band
+/// wherever the art zone changes.
+class _RoutePainter extends CustomPainter {
+  final UiTheme theme;
+  final CampaignState state;
+  final int focus;
+
+  _RoutePainter({
+    required this.theme,
+    required this.state,
+    required this.focus,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _paintZoneBands(canvas, size);
+    _paintRoute(canvas, size);
+    for (var i = 0; i < kCampaignNodes.length; i++) {
+      _paintNode(canvas, size, i);
+    }
+  }
+
+  /// A faint stripe behind each run of nodes that shares a backdrop, so the
+  /// route reads as passing through places rather than along a ruler.
+  void _paintZoneBands(Canvas canvas, Size size) {
+    var start = 0;
+    for (var i = 1; i <= kCampaignNodes.length; i++) {
+      final ends = i == kCampaignNodes.length ||
+          kCampaignNodes[i].zone != kCampaignNodes[start].zone;
+      if (!ends) continue;
+
+      final top = _nodeCenter(i - 1, size).dy - _nodeGap * 0.5;
+      final bottom = _nodeCenter(start, size).dy + _nodeGap * 0.5;
+      final zone = kCampaignNodes[start].zone;
+      canvas.drawRect(
+        Rect.fromLTRB(0, top, size.width, bottom),
+        Paint()..color = theme.accent.withAlpha(zone.isEven ? 10 : 20),
+      );
+      final label = TextPainter(
+        text: TextSpan(
+          text: 'ZONE ${zone + 1}',
+          style: TextStyle(
+            color: theme.accent.withAlpha(90),
+            fontSize: 10,
+            letterSpacing: 3,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      label.paint(canvas, Offset(10, top + 6));
+      start = i;
+    }
+  }
+
+  void _paintRoute(Canvas canvas, Size size) {
+    for (var i = 0; i < kCampaignNodes.length - 1; i++) {
+      final a = _nodeCenter(i, size);
+      final b = _nodeCenter(i + 1, size);
+      // Reached track is lit; the rest is the dark road ahead.
+      final lit = state.isUnlocked(i + 1);
+      final paint = Paint()
+        ..color = lit ? theme.accent.withAlpha(140) : theme.accentDim
+        ..strokeWidth = lit ? 3 : 2
+        ..style = PaintingStyle.stroke;
+      // Bend through the midpoint so consecutive segments meet smoothly
+      // instead of showing the serpentine's corners.
+      final path = Path()
+        ..moveTo(a.dx, a.dy)
+        ..quadraticBezierTo(a.dx, (a.dy + b.dy) / 2, (a.dx + b.dx) / 2,
+            (a.dy + b.dy) / 2)
+        ..quadraticBezierTo(b.dx, (a.dy + b.dy) / 2, b.dx, b.dy);
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  void _paintNode(Canvas canvas, Size size, int i) {
+    final node = kCampaignNodes[i];
+    final c = _nodeCenter(i, size);
+    final done = state.isCompleted(i);
+    final open = state.isUnlocked(i);
+    final focused = i == focus;
+    final r = node.isBoss ? 26.0 : 19.0;
+
+    final Color edge;
+    if (done) {
+      edge = theme.success;
+    } else if (open) {
+      edge = theme.accent;
+    } else {
+      edge = theme.accentDim;
+    }
+
+    canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..color = done
+              ? theme.success.withAlpha(45)
+              : (open ? theme.surfaceLight : theme.surfaceDark));
+    canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..color = edge
+          ..strokeWidth = focused ? 3 : 2
+          ..style = PaintingStyle.stroke);
+
+    // A boss wears a second ring, so the four of them stand out down the
+    // whole route.
+    if (node.isBoss) {
+      canvas.drawCircle(
+          c,
+          r + 5,
+          Paint()
+            ..color = (open ? theme.danger : theme.accentDim).withAlpha(160)
+            ..strokeWidth = 1.5
+            ..style = PaintingStyle.stroke);
+    }
+
+    if (focused) {
+      canvas.drawCircle(
+          c,
+          r + 10,
+          Paint()
+            ..color = theme.accent.withAlpha(60)
+            ..strokeWidth = 1
+            ..style = PaintingStyle.stroke);
+    }
+
+    _text(canvas, c, open ? '${i + 1}' : '🔒',
+        color: open ? theme.textPrimary : theme.textSecondary,
+        size: open ? 15 : 12);
+
+    // Stars sit under the marker, as many pips as the node awards.
+    final earned = state.starsFor(i);
+    final total = node.starObjectives.length;
+    if (done && total > 0) {
+      _text(canvas, Offset(c.dx, c.dy + r + 10),
+          '${'★' * earned}${'·' * (total - earned)}',
+          color: earned > 0 ? theme.upgrade : theme.textSecondary, size: 11);
+    }
+  }
+
+  void _text(Canvas canvas, Offset center, String s,
+      {required Color color, required double size}) {
+    final tp = TextPainter(
+      text: TextSpan(
+        text: s,
+        style: TextStyle(
+            color: color, fontSize: size, fontWeight: FontWeight.bold),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, center - Offset(tp.width / 2, tp.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(_RoutePainter old) =>
+      old.focus != focus ||
+      old.state.currentNode != state.currentNode ||
+      old.state.completed.length != state.completed.length;
 }
