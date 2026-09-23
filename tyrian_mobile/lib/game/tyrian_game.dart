@@ -425,6 +425,8 @@ class TyrianGame extends FlameGame
     }
     loadSector(currentSectorIndex);
     _startSectorMusic();
+    // After loadSector, which resets the node's counters.
+    campaignTracker?.onLaunch(vessel);
     AchievementService.instance
         .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
   }
@@ -676,6 +678,7 @@ class TyrianGame extends FlameGame
         node: node,
         vessel: vessel,
         hullDamage: sectorHullDamage,
+        elapsed: elapsed,
       );
       lastNodeResult = result;
       lastNodeUnlock = null;
@@ -925,6 +928,9 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     _startSectorMusic();
+    // The shop has just closed, so this is the loadout the node is flown with
+    // — what every loadout task is graded against.
+    campaignTracker?.onLaunch(vessel);
   }
 
   void togglePause() {
@@ -1207,6 +1213,7 @@ class TyrianGame extends FlameGame
             c.position.y < v.position.y + v.size.y / 2 &&
             c.position.y + c.size.y > v.position.y - v.size.y / 2) {
           c.applyEffect(v, this);
+          campaignTracker?.onPickup();
           break; // applyEffect calls removeCollectable, which removes from list
         }
       }

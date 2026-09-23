@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tyrian_mobile/entities/collectable.dart';
 import 'package:tyrian_mobile/entities/vessel.dart';
 import 'package:tyrian_mobile/game/game_config.dart' as config;
 import 'package:tyrian_mobile/systems/campaign.dart';
@@ -53,15 +54,22 @@ void main() {
   });
 
   group('objectives can never lock a pilot out', () {
-    /// Kinds the tracker actually grades. A required task of any other kind
-    /// would be unmeetable, and the node would gate the campaign forever.
-    const graded = {
-      ObjectiveKind.completeNode,
-      ObjectiveKind.killsTotal,
-      ObjectiveKind.killsWithFamily,
-      ObjectiveKind.noHullDamage,
-      ObjectiveKind.hpAbove,
-    };
+    /// Every kind the tracker grades — which is now all of them. A required
+    /// task of an ungraded kind would be unmeetable and would gate the
+    /// campaign forever.
+    const graded = ObjectiveKind.values;
+
+    /// What the node itself puts on the field.
+    ({int enemies, int fleets, int drops}) supply(int i) {
+      final s = Campaign.buildNodeContent(i);
+      var enemies = 0;
+      var drops = 0;
+      for (final f in s.fleets) {
+        enemies += f.count;
+        if (f.bonus != CollType.none || f.bonusMoney > 0) drops++;
+      }
+      return (enemies: enemies, fleets: s.fleets.length, drops: drops);
+    }
 
     test('every node asks to be cleared, and asks it as a requirement', () {
       for (final n in kCampaignNodes) {
@@ -85,10 +93,7 @@ void main() {
       // count has to sit below the total with room to spare.
       for (var i = 0; i < Campaign.nodeCount; i++) {
         final node = kCampaignNodes[i];
-        var available = 0;
-        for (final f in Campaign.buildNodeContent(i).fleets) {
-          available += f.count;
-        }
+        final available = supply(i).enemies;
         for (final o in node.requiredObjectives) {
           if (o.kind != ObjectiveKind.killsTotal) continue;
           expect(o.amount, lessThanOrEqualTo((available * 0.6).floor()),
@@ -97,20 +102,108 @@ void main() {
       }
     });
 
-    test('star kill counts stay reachable at all', () {
+    test('kill counts of every flavour stay reachable at all', () {
+      const killKinds = {
+        ObjectiveKind.killsTotal,
+        ObjectiveKind.killsWithFamily,
+        ObjectiveKind.killsWithSlot,
+      };
       for (var i = 0; i < Campaign.nodeCount; i++) {
         final node = kCampaignNodes[i];
-        var available = 0;
-        for (final f in Campaign.buildNodeContent(i).fleets) {
-          available += f.count;
+        final available = supply(i).enemies;
+        for (final o in node.objectives) {
+          if (!killKinds.contains(o.kind)) continue;
+          expect(o.amount, lessThanOrEqualTo(available),
+              reason: '${node.caption}: "${o.text}" of $available');
         }
-        for (final o in node.starObjectives) {
-          if (o.kind != ObjectiveKind.killsTotal &&
-              o.kind != ObjectiveKind.killsWithFamily) {
+      }
+    });
+
+    test('formation and pickup counts fit what the node actually drops', () {
+      // A formation only drops when wiped to the last ship, and a pickup only
+      // exists because a formation dropped it.
+      for (var i = 0; i < Campaign.nodeCount; i++) {
+        final node = kCampaignNodes[i];
+        final s = supply(i);
+        for (final o in node.objectives) {
+          if (o.kind == ObjectiveKind.fleetBonuses) {
+            expect(o.amount, lessThanOrEqualTo(s.fleets),
+                reason: '${node.caption}: "${o.text}" of ${s.fleets} formations');
+          }
+          if (o.kind == ObjectiveKind.collectPickups) {
+            expect(o.amount, lessThanOrEqualTo(s.drops),
+                reason: '${node.caption}: "${o.text}" of ${s.drops} drops');
+          }
+        }
+      }
+    });
+
+    test('loadout tasks name weapons the shop actually stocks by then', () {
+      // A task naming a gun the boss progression has not opened yet would be
+      // unbuyable — and as a requirement, a dead end.
+      var tier = 0;
+      for (var i = 0; i < Campaign.nodeCount; i++) {
+        final node = kCampaignNodes[i];
+        for (final o in node.objectives) {
+          if (o.kind != ObjectiveKind.equipInSlot) continue;
+          final stocked = [
+            ...DevType.frontWeapons.take(tier + 1),
+            ...DevType.sideWeapons.take(tier + 1),
+          ].map((d) => d.name);
+          expect(stocked, contains(o.weaponName),
+              reason: '${node.caption}: "${o.text}" but tier $tier is on sale');
+        }
+        // Clearing a boss opens the next tier for every node after it.
+        if (node.isBoss) {
+          tier = Campaign.tierForBossOrdinal(node.bossOrdinal!);
+        }
+      }
+    });
+
+    test('a timed star is quick but not impossible', () {
+      // Below the last spawn there is physically nothing left to shoot yet;
+      // above the script's own end it would come for free.
+      for (var i = 0; i < Campaign.nodeCount; i++) {
+        final node = kCampaignNodes[i];
+        final s = Campaign.buildNodeContent(i);
+        var spawnFloor = 0.0;
+        for (final f in s.fleets) {
+          final end = f.enterTime + (f.count - 1) * f.triggerInterval + 2.0;
+          if (end > spawnFloor) spawnFloor = end;
+        }
+        for (final o in node.objectives) {
+          if (o.kind != ObjectiveKind.underTime) continue;
+          expect(o.amount, greaterThan(spawnFloor),
+              reason: '${node.caption}: ${o.amount}s is before the last spawn '
+                  'at ${spawnFloor.toStringAsFixed(1)}s');
+          expect(o.amount, lessThan(scriptEnd(s)),
+              reason: '${node.caption}: ${o.amount}s is past the script itself');
+        }
+      }
+    });
+
+    test('a required upgrade only ever asks for the generator', () {
+      // Upgrade price is the weapon's own price compounding 25-42% a level,
+      // so requiring a level on a gun the pilot chose could cost more than
+      // the whole campaign earns. The generator is cheap and its lesson —
+      // power is the real constraint — is the one worth forcing.
+      for (final n in kCampaignNodes) {
+        for (final o in n.requiredObjectives) {
+          if (o.kind != ObjectiveKind.slotLevelAtLeast) continue;
+          expect(o.slot, WeaponSlot.generator, reason: '${n.caption}: ${o.text}');
+        }
+      }
+    });
+
+    test('only boss nodes ask for boss parts', () {
+      for (final n in kCampaignNodes) {
+        for (final o in n.objectives) {
+          if (o.kind != ObjectiveKind.allBossParts &&
+              o.kind != ObjectiveKind.bossPartDestroyed) {
             continue;
           }
-          expect(o.amount, lessThanOrEqualTo(available),
-              reason: '${node.caption}: star "${o.text}" of $available');
+          expect(n.isBoss, isTrue,
+              reason: '${n.caption} asks for boss parts but has no boss');
         }
       }
     });

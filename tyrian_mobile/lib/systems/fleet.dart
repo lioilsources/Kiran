@@ -199,7 +199,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     if (_spawned >= count && hostiles.isEmpty) {
       active = false;
       // VB6: bonus only drops when ALL enemies were killed (not path-destroyed)
-      if (kills >= count) _spawnBonus();
+      if (kills >= count) {
+        game.campaignTracker?.onFleetCleared();
+        _spawnBonus();
+      }
     }
   }
 

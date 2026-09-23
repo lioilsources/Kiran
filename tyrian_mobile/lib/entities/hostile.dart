@@ -6,6 +6,7 @@ import '../game/tyrian_game.dart';
 import '../systems/path_system.dart';
 import '../systems/fleet.dart';
 import '../systems/device.dart';
+import '../systems/dev_type.dart';
 import '../systems/weapon_family.dart';
 import '../services/asset_library.dart';
 import 'vessel.dart';
@@ -44,6 +45,10 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   /// non-weapon deaths (path-destroy, off-field reap), which keep the generic
   /// explosion.
   WeaponFamily? deathFamily;
+
+  /// Which slot's gun landed the killing blow. Same rule as [deathFamily]:
+  /// recorded only on the fatal hit, so a non-weapon death carries none.
+  WeaponSlot? deathSlot;
   int collisionDmg;
 
   /// Kill payout, when it must not follow [hpMax]. Boss parts use it: their
@@ -349,6 +354,7 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
       // takeDamage (path-destroy, off-field reap) never inherits a stale
       // weapon.
       deathFamily = source == null ? null : weaponFamilyFromImgName(source.imgName);
+      deathSlot = source?.slot;
     }
   }
 

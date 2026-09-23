@@ -544,6 +544,7 @@ class Vessel extends PositionComponent
     _asteroidComboStage++;
     _asteroidComboTimer = _asteroidComboWindow;
     AchievementService.instance.onAsteroidRam();
+    game.campaignTracker?.onAsteroidRam();
 
     switch (_asteroidComboStage) {
       case 1:
