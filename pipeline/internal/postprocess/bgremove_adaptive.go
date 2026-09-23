@@ -3,6 +3,7 @@ package postprocess
 import (
 	"fmt"
 	"image"
+	"strings"
 )
 
 // keyDeadCoverage is the opaque fraction below which a key is treated as having
@@ -29,6 +30,25 @@ const keyRescueCoverage = 0.02
 // sprite keeps the tightest key that actually works rather than the loosest.
 var keyBackoffThresholds = []int{45, 35, 25, 18, 12}
 
+// bossPartThreshold is the key used for the composite-boss modules.
+//
+// They are drawn as armour plate rather than as craft, so their bodies sit in
+// the same dark end of the skin's palette as the background behind them —
+// measured on default's first four, the body keyed away entirely at the usual
+// 60, leaving a rim and the glowing trim. This is not the total erasure
+// KeySprite's backoff ladder catches: a skeleton keeps plenty of opaque
+// pixels, it just is not the part. Keying them tighter from the start is what
+// keeps that out of the atlas without anyone having to remember a flag.
+const bossPartThreshold = 35
+
+// thresholdFor picks the key for one sprite by name.
+func thresholdFor(name string, base int) int {
+	if strings.HasPrefix(name, "boss_") && base > bossPartThreshold {
+		return bossPartThreshold
+	}
+	return base
+}
+
 // KeySprite chroma-keys a sprite and backs off if the key erased the artwork.
 //
 // The flood key models the background from border pixels and claims everything
@@ -45,6 +65,7 @@ var keyBackoffThresholds = []int{45, 35, 25, 18, 12}
 // rescue would hide a background that is genuinely too close to the artwork and
 // wants a different variation, not a looser key.
 func KeySprite(src image.Image, threshold, margin int, name string) *image.NRGBA {
+	threshold = thresholdFor(name, threshold)
 	out := RemoveBackgroundFlood(src, threshold, margin)
 	if opaqueCoverage(out) >= keyDeadCoverage {
 		return out

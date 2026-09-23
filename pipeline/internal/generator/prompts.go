@@ -70,6 +70,15 @@ Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Menacing hostile design. A single craft drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
 Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
+	"boss_part": `{{.ArtDirective}}
+A single machine part seen from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt.
+The part is {{.PartDirective}}.
+It is a component bolted onto a much larger warship, NOT a vehicle: no cockpit, no canopy, no wings, no fuselage, no nose, no engine plume, no exhaust trail. It is also NOT a ground vehicle: no wheels, no tracks, no legs, no chassis, no ground under it, no cast shadow.
+One flat mounting face along the bottom edge shows where it attaches to the hull. Any barrel, nozzle or dish runs STRAIGHT UP the frame — its opening sits at the TOP edge of the image, never pointing sideways or diagonally.
+Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
+Heavy armored hardware, chunky and industrial. Drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin.
+Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
+
 	"structure": `Top-down space obstacle/debris: {{.StructureDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Irregular natural shape, no propulsion or weapons visible.
@@ -157,6 +166,13 @@ overhead view, bird's eye view, directly above, orthographic top-down, no perspe
 menacing mecha design, detailed, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
+
+	"boss_part": ponyQuality + `, mechanical component, machine part, {{.PartDirective}},
+part of a larger warship hull, overhead view, directly above, orthographic top-down, no perspective, no isometric, no 3/4 view,
+flat mounting face at bottom edge, barrel pointing straight up toward top edge, vertical barrel axis,
+heavy armored hardware, chunky industrial, detailed, sharp clean lineart, large, centered, fills frame,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid background, no text, no UI, no spaceship, no vehicle, no cockpit, no wings, no engine flame, no exhaust trail, no wheels, no tracks, no chassis, no ground, no shadow, no humans, no 3d render, no voxel`,
 
 	"structure": ponyQuality + `, anime style top-down space obstacle, {{.StructureDirective}},
 irregular natural shape, no propulsion, no weapons, detailed, centered, fills frame,

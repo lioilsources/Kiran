@@ -46,13 +46,21 @@ var enemySpecs = []struct{ name, directive string }{
 	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
 	{"rododendron", "boss dreadnought, layered armor plating, dominating silhouette, ornate command superstructure"},
-	// Boss parts. Modules that bolt onto the dreadnought, not craft of their
-	// own: each is drawn as a detached component with a clear mounting face,
-	// so the assembled boss reads as one machine.
-	{"boss_turret", "detached weapon turret module, rotating gun mount on an armored collar, mounting flange"},
-	{"boss_shield", "detached shield generator pod, emitter dish ringed by coils, glowing projector core, mounting flange"},
-	{"boss_thruster", "detached engine module, exhaust bells and cooling fins, mounting flange"},
-	{"boss_cannon", "detached heavy cannon module, long barrel assembly with recoil housing, mounting flange"},
+}
+
+// bossPartSpecs are the modules that bolt onto the dreadnought. They get their
+// own prompt kind rather than riding the enemy one: that template insists on a
+// "single craft" with a nose and a menacing hostile design, which is exactly
+// what a part must not be. The first pass through the enemy template produced
+// four complete fighters, engine plumes and all.
+var bossPartSpecs = []struct{ name, directive string }{
+	{"boss_turret", "a round armored gun drum seen from directly above, two short muzzle openings breaking its top rim"},
+	{"boss_shield", "a shield emitter: a dish ringed by coils around a glowing projector core"},
+	{"boss_thruster", "an engine block: a cluster of exhaust bells behind cooling fins"},
+	// Deliberately not the word "cannon": it drags in wheeled field artillery
+	// no matter how the template argues. A launch-tube bank is the same thing
+	// for the game — the part fires spread volleys — and reads from above.
+	{"boss_cannon", "an armored launch-tube bank, a rectangular block of vertical tubes with their open mouths facing the top edge"},
 }
 
 var structureSpecs = []struct{ name, directive string }{
@@ -210,6 +218,18 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 			AspectRatio: "1:1",
 			Resolution:  "1k",
 			ExtraVars:   map[string]string{"EnemyDirective": e.directive},
+		})
+	}
+
+	// Boss parts
+	for _, bp := range bossPartSpecs {
+		specs = append(specs, AssetSpec{
+			Name:        bp.name,
+			AssetType:   "boss_part",
+			OutputDir:   "sprites",
+			AspectRatio: "1:1",
+			Resolution:  "1k",
+			ExtraVars:   map[string]string{"PartDirective": bp.directive},
 		})
 	}
 
