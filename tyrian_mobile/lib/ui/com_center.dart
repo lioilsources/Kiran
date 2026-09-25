@@ -14,7 +14,7 @@ import '../input/gamepad_input.dart';
 import '../services/asset_library.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
-import 'skin_selector.dart' show SkinShopSection;
+import 'skin_selector.dart' show SkinShopSection, SkinShopSectionState;
 
 /// Ported from ComCenter.cls — the shop/equipment screen.
 /// Aligned with original VBA layout: ship stats + scores left, weapon cards right.
@@ -39,6 +39,15 @@ class ComCenterScreen extends StatefulWidget {
   @override
   State<ComCenterScreen> createState() => _ComCenterScreenState();
 }
+
+/// Where the gamepad cursor currently lives.
+///
+/// The pad used to reach only the OUTFITTING list, the tabs and Continue —
+/// the whole SKINS column, the LOADOUT rows and HOST/JOIN were mouse-only,
+/// which on a Steam Deck means unreachable. The regions follow the layout
+/// rather than a flat cycle: LOADOUT sits above OUTFITTING in the left
+/// column, SKINS is the right column, and the bottom bar spans both.
+enum _PadRegion { loadout, outfitting, skins, bottomBar }
 
 class _ComCenterScreenState extends State<ComCenterScreen>
     with SingleTickerProviderStateMixin {
@@ -81,9 +90,33 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   bool _prevUp = false, _prevDown = false;
   bool _prevLeft = false, _prevRight = false;
   bool _prevConfirm = false, _prevStart = false, _prevBack = false;
+  bool _prevSlotToggle = false;
   bool _prevSell = false;
   bool _prevLb = false, _prevRb = false;
   final FocusNode _focusNode = FocusNode();
+
+  // ── Gamepad focus regions ──
+  //
+  // Vertical movement walks within a region and falls through into the next
+  // one below it; horizontal movement swaps columns. The side-gun slot picker
+  // that used to own d-pad ←/→ moved to A, because ←/→ is the only axis that
+  // can express "the other column" and the right half of the screen had no
+  // way in at all.
+  _PadRegion _region = _PadRegion.outfitting;
+
+  /// Row of the LOADOUT list under the cursor (Front / Left / Right / Gen).
+  int _loadoutIndex = 0;
+
+  /// Button of the bottom bar under the cursor, indexing [_bottomActions].
+  int _bottomIndex = 0;
+
+  /// The column to come back to when leaving SKINS or the bottom bar.
+  _PadRegion _lastColumnRegion = _PadRegion.outfitting;
+
+  /// Drives the SKINS grid's cursor without duplicating its scroll or buy
+  /// rules here — see SkinShopSectionState.
+  final GlobalKey<SkinShopSectionState> _skinShopKey =
+      GlobalKey<SkinShopSectionState>();
 
   // ── Computed section state ──
   bool get _showingSide => _sectionIndex == 1;
@@ -150,17 +183,21 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final left = gp.dpadLeft || GamepadInput.deadzone(gp.leftStickX) < -0.5;
     final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
     final confirm = gp.buttonB;
+    final slotToggle = gp.buttonA;
     final sell = gp.buttonX || gp.buttonY;
     final start = gp.start;
     final back = gp.back;
     final lb = gp.leftShoulder;
     final rb = gp.rightShoulder;
 
-    if (up && !_prevUp) _moveWeapon(-1);
-    if (down && !_prevDown) _moveWeapon(1);
-    // D-pad left/right: switch side gun slot when in Side tab
-    if (left && !_prevLeft && _showingSide) setState(() => _targetSideSlot = WeaponSlot.leftGun);
-    if (right && !_prevRight && _showingSide) setState(() => _targetSideSlot = WeaponSlot.rightGun);
+    if (up && !_prevUp) _moveVertical(-1);
+    if (down && !_prevDown) _moveVertical(1);
+    if (left && !_prevLeft) _moveHorizontal(-1);
+    if (right && !_prevRight) _moveHorizontal(1);
+    // A toggles the side-gun slot. It took over from d-pad ←/→ when those
+    // became the column switch; A was the only face button still free here
+    // (B confirms, X/Y sell), and the input layer exposes no stick clicks.
+    if (slotToggle && !_prevSlotToggle) _toggleSideSlot();
     if (confirm && !_prevConfirm) _confirmAction();
     // X/Y = sell — previously keyboard-only (Delete/Backspace), which left a
     // pad-only Steam Deck player unable to sell anything (Steam plan, Fix 6).
@@ -172,19 +209,124 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
     _prevUp = up; _prevDown = down;
     _prevLeft = left; _prevRight = right;
-    _prevConfirm = confirm;
+    _prevConfirm = confirm; _prevSlotToggle = slotToggle;
     _prevSell = sell; _prevStart = start;
     _prevBack = back;
     _prevLb = lb; _prevRb = rb;
   }
 
-  void _moveWeapon(int delta) {
-    final weapons = _currentWeapons;
-    if (weapons.isEmpty) return;
+  // ── Region navigation ──
+
+  /// Bottom-bar buttons in the order _buildBottomBar lays them out.
+  List<String> get _bottomActions => [
+        if (widget.onHost != null &&
+            game.coopRole == CoopRole.none &&
+            game.vessel2 == null)
+          'host',
+        if (widget.onJoin != null &&
+            game.coopRole != CoopRole.client &&
+            game.vessel2 == null)
+          'join',
+        'start',
+      ];
+
+  /// The SKINS grid is its own column only in the desktop two-column layout;
+  /// on mobile it is just more of the one scrolling page (and there is no pad
+  /// polling there anyway).
+  bool get _hasSkinsRegion => platform.isDesktop;
+
+  /// Rows in the LOADOUT list — Front / Left / Right / Gen.
+  static const _loadoutSlots = [
+    WeaponSlot.frontGun,
+    WeaponSlot.leftGun,
+    WeaponSlot.rightGun,
+    WeaponSlot.generator,
+  ];
+
+  void _enterRegion(_PadRegion region, {bool fromBottom = false}) {
+    if (region == _PadRegion.skins || region == _PadRegion.outfitting ||
+        region == _PadRegion.loadout) {
+      if (region != _PadRegion.skins) _lastColumnRegion = region;
+    }
+    // The grid keeps its own cursor, so tell it when it gains or loses focus.
+    final shop = _skinShopKey.currentState;
+    if (region == _PadRegion.skins) {
+      shop?.setPadFocus(fromBottom ? (shop.cardCount - 1) : shop.padFocusIndex);
+    } else {
+      shop?.setPadFocus(null);
+    }
     setState(() {
-      _selectedWeaponIndex = (_selectedWeaponIndex + delta).clamp(0, weapons.length - 1);
+      _region = region;
+      if (region == _PadRegion.loadout) {
+        _loadoutIndex = fromBottom ? _loadoutSlots.length - 1 : _loadoutIndex;
+      } else if (region == _PadRegion.outfitting) {
+        final last = _currentWeapons.length - 1;
+        _selectedWeaponIndex =
+            fromBottom ? (last < 0 ? 0 : last) : _selectedWeaponIndex;
+      } else if (region == _PadRegion.bottomBar) {
+        _bottomIndex = _bottomIndex.clamp(0, _bottomActions.length - 1);
+      }
     });
-    _scrollWeaponIntoView();
+    if (region == _PadRegion.outfitting) _scrollWeaponIntoView();
+  }
+
+  /// Up/down: walk the active region, then fall through to the next one.
+  void _moveVertical(int delta) {
+    switch (_region) {
+      case _PadRegion.loadout:
+        final next = _loadoutIndex + delta;
+        if (next < 0) return; // top of the screen — nothing above LOADOUT
+        if (next >= _loadoutSlots.length) {
+          _enterRegion(_PadRegion.outfitting);
+          setState(() => _selectedWeaponIndex = 0);
+          _scrollWeaponIntoView();
+          return;
+        }
+        setState(() => _loadoutIndex = next);
+      case _PadRegion.outfitting:
+        final weapons = _currentWeapons;
+        final next = _selectedWeaponIndex + delta;
+        if (next < 0) {
+          _enterRegion(_PadRegion.loadout, fromBottom: true);
+          return;
+        }
+        if (weapons.isEmpty || next >= weapons.length) {
+          _enterRegion(_PadRegion.bottomBar);
+          return;
+        }
+        setState(() => _selectedWeaponIndex = next);
+        _scrollWeaponIntoView();
+      case _PadRegion.skins:
+        final shop = _skinShopKey.currentState;
+        if (shop == null || shop.movePadFocus(delta)) return;
+        // Ran off the grid: below it is the bottom bar, above it nothing.
+        if (delta > 0) _enterRegion(_PadRegion.bottomBar);
+      case _PadRegion.bottomBar:
+        if (delta < 0) _enterRegion(_lastColumnRegion, fromBottom: true);
+    }
+  }
+
+  /// Left/right: swap columns, or walk the bottom bar.
+  void _moveHorizontal(int delta) {
+    switch (_region) {
+      case _PadRegion.loadout:
+      case _PadRegion.outfitting:
+        if (delta > 0 && _hasSkinsRegion) _enterRegion(_PadRegion.skins);
+      case _PadRegion.skins:
+        if (delta < 0) _enterRegion(_lastColumnRegion);
+      case _PadRegion.bottomBar:
+        final actions = _bottomActions;
+        if (actions.isEmpty) return;
+        setState(() => _bottomIndex =
+            (_bottomIndex + delta).clamp(0, actions.length - 1));
+    }
+  }
+
+  void _toggleSideSlot() {
+    if (!_showingSide) return;
+    setState(() => _targetSideSlot = _targetSideSlot == WeaponSlot.leftGun
+        ? WeaponSlot.rightGun
+        : WeaponSlot.leftGun);
   }
 
   void _scrollWeaponIntoView() {
@@ -206,9 +348,25 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         _selectedWeaponIndex = 0;
       });
     }
+    // LB/RB is only meaningful for the shop list, so pressing it from another
+    // region is also a request to go back to it.
+    if (_region != _PadRegion.outfitting) _enterRegion(_PadRegion.outfitting);
   }
 
   void _confirmAction() {
+    switch (_region) {
+      case _PadRegion.loadout:
+        _confirmLoadout();
+        return;
+      case _PadRegion.skins:
+        _skinShopKey.currentState?.activatePadFocus();
+        return;
+      case _PadRegion.bottomBar:
+        _confirmBottomBar();
+        return;
+      case _PadRegion.outfitting:
+        break; // falls through to the shop logic below
+    }
     if (_currentWeapons.isEmpty) return;
     final weapon = _currentWeapons[_selectedWeaponIndex];
     if (_showingGen) {
@@ -234,7 +392,50 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     }
   }
 
+  /// B on a LOADOUT row: upgrade the device fitted to that slot.
+  void _confirmLoadout() {
+    final slot = _loadoutSlots[_loadoutIndex];
+    final device = vessel.devices
+        .cast<Device?>()
+        .firstWhere((d) => d?.slot == slot, orElse: () => null);
+    if (device == null || device.level >= Device.maxLevel) return;
+    _upgradeSlot(slot);
+  }
+
+  /// Is the pad cursor on this bottom-bar button?
+  bool _bottomFocused(String action) {
+    if (_region != _PadRegion.bottomBar) return false;
+    final actions = _bottomActions;
+    if (actions.isEmpty) return false;
+    return actions[_bottomIndex.clamp(0, actions.length - 1)] == action;
+  }
+
+  void _confirmBottomBar() {
+    final actions = _bottomActions;
+    if (actions.isEmpty) return;
+    switch (actions[_bottomIndex.clamp(0, actions.length - 1)]) {
+      case 'host':
+        widget.onHost?.call();
+        setState(() {});
+      case 'join':
+        widget.onJoin?.call();
+      default:
+        widget.onStart();
+    }
+  }
+
   void _sellAction() {
+    if (_region == _PadRegion.loadout) {
+      final slot = _loadoutSlots[_loadoutIndex];
+      // Matches the row's own SELL button: the generator is not sellable.
+      if (slot == WeaponSlot.generator) return;
+      final device = vessel.devices
+          .cast<Device?>()
+          .firstWhere((d) => d?.slot == slot, orElse: () => null);
+      if (device != null) _sellSlot(slot);
+      return;
+    }
+    if (_region != _PadRegion.outfitting) return;
     if (_showingGen) return;
     if (_currentWeapons.isEmpty) return;
     if (_showingSide) {
@@ -250,28 +451,33 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     final key = event.logicalKey;
 
+    // Same region model as the pad — the two must not disagree about where
+    // the cursor is. Tab/Shift+Tab keeps the old keyboard-only way of cycling
+    // the FRONT/SIDE/GEN tabs, which ←/→ gave up when it became the column
+    // switch (the pad has LB/RB for that).
     if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
-      _moveWeapon(-1);
+      _moveVertical(-1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.keyS) {
-      _moveWeapon(1);
+      _moveVertical(1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
-      if (_showingSide) {
-        setState(() { _targetSideSlot = WeaponSlot.leftGun; _selectedWeaponIndex = 0; });
-      } else {
-        _switchSection((_sectionIndex - 1).clamp(0, 2));
-      }
+      _moveHorizontal(-1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.keyD) {
-      if (_showingSide) {
-        setState(() { _targetSideSlot = WeaponSlot.rightGun; _selectedWeaponIndex = 0; });
-      } else {
-        _switchSection((_sectionIndex + 1).clamp(0, 2));
-      }
+      _moveHorizontal(1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.tab) {
+      final back = HardwareKeyboard.instance.isShiftPressed;
+      _switchSection((_sectionIndex + (back ? -1 : 1)).clamp(0, 2));
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.keyQ) {
+      _toggleSideSlot();
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
@@ -446,6 +652,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                                 child: SingleChildScrollView(
                                   padding: const EdgeInsets.all(12),
                                   child: SkinShopSection(
+                                    key: _skinShopKey,
                                     crossAxisCount: 5,
                                     onSkinChanged: _onSkinChanged,
                                   ),
@@ -734,7 +941,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   Widget _buildSlotWeaponCard(DevType weapon, int index, WeaponSlot slot, bool columnActive) {
-    final isSelected = columnActive && _selectedWeaponIndex == index;
+    final isSelected = columnActive &&
+        _region == _PadRegion.outfitting &&
+        _selectedWeaponIndex == index;
     final slotDevice = vessel.devices.cast<Device?>().firstWhere(
       (d) => d?.slot == slot,
       orElse: () => null,
@@ -885,7 +1094,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                           : _theme.upgrade.withAlpha(130)),
                 ),
                 child: Text(
-                  atMax ? 'MAX' : 'UPGRADE',
+                  atMax ? 'MAX' : 'UPGRADE${_padHint('B')}',
                   textAlign: TextAlign.center,
                   style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
@@ -907,7 +1116,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 border: Border.all(color: _theme.danger.withAlpha(130)),
               ),
               child: Text(
-                'SELL',
+                'SELL${_padHint('X')}',
                 style: _theme.styled(TextStyle(
                     color: _theme.danger,
                     fontSize: _fs(13),
@@ -1250,24 +1459,34 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSlotRow('Front', WeaponSlot.frontGun),
-        _buildSlotRow('Left', WeaponSlot.leftGun),
-        _buildSlotRow('Right', WeaponSlot.rightGun),
-        _buildSlotRow('Gen', WeaponSlot.generator),
+        _buildSlotRow('Front', WeaponSlot.frontGun, 0),
+        _buildSlotRow('Left', WeaponSlot.leftGun, 1),
+        _buildSlotRow('Right', WeaponSlot.rightGun, 2),
+        _buildSlotRow('Gen', WeaponSlot.generator, 3),
       ],
     );
   }
 
-  Widget _buildSlotRow(String label, WeaponSlot slot) {
+  Widget _buildSlotRow(String label, WeaponSlot slot, int rowIndex) {
     final device = vessel.devices.cast<Device?>().firstWhere(
       (d) => d?.slot == slot,
       orElse: () => null,
     );
     final name = device != null ? '${device.name} Lv.${device.level}' : '---';
     final color = device != null ? _theme.success : _theme.accentDim;
+    final isFocused =
+        _region == _PadRegion.loadout && _loadoutIndex == rowIndex;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: isFocused
+          ? BoxDecoration(
+              color: _theme.accent.withAlpha(25),
+              border: Border.all(color: _theme.accent, width: 2),
+              borderRadius: BorderRadius.circular(_theme.cornerRadius),
+            )
+          : null,
       child: Row(
         children: [
           SizedBox(
@@ -1302,7 +1521,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
-                  device.level >= Device.maxLevel ? 'MAX' : 'UPG',
+                  device.level >= Device.maxLevel
+                      ? 'MAX'
+                      : 'UPG${_padHint('B')}',
                   style: _theme.styled(
                       TextStyle(color: _theme.upgrade, fontSize: _fs(11))),
                 ),
@@ -1317,7 +1538,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
-                  'SELL',
+                  'SELL${_padHint('X')}',
                   style: _theme.styled(
                       TextStyle(color: _theme.danger, fontSize: _fs(11))),
                 ),
@@ -1336,7 +1557,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: Text(
-                  device.level >= Device.maxLevel ? 'MAX' : 'UPG',
+                  device.level >= Device.maxLevel
+                      ? 'MAX'
+                      : 'UPG${_padHint('B')}',
                   style: _theme.styled(
                       TextStyle(color: _theme.upgrade, fontSize: _fs(11))),
                 ),
@@ -1387,7 +1610,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   // ── Weapon card ──
 
   Widget _buildWeaponCard(DevType weapon, int index) {
-    final isSelected = !_showingGen && _selectedWeaponIndex == index;
+    final isSelected = !_showingGen &&
+        _region == _PadRegion.outfitting &&
+        _selectedWeaponIndex == index;
     final owned = vessel.devices.any((d) => d.name == weapon.name);
     final canAfford = vessel.credit >= weapon.price;
     final device = owned
@@ -1527,7 +1752,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                           : _theme.upgrade.withAlpha(130)),
                 ),
                 child: Text(
-                  atMax ? 'MAX' : 'UPGRADE',
+                  atMax ? 'MAX' : 'UPGRADE${_padHint('B')}',
                   textAlign: TextAlign.center,
                   style: _theme.styled(TextStyle(
                     color: atMax ? _theme.accentDim : _theme.upgrade,
@@ -1549,7 +1774,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 border: Border.all(color: _theme.danger.withAlpha(130)),
               ),
               child: Text(
-                'SELL',
+                'SELL${_padHint('X')}',
                 style: _theme.styled(TextStyle(
                     color: _theme.danger,
                     fontSize: _fs(13),
@@ -1589,7 +1814,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   // ── Generator section ──
 
   Widget _buildGeneratorSection() {
-    final isFocused = _showingGen;
+    final isFocused = _showingGen && _region == _PadRegion.outfitting;
     final gen = DevType.generatorBasic;
     final device = vessel.devices.cast<Device?>().firstWhere(
       (d) => d?.slot == WeaponSlot.generator,
@@ -1695,7 +1920,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                         borderRadius: BorderRadius.circular(3),
                       ),
                       child: Text(
-                        device.level >= Device.maxLevel ? 'MAX' : 'UPGRADE',
+                        device.level >= Device.maxLevel
+                            ? 'MAX'
+                            : 'UPGRADE${_padHint('B')}',
                         textAlign: TextAlign.center,
                         style: _theme.styled(TextStyle(
                           color: device.level >= Device.maxLevel
@@ -1719,20 +1946,40 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   String _romanLevel(int level) => 'Lv.$level';
 
+  /// Suffix naming the pad button that triggers this action.
+  ///
+  /// The pad cursor stops at the row or card, not at the individual UPG/SELL
+  /// buttons — B and X/Y act on whatever is selected. Without this the buttons
+  /// read as targets the pad simply cannot reach; with it they read as labels
+  /// for bindings the player already has. Mouse-only platforms get nothing.
+  String _padHint(String button) => platform.isDesktop ? ' [$button]' : '';
+
   Widget _buildStartButton(String label) {
     final btnSprite = AssetLibrary.instance.getIcon('ui_button');
+    final focused = _bottomFocused('start');
     return GestureDetector(
       onTap: widget.onStart,
       child: spriteBox(
         sprite: btnSprite,
         child: Container(
           height: 48,
+          // The sprite-backed button draws its own body, so the cursor there is
+          // an added outline rather than a different fill.
           decoration: btnSprite == null
               ? BoxDecoration(
                   color: _theme.accent,
                   borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                  border: focused
+                      ? Border.all(color: Colors.white, width: 2)
+                      : null,
                 )
-              : null,
+              : (focused
+                  ? BoxDecoration(
+                      border: Border.all(color: _theme.accent, width: 2),
+                      borderRadius:
+                          BorderRadius.circular(_theme.cornerRadius),
+                    )
+                  : null),
           child: Center(
             child: Text(
               label,
@@ -1769,7 +2016,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
-                '[B] Buy/Upgrade   [X/Y] Sell   [LB/RB] Tabs   [OPTIONS] Continue mission',
+                '[\u2191\u2193] Select   [\u2190\u2192] Columns   [LB/RB] Tabs   '
+                '[A] L/R slot    \u2014    [B] Buy/Upgrade selected   '
+                '[X/Y] Sell selected   [OPTIONS] Continue',
                 style: TextStyle(color: _theme.accentDim.withAlpha(120), fontSize: 12),
               ),
             ),
@@ -1787,7 +2036,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: _theme.accent.withAlpha(150)),
+                      color: _bottomFocused('host')
+                          ? _theme.accent.withAlpha(35)
+                          : null,
+                      border: Border.all(
+                        color: _bottomFocused('host')
+                            ? _theme.accent
+                            : _theme.accent.withAlpha(150),
+                        width: _bottomFocused('host') ? 2 : 1,
+                      ),
                       borderRadius: BorderRadius.circular(_theme.cornerRadius),
                     ),
                     child: Text(
@@ -1824,7 +2081,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: _theme.upgrade.withAlpha(150)),
+                      color: _bottomFocused('join')
+                          ? _theme.upgrade.withAlpha(35)
+                          : null,
+                      border: Border.all(
+                        color: _bottomFocused('join')
+                            ? _theme.upgrade
+                            : _theme.upgrade.withAlpha(150),
+                        width: _bottomFocused('join') ? 2 : 1,
+                      ),
                       borderRadius: BorderRadius.circular(_theme.cornerRadius),
                     ),
                     child: Text(
@@ -1923,10 +2188,23 @@ class _GridPainter extends CustomPainter {
 // Renders the current skin's vessel sprite into the ComCenter ship preview box.
 class _ShipPreviewPainter extends CustomPainter {
   final Sprite sprite;
-  _ShipPreviewPainter(this.sprite);
+
+  /// The AssetLibrary generation [sprite] was taken from.
+  ///
+  /// A skin switch disposes the atlas behind every live Sprite while the
+  /// ComCenter stays on screen and keeps repainting, so a Sprite captured
+  /// before the switch is backed by a dead ui.Image by the time the next frame
+  /// lands. Drawing one throws out of drawImageRect and takes the entire
+  /// ComCenter paint with it. Skipping leaves the box empty for the handful of
+  /// frames before the rebuild arrives with the new atlas.
+  final int generation;
+
+  _ShipPreviewPainter(this.sprite)
+      : generation = AssetLibrary.instance.generation;
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (AssetLibrary.instance.generation != generation) return;
     final src = Rect.fromLTWH(
       sprite.srcPosition.x,
       sprite.srcPosition.y,
@@ -1947,5 +2225,6 @@ class _ShipPreviewPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ShipPreviewPainter old) => old.sprite != sprite;
+  bool shouldRepaint(_ShipPreviewPainter old) =>
+      old.sprite != sprite || old.generation != generation;
 }

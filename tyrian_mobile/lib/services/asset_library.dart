@@ -25,6 +25,18 @@ class AssetLibrary {
   final Map<String, Sprite> _sprites = {};
   final Map<String, ui.Image> _images = {};
   final List<Sprite> _vesselFrames = [];
+
+  /// Bumped once per [loadSkin], before the old images are disposed.
+  ///
+  /// Flutter overlays are not part of the component tree that
+  /// [onSkinAssetsChanged] re-points: they capture a Sprite when they build and
+  /// keep repainting from it on the ticker, so a skin switch leaves them
+  /// drawing an atlas that `Flame.images.clearCache()` already disposed —
+  /// "non-genuine Image" out of drawImageRect, which aborts the whole overlay's
+  /// paint. They compare this against the value they captured and skip the draw
+  /// instead. See _ShipPreviewPainter in ui/com_center.dart.
+  int _generation = 0;
+  int get generation => _generation;
   final List<ui.Image> _bgLayers = [];
   List<ui.Image> get bgLayers => _bgLayers;
 
@@ -91,6 +103,12 @@ class AssetLibrary {
     _fragments.clear();
     _loaded = false;
     _manifest = null;
+    // loadAll() rebuilds these, but only once the new atlas has decoded. Until
+    // then they point at the atlas cleared below, and _buildShipPreview reads
+    // them on every rebuild — so empty them here and let it draw its
+    // placeholder for the length of the swap.
+    _vesselFrames.clear();
+    _generation++;
     // Clear Flame's image cache so it reloads from the new paths. This disposes
     // the atlas too, which every live Sprite references — correct for a skin
     // change (already a full stall), and exactly why a zone swap must never

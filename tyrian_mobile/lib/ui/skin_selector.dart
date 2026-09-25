@@ -427,6 +427,11 @@ class SkinCard extends StatelessWidget {
 
   /// Focused (selector) or currently active (shop section).
   final bool highlighted;
+
+  /// The gamepad cursor is on this card. Separate from [highlighted] because in
+  /// the shop section that already means "this is the skin you are wearing" —
+  /// the pad has to be able to point at a card without claiming it is active.
+  final bool padFocused;
   final bool unlocked;
   final bool buying;
   final String? price;
@@ -437,6 +442,7 @@ class SkinCard extends StatelessWidget {
     required this.skin,
     required this.preview,
     required this.highlighted,
+    this.padFocused = false,
     required this.unlocked,
     required this.buying,
     required this.price,
@@ -452,8 +458,10 @@ class SkinCard extends StatelessWidget {
           color: highlighted ? const Color(0xFF1a1a4e) : const Color(0xFF0d0d20),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: highlighted ? Colors.cyanAccent : Colors.white24,
-            width: highlighted ? 2 : 1,
+            color: padFocused
+                ? Colors.white
+                : (highlighted ? Colors.cyanAccent : Colors.white24),
+            width: padFocused ? 3 : (highlighted ? 2 : 1),
           ),
         ),
         child: Column(
@@ -557,15 +565,66 @@ class SkinShopSection extends StatefulWidget {
   });
 
   @override
-  State<SkinShopSection> createState() => _SkinShopSectionState();
+  SkinShopSectionState createState() => SkinShopSectionState();
 }
 
-class _SkinShopSectionState extends State<SkinShopSection> {
+/// Public so the embedding screen can drive the pad cursor through a
+/// GlobalKey. The grid owns its own scroll-into-view and buy/select rules, so
+/// the host only says "move", "activate" or "the pad went somewhere else"
+/// rather than reimplementing any of it — see ComCenter's _PadRegion.skins.
+class SkinShopSectionState extends State<SkinShopSection> {
   Map<String, ui.Image> _previews = {};
   bool _switching = false;
   final Map<String, GlobalKey> _cardKeys = {
     for (final s in kSkins) s.id: GlobalKey(),
   };
+
+  /// Index of the pad cursor, or null while the pad is in another region.
+  int? _padFocus;
+
+  /// Where the cursor sits (or would sit), regardless of whether it is shown.
+  int get padFocusIndex => _padFocus ?? 0;
+
+  int get cardCount => kSkins.length;
+
+  /// Show the cursor at [index], or hide it with null.
+  void setPadFocus(int? index) {
+    if (!mounted) return;
+    setState(() => _padFocus = index?.clamp(0, kSkins.length - 1));
+    if (index != null) _scrollPadFocusIntoView();
+  }
+
+  /// Step the cursor by [delta] cards. Returns false when the move would run
+  /// off the grid, which is the host's cue to hand focus to another region.
+  bool movePadFocus(int delta) {
+    if (!mounted) return false;
+    final next = padFocusIndex + delta;
+    if (next < 0 || next >= kSkins.length) return false;
+    setState(() => _padFocus = next);
+    _scrollPadFocusIntoView();
+    return true;
+  }
+
+  /// Select (or buy) the card under the cursor.
+  void activatePadFocus() {
+    final i = _padFocus;
+    if (i == null) return;
+    _select(kSkins[i].id);
+  }
+
+  void _scrollPadFocusIntoView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final i = _padFocus;
+      if (i == null) return;
+      final ctx = _cardKeys[kSkins[i].id]?.currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(ctx,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          alignment: 0.5);
+    });
+  }
 
   @override
   void initState() {
@@ -642,12 +701,13 @@ class _SkinShopSectionState extends State<SkinShopSection> {
           crossAxisSpacing: 12,
           childAspectRatio: widget.crossAxisCount >= 4 ? 1.0 : 0.85,
           children: [
-            for (final skin in kSkins)
+            for (final (i, skin) in kSkins.indexed)
               SkinCard(
                 key: _cardKeys[skin.id],
                 skin: skin,
                 preview: _previews[skin.id],
                 highlighted: skin.id == active,
+                padFocused: _padFocus == i,
                 unlocked: store.isUnlocked(skin.id),
                 buying: store.pendingSkinId == skin.id,
                 price: store.priceFor(skin.id),
