@@ -84,6 +84,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build libgtk-3-dev pkg-config cmake clang
+          # libmpv is the audio backend (media_kit); nothing in pub bundles it,
+          # so we install it here only to copy it into the depot below.
+          sudo apt-get install -y libmpv2 || sudo apt-get install -y libmpv1
 
       - run: flutter config --enable-linux-desktop
 
@@ -101,6 +104,12 @@ jobs:
       - name: Build Linux (release)
         working-directory: tyrian_mobile
         run: flutter build linux --release
+
+      # Without this the depot has no audio backend at all on a machine that
+      # happens not to ship libmpv, which is most of them.
+      - name: Bundle libmpv into the depot
+        working-directory: tyrian_mobile
+        run: tool/bundle_linux_libmpv.sh build/linux/x64/release/bundle
 
       # Steam launches the raw bundle binary directly (launch option: kirian);
       # the AppImage from release-linux.yml is for direct download only.
