@@ -1,0 +1,4 @@
+# Generated plates: large, reproducible from gen_capsule_art.py, and re-rolled
+# often. The composited set in out/ is what Steamworks receives, so that one is
+# tracked.
+art/
