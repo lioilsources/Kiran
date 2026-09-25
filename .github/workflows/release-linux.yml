@@ -11,7 +11,9 @@ permissions:
 jobs:
   build-linux:
     name: Build & Release Linux
-    runs-on: ubuntu-latest
+    # Pinned for the same reason as steam-deploy.yml: the build host's glibc is
+    # the floor for everyone downloading the tar.gz or AppImage.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -24,6 +26,9 @@ jobs:
             clang cmake ninja-build pkg-config \
             libgtk-3-dev liblzma-dev libstdc++-12-dev \
             desktop-file-utils
+          # Audio backend for media_kit — installed only so the packaging step
+          # below can copy it into the bundle; see tool/bundle_linux_libmpv.sh.
+          sudo apt-get install -y libmpv2 || sudo apt-get install -y libmpv1
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -42,6 +47,11 @@ jobs:
       - name: Build Linux (release)
         working-directory: tyrian_mobile
         run: flutter build linux --release
+
+      # Before packaging, so both the tar.gz and the AppImage carry it.
+      - name: Bundle libmpv into the build
+        working-directory: tyrian_mobile
+        run: tool/bundle_linux_libmpv.sh build/linux/x64/release/bundle
 
       - name: Package as tar.gz
         run: |

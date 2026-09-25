@@ -35,6 +35,29 @@ import 'net/coop_client.dart';
 import 'net/discovery.dart';
 import 'net/protocol.dart';
 
+/// Absolute path to the libmpv we ship next to the Linux executable, or null
+/// to let media_kit search the system loader path.
+///
+/// Nothing on Linux bundles libmpv for us: `media_kit_libs_linux` only wires up
+/// mimalloc, so a plain `flutter build linux` produces a bundle that needs a
+/// distro-provided libmpv. The Steam depot and the AppImage therefore carry
+/// their own copy in `lib/` (see tool/bundle_linux_libmpv.sh), and we hand
+/// media_kit the exact path rather than trusting dlopen to pick it up from the
+/// runner's RPATH — that resolution depends on which ELF object happens to
+/// call dlopen, which is not something to bet a store build on.
+///
+/// Windows needs none of this: media_kit_libs_windows_audio drops its DLLs
+/// beside the .exe, where the loader finds them without help.
+String? _bundledLibmpv() {
+  if (!Platform.isLinux) return null;
+  final beside = File(Platform.resolvedExecutable).parent.path;
+  for (final name in const ['libmpv.so.2', 'libmpv.so.1', 'libmpv.so']) {
+    final f = File('$beside/lib/$name');
+    if (f.existsSync()) return f.path;
+  }
+  return null;
+}
+
 /// True on iOS releases older than 18.4 — the first version whose CoreAudio
 /// opens Ogg containers. Parses "Version 17.5 (Build 21F90)"; on any parse
 /// surprise we claim the decoder exists and stay on the native backend.
@@ -57,11 +80,31 @@ void main() async {
     // removable "Web Media Extensions" store pack happens to be installed.
     // One backend removes the codec lottery. macOS/Android keep their
     // native just_audio implementations.
-    JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
-    MusicService.manualLoop = true; // libmpv has no working loop — see the field
-    SoundService.leanPools = true; // one audio device per player on this backend
-    audioLog('${Platform.operatingSystem} '
-        '${Platform.operatingSystemVersion} — backend: media_kit (libmpv)');
+    //
+    // Guarded for the same reason as the iOS branch below, and with more cause:
+    // media_kit throws from ensureInitialized when it cannot dlopen libmpv, and
+    // on Linux that is a live possibility (no distro guarantee, and the Steam
+    // Deck runtime is not ours to control). Unguarded, that exception lands
+    // before runApp and the game never draws a frame — a store build that dies
+    // on launch is far worse than one that runs silent.
+    final libmpv = _bundledLibmpv();
+    try {
+      JustAudioMediaKit.ensureInitialized(
+          linux: true, windows: true, libmpv: libmpv);
+      MusicService.manualLoop = true; // libmpv has no working loop — see field
+      SoundService.leanPools = true; // one audio device per player on this one
+      audioLog('${Platform.operatingSystem} '
+          '${Platform.operatingSystemVersion} — backend: media_kit (libmpv'
+          '${libmpv == null ? ', system' : ': $libmpv'})');
+    } catch (e) {
+      // Linux has no second backend to fall back to, so this is silence, not
+      // recovery. Windows keeps just_audio_windows in pubspec as a manual
+      // rollback, but media_kit already registered itself as the just_audio
+      // platform by the time this throws, so we do not switch here.
+      audioLog('${Platform.operatingSystem} '
+          '${Platform.operatingSystemVersion} — media_kit init FAILED '
+          '(${e.runtimeType}: $e), continuing without audio');
+    }
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Kirian');
     // Fullscreen by default, but honour a windowed preference saved by the
