@@ -11,7 +11,9 @@ permissions:
 jobs:
   build-linux:
     name: Build & Release Linux
-    runs-on: ubuntu-latest
+    # Pinned for the same reason as steam-deploy.yml: the build host's glibc is
+    # the floor for everyone downloading the tar.gz or AppImage.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout

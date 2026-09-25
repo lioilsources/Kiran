@@ -70,7 +70,12 @@ jobs:
 
   build-linux:
     name: Build Linux depot
-    runs-on: ubuntu-latest
+    # Pinned, not `ubuntu-latest`: the build host's glibc becomes the depot's
+    # minimum. 24.04 means glibc 2.39, which covers SteamOS and every current
+    # desktop distro. Letting `latest` drift to the next LTS would quietly
+    # raise that floor under players who are already running the game, so this
+    # moves only when we decide it does.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
 
