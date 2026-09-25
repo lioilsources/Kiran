@@ -1,16 +1,35 @@
 import 'package:flame/components.dart' show Sprite;
 import 'package:flutter/material.dart';
 
+import '../services/asset_library.dart';
+
+/// True once the atlas behind [generation] has been thrown away.
+///
+/// Every Sprite here points into the skin atlas, and a skin switch disposes it
+/// (AssetLibrary.loadSkin → Flame.images.clearCache) while these overlays stay
+/// mounted and keep repainting from the Sprite they captured at build time.
+/// Handing a disposed ui.Image to drawImageRect throws "non-genuine Image",
+/// and because these painters back the card and panel chrome of every screen,
+/// one stale Sprite aborts the paint of the whole overlay. Skipping the draw
+/// leaves the chrome bare for the frames until the rebuild lands.
+bool _atlasGone(int generation) =>
+    AssetLibrary.instance.generation != generation;
+
 /// Paints a [Sprite] (Flame) onto a Flutter Canvas covering the entire widget.
 /// [darkOverlay] (0.0–1.0) adds a semi-transparent black layer for readability.
 class SpritePainter extends CustomPainter {
   final Sprite sprite;
   final double darkOverlay;
 
-  const SpritePainter(this.sprite, {this.darkOverlay = 0.0});
+  /// The AssetLibrary generation [sprite] was captured from — see [_atlasGone].
+  final int generation;
+
+  SpritePainter(this.sprite, {this.darkOverlay = 0.0})
+      : generation = AssetLibrary.instance.generation;
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (_atlasGone(generation)) return;
     final src = Rect.fromLTWH(
       sprite.srcPosition.x,
       sprite.srcPosition.y,
@@ -31,7 +50,9 @@ class SpritePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(SpritePainter old) =>
-      old.sprite != sprite || old.darkOverlay != darkOverlay;
+      old.sprite != sprite ||
+      old.darkOverlay != darkOverlay ||
+      old.generation != generation;
 }
 
 /// Wraps [child] in a Stack with [sprite] painted full-size behind it.
@@ -64,14 +85,18 @@ class _SpriteFramePainter extends CustomPainter {
   final double dstInset;
   final double darkOverlay;
 
-  const _SpriteFramePainter(this.sprite, {
+  /// The AssetLibrary generation [sprite] was captured from — see [_atlasGone].
+  final int generation;
+
+  _SpriteFramePainter(this.sprite, {
     required this.srcInset,
     required this.dstInset,
     this.darkOverlay = 0.0,
-  });
+  }) : generation = AssetLibrary.instance.generation;
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (_atlasGone(generation)) return;
     final sx = sprite.srcPosition.x;
     final sy = sprite.srcPosition.y;
     final sw = sprite.srcSize.x;
@@ -107,7 +132,8 @@ class _SpriteFramePainter extends CustomPainter {
   @override
   bool shouldRepaint(_SpriteFramePainter old) =>
       old.sprite != sprite || old.srcInset != srcInset ||
-      old.dstInset != dstInset || old.darkOverlay != darkOverlay;
+      old.dstInset != dstInset || old.darkOverlay != darkOverlay ||
+      old.generation != generation;
 }
 
 /// 9-slice version of [spriteBox] for card/frame backgrounds.
