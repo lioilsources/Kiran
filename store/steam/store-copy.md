@@ -14,21 +14,14 @@ Steam for the same reason it held on the App Store.
 
 ---
 
-## ⚠ Before pasting — three things need your decision
+## ⚠ Before pasting — one thing left
 
-1. **The original author's credit is a placeholder.** `[AUTHOR NAME]` appears in
-   the Description and in *Developers*. Kirian is a port of your friend's VB6
-   game and that credit has to be right and has to be his call — tell me the
-   name and wording he wants and I will set it everywhere. Do not publish with
-   the placeholder still in.
+1. **Co-op and author credit are confirmed.** Original author is Tomáš
+   Burian, credited with his permission — set below. Local co-op has been
+   run PC-to-PC and works, so the `LOCAL CO-OP` block and `Local Co-Op` tag
+   stay as written.
 
-2. **Co-op is claimed but unverified on Windows and Linux.** Local co-op is
-   tested between iPhone, iPad and Mac. Nobody has run it PC-to-PC. If it does
-   not work there, cut the `LOCAL CO-OP` block and the `Remote Play` /
-   multiplayer tags — a headline feature that fails is a refund and a bad
-   review, not a small inaccuracy.
-
-3. **No leaderboards or achievements are claimed.** The mobile listing sells
+2. **No leaderboards or achievements are claimed.** The mobile listing sells
    Game Center boards; the Steam equivalents are not implemented (they sit
    unchecked under *Doporučené položky*). Nothing below promises them.
 
@@ -71,7 +64,7 @@ Two players over the local network with automatic discovery. No accounts, no ser
 GPU shaders drive bloom, scanlines, vignette and chromatic aberration. Enemies shatter into physics-driven fragments cut from their own sprites. Play with a controller or the keyboard, windowed or fullscreen, on Windows, Linux or Steam Deck.
 
 [hr][/hr]
-Kirian is a remake of a game written by [AUTHOR NAME], rebuilt from the original source with his blessing.
+Kirian is a remake of a game written by Tomáš Burian, rebuilt from the original source with his blessing.
 ```
 
 ## Tags (Popisné značky v obchodě)
@@ -104,8 +97,6 @@ Stylized
 Indie
 ```
 
-Drop `Local Co-Op` if point 2 above goes unverified.
-
 ## Controller support (Popis podpory ovladačů)
 
 ```
@@ -133,7 +124,7 @@ before pasting — Steam checks that the privacy policy loads.
 |---|---|
 | Type | Game |
 | Genres | Action, Indie |
-| Developers | lioilsources / [AUTHOR NAME] — see point 1 |
+| Developers | lioilsources / Tomáš Burian |
 | Publisher | lioilsources |
 | Supported OS | Windows, Linux / SteamOS |
 | Price | one-time, not set yet — blocks two build checklist items |
