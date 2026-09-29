@@ -53,19 +53,29 @@ MODEL = 'wan2.2_ti2v_5B_fp16.safetensors'
 CLIP = 'umt5_xxl_fp8_e4m3fn_scaled.safetensors'
 VAE = 'wan2.2_vae.safetensors'
 
+# Describe THIS plate, not "a refinery". The first attempt asked for a generic
+# night refinery and Wan duly invented its own — a photographic petrochemical
+# plant strung with hundreds of small lights, no central fire column, nothing
+# like the painted key art. The sting exists to match the store page, so the
+# prompt has to pin the composition down and ask only for motion inside it.
 POSITIVE = (
-    'slow cinematic push in on a burning night refinery, the column of fire '
-    'billowing and curling upward, thick smoke drifting across the frame, '
-    'embers rising and floating, heat haze shimmering over the silhouetted '
-    'towers, subtle flicker of orange light on the structures'
+    'a single enormous column of orange fire erupting behind dark silhouetted '
+    'storage tanks and steel towers, the left side of the frame almost black, '
+    'painted game key art, the composition holds exactly as it is and the '
+    'camera barely moves; only the flames curl and the smoke billows upward, '
+    'embers drifting, heat haze over the silhouettes'
 )
-# The camera must stay calm and the scene must stay empty: anything that moves
-# like a player would makes the sting read as gameplay, which is the one thing
-# this shot must not do.
+# Two jobs. Keep anything that moves like a player out of frame — a ship or a
+# fast camera would make the sting read as gameplay, the one thing it must not
+# do. And keep the model from redecorating: the second half of this list is
+# everything it produced last time instead of the plate.
 NEGATIVE = (
     'spacecraft, ship, aircraft, flying vehicle, people, figures, text, '
     'letters, logo, watermark, ui, hud, fast camera movement, shaking, '
-    'zooming out, cuts, flashing, cartoon, low quality, blurry'
+    'zooming out, panning away, cuts, flashing, '
+    'photograph, photorealistic, different scene, changing composition, '
+    'new buildings, city skyline, many small lights, string lights, '
+    'floodlights, flare stacks, daylight, low quality, blurry'
 )
 
 
@@ -107,7 +117,7 @@ def upload(e, path):
     return json.loads(urllib.request.urlopen(req, timeout=120).read())['name']
 
 
-def graph(image_name, length, seed, prefix):
+def graph(image_name, length, seed, prefix, shift, cfg):
     return {
         '1': {'class_type': 'UNETLoader',
               'inputs': {'unet_name': MODEL, 'weight_dtype': 'default'}},
@@ -115,10 +125,12 @@ def graph(image_name, length, seed, prefix):
               'inputs': {'clip_name': CLIP, 'type': 'wan', 'device': 'default'}},
         '3': {'class_type': 'VAELoader', 'inputs': {'vae_name': VAE}},
         '4': {'class_type': 'LoadImage', 'inputs': {'image': image_name}},
-        # shift 8.0 rather than the node default 3.0: Wan 2.2 video is trained
-        # for the higher shift and drifts badly at the default.
+        # Wan 2.2 wants a higher shift than the node default of 3.0, but the
+        # higher it goes the freer the model is to reinterpret the start frame
+        # — which is exactly how attempt one lost the plate. 5.0 is the
+        # compromise; raise it for more motion, lower it to stay put.
         '5': {'class_type': 'ModelSamplingSD3',
-              'inputs': {'model': ['1', 0], 'shift': 8.0}},
+              'inputs': {'model': ['1', 0], 'shift': shift}},
         '6': {'class_type': 'CLIPTextEncode',
               'inputs': {'clip': ['2', 0], 'text': POSITIVE}},
         '7': {'class_type': 'CLIPTextEncode',
@@ -131,7 +143,7 @@ def graph(image_name, length, seed, prefix):
         '9': {'class_type': 'KSampler',
               'inputs': {'model': ['5', 0], 'positive': ['8', 0],
                          'negative': ['8', 1], 'latent_image': ['8', 2],
-                         'seed': seed, 'steps': 30, 'cfg': 5.0,
+                         'seed': seed, 'steps': 30, 'cfg': cfg,
                          'sampler_name': 'uni_pc', 'scheduler': 'simple',
                          'denoise': 1.0}},
         '10': {'class_type': 'VAEDecode',
@@ -211,6 +223,10 @@ def main():
                     help='frames; 121 @ 24fps = ~5 s (must be 4n+1)')
     ap.add_argument('-n', type=int, default=1, help='variants')
     ap.add_argument('-seed', type=int, default=None)
+    ap.add_argument('-shift', type=float, default=5.0,
+                    help='ModelSamplingSD3 shift; lower stays closer to the plate')
+    ap.add_argument('-cfg', type=float, default=4.0,
+                    help='lower follows the start frame more, prompts less')
     args = ap.parse_args()
 
     e = env()
@@ -233,9 +249,10 @@ def main():
 
     for i in range(1, args.n + 1):
         seed = (args.seed + i - 1) if args.seed else random.randint(1, 2**31)
-        pid = submit(e, graph(name, args.length, seed, f'kirian_sting_v{i}'))
+        pid = submit(e, graph(name, args.length, seed, f'kirian_sting_v{i}',
+                              args.shift, args.cfg))
         print(f'v{i}  {args.length}f @ {FPS}fps (~{args.length / FPS:.1f}s)  '
-              f'seed={seed}  {pid}', flush=True)
+              f'seed={seed} shift={args.shift} cfg={args.cfg}  {pid}', flush=True)
         for node in wait(e, pid).values():
             for key in ('images', 'videos', 'gifs'):
                 for item in node.get(key, []):

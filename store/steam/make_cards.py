@@ -32,8 +32,12 @@ CARDS = [
     ('campaign', '20 NODES. 4 BOSSES', 'EACH BUILT ON THE LAST'),
     ('skins', '24 GAMES IN ONE', 'ALL INCLUDED'),
     ('coop', 'LOCAL TWO-PLAYER CO-OP', None),
-    ('coming_soon', 'COMING SOON', 'WINDOWS  ·  LINUX  ·  STEAM DECK'),
 ]
+# The end card is not one of these: it is the only place the game's name
+# appears in the whole film, so it gets the wordmark lockup rather than a
+# line of copy. See end_card().
+END = ('07_coming_soon', 'KIRIAN', 'COMING SOON',
+       'WINDOWS  ·  LINUX  ·  STEAM DECK')
 
 
 def card(main, accent):
@@ -74,12 +78,49 @@ def card(main, accent):
     return im
 
 
+def end_card(word, line2, line3):
+    """Wordmark lockup for the last five seconds — the only time the game is
+    named on screen, so it is set at the size the capsules use rather than as
+    another line of body copy."""
+    im = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    f_word = ImageFont.truetype(FONT, 210, index=FACE_BLACK)
+    f_two = ImageFont.truetype(FONT, 66, index=FACE_BLACK)
+    f_three = ImageFont.truetype(FONT, 40, index=FACE_BOLD)
+
+    measure = ImageDraw.Draw(im)
+    widest = max(measure.textbbox((0, 0), t, font=f)[2]
+                 for t, f in ((word, f_word), (line2, f_two), (line3, f_three)))
+    top = (H - (210 + 40 + 66 + 34 + 40)) // 2
+
+    band = Image.new('L', (W, H), 0)
+    ImageDraw.Draw(band).rounded_rectangle(
+        (W / 2 - widest / 2 - 120, top - 90,
+         W / 2 + widest / 2 + 120, top + 400),
+        radius=48, fill=165)
+    band = band.filter(ImageFilter.GaussianBlur(70))
+    z = Image.new('L', (W, H), 0)
+    im.alpha_composite(Image.merge('RGBA', (z, z, z, band)))
+
+    d = ImageDraw.Draw(im)
+    for text, font, y, fill in (
+            (word, f_word, top, (255, 255, 255, 255)),
+            (line2, f_two, top + 250, CYAN + (255,)),
+            (line3, f_three, top + 350, (206, 212, 220, 255))):
+        d.text((W / 2 + 4, y + 4), text, font=font, anchor='ma', fill=(0, 0, 0, 200))
+        d.text((W / 2, y), text, font=font, anchor='ma', fill=fill)
+    return im
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     for i, (slug, m, a) in enumerate(CARDS, 1):
         dest = OUT / f'{i:02d}_{slug}.png'
         card(m, a).save(dest)
         print(dest.name)
+    slug, w, l2, l3 = END
+    dest = OUT / f'{slug}.png'
+    end_card(w, l2, l3).save(dest)
+    print(dest.name)
 
 
 if __name__ == '__main__':
