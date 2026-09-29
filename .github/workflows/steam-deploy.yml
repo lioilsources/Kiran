@@ -1,4 +1,4 @@
-# Builds Windows + Linux and pushes both depots to Steam's `beta` branch.
+# Builds Windows + Linux and uploads both depots to Steam as a new build.
 #
 # Runs only when the Steam secrets exist (the `deploy` job is skipped
 # otherwise), so this workflow is safe to merge before the Steamworks account
@@ -10,9 +10,20 @@
 #                           `steamcmd +login <user>` (Steam Guard handshake)
 #
 # Depot layout (Steamworks defaults): <APPID+1> = windows, <APPID+2> = linux.
-# Every tag lands on the password-protected `beta` branch; promotion to
-# `default` is done by hand in Steamworks — Valve requires an interactive
-# confirmation to set the live branch, do not try to automate it.
+#
+# A tag uploads a build and stops there — it sets no branch live. That is
+# deliberate twice over. Promotion is a decision a human should make in
+# Steamworks, and setting a branch live from CI is also impossible to bootstrap:
+# a branch other than `default` cannot be created until `default` already has a
+# build on it, so a workflow that names one fails with "Failed to commit build"
+# while the depots upload perfectly — which is exactly how v3.6.1 failed twice.
+# game-ci/steam-deploy only passes `--branch` when releaseBranch is non-empty
+# (see its src/build-cli-args.ts), so leaving it empty is the supported way to
+# upload without promoting.
+#
+# To promote: Steamworks → SteamPipe → Buildy, pick the build, "Aktivovat build
+# na větvi". Or run this workflow by hand with releaseBranch set, once the
+# branch exists.
 name: Steam Deploy
 
 on:
@@ -22,9 +33,9 @@ on:
   workflow_dispatch:
     inputs:
       releaseBranch:
-        description: 'Steam branch to set live on'
+        description: 'Steam branch to set live on (empty = upload only, no promotion)'
         required: false
-        default: 'beta'
+        default: ''
 
 permissions:
   contents: read
@@ -125,7 +136,7 @@ jobs:
           if-no-files-found: error
 
   deploy:
-    name: Push depots to Steam (beta)
+    name: Upload depots to Steam
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     # Skip cleanly until the Steamworks secrets are configured.
@@ -155,4 +166,5 @@ jobs:
           rootPath: steam-build
           depot1Path: windows
           depot2Path: linux
-          releaseBranch: ${{ inputs.releaseBranch || 'beta' }}
+          # Empty on a tag push: upload only, promote by hand. See the header.
+          releaseBranch: ${{ inputs.releaseBranch }}
