@@ -53,6 +53,39 @@ def skins():
                   if p.is_dir() and p.name != 'default')
 
 
+CACHE = OUT / '_prompts.json'
+
+
+def harvest_all(targets):
+    """Prompts for every skin, cached on disk.
+
+    The harvest shells out to `go run` once per skin, and twenty-three Go
+    builds back to back is what got the first full batch killed for memory —
+    the GPU side was never the problem. Caching turns a rerun into zero
+    subprocesses, which also makes resuming after an interruption cheap.
+    """
+    cache = {}
+    if CACHE.exists():
+        try:
+            cache = json.loads(CACHE.read_text())
+        except json.JSONDecodeError:
+            cache = {}
+
+    out = {}
+    for skin in targets:
+        if cache.get(skin):
+            out[skin] = cache[skin]
+            print(f'  {skin}: {len(out[skin])} prompts (cached)', flush=True)
+            continue
+        out[skin] = prompts_for(skin)
+        print(f'  {skin}: {len(out[skin])} prompts', flush=True)
+        if out[skin]:
+            cache[skin] = out[skin]
+            CACHE.parent.mkdir(parents=True, exist_ok=True)
+            CACHE.write_text(json.dumps(cache, indent=1, ensure_ascii=False))
+    return out
+
+
 def prompts_for(skin):
     """Harvest the pipeline's own boss_part prompts for one skin."""
     p = subprocess.run(
@@ -127,10 +160,7 @@ def main():
     print(f'{len(targets)} skins x 4 parts x {args.n} = '
           f'{len(targets) * 4 * args.n} images', flush=True)
 
-    harvested = {}
-    for s in targets:
-        harvested[s] = prompts_for(s)
-        print(f'  {s}: {len(harvested[s])} prompts', flush=True)
+    harvested = harvest_all(targets)
 
     if args.dry_run:
         first = next((s for s in targets if harvested.get(s)), None)
