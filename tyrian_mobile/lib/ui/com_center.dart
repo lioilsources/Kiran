@@ -1183,6 +1183,22 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   )),
                 ),
               ),
+              // Which challenge this mission flies at. Campaign: fixed for the
+              // run. Endless: whatever the main menu says right now.
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Text(
+                  game.challenge.label,
+                  style: TextStyle(
+                    color: game.challenge.isHidden
+                        ? Colors.purpleAccent
+                        : _theme.accentDim,
+                    fontSize: 10,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               if (game.isCoop && game.vessel2 != null) ...[
                 const Spacer(),
                 Text(

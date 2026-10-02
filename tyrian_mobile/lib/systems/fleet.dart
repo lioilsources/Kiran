@@ -117,7 +117,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     // Fleet weapon firing (centralized — prevents multi-fire bug from parallel hostile updates)
     if (weapCharge > 0 && hostiles.isNotEmpty) {
       weapCD += dt * config.originalFps;
-      if (weapCD >= weapCharge) {
+      if (weapCD >= weapCharge * game.challenge.cadence) {
         final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
         if (alive.isNotEmpty) {
           final shooter = alive[Random().nextInt(alive.length)];
@@ -213,7 +213,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   }
 
   void _spawnHostile() {
-    final hpMax = hpOverride ?? Hostile.getHpMax(hostType);
+    final baseHp = hpOverride ?? Hostile.getHpMax(hostType);
+    // Challenge scales HP here, at the one place every hostile is born. Boss
+    // parts size themselves off the core's hpMax, so they inherit it.
+    final hpMax = (baseHp * game.challenge.hp).round();
     final clonedPath = path.clone();
     clonedPath.onExit = defaultPathAction;
     if (extraPath != null) {
@@ -244,6 +247,12 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
             position: spawnPos,
           );
     h.parentFleet = this;
+    // Kill credit follows hpMax by default, which would make Hard the richest
+    // economy. Pin it to the unscaled value; bosses already carry a bounty
+    // through creditOverride and are left alone.
+    if (hpMax != baseHp && bossSpec == null && creditOverride == null) {
+      h.creditValue = baseHp;
+    }
     hostiles.add(h);
     game.world.add(h);
 
@@ -299,7 +308,9 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
     // Add score and credit to the vessel that got the kill
     final target = attacker ?? gameInstance.vessel;
-    target.addScore(h.hpMax);
+    // hpMax is already challenge-scaled; the score multiplier compounds on
+    // top by design — see Challenge.
+    target.addScore((h.hpMax * gameInstance.challenge.score).round());
     target.credit += h.creditValue ?? creditOverride ?? h.hpMax;
   }
 
