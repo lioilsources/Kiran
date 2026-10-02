@@ -156,9 +156,11 @@ packages:
   cute_kid_fonts:
     dependency: "direct main"
     description:
-      path: "../../CuteKidFonts"
-      relative: true
-    source: path
+      path: "."
+      ref: "v0.1.0"
+      resolved-ref: fc1952c9da1555d8b8fbce149f1acf9aa345ce34
+      url: "https://github.com/lioilsources/CuteKidFonts.git"
+    source: git
     version: "0.1.0"
   dbus:
     dependency: transitive
