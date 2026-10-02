@@ -12,6 +12,7 @@ import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import '../services/skin_registry.dart';
 import '../services/skin_store_service.dart';
+import '../game/challenge.dart';
 import '../game/platform_config.dart' as platform;
 import '../input/gamepad_input.dart';
 
@@ -130,16 +131,36 @@ class _SkinSelectorState extends State<SkinSelector> {
   bool get _hasQuit => widget.showQuit && platform.isDesktop;
   bool get _hasCampaign => widget.onCampaign != null;
 
-  /// Pseudo focus indices for the entries under the grid: CAMPAIGN first,
-  /// then QUIT, each one past the last.
-  int get _campaignIndex => kSkins.length;
-  int get _quitIndex => kSkins.length + (_hasCampaign ? 1 : 0);
+  /// Pseudo focus indices for the entries under the grid: DIFFICULTY first,
+  /// then CAMPAIGN, then QUIT, each one past the last.
+  int get _challengeIndex => kSkins.length;
+  int get _campaignIndex => kSkins.length + 1;
+  int get _quitIndex => kSkins.length + 1 + (_hasCampaign ? 1 : 0);
 
   /// The entries below the grid, top to bottom.
   List<int> get _footer => [
+        _challengeIndex,
         if (_hasCampaign) _campaignIndex,
         if (_hasQuit) _quitIndex,
       ];
+
+  /// The difficulty row is a stepper, not a button: confirm and tap step
+  /// forward, left/right step either way. Persisted immediately so PLAY and
+  /// CAMPAIGN both see it without any plumbing.
+  void _stepChallenge(int dir) {
+    final c = dir < 0 ? Challenge.selected.previous : Challenge.selected.next;
+    Challenge.select(c);
+    setState(() {});
+  }
+
+  /// The hidden tier joins the stepper once it has been found — same gesture
+  /// as the ComCenter cheat panel, on purpose.
+  void _unlockLord() {
+    if (Challenge.lordUnlocked) return;
+    Challenge.unlockLord();
+    Challenge.select(Challenge.lord);
+    setState(() {});
+  }
 
   Future<void> _quit() async {
     await windowManager.destroy();
@@ -149,7 +170,9 @@ class _SkinSelectorState extends State<SkinSelector> {
   /// Confirm on whatever has focus: a skin card plays, the footer entries
   /// do their own thing.
   void _activateFocus() {
-    if (_hasQuit && _focusIndex == _quitIndex) {
+    if (_focusIndex == _challengeIndex) {
+      _stepChallenge(1);
+    } else if (_hasQuit && _focusIndex == _quitIndex) {
       _quit();
     } else if (_hasCampaign && _focusIndex == _campaignIndex) {
       widget.onCampaign!();
@@ -166,10 +189,12 @@ class _SkinSelectorState extends State<SkinSelector> {
 
     // The footer is a vertical list below the grid: down from the last row
     // lands on its first entry, up from that entry returns to the last row.
-    // Left/right on it stay put.
+    // Left/right stay put, except on the difficulty row, where they step it.
     final fi = footer.indexOf(_focusIndex);
     if (fi >= 0) {
-      if (dy < 0) {
+      if (dx != 0 && _focusIndex == _challengeIndex) {
+        _stepChallenge(dx);
+      } else if (dy < 0) {
         setState(() => _focusIndex = fi == 0 ? count - 1 : footer[fi - 1]);
         if (fi == 0) _scrollToFocus();
       } else if (dy > 0 && fi + 1 < footer.length) {
@@ -315,6 +340,54 @@ class _SkinSelectorState extends State<SkinSelector> {
                           children: List.generate(kSkins.length, (i) => _buildSkinCard(i)),
                         ),
                       ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: InkWell(
+                  onTap: () => _stepChallenge(1),
+                  onLongPress: _unlockLord,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _focusIndex == _challengeIndex
+                            ? Colors.cyanAccent
+                            : Colors.cyanAccent.withAlpha(110),
+                        width: _focusIndex == _challengeIndex ? 2 : 1,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'DIFFICULTY',
+                          style: TextStyle(
+                            color: Colors.cyanAccent.withAlpha(140),
+                            fontSize: 11,
+                            letterSpacing: 3,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Text(
+                          '‹ ${Challenge.selected.label} ›',
+                          style: TextStyle(
+                            color: Challenge.selected.isHidden
+                                ? Colors.purpleAccent
+                                : (_focusIndex == _challengeIndex
+                                    ? Colors.cyanAccent
+                                    : Colors.cyanAccent.withAlpha(200)),
+                            fontSize: 14,
+                            letterSpacing: 4,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               if (_hasCampaign)
                 Padding(

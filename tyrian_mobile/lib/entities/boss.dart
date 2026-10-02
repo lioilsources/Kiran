@@ -157,14 +157,12 @@ class Boss extends Hostile {
   double get _weapScale => (spec.weapDamage / 75.0).clamp(0.3, 0.99);
 
   int get _cadence {
-    switch (phase) {
-      case 1:
-        return spec.rechargeFrames;
-      case 2:
-        return (spec.rechargeFrames * 0.75).round();
-      default:
-        return (spec.rechargeFrames * 0.55).round();
-    }
+    final base = switch (phase) {
+      1 => spec.rechargeFrames,
+      2 => (spec.rechargeFrames * 0.75).round(),
+      _ => (spec.rechargeFrames * 0.55).round(),
+    };
+    return (base * game.challenge.cadence).round();
   }
 
   @override
@@ -362,15 +360,12 @@ class BossPart extends Hostile {
   bool get reapWhenStranded => false;
 
   int get _cadence {
-    switch (kind) {
-      case PartKind.turret:
-        return 110;
-      case PartKind.cannon:
-        return 150;
-      case PartKind.shieldPod:
-      case PartKind.thruster:
-        return 0; // unarmed
-    }
+    final base = switch (kind) {
+      PartKind.turret => 110,
+      PartKind.cannon => 150,
+      PartKind.shieldPod || PartKind.thruster => 0, // unarmed
+    };
+    return (base * game.challenge.cadence).round();
   }
 
   @override

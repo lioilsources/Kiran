@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../entities/boss.dart';
 import '../entities/vessel.dart';
+import '../game/challenge.dart';
 import '../game/tyrian_game.dart';
 import '../rendering/bg_zones.dart';
 import 'dev_type.dart';
@@ -383,11 +384,18 @@ class CampaignState {
   final Map<int, Set<String>> stars;
   Map<String, dynamic> vessel;
 
+  /// Fixed when the campaign is created and never changed by the menu: a
+  /// run's stars and clears were earned at one challenge, and switching it
+  /// halfway would make them say nothing. Saves older than this field load
+  /// as normal, which is the only value they could have been played at.
+  final Challenge challenge;
+
   CampaignState({
     this.currentNode = 0,
     Set<int>? completed,
     Map<int, Set<String>>? stars,
     Map<String, dynamic>? vessel,
+    this.challenge = Challenge.normal,
   })  : completed = completed ?? {},
         stars = stars ?? {},
         vessel = vessel ?? {};
@@ -414,9 +422,11 @@ class CampaignState {
           for (final e in stars.entries) '${e.key}': e.value.toList()..sort(),
         },
         'vessel': vessel,
+        'challenge': challenge.id,
       };
 
   factory CampaignState.fromJson(Map<String, dynamic> m) => CampaignState(
+        challenge: Challenge.fromId(m['challenge'] as String?),
         currentNode: (m['currentNode'] as num?)?.toInt() ?? 0,
         completed: {
           for (final v in (m['completed'] as List?) ?? const [])
