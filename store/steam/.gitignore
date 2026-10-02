@@ -2,3 +2,5 @@
 # often. The composited set in out/ is what Steamworks receives, so that one is
 # tracked.
 art/
+video/
+cards/
