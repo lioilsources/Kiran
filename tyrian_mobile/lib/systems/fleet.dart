@@ -9,6 +9,7 @@ import '../entities/boss.dart';
 import '../entities/hostile.dart';
 import '../entities/collectable.dart';
 import '../entities/vessel.dart';
+import '../systems/fire_pattern.dart';
 import '../systems/path_system.dart';
 import '../systems/device.dart';
 import '../rendering/pixel_explosion_overlay.dart';
@@ -47,6 +48,11 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   // Enemy weapon (VB6 Fleet.weap / weapCharge / weapCD)
   Device? weapon;
   int weapCharge = 0;   // VB6 frames between shots (recharge), at 40fps
+  /// Shape of the fleet's fire. Set by addWeapon, defaulting by hostile tier.
+  FirePattern pattern = FirePattern.straight;
+  // Burst bookkeeping: shots still owed and frames until the next one.
+  int _burstLeft = 0;
+  double _burstCD = 0;
   /// Cooldown accumulator in VB6 frame units. Advanced by `dt * originalFps`
   /// rather than incremented per rendered frame — the latter made enemies fire
   /// 1.5x more often at 60Hz and 3x at 120Hz, while the player's weapons are
@@ -116,17 +122,40 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
     // Fleet weapon firing (centralized — prevents multi-fire bug from parallel hostile updates)
     if (weapCharge > 0 && hostiles.isNotEmpty) {
-      weapCD += dt * config.originalFps;
-      if (weapCD >= weapCharge * game.challenge.cadence) {
+      final frames = dt * config.originalFps;
+      weapCD += frames;
+      final cadence = weapCharge *
+          game.challenge.cadence *
+          (pattern == FirePattern.volley ? FirePattern.volleyCadence : 1.0);
+      if (weapCD >= cadence) {
         final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
         if (alive.isNotEmpty) {
-          final shooter = alive[Random().nextInt(alive.length)];
-          final xm = shooter.position.x + shooter.size.x / 2;
-          if (xm > 0 && xm < config.gameWidth) {
-            game.spawnEnemyProjectile(xm, shooter.y2 + 10, weapDamage, weapScale);
+          if (pattern == FirePattern.volley) {
+            for (final h in alive) {
+              _shootFrom(h, FirePattern.straight);
+            }
+          } else {
+            final shooter = alive[Random().nextInt(alive.length)];
+            _shootFrom(shooter, pattern);
+            if (pattern == FirePattern.burst) {
+              _burstLeft = 2;
+              _burstCD = FirePattern.burstGap.toDouble();
+            }
           }
         }
         weapCD = 0;
+      }
+      // The rest of a burst, a few frames apart, from whoever is still alive.
+      if (_burstLeft > 0) {
+        _burstCD -= frames;
+        if (_burstCD <= 0) {
+          final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
+          if (alive.isNotEmpty) {
+            _shootFrom(alive[Random().nextInt(alive.length)], FirePattern.straight);
+          }
+          _burstLeft--;
+          _burstCD = FirePattern.burstGap.toDouble();
+        }
       }
     }
 
@@ -353,11 +382,57 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     }
   }
 
-  /// VB6 Sector.AddWeapon — set enemy weapon for this fleet
-  void addWeapon(int dmg, int recharge) {
+  /// VB6 Sector.AddWeapon — set enemy weapon for this fleet. The pattern
+  /// defaults by hostile tier so existing calls gain variety unchanged; pass
+  /// one to author a specific shape (a volley wall, a burst from a swarm).
+  void addWeapon(int dmg, int recharge, {FirePattern? pattern}) {
     weapDamage = dmg;
     weapCharge = recharge;
     weapScale = (dmg / 75.0).clamp(0.3, 0.99);
+    this.pattern = pattern ?? FirePattern.defaultFor(hostType);
+  }
+
+  /// One shot (or fan) from [h] in the given shape. Straight and aimed are a
+  /// single projectile; spread is three. Burst and volley are sequencing
+  /// decisions made by the caller, which is why they land here as straight.
+  void _shootFrom(Hostile h, FirePattern shape) {
+    final xm = h.position.x + h.size.x / 2;
+    if (xm <= 0 || xm >= config.gameWidth) return;
+    final y = h.y2 + 10;
+    switch (shape) {
+      case FirePattern.aimed:
+        final target = _nearestVessel(xm, y);
+        if (target == null) {
+          game.spawnEnemyProjectile(xm, y, weapDamage, weapScale);
+          return;
+        }
+        final (vx, vy) = FirePattern.aim(
+            target.position.x - xm, target.position.y - y, 15.0);
+        game.spawnEnemyProjectile(xm, y, weapDamage, weapScale, vx: vx, speed: vy);
+      case FirePattern.spread:
+        for (final vx in const [-FirePattern.spreadVx, 0.0, FirePattern.spreadVx]) {
+          game.spawnEnemyProjectile(xm, y, weapDamage, weapScale, vx: vx, speed: 14.0);
+        }
+      case FirePattern.straight:
+      case FirePattern.burst:
+      case FirePattern.volley:
+        game.spawnEnemyProjectile(xm, y, weapDamage, weapScale);
+    }
+  }
+
+  Vessel? _nearestVessel(double x, double y) {
+    Vessel? best;
+    var bestD = double.infinity;
+    for (final v in [game.vessel, game.vessel2]) {
+      if (v == null || !v.visible) continue;
+      final d = (v.position.x - x) * (v.position.x - x) +
+          (v.position.y - y) * (v.position.y - y);
+      if (d < bestD) {
+        bestD = d;
+        best = v;
+      }
+    }
+    return best;
   }
 
   /// Factory: create fleet with path
