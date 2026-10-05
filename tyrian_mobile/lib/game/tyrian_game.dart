@@ -8,6 +8,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'challenge.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
 import '../input/keyboard_input.dart';
@@ -127,6 +128,13 @@ class TyrianGame extends FlameGame
   int currentSectorIndex = 0;
 
   GameMode mode = GameMode.endless;
+
+  /// The challenge in force right now. A campaign carries its own, fixed at
+  /// creation; endless follows the menu selection live, so changing it in
+  /// the main menu takes effect from the next sector of the current run.
+  Challenge get challenge => mode == GameMode.campaign
+      ? (campaign?.challenge ?? Challenge.normal)
+      : Challenge.selected;
   CampaignState? campaign;
 
   /// Counts objective progress through a campaign node. Null in endless, which
@@ -769,6 +777,9 @@ class TyrianGame extends FlameGame
 
   /// Restore saved progress at startup. Returns true if a saved game was loaded.
   Future<bool> loadProgress() async {
+    // Awaited once at startup; from here on Challenge.selected is a plain
+    // static read on the hot path.
+    await Challenge.init();
     final state = await SaveService.loadGameState();
     if (state == null) return false;
     vessel.loadFromSave(state);
@@ -839,7 +850,9 @@ class TyrianGame extends FlameGame
       final name = vessel.pilotName;
       vessel.newGame();
       vessel.pilotName = name;
-      campaign = CampaignState(vessel: vessel.toSaveMap());
+      // The menu's current pick becomes this campaign's challenge for good.
+      campaign = CampaignState(
+          vessel: vessel.toSaveMap(), challenge: Challenge.selected);
     } else {
       campaign = CampaignState.fromJson(saved);
       vessel.loadFromSave(campaign!.vessel);
@@ -1228,7 +1241,9 @@ class TyrianGame extends FlameGame
       position: Vector2(x, y),
       speed: speed, // positive = downward
       vx: vx,
-      damage: dmg.toDouble(),
+      // Every enemy shot in the game is born here — fleets, boss core, boss
+      // parts — which is what makes this the one place challenge scales damage.
+      damage: dmg * challenge.damage,
       scale: scale,
     );
     enemyProjectiles.add(proj);
