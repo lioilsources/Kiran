@@ -1,6 +1,7 @@
 import 'dart:async' show unawaited;
 import 'dart:math' show pi, exp, min;
 import 'dart:typed_data';
+import 'package:cute_kid_fonts/cute_kid_fonts.dart' show KidPalette;
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -1170,6 +1171,7 @@ class TyrianGame extends FlameGame
     world.add(FloatText(
       text: msg,
       color: const Color(0xFF00FFFF),
+      palette: KidPalette.sky,
       fontSize: 18,
       position: Vector2(config.gameWidth / 2, config.gameHeight * 0.3),
     ));

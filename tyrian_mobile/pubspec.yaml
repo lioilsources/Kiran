@@ -35,6 +35,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flame: ^1.35.1
+  # Shared kid typography. For local development next to the package, add
+  #   dependency_overrides: {cute_kid_fonts: {path: <path to CuteKidFonts>}}
+  cute_kid_fonts:
+    git:
+      url: https://github.com/lioilsources/CuteKidFonts.git
+      ref: v0.1.0
   just_audio: ^0.9.40
   # Direct dependency because main() configures the one shared session and
   # MusicService owns interruption handling — see their comments.
