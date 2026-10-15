@@ -41,7 +41,7 @@ Bundle id: `com.ol1n.kiran`.
 ## 2. Google — Play Console (Play Games Services)
 
 1. **Play Console** → **Play Games Services → Setup and management →
-   Configuration** → create/link a Games Services project for `com.ol1n.kiran`.
+   Configuration** → create/link a Games Services project for `com.ab.kiran` (the Android applicationId).
    - Copy the numeric **Application ID** → put it in `strings.xml`
      (`game_services_app_id`).
 2. **Credentials**: add an **Android** credential; register the **OAuth client**

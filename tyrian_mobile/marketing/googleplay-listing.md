@@ -1,7 +1,7 @@
 # Google Play Console — Kirian
 
 Everything to paste or click, in the order Play Console asks for it. Written
-against the current build (v2.7.4, `app-release.aab`, package `com.ol1n.kiran`).
+against the current build (v2.7.4, `app-release.aab`, package `com.ab.kiran` since the move to A+B).
 
 Character limits are Play's, not Apple's, and they differ — do not paste the
 App Store copy in.
@@ -112,7 +112,7 @@ Note: a product ID can never be reused on Play either. Type them carefully.
 
 ## 4. Play Games Services
 
-Play Games → Set up → create a project and link it to `com.ol1n.kiran`.
+Play Games → Set up → create a project and link it to `com.ab.kiran`.
 
 ### 4a. The App ID goes into the code
 
