@@ -844,7 +844,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           ],
 
           // FPS overlay (visible during gameplay)
-          if (_game.isLoaded && _screen == _ScreenState.game)
+          if (showFpsOverlay &&
+              _game.isLoaded &&
+              _screen == _ScreenState.game)
             _FpsOverlay(game: _game),
         ],
       ),
@@ -880,6 +882,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     );
   }
 }
+
+/// Off only for store screenshots (test_driver/store_app.dart).
+bool showFpsOverlay = true;
 
 /// Lightweight FPS + entity count overlay (Flutter widget, outside game render).
 class _FpsOverlay extends StatefulWidget {
