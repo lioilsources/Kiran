@@ -1,34 +1,72 @@
 # Google Play Console — Kirian
 
-Everything to paste or click, in the order Play Console asks for it. Written
-against the current build (v2.7.4, `app-release.aab`, package `com.ab.kiran` since the move to A+B).
+App: **Kirian** · package **`com.ab.kiran`** · A+B organization developer
+account · new app, straight to **Production** (organization accounts have no
+"12 testers / 14 days" closed-test gate).
 
-Character limits are Play's, not Apple's, and they differ — do not paste the
-App Store copy in.
+Written for the **v2 line** — the same game as the live App Store 2.9.1:
+14 skins / 11 paid, endless sectors, no Campaign, no difficulty selection.
+Built from branch `release/2.9.x` (tag `v2.9.1` + `applicationId com.ab.kiran`).
+The v3 features (Campaign, difficulty, 24 skins) come to Play with a later
+update, never the other way: Play only accepts a higher versionCode.
 
----
+Three things to know before starting:
 
-## 1. Store listing
+- **No keywords field.** Play indexes the name, short and full description,
+  so "roguelike", "arcade", "shmup", "shooter", "co-op", "controller" live in
+  the prose. Do not paste Apple's comma list anywhere — keyword stuffing is a
+  policy violation.
+- **A feature graphic is mandatory**: `play-assets/feature_graphic_1024x500.png`.
+- **Play Games needs the app signing key's SHA-1**, which exists only after the
+  first AAB is uploaded. So the release is two builds: 2.9.1 (85) to Internal
+  testing first, then 2.9.2 with the Play Games IDs to Production.
 
-### App name (limit 30)
+Every text below is length-checked by
+`python3 marketing/tools/check_play_lengths.py` (the `[N]` is its count).
 
+## Language: English default, Japanese translation
+
+**Default language: English (United States) – en-US.** The whole game UI is
+English. **Japanese – ja-JP** is added as a translation from
+`googleplay-listing-ja.md` (texts) and `screenshots-ja/play-*` (graphics).
+
+## Store listing
+
+| Field | Limit | Value |
+|---|---|---|
+| App name | 30 | `Kirian: Space Shooter` [21] — the launcher label is `Kirian` |
+| Short description | 80 | below |
+| Full description | 4000 | below |
+| App or game | — | **Game** |
+| Free or paid | — | **Free** (with in-app products). Free can never become paid; IAPs are fine. |
+| Category | — | **Arcade** |
+| Tags | — | from Play's fixed list, max 5: Shoot 'em up, Arcade, Roguelike, Sci-fi, Offline (pick the closest offered) |
+| Contact email | — | `oldrich.vorechovsky.jr@gmail.com` |
+| Website | — | `https://lioilsources.github.io/Kiran/` |
+| Privacy policy | — | `https://lioilsources.github.io/Kiran/privacy.html` |
+
+All three URLs return HTTP 200 (checked 2026-10-16). The privacy policy is
+updated on this branch to name **Kirian / `com.ab.kiran` / A+B** and to cover
+Play Games, Play Billing and local co-op — **it goes live only after this
+branch is merged to `main`** (GitHub Pages). Merge before sending for review.
+
+<!-- check: name 30 -->
 ```
 Kirian: Space Shooter
 ```
-**21 chars.** The device shows `Kirian` (AndroidManifest `android:label`), and
-unlike Apple, Google does not police name-vs-listing similarity nearly as hard.
-Keep them close anyway.
 
-### Short description (limit 80)
+### Short description (80)
 
+<!-- check: short_en 80 -->
 ```
 Roguelike arcade shmup. Die, keep everything, push deeper. Local co-op for two.
 ```
-**78 chars.** This one matters more than on iOS: it is the text under the title
-in search results and the first thing anyone reads.
 
-### Full description (limit 4000)
+It is the line under the title in search results — the first thing anyone reads.
 
+### Full description (4000)
+
+<!-- check: full_en 4000 -->
 ```
 Fly a lone gunship through an endless corridor of hostiles, one sixty-second sector at a time.
 
@@ -40,7 +78,7 @@ Enemies die by the weapon that killed them. Bubble guns burst them into water. C
 BUILD YOUR GUNSHIP
 Between sectors, the Com Center is yours: front guns, side guns, generators, hull and shields, all upgradable across twenty-five levels. Power is finite — a heavier gun drains a generator that cannot keep up, so every loadout is a trade. Score never resets, and crossing its thresholds permanently unlocks the higher weapon tiers.
 
-SEVEN ZONES, THEN FOREVER
+SIX ZONES, THEN FOREVER
 Eighteen hand-authored sectors span six zones, each a tight sixty-second script with its own formations and rhythm. The sky escalates with them — cold and calm at the frontier, running teal, then amber, then crimson as you push in. Past the authored run the generator takes over and never stops, difficulty climbing without a ceiling, bosses waiting at every fifth level.
 
 TWO PLAYERS, ONE ROOM
@@ -54,221 +92,293 @@ GPU shaders drive bloom, scanlines, vignette and chromatic aberration. Enemies s
 
 Play Games leaderboards rank you by total score and by the deepest level you have ever reached, alongside achievements for kills, sectors and untouched runs.
 ```
-**~2 250 chars.**
 
-### ⚠ There is no keywords field
+The last paragraph is true only once the Play Games IDs are in the build
+(2.9.2). It is not in the listing until Production goes out with 2.9.2, so it
+can stay.
 
-Play has nothing equivalent to Apple's 100-character keyword box. Search ranking
-reads the **title, short description and full description**, so the terms have to
-live in the prose — which is why the copy above says "roguelike", "arcade",
-"shmup", "co-op", "controller" and "shooter" in plain sentences rather than
-keeping them for a separate field. Do not paste Apple's comma list anywhere;
-Google treats keyword stuffing as a policy violation.
+### Release notes (first production release, 500)
 
----
+<!-- check: notes_en 500 -->
+```
+First release on Google Play. Fourteen skins, three free. Play Games leaderboards and achievements.
+```
 
-## 2. Graphics you must supply
+ja-JP notes are in `googleplay-listing-ja.md`.
 
-| Asset | Spec | Have it? |
+## Graphics
+
+| Asset | Requirement | File |
 |---|---|---|
-| App icon | 512×512 PNG, 32-bit | from `android/app/src/main/res/mipmap-*` |
-| **Feature graphic** | **1024×500 PNG/JPG, no alpha** | **MISSING — required, blocks release** |
-| Phone screenshots | 2–8, min 320px, 16:9 or 9:16 | reuse `ol1n.now/apps/kirian/screenshots/raw/mobile/ios/` |
-| 7" tablet | 2–8 | optional unless you claim tablet support |
-| 10" tablet | 2–8 | optional unless you claim tablet support |
+| App icon | 512×512 PNG, no alpha | `play-assets/icon_512.png` (RGB) |
+| Feature graphic | 1024×500, no alpha | `play-assets/feature_graphic_1024x500.png` |
+| Phone screenshots | 2–8, max 2:1 | `screenshots-en/play-phone/01…06_*.png` (1080×1920) |
+| 7" tablet | 2–8 | `screenshots-en/play-tablet7/` (1200×1920) |
+| 10" tablet | 2–8 | `screenshots-en/play-tablet10/` (1600×2560) |
 
-The feature graphic is the banner at the top of the store page and Play will not
-let you publish without one. Nothing in the repo is that shape.
+Screenshots are real v2.9.1 captures (iPhone 17 Pro Max / iPad Pro 13"
+simulator — Flutter draws the same UI on Android) with English captions:
+01 roguelike · 02 skins · 03 Com Center · 04 elemental kills · 05 endless
+sectors · 06 no ads. Regenerate with
+`python3 marketing/screenshots/compose.py -lang en -raw build/store_screenshots_v2`
+(see `screenshots/README.md`). The Japanese translation gets its own set from
+`screenshots-ja/play-*`.
 
----
+The old `play-assets/phone|tablet7|tablet10/` (v2.7 shots) are superseded.
 
-## 3. In-app products
+## In-app products
 
-Monetization → Products → In-app products. Create all eleven with these exact
-IDs — they match the code (`skin_registry.dart`) and the iOS products, so no
-code change is needed.
+**Monetize with Play → Products → In-app products** (one-time products).
+Locked until (a) the A+B account has a **payments profile** and (b) an AAB with
+the `com.android.vending.BILLING` permission is uploaded to any track — the
+Internal testing upload in step 6 unlocks it.
 
-| Product ID | Name | Price |
+The IDs must match `skin_registry.dart` exactly — a mismatch fails silently
+(the skin shows no price). They keep the `com.ol1n.kiran.` prefix even though
+the package is `com.ab.kiran`: product IDs are free-form strings, and sharing
+them with iOS keeps one code path. **A product ID can never be reused**, even
+after deletion — type carefully.
+
+Products are per app: nothing carries over from any older Kiran app. Unlike
+Apple, they are not reviewed — **Activate** each one and it is live.
+
+| Product ID | Name (≤55) | Description (≤200) |
 |---|---|---|
-| `com.ol1n.kiran.skin_space_invaders` | Monochrome Invader Skin | 0.99 |
-| `com.ol1n.kiran.skin_asteroids` | Vector Wireframe Skin | 0.99 |
-| `com.ol1n.kiran.skin_river_raid` | 8-Bit Canyon Skin | 0.99 |
-| `com.ol1n.kiran.skin_rtype` | Biomech Cruiser Skin | 0.99 |
-| `com.ol1n.kiran.skin_blazing_lazers` | 16-Bit Laser Skin | 0.99 |
-| `com.ol1n.kiran.skin_tyrian_dos` | Retro PC Pixel Skin | 0.99 |
-| `com.ol1n.kiran.skin_ikaruga` | Dual-Polarity Skin | 0.99 |
-| `com.ol1n.kiran.skin_gradius_v` | Chrome Fleet Skin | 0.99 |
-| `com.ol1n.kiran.skin_luftrausers` | Sepia Dogfight Skin | 0.99 |
-| `com.ol1n.kiran.skin_nuclear_throne` | Wasteland Pixel Skin | 0.99 |
-| `com.ol1n.kiran.skin_nex_machina` | Neon Voxel Skin | 0.99 |
+| `com.ol1n.kiran.skin_space_invaders` | Monochrome Invader Skin | 1978 arcade monochrome. Restyles ships, enemies, backgrounds, UI and sound. Yours for good. |
+| `com.ol1n.kiran.skin_asteroids` | Vector Wireframe Skin | 1979 vector wireframe. … |
+| `com.ol1n.kiran.skin_river_raid` | 8-Bit Canyon Skin | 1982 8-bit canyon. … |
+| `com.ol1n.kiran.skin_rtype` | Biomech Cruiser Skin | 1987 biomechanical. … |
+| `com.ol1n.kiran.skin_blazing_lazers` | 16-Bit Laser Skin | 1989 16-bit console. … |
+| `com.ol1n.kiran.skin_tyrian_dos` | Retro PC Pixel Skin | 1995 DOS pixel art. … |
+| `com.ol1n.kiran.skin_ikaruga` | Dual-Polarity Skin | 2001 black-and-white polarity. … |
+| `com.ol1n.kiran.skin_gradius_v` | Chrome Fleet Skin | 2004 chrome and steel. … |
+| `com.ol1n.kiran.skin_luftrausers` | Sepia Dogfight Skin | 2014 sepia dogfight. … |
+| `com.ol1n.kiran.skin_nuclear_throne` | Wasteland Pixel Skin | 2015 wasteland pixel art. … |
+| `com.ol1n.kiran.skin_nex_machina` | Neon Voxel Skin | 2017 neon voxel. … |
 
-Type: **one-time product** (non-consumable equivalent). Unlike Apple, these do
-**not** get submitted for review — activate them and they are live. That whole
-class of problem does not exist here.
+"…" = the same tail as the first row: ` Restyles ships, enemies, backgrounds,
+UI and sound. Yours for good.` Longest description is 98 characters.
 
-Note: a product ID can never be reused on Play either. Type them carefully.
+Price: **€0.99 / $0.99** tier each (same as the App Store), let Play convert
+the rest. Japanese names/descriptions are in `iap/iap-ja.md` (Play limits:
+name 55, description 200 — the Apple-sized ja texts fit).
 
----
-
-## 4. Play Games Services
-
-Play Games → Set up → create a project and link it to `com.ab.kiran`.
-
-### 4a. The App ID goes into the code
-
-Play Games gives the project a numeric **App ID** (12-ish digits). It currently
-sits in `android/app/src/main/res/values/strings.xml` as a placeholder:
-
-```xml
-<string name="game_services_app_id">000000000000</string>
+<!-- check: iap_desc_longest 200 -->
+```
+2001 black-and-white polarity. Restyles ships, enemies, backgrounds, UI and sound. Yours for good.
 ```
 
-Send it to me — leaderboards and achievements cannot work until it is real.
+## Play Games Services
 
-### 4b. Leaderboards (2)
+**Grow users → Play Games Services → Setup and management → Configuration.**
+Do this after the first AAB is in Internal testing (step 6 below), because the
+credential needs the app signing key.
 
-Create both, then send me the generated IDs (they look like `CgkI…`). The code
-holds `REPLACE_WITH_PLAY_LEADERBOARD_ID` / `REPLACE_WITH_PLAY_DEPTH_LEADERBOARD_ID`
-in `leaderboard_service.dart`.
+1. **Create** a new Play Games Services project → *No, my game doesn't use
+   Google APIs yet* → name `Kirian`.
+2. **Properties**: display name `Kirian`, category Arcade, description = the
+   short description, icon `play-assets/icon_512.png`, feature graphic as above.
+3. **Credentials → Add credential → Android**: package `com.ab.kiran`,
+   OAuth client with the **SHA-1 of the app signing key** — Play Console →
+   Test and release → **App integrity → App signing → App signing key
+   certificate → SHA-1**. Add a second credential with the **upload key**
+   SHA-1 `73:C8:1A:1A:89:43:D5:09:BB:0B:86:18:A0:35:80:C6:31:9E:EA:02` only if
+   you want to test APKs installed from GitHub Releases (they are signed with
+   the upload key, not by Play).
+   Google Cloud will ask to configure the **OAuth consent screen** first:
+   External, app name Kirian, support email as above, no scopes.
+4. **Testers**: add your own Google account so it works before publishing.
+5. **Leaderboards** (2) and **Achievements** (34), below.
+6. **Review and publish** the Play Games configuration — independent of the
+   app release; it can go out first.
+7. Send me: the numeric **Application ID** (Configuration page, 12 digits),
+   both leaderboard IDs and the 34 achievement IDs (`CgkI…`). The
+   **Achievements → Get resources** button gives them all as one XML — paste
+   that.
 
-| Name | Sort | Format | Notes |
+### Leaderboards
+
+| Name | Format | Order | Icon |
 |---|---|---|---|
-| Top Score | Larger is better | Integer | cumulative score, never resets |
-| Deepest Sector | Larger is better | Integer | deepest level ever reached |
+| Top Score | Numeric, no decimals | Larger is better | `play-games/leaderboard_top_score.png` |
+| Deepest Sector | Numeric, no decimals | Larger is better | `play-games/leaderboard_deepest_sector.png` |
 
-Both are ordinary (non-recurring) boards, matching the Game Center setup.
+Tamper protection on, no limits. Same meaning as the Game Center boards
+(`kiran_topscore`, cumulative score; deepest level ever reached).
 
-### 4c. Achievements (34)
+### Achievements
 
-The iOS names are reused so the two platforms read the same. **Incremental**
-achievements need their step count entered in Play; the others are one-shot.
+Icons are 512×512 RGB in `play-assets/play-games/<id>.png` (from the same
+art as Game Center). For every row: **Incremental** only where Steps is
+given (enter that step count); initial state **Revealed**; points as listed —
+they total 920, under Play's 1000 cap. The ID column is the file name and the Game
+Center ID; Play generates its own `CgkI…` IDs.
 
-| ID (for your reference) | Name | Points | Steps |
-|---|---|---|---|
-| `kiran_ach_sector_5` | Deep Space | 10 | — |
-| `kiran_ach_sector_10` | Into the Fire | 25 | — |
-| `kiran_ach_sector_20` | Veteran | 50 | — |
-| `kiran_ach_sector_40` | Legend of Kirian | 100 | — |
-| `kiran_ach_first_kill` | First Blood | 5 | — |
-| `kiran_ach_kills_1000` | Exterminator | 25 | 1000 |
-| `kiran_ach_kills_10000` | Armada Slayer | 100 | 10000 |
-| `kiran_ach_falcon1_100` | Falcon I Hunter | 10 | 100 |
-| `kiran_ach_falcon2_100` | Falcon II Hunter | 10 | 100 |
-| `kiran_ach_falcon3_100` | Falcon III Hunter | 10 | 100 |
-| `kiran_ach_falcon4_100` | Falcon IV Hunter | 10 | 100 |
-| `kiran_ach_falcon5_100` | Falcon V Hunter | 10 | 100 |
-| `kiran_ach_falcon6_100` | Falcon VI Hunter | 10 | 100 |
-| `kiran_ach_elite_100` | Elite Hunter | 25 | 100 |
-| `kiran_ach_boss_1` | Boss Down | 25 | — |
-| `kiran_ach_boss_10` | Serial Boss Killer | 50 | 10 |
-| `kiran_ach_asteroid_1` | Rock Meets Hull | 5 | — |
-| `kiran_ach_asteroid_50` | Asteroid Magnet | 25 | 50 |
-| `kiran_ach_max_bubble_gun` | Bubble Gun Master | 25 | — |
-| `kiran_ach_max_vulcan_cannon` | Vulcan Cannon Master | 25 | — |
-| `kiran_ach_max_blaster` | Blaster Master | 25 | — |
-| `kiran_ach_max_laser` | Laser Master | 25 | — |
-| `kiran_ach_max_small_bubble` | Small Bubble Master | 25 | — |
-| `kiran_ach_max_small_vulcan` | Small Vulcan Master | 25 | — |
-| `kiran_ach_max_star_gun` | Star Gun Master | 25 | — |
-| `kiran_ach_max_small_laser` | Small Laser Master | 25 | — |
-| `kiran_ach_starts_10` | Regular | 10 | 10 |
-| `kiran_ach_starts_100` | Addicted | 50 | 100 |
-| `kiran_ach_time_1h` | Warming Up | 10 | 60 |
-| `kiran_ach_time_10h` | No Sleep | 50 | 600 |
-| `kiran_ach_deaths_25` | Never Give Up | 10 | 25 |
-| `kiran_ach_coop` | Better Together | 25 | — |
-| `kiran_ach_skins_5` | Fashion Victim | 10 | — |
-| `kiran_ach_untouchable` | Untouchable | 50 | — |
+| ID | Name | Description | Pts | Steps |
+|---|---|---|---|---|
+| `kiran_ach_sector_5` | Deep Space | Reach sector 5. | 10 | — |
+| `kiran_ach_sector_10` | Into the Fire | Reach sector 10. | 25 | — |
+| `kiran_ach_sector_20` | Veteran | Reach sector 20. | 50 | — |
+| `kiran_ach_sector_40` | Legend of Kirian | Reach sector 40. | 100 | — |
+| `kiran_ach_first_kill` | First Blood | Destroy your first enemy. | 5 | — |
+| `kiran_ach_kills_1000` | Exterminator | Destroy 1,000 enemies. | 25 | 1000 |
+| `kiran_ach_kills_10000` | Armada Slayer | Destroy 10,000 enemies. | 100 | 10000 |
+| `kiran_ach_falcon1_100` | Falcon I Hunter | Destroy 100 Falcon I fighters. | 10 | 100 |
+| `kiran_ach_falcon2_100` | Falcon II Hunter | Destroy 100 Falcon II fighters. | 10 | 100 |
+| `kiran_ach_falcon3_100` | Falcon III Hunter | Destroy 100 Falcon III fighters. | 10 | 100 |
+| `kiran_ach_falcon4_100` | Falcon IV Hunter | Destroy 100 Falcon IV fighters. | 10 | 100 |
+| `kiran_ach_falcon5_100` | Falcon V Hunter | Destroy 100 Falcon V fighters. | 10 | 100 |
+| `kiran_ach_falcon6_100` | Falcon VI Hunter | Destroy 100 Falcon VI fighters. | 10 | 100 |
+| `kiran_ach_elite_100` | Elite Hunter | Destroy 100 elite fighters. | 25 | 100 |
+| `kiran_ach_boss_1` | Boss Down | Defeat a boss. | 25 | — |
+| `kiran_ach_boss_10` | Serial Boss Killer | Defeat 10 bosses. | 50 | 10 |
+| `kiran_ach_asteroid_1` | Rock Meets Hull | Ram an asteroid. | 5 | — |
+| `kiran_ach_asteroid_50` | Asteroid Magnet | Ram 50 asteroids. | 25 | 50 |
+| `kiran_ach_max_bubble_gun` | Bubble Gun Master | Upgrade the Bubble Gun to level XXV. | 25 | — |
+| `kiran_ach_max_vulcan_cannon` | Vulcan Cannon Master | Upgrade the Vulcan Cannon to level XXV. | 25 | — |
+| `kiran_ach_max_blaster` | Blaster Master | Upgrade the Blaster to level XXV. | 25 | — |
+| `kiran_ach_max_laser` | Laser Master | Upgrade the Laser to level XXV. | 25 | — |
+| `kiran_ach_max_small_bubble` | Small Bubble Master | Upgrade the Small Bubble to level XXV. | 25 | — |
+| `kiran_ach_max_small_vulcan` | Small Vulcan Master | Upgrade the Small Vulcan to level XXV. | 25 | — |
+| `kiran_ach_max_star_gun` | Star Gun Master | Upgrade the Star Gun to level XXV. | 25 | — |
+| `kiran_ach_max_small_laser` | Small Laser Master | Upgrade the Small Laser to level XXV. | 25 | — |
+| `kiran_ach_starts_10` | Regular | Start 10 runs. | 10 | 10 |
+| `kiran_ach_starts_100` | Addicted | Start 100 runs. | 50 | 100 |
+| `kiran_ach_time_1h` | Warming Up | Play for one hour. | 10 | 60 |
+| `kiran_ach_time_10h` | No Sleep | Play for ten hours. | 50 | 600 |
+| `kiran_ach_deaths_25` | Never Give Up | Lose your vessel 25 times. | 10 | 25 |
+| `kiran_ach_coop` | Better Together | Play a co-op game. | 25 | — |
+| `kiran_ach_skins_5` | Fashion Victim | Play with 5 different skins. | 10 | — |
+| `kiran_ach_untouchable` | Untouchable | Clear a sector without taking damage. | 50 | — |
 
-Play requires an icon per achievement (512×512). If you would rather not draw
-34 of them, ship the leaderboards first and add achievements in a later pass —
-the code degrades quietly when an ID is missing.
+Steps and thresholds are the ones in `achievement_service.dart` (`target`,
+`incremental: true`); time steps are minutes. Order in Play = the order above.
 
-Total points: 1000, which is Play's maximum for the initial set. It already fits.
+## App content (Policy → App content)
 
----
+### Privacy policy
+`https://lioilsources.github.io/Kiran/privacy.html` — see the Store listing
+note: merge first so the updated version is live.
 
-## 5. Policy sections (Play is stricter than Apple here)
+### App access
+**All functionality is available without special access.** No login; Play
+Games sign-in is automatic and optional.
 
-**Privacy policy URL** — required, and it must be reachable:
-```
-https://lioilsources.github.io/Kiran/privacy.html
-```
-Note this is **not** on `olin.now` — that host returns 404 for `/privacy.html`.
-Use the github.io address or move the page.
+### Ads
+**No.** No ad SDK (`pubspec.yaml`).
 
-**Data safety** — the questionnaire is mandatory and self-declared. For Kirian:
-- Data collected: none by the app itself.
-- Data shared: none.
-- But you must still declare what Play Games Services and Google Play Billing
-  handle on your behalf — sign-in identifier and in-app purchase history.
-- No data is collected for advertising or analytics; there is no ad SDK.
-- Answer "Yes" to encryption in transit (Play Games and Billing use HTTPS).
+### Content rating (IARC questionnaire)
 
-**Content rating** — an IARC questionnaire. Kirian is fantasy space combat with
-no blood, gore, language or gambling. That lands around PEGI 7 / ESRB Everyone,
-matching the 4+ you already have on iOS.
+Email `oldrich.vorechovsky.jr@gmail.com`, category **Game**.
 
-**Target audience** — 13+ is the honest bracket. Do not tick "designed for
-children"; it drags in Families policy and extra review.
+| Question area | Answer | Why |
+|---|---|---|
+| Violence | **Yes — fantasy violence**, non-realistic, no blood, no humans harmed | spaceships explode into fragments |
+| Blood / gore | No | |
+| Fear / horror | No | |
+| Sexuality / nudity | No | |
+| Language | No | |
+| Controlled substances | No | |
+| Gambling / simulated gambling / loot boxes | No | skins are fixed-content one-time purchases |
+| Users interact or exchange content (chat, voice, UGC) | **No** — co-op shares only gameplay over local Wi-Fi, no communication | `lib/net/` |
+| Shares user location | No | |
+| Digital purchases | **Yes** | in-app skins |
+| Unrestricted internet | No | |
 
-**Ads** — declare **no ads**. True, and it is worth saying in the listing too.
+Expect **PEGI 7 / ESRB Everyone 10+ / USK 6** or close — matches the 4+/9+
+neighbourhood on iOS. Accept the generated rating.
 
-**Government / financial features** — none apply.
+### Target audience and content
+Select **13–15, 16–17 and 18+**. Not under 13: any under-13 band pulls in the
+Families policy (and Play Games + IAP need extra review there). "Appeals to
+children": **No**.
 
----
+### Data safety
 
-## 6. Signing — read before the first upload
+The app itself collects nothing. The **Play Games Services SDK** does, on the
+app's behalf, and Google's guidance
+(developer.android.com/games/pgs/data-collection) says to declare it:
 
-Turn on **Play App Signing**. Google then holds the distribution key and your
-CI keystore (`ANDROID_KEYSTORE_BASE64` in GitHub secrets) becomes only the
-*upload* key. Without it, losing that keystore means you can never ship an
-update to the same listing again — there is no recovery path.
+- Does your app collect or share any of the required user data types? **Yes.**
+- Is all user data encrypted in transit? **Yes** (HTTPS, per Google).
+- Do you provide a way for users to request deletion? **No** account in the
+  app; the player deletes Play Games data in their Play Games profile. Answer
+  No (deletion is required only for apps with account creation).
+- Data types, all **Collected**, not shared, processed ephemerally: No,
+  required (cannot be turned off in the app):
 
-The first AAB you upload binds the app to whichever key signs it, so decide
-before, not after.
+| Data type | Purpose | Source |
+|---|---|---|
+| App activity → **Other actions** (scores, achievements) | App functionality | leaderboards, achievements |
+| App info and performance → **Diagnostics** | Analytics | PGS SDK default |
+| App info and performance → **Crash logs** | Analytics | PGS SDK default |
 
----
+Not collected: location, personal info, financial info (purchases are Play
+Billing's data, not ours), device IDs, contacts, files, messages.
+**Advertising ID: No** — verified: the merged manifest of the 2.9.1 (85) AAB
+has no `com.google.android.gms.permission.AD_ID` (permissions: INTERNET,
+ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE, CHANGE_WIFI_MULTICAST_STATE,
+com.android.vending.BILLING).
 
-## 7. What I do once you send the IDs
+### Other declarations
+Government app **No** · Financial features **None** · Health **No** · News
+**No** · COVID-19 **No** · Data deletion: not applicable (no account creation).
 
-Send me the **Play Games App ID** and the **two leaderboard IDs** and I will:
-1. put the App ID into `strings.xml`,
-2. replace both `REPLACE_WITH_PLAY_LEADERBOARD_ID` constants in
-   `leaderboard_service.dart`,
-3. optionally wire the 34 achievement IDs (34 more `CgkI…` strings — send them
-   whenever, they are independent),
-4. cut a release so the AAB you upload actually has working Play Games.
+## Signing and versionCode
 
-Uploading the current `app-release.aab` before that works fine — the game plays
-correctly, only leaderboards and achievements stay silent.
+- **Upload key** = the CI keystore in the `ANDROID_KEYSTORE_BASE64` secret,
+  `CN=Kirian, OU=Mobile, O=lioilsources` — SHA-256
+  `c0:8c:32:a6:3e:fd:1a:ba:0a:13:82:5e:54:8f:f7:df:70:f7:38:6b:9b:84:db:85:b4:9c:69:c0:1e:39:1b:c8`,
+  SHA-1 `73:c8:1a:1a:89:43:d5:09:bb:0b:86:18:a0:35:80:c6:31:9e:ea:02`.
+  It exists **only** in GitHub secrets — not on this Mac (`~/upload-keystore.jks`
+  is PoetryStream's key, a different certificate). So every Play AAB comes
+  from CI.
+- **Play App Signing**: accept the **Google-generated app signing key**
+  (default) at the first upload.
+- versionCode = `github.run_number` of `release-android.yml`; versionName from
+  the tag, or `pubspec.yaml` on an untagged run.
+  - **2.9.1 (85)** — run #85, manual run on `release/2.9.x`, AAB in the run's
+    artifacts (`kirian-aab-85`). For Internal testing only: no Play Games IDs.
+  - **2.9.2 (86+)** — tag `v2.9.2` on `release/2.9.x` once the IDs are in;
+    AAB attached to the GitHub Release. This is the Production build. The
+    same tag also builds iOS 2.9.2 for the Japanese App Store listing.
+- Do not upload any `v3.x` AAB from GitHub Releases: they are `com.ol1n.kiran`.
 
----
+## Release — new app `com.ab.kiran`
 
-## 8. Where the upload-ready images are
+1. **Create app** (A+B → All apps → Create app): name `Kirian: Space
+   Shooter`, default language **English (United States)**, **Game**,
+   **Free**, accept the declarations.
+2. **Store settings**: category Arcade, tags, contact email, website.
+3. **Main store listing**: en-US texts, icon, feature graphic, phone + tablet
+   screenshots. **Manage translations → Add your own → Japanese (ja-JP)**,
+   texts from `googleplay-listing-ja.md`, screenshots from `screenshots-ja/play-*`.
+4. **App content**: everything above.
+5. **Production → Countries/regions**: all countries.
+6. **Internal testing → Create new release**: accept Play App Signing,
+   upload `app-release.aab` from run #85's artifact (2.9.1 (85)), add yourself
+   as tester, **Save and roll out**. This unlocks in-app products and shows
+   the app signing key.
+7. **In-app products**: create and activate the 11 above (needs the
+   payments profile).
+8. **Play Games Services**: setup above; send me the IDs.
+9. I put the IDs into `strings.xml`, `leaderboard_service.dart` and
+   `achievement_service.dart` on `release/2.9.x` and tag **v2.9.2**.
+10. **Production → Create new release**: upload the 2.9.2 AAB from the GitHub
+    Release, notes en-US + ja-JP, **Next → Save**. Optionally turn on
+    **Managed publishing** to pick the go-live moment.
+11. **Publishing overview → Send changes for review.** A new app's first
+    review usually takes several days, sometimes over a week.
 
-`tyrian_mobile/marketing/play-assets/` — all validated against Play's limits
-(min 320px, max 3840px, aspect ratio never steeper than 1:2).
+### CI follow-ups (not blockers)
 
-| Console field | File |
-|---|---|
-| App icon | `icon_512.png` |
-| Feature graphic | `feature_graphic_1024x500.png` |
-| Phone screenshots | `phone/` (4) |
-| 7-inch tablet | `tablet7/` (4) |
-| 10-inch tablet | `tablet10/` (4) |
-
-Two things worth knowing about how these were made:
-
-- The iOS screenshots are 1125×2436, i.e. 1:2.17 — **steeper than Play allows**,
-  so they could not be uploaded as-is. Three are re-cut to Play's canonical
-  1080×1920 by `ol1n.now`'s own `make screenshots` (center-crop), and
-  `kirian_comcenter` is instead padded to 1218×2436, because the crop cut its
-  CONTINUE MISSION button off the bottom.
-- `ol1n.now/scripts/resize-screenshots.sh` already knows Play's phone size
-  (`PLAY_PHONE=1080x1920`) but keys store output off the *platform folder*, and
-  Kirian only had `screenshots/raw/mobile/ios/`. Adding `.../android/` makes it
-  emit Play sizes on every run. It has no Play tablet target — those two folders
-  were produced by hand.
-- The feature graphic did not exist in any form; it is composed from game art
-  (zone-5 background, `vessel_2`, Avenir Next Condensed wordmark).
+- **Firebase App Distribution**: `FIREBASE_ANDROID_APP_ID` is registered for
+  `com.ol1n.kiran` (`google-services.json` has no `com.ab.kiran`), so the step
+  will fail for `com.ab.kiran` tag builds. It runs last; the GitHub Release
+  already has the AAB by then. Register `com.ab.kiran` in Firebase or drop the
+  step. On `release/2.9.x` it is skipped for manual runs.
+- **Automatic Play upload** (as PoetryStream has, `r0adkll/upload-google-play`)
+  needs a service account invited to the A+B account and works only after the
+  first manual upload. Worth adding once 2.9.2 is out.
+- `main` (v3) already has `com.ab.kiran`; its next tag builds an AAB for the
+  same Play app, with a higher versionCode — that is the v3 update path.
