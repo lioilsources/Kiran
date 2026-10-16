@@ -34,7 +34,7 @@ import pathlib
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-RAW = ROOT / 'build/store_screenshots'
+RAW = ROOT / 'build/store_screenshots'  # -raw overrides
 
 # Hiragino Sans: W8 for headlines, W4 for the line under them. Ships with
 # macOS; the file names are Japanese.
@@ -49,19 +49,36 @@ BG_BOTTOM = (0, 0, 16)
 # (scene, raw capture, headline, subline) per language, in store order.
 # The first two carry the listing — most people never swipe past them.
 SCENES = {
+    # v2.9.1: 14 skins, no Campaign, no difficulty selection. The v3.7.0 set
+    # (Campaign, enemy fire patterns, 24 skins) is in commit a4245b3.
     'ja': [
         ('roguelike', 'play_default_1',
          '死んでも、すべて持ち越し。', '武器もクレジットもスコアも。もっと深くへ。'),
         ('skins', 'play_neon_grid_0',
-         '24種のスキンで、丸ごと変わる', '船・敵・背景・UI・サウンドまで一新'),
+         '14種のスキンで、丸ごと変わる', '船・敵・背景・UI・サウンドまで一新'),
         ('comcenter', 'comcenter_default',
          '25段階の強化。出力をやりくりせよ', 'フロント、サイド、ジェネレーター、シールド'),
-        ('bullets', 'play_biomech_0',
-         '撃ち方を読め', '狙い撃ち・拡散・バースト・一斉射撃'),
-        ('campaign', 'campaign',
-         '20ノード、4体のボス', 'キャンペーンで任務と挑戦に挑め'),
+        ('elemental', 'play_default_0',
+         '倒し方で、散り方が変わる', '水しぶき・氷・炎・稲妻・プラズマ'),
+        ('endless', 'play_pixel_0',
+         '18の手作りセクター、その先は無限', '5レベルごとにボスが待ち受ける'),
         ('nofree2play', 'skins',
          '広告なし。買い切りのみ。', '3種は無料、追加スキンは1つずつ買い切り'),
+    ],
+    # Google Play default listing (en-US); same scenes as ja.
+    'en': [
+        ('roguelike', 'play_default_1',
+         'Die. Keep everything.', 'Weapons, credits, score. Push deeper.'),
+        ('skins', 'play_neon_grid_0',
+         '14 skins restyle everything', 'Ships, enemies, backgrounds, UI and sound'),
+        ('comcenter', 'comcenter_default',
+         '25 upgrade levels. Mind the power.', 'Front, side, generator, shield'),
+        ('elemental', 'play_default_0',
+         'Every weapon kills differently', 'Water, ice, fire, lightning, plasma'),
+        ('endless', 'play_pixel_0',
+         '18 hand-built sectors, then forever', 'A boss waits every fifth level'),
+        ('nofree2play', 'skins',
+         'No ads. Buy once.', 'Three skins free, the rest one-time purchases'),
     ],
 }
 
@@ -70,12 +87,15 @@ SCENES = {
 # under it — so only the search asset is localized.
 SEARCH_LINE = {
     'ja': '死んでも、すべて持ち越し。',
+    'en': 'Die. Keep everything.',
 }
 
 # Raw captures for the creative assets, left to right.
+# v2.9.1 walk: the biomech captures landed on the Com Center (the seeded ship
+# had died by then), so they are not used.
 HEADER_SHOTS = ['play_pixel_0', 'play_neon_grid_0', 'play_default_1',
-                'play_biomech_0', 'play_dual_polarity_0']
-SEARCH_SHOTS = ['play_neon_grid_0', 'play_default_1', 'play_biomech_0']
+                'play_dual_polarity_1', 'play_neon_grid_1']
+SEARCH_SHOTS = ['play_neon_grid_0', 'play_default_1', 'play_pixel_0']
 
 # name: (w, h, raw source folder)
 TARGETS = {
@@ -227,7 +247,11 @@ def search(raws, line, w=3840, h=2560):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('-lang', default='ja')
+    ap.add_argument('-raw', help='raw capture folder (default build/store_screenshots)')
     args = ap.parse_args()
+    global RAW
+    if args.raw:
+        RAW = pathlib.Path(args.raw).resolve()
 
     out = ROOT / 'marketing' / f'screenshots-{args.lang}'
     for target, (w, h, src) in TARGETS.items():

@@ -35,6 +35,26 @@ for a capture, bump `IPHONEOS_DEPLOYMENT_TARGET` to 15.0 in
 `ios/Runner.xcodeproj/project.pbxproj` and in a Podfile `post_install`, run,
 and revert.
 
+## Capturing an older release (v2.9.1)
+
+The current `screenshots-ja/` set is from **v2.9.1**, the release the
+Japanese listing targets. Capture ran in a detached worktree of tag `v2.9.1`
+with this driver copied in, three local edits that were never committed
+(`flutter_driver` dev dependency, FPS overlay line removed, iOS target 15.0),
+and a walk adapted to v2: no CAMPAIGN, and no MAIN MENU in the pause menu, so
+skins are switched mid-mission via PAUSE → SKINS. Then:
+
+```bash
+python3 marketing/screenshots/compose.py -lang ja -raw build/store_screenshots_v2
+python3 marketing/screenshots/compose.py -lang en -raw build/store_screenshots_v2  # Google Play en-US
+```
+
+A single walk does not reach the fourth skin: the seeded ship dies after about
+a minute of auto-fire, and with it the PAUSE button the walk taps. So the
+iPhone ran twice, the second time with `SHOTS_ONLY_SKINS=1` (skips the
+opening shots, walks only Retro PC Pixel and Dual-Polarity), both into the
+same folder.
+
 ## Output (per language)
 
 | Folder | Size | Store slot |
