@@ -17,7 +17,7 @@ class LeaderboardService {
   //   Android    — Play Console → Play Games Services → Leaderboards → the ID
   //                (looks like "CgkI…"); the APP_ID goes in AndroidManifest.
   static const String _iosLeaderboardId = 'kiran_topscore';
-  static const String _androidLeaderboardId = 'REPLACE_WITH_PLAY_LEADERBOARD_ID';
+  static const String _androidLeaderboardId = 'CgkI9-rdyZoHEAIQAQ';
 
   /// Second board: how deep the pilot has ever pushed. The run loops forever
   /// and a death only rewinds to sector 1, so depth is the other half of the
@@ -25,7 +25,7 @@ class LeaderboardService {
   /// Must be created in App Store Connect / Play Console before it resolves;
   /// until then submits fail silently like any other unavailable board.
   static const String _iosDepthLeaderboardId = 'kiran_deepest';
-  static const String _androidDepthLeaderboardId = 'REPLACE_WITH_PLAY_DEPTH_LEADERBOARD_ID';
+  static const String _androidDepthLeaderboardId = 'CgkI9-rdyZoHEAIQAg';
 
   bool _signedIn = false;
 
