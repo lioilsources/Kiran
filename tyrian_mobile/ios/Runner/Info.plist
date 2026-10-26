@@ -6,6 +6,24 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>cs</string>
+		<string>de</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>id</string>
+		<string>it</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>pt-BR</string>
+		<string>ru</string>
+		<string>th</string>
+		<string>tr</string>
+		<string>vi</string>
+		<string>zh-Hant</string>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Kirian</string>
 	<key>CFBundleExecutable</key>
@@ -34,9 +52,9 @@
 		<string>_tyriancoop._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Tyrian uses local network for co-op multiplayer</string>
+	<string>Kirian looks for co-op games hosted on your Wi-Fi and lets other players find yours.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Kiran does not use the microphone. This permission is required by the audio framework.</string>
+	<string>Kirian does not use the microphone. This permission is required by the audio framework.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

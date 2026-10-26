@@ -1,0 +1,3 @@
+/* Permission prompts (Info.plist NS*UsageDescription), localized. */
+"NSLocalNetworkUsageDescription" = "Kirian hledá co-op hry hostované na vaší Wi-Fi a umožňuje ostatním hráčům najít tu vaši.";
+"NSMicrophoneUsageDescription" = "Kirian mikrofon nepoužívá. Toto oprávnění vyžaduje zvukový framework.";

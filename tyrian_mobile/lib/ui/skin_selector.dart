@@ -14,6 +14,7 @@ import '../services/skin_registry.dart';
 import '../services/skin_store_service.dart';
 import '../game/platform_config.dart' as platform;
 import '../input/gamepad_input.dart';
+import '../l10n/l10n.dart';
 
 /// Full-screen skin selection overlay (dark gradient, cyan accents).
 class SkinSelector extends StatefulWidget {
@@ -265,9 +266,9 @@ class _SkinSelectorState extends State<SkinSelector> {
           child: Column(
             children: [
               const SizedBox(height: 24),
-              const Text(
-                'SELECT SKIN',
-                style: TextStyle(
+              Text(
+                context.l10n.selectSkin,
+                style: const TextStyle(
                   color: Colors.cyanAccent,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -309,7 +310,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'QUIT',
+                        context.l10n.quit,
                         style: TextStyle(
                           color: _focusIndex == _quitIndex
                               ? Colors.cyanAccent
@@ -325,9 +326,9 @@ class _SkinSelectorState extends State<SkinSelector> {
               if (SkinStoreService.instance.supported)
                 TextButton(
                   onPressed: SkinStoreService.instance.restore,
-                  child: const Text(
-                    'RESTORE PURCHASES',
-                    style: TextStyle(
+                  child: Text(
+                    context.l10n.restorePurchases,
+                    style: const TextStyle(
                       color: Colors.white38,
                       fontSize: 12,
                       letterSpacing: 2,
@@ -466,7 +467,7 @@ class SkinCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        price ?? 'LOCKED',
+                        price ?? context.l10n.locked,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.amberAccent,
@@ -602,9 +603,9 @@ class _SkinShopSectionState extends State<SkinShopSection> {
         if (store.supported)
           TextButton(
             onPressed: store.restore,
-            child: const Text(
-              'RESTORE PURCHASES',
-              style: TextStyle(
+            child: Text(
+              context.l10n.restorePurchases,
+              style: const TextStyle(
                 color: Colors.white38,
                 fontSize: 12,
                 letterSpacing: 2,

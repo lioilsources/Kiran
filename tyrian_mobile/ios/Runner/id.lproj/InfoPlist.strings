@@ -1,0 +1,3 @@
+/* Permission prompts (Info.plist NS*UsageDescription), localized. */
+"NSLocalNetworkUsageDescription" = "Kirian mencari game co-op yang di-host di Wi-Fi-mu dan memungkinkan pemain lain menemukan game-mu.";
+"NSMicrophoneUsageDescription" = "Kirian tidak menggunakan mikrofon. Izin ini diwajibkan oleh framework audio.";
