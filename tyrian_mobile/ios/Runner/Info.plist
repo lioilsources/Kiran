@@ -59,7 +59,7 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Kirian looks for co-op games hosted on your Wi-Fi or on nearby devices, and lets other players find yours.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Kiran does not use the microphone. This permission is required by the audio framework.</string>
+	<string>Kirian does not use the microphone. This permission is required by the audio framework.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
