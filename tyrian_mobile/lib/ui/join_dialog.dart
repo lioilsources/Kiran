@@ -5,6 +5,7 @@ import 'package:multipeer_coop/multipeer_coop.dart';
 
 import '../net/coop_host.dart';
 import '../net/discovery.dart';
+import '../l10n/l10n.dart';
 
 /// One list of every co-op host the device can reach: players on the same
 /// Wi-Fi (Bonjour) and, on iPhone, iPad and Mac, players nearby with no
@@ -56,7 +57,7 @@ class _JoinDialogState extends State<JoinDialog> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Cannot search this network';
+        _error = context.l10n.cannotSearchNetwork;
         _manual = true;
       });
     }
@@ -80,11 +81,12 @@ class _JoinDialogState extends State<JoinDialog> {
   Widget build(BuildContext context) {
     final hosts = widget.discovery.hosts;
     final nearbyHint = MultipeerCoop.isSupported
-        ? 'Same Wi-Fi works on every device. iPhone, iPad and Mac also find each other nearby without one — with Personal Hotspot off on both.'
-        : 'Both players must be on the same Wi-Fi — a Personal Hotspot works too.';
+        ? context.l10n.joinHintNearby
+        : context.l10n.joinHintWifi;
     return AlertDialog(
       backgroundColor: Colors.grey[900],
-      title: const Text('Join co-op', style: TextStyle(color: Colors.cyanAccent)),
+      title: Text(context.l10n.joinCoopTitle,
+          style: const TextStyle(color: Colors.cyanAccent)),
       content: SizedBox(
         width: 320,
         child: Column(
@@ -106,8 +108,8 @@ class _JoinDialogState extends State<JoinDialog> {
                     Expanded(
                       child: Text(
                         _slow
-                            ? 'No hosts yet. $nearbyHint'
-                            : 'Looking for hosts on this Wi-Fi and nearby…',
+                            ? context.l10n.noHostsYet(nearbyHint)
+                            : context.l10n.lookingForHosts,
                         style: const TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ),
@@ -136,8 +138,9 @@ class _JoinDialogState extends State<JoinDialog> {
                             ),
                             Text(
                               host.isNearby
-                                  ? 'Nearby · Bluetooth / peer-to-peer Wi-Fi'
-                                  : '${host.address}:${host.port} · same Wi-Fi',
+                                  ? context.l10n.hostNearby
+                                  : context.l10n.hostSameWifi(
+                                      '${host.address}:${host.port}'),
                               style: const TextStyle(
                                   color: Colors.white38, fontSize: 12),
                             ),
@@ -160,8 +163,8 @@ class _JoinDialogState extends State<JoinDialog> {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () => setState(() => _manual = true),
-                  child: const Text('Enter IP manually',
-                      style: TextStyle(color: Colors.white54, fontSize: 12)),
+                  child: Text(context.l10n.enterIpManually,
+                      style: const TextStyle(color: Colors.white54, fontSize: 12)),
                 ),
               )
             else
@@ -186,12 +189,14 @@ class _JoinDialogState extends State<JoinDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('CANCEL', style: TextStyle(color: Colors.white54)),
+          child: Text(context.l10n.cancel,
+              style: const TextStyle(color: Colors.white54)),
         ),
         if (_manual)
           TextButton(
             onPressed: _connectTyped,
-            child: const Text('CONNECT', style: TextStyle(color: Colors.cyanAccent)),
+            child: Text(context.l10n.connect,
+                style: const TextStyle(color: Colors.cyanAccent)),
           ),
       ],
     );

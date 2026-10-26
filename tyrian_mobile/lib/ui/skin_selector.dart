@@ -15,6 +15,7 @@ import '../services/skin_store_service.dart';
 import '../game/challenge.dart';
 import '../game/platform_config.dart' as platform;
 import '../input/gamepad_input.dart';
+import '../l10n/l10n.dart';
 
 /// Full-screen skin selection overlay (dark gradient, cyan accents).
 class SkinSelector extends StatefulWidget {
@@ -315,9 +316,9 @@ class _SkinSelectorState extends State<SkinSelector> {
           child: Column(
             children: [
               const SizedBox(height: 24),
-              const Text(
-                'SELECT SKIN',
-                style: TextStyle(
+              Text(
+                context.l10n.selectSkin,
+                style: const TextStyle(
                   color: Colors.cyanAccent,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -362,7 +363,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'DIFFICULTY',
+                          context.l10n.difficulty,
                           style: TextStyle(
                             color: Colors.cyanAccent.withAlpha(140),
                             fontSize: 11,
@@ -372,7 +373,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                         ),
                         const SizedBox(width: 14),
                         Text(
-                          '‹ ${Challenge.selected.label} ›',
+                          '‹ ${Challenge.selected.localizedLabel(context.l10n)} ›',
                           style: TextStyle(
                             color: Challenge.selected.isHidden
                                 ? Colors.purpleAccent
@@ -407,7 +408,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'CAMPAIGN',
+                        context.l10n.campaign,
                         style: TextStyle(
                           color: _focusIndex == _campaignIndex
                               ? Colors.cyanAccent
@@ -438,7 +439,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'QUIT',
+                        context.l10n.quit,
                         style: TextStyle(
                           color: _focusIndex == _quitIndex
                               ? Colors.cyanAccent
@@ -454,9 +455,9 @@ class _SkinSelectorState extends State<SkinSelector> {
               if (SkinStoreService.instance.supported)
                 TextButton(
                   onPressed: SkinStoreService.instance.restore,
-                  child: const Text(
-                    'RESTORE PURCHASES',
-                    style: TextStyle(
+                  child: Text(
+                    context.l10n.restorePurchases,
+                    style: const TextStyle(
                       color: Colors.white38,
                       fontSize: 12,
                       letterSpacing: 2,
@@ -603,7 +604,7 @@ class SkinCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        price ?? 'LOCKED',
+                        price ?? context.l10n.locked,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.amberAccent,
@@ -791,9 +792,9 @@ class SkinShopSectionState extends State<SkinShopSection> {
         if (store.supported)
           TextButton(
             onPressed: store.restore,
-            child: const Text(
-              'RESTORE PURCHASES',
-              style: TextStyle(
+            child: Text(
+              context.l10n.restorePurchases,
+              style: const TextStyle(
                 color: Colors.white38,
                 fontSize: 12,
                 letterSpacing: 2,

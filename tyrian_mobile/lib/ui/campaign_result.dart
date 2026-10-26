@@ -10,6 +10,7 @@ import '../systems/campaign.dart';
 import '../systems/campaign_tracker.dart';
 import 'format.dart';
 import 'ui_theme.dart';
+import '../l10n/l10n.dart';
 
 /// The objective list, shown twice: as a briefing on the map (no progress
 /// yet) and as the score sheet on the result card.
@@ -56,7 +57,7 @@ class ObjectiveLines extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    o.spec.text,
+                    o.spec.localizedText(context.l10n),
                     style: theme.styled(TextStyle(
                       color: graded && !o.met
                           ? theme.textSecondary
@@ -67,7 +68,7 @@ class ObjectiveLines extends StatelessWidget {
                 ),
                 if (!o.required && !graded)
                   Text(
-                    'STAR',
+                    context.l10n.objectiveStar,
                     style: theme.styled(TextStyle(
                       color: theme.upgrade.withAlpha(170),
                       fontSize: compact ? 9 : 11,
@@ -129,8 +130,9 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
   bool _prevConfirm = true;
 
   List<(String, VoidCallback)> get _items => [
-        if (widget.result.requiredMet) ('CONTINUE', widget.onContinue),
-        (widget.result.requiredMet ? 'REPLAY NODE' : 'RETRY', widget.onRetry),
+        if (widget.result.requiredMet) (context.l10n.continueButton, widget.onContinue),
+        (widget.result.requiredMet ? context.l10n.replayNode : context.l10n.retry,
+            widget.onRetry),
       ];
 
   @override
@@ -218,7 +220,7 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  cleared ? 'NODE CLEARED' : 'NODE FAILED',
+                  cleared ? context.l10n.nodeCleared : context.l10n.nodeFailed,
                   style: _theme.styled(TextStyle(
                     color: cleared ? _theme.success : _theme.danger,
                     fontSize: 22,
@@ -274,7 +276,7 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'WEAPON TIER UNLOCKED',
+                          context.l10n.weaponTierUnlocked,
                           style: _theme.styled(TextStyle(
                             color: _theme.upgrade,
                             fontSize: 12,
@@ -291,7 +293,7 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
                           )),
                         ),
                         Text(
-                          'On sale in the Com Center.',
+                          context.l10n.onSaleInComCenter,
                           style: _theme.styled(TextStyle(
                             color: _theme.textSecondary,
                             fontSize: 11,
@@ -304,8 +306,7 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
                 if (!cleared) ...[
                   const SizedBox(height: 10),
                   Text(
-                    'The required tasks decide the node. Fly it again — what '
-                    'you earned stays with you.',
+                    context.l10n.requiredTasksHint,
                     style: _theme.styled(TextStyle(
                       color: _theme.textSecondary,
                       fontSize: 12,
