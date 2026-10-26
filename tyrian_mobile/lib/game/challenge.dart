@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/l10n.dart';
 
 /// Player-chosen difficulty: Easy / Normal / Hard, plus a hidden fourth.
 ///
@@ -53,6 +54,14 @@ enum Challenge {
   final double score;
 
   bool get isHidden => this == lord;
+
+  /// [label] in the player's language; [label] stays English for logs.
+  String localizedLabel(AppLocalizations l) => switch (this) {
+        easy => l.difficultyEasy,
+        normal => l.difficultyNormal,
+        hard => l.difficultyHard,
+        lord => l.difficultyLord,
+      };
 
   static Challenge fromId(String? id) =>
       values.firstWhere((c) => c.id == id, orElse: () => normal);

@@ -9,6 +9,7 @@ import '../systems/device.dart';
 import '../systems/path_system.dart';
 import 'hostile.dart';
 import 'vessel.dart';
+import '../l10n/l10n.dart';
 
 /// A piece bolted onto a composite boss. Each campaign boss keeps the ones
 /// before it and gains the next, so the silhouette grows across the campaign.
@@ -318,13 +319,13 @@ class BossPart extends Hostile {
   static String _captionFor(PartKind kind) {
     switch (kind) {
       case PartKind.turret:
-        return 'Turret';
+        return L10n.current.bossPartTurret;
       case PartKind.shieldPod:
-        return 'Shield Pod';
+        return L10n.current.bossPartShieldPod;
       case PartKind.thruster:
-        return 'Thruster';
+        return L10n.current.bossPartThruster;
       case PartKind.cannon:
-        return 'Cannon';
+        return L10n.current.bossPartCannon;
     }
   }
 

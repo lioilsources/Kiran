@@ -47,6 +47,7 @@ import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
+import '../l10n/l10n.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -1337,13 +1338,13 @@ class TyrianGame extends FlameGame
         vessel2!.visible = false;
       }
 
-      showMessage('Player 2 joined!');
+      showMessage(L10n.current.player2Joined);
       onClientJoined?.call();
     };
 
     host.onClientDisconnected = () {
       vessel2?.visible = false;
-      showMessage('Player 2 disconnected');
+      showMessage(L10n.current.player2Disconnected);
       onClientLeft?.call();
     };
   }
@@ -1414,7 +1415,7 @@ class TyrianGame extends FlameGame
     };
 
     client.onDisconnected = () {
-      showMessage('Host disconnected');
+      showMessage(L10n.current.hostDisconnected);
       onDisconnected?.call();
     };
 

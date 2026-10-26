@@ -4,6 +4,7 @@ import '../entities/boss.dart';
 import '../entities/vessel.dart';
 import '../game/challenge.dart';
 import '../game/tyrian_game.dart';
+import '../l10n/l10n.dart';
 import '../rendering/bg_zones.dart';
 import 'dev_type.dart';
 import 'sector.dart';
@@ -50,6 +51,57 @@ class ObjectiveSpec {
       this.family,
       this.slot,
       this.weaponName});
+
+  /// [text] in the player's language. [text] itself stays English: it is
+  /// what the tests and logs quote.
+  String localizedText(AppLocalizations l) {
+    switch (id) {
+      case 'clear':
+        return l.objClear;
+      case 'kills':
+      case 'sweep':
+        return l.objKills(amount);
+      case 'untouched':
+        return l.objUntouched;
+      case 'hull':
+        return l.objHull(amount);
+      case 'weapon':
+        return l.objWeaponKills(amount, _weaponLabel);
+      case 'sides':
+        return l.objSideGunKills(amount);
+      case 'loadout':
+        return slot == WeaponSlot.frontGun
+            ? l.objFlyWithFront(weaponName ?? '')
+            : l.objFlyWithSide(weaponName ?? '');
+      case 'sidearm':
+        return l.objBuySideGun;
+      case 'upgrade':
+        return switch (slot) {
+          WeaponSlot.generator => l.objUpgradeGenerator(amount),
+          WeaponSlot.frontGun => l.objUpgradeFrontGun(amount),
+          _ => l.objUpgradeSideGun(amount),
+        };
+      case 'pickups':
+        return l.objPickups(amount);
+      case 'fleets':
+        return l.objFleets(amount);
+      case 'noram':
+        return l.objNoRam;
+      case 'fast':
+        return l.objUnderTime(amount);
+      case 'strip':
+        return l.objStripBoss;
+    }
+    return text;
+  }
+
+  /// The weapon a kill-by-weapon task names — a proper name, never
+  /// translated — read back out of the English [text].
+  String get _weaponLabel {
+    const marker = ' with the ';
+    final i = text.indexOf(marker);
+    return i < 0 ? '' : text.substring(i + marker.length);
+  }
 
   /// Clearing the sector at all — every node's first required task.
   static const clear = ObjectiveSpec(

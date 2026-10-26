@@ -1,0 +1,5 @@
+/* Permission prompts (Info.plist NS*UsageDescription), localized. */
+"NSBluetoothAlwaysUsageDescription" = "Kirian utilise le Bluetooth pour trouver un joueur à proximité en coop locale lorsque vous n'êtes pas sur le même Wi-Fi.";
+"NSBluetoothPeripheralUsageDescription" = "Kirian utilise le Bluetooth pour trouver un joueur à proximité en coop locale lorsque vous n'êtes pas sur le même Wi-Fi.";
+"NSLocalNetworkUsageDescription" = "Kirian recherche les parties coop hébergées sur votre Wi-Fi ou sur des appareils à proximité, et permet aux autres joueurs de trouver la vôtre.";
+"NSMicrophoneUsageDescription" = "Kirian n'utilise pas le micro. Cette autorisation est exigée par le framework audio.";

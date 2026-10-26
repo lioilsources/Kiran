@@ -8,6 +8,7 @@ import 'dev_type.dart';
 import '../entities/projectile.dart';
 import '../entities/vessel.dart';
 import '../entities/hostile.dart';
+import '../l10n/l10n.dart';
 
 /// Ported from Device.cls — a weapon instance equipped on a vessel or hostile.
 class Device {
@@ -254,7 +255,7 @@ class Device {
         parentVessel!.credit += bonus;
         (parentVessel! as HasGameReference<TyrianGame>)
             .game
-            .showMessage('Max. level! Sold for \$${fmtNum(bonus)}');
+            .showMessage(L10n.current.maxLevelSold(fmtNum(bonus)));
       }
       return;
     }

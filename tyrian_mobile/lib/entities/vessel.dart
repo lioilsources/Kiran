@@ -11,6 +11,7 @@ import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
 import '../rendering/dissolve_effect.dart';
 import 'hostile.dart';
+import '../l10n/l10n.dart';
 
 /// Ported from Vessel.cls — the player's ship.
 class Vessel extends PositionComponent
@@ -623,7 +624,7 @@ class Vessel extends PositionComponent
         score > wepLevScores[nextWeaponLevel]) {
       nextWeaponLevel++;
       const roman = ['', 'I', 'II', 'III', 'IV'];
-      game.showMessage('Weapon level ${roman[nextWeaponLevel]} unlocked');
+      game.showMessage(L10n.current.weaponLevelUnlocked(roman[nextWeaponLevel]));
       SoundService.instance.play(SfxEvent.weaponUnlock);
     }
   }

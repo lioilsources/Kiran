@@ -9,6 +9,7 @@ import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import 'skin_painter.dart';
+import '../l10n/l10n.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
@@ -136,7 +137,7 @@ class OsdPanel extends StatelessWidget {
                 children: [
                   if (game.state == GameState.paused)
                     Text(
-                      'PAUSED',
+                      L10n.current.paused,
                       style: TextStyle(
                         color: Colors.cyanAccent,
                         fontSize: _sc(13),
@@ -160,7 +161,7 @@ class OsdPanel extends StatelessWidget {
                               border: Border.all(color: Colors.orangeAccent.withAlpha(100)),
                             ),
                             child: Text(
-                              'SKIN',
+                              L10n.current.skin,
                               style: TextStyle(
                                 color: Colors.orangeAccent,
                                 fontSize: _sc(10),
@@ -210,7 +211,9 @@ class OsdPanel extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            game.state == GameState.paused ? 'RESUME' : 'PAUSE',
+                            game.state == GameState.paused
+                                ? L10n.current.resume
+                                : L10n.current.pause,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: _sc(10),
@@ -253,15 +256,15 @@ class OsdPanel extends StatelessWidget {
             ),
           ),
         _staggeredBar(vessel.hp.toDouble(), vessel.hpMax.toDouble(),
-            Colors.redAccent, 'HP', 'icon_life',
+            Colors.redAccent, L10n.current.hudHp, 'icon_life',
             indent: 0),
         const SizedBox(height: 3),
         _staggeredBar(vessel.shield, vessel.shieldMax,
-            Colors.cyanAccent, 'SH', 'icon_shield',
+            Colors.cyanAccent, L10n.current.hudShield, 'icon_shield',
             indent: 10),
         const SizedBox(height: 3),
         _staggeredBar(vessel.genValue, vessel.genMax,
-            Colors.amberAccent, 'PWR', 'icon_gen',
+            Colors.amberAccent, L10n.current.hudPower, 'icon_gen',
             indent: 20),
       ],
     );
@@ -276,7 +279,7 @@ class OsdPanel extends StatelessWidget {
   Widget _buildCreditsWidget() {
     if (!game.isCoop) {
       return CreditsWave(
-        prefix: 'Credits: ',
+        prefix: L10n.current.creditsPrefix,
         value: game.vessel.credit,
         style: _creditsStyle,
       );
@@ -334,7 +337,9 @@ class BossHealthBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               HealthBar(
-                label: boss.shielded ? '${boss.caption} — SHIELDED' : boss.caption,
+                label: boss.shielded
+                    ? L10n.current.bossShielded(boss.caption)
+                    : boss.caption,
                 value: boss.hp.toDouble(),
                 maxValue: boss.hpMax.toDouble(),
                 // A shielded core takes nothing: colour it as inert so the

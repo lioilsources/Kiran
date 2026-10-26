@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
+import 'l10n/l10n.dart';
+
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
 import 'input/gamepad_input.dart';
@@ -171,6 +173,14 @@ class TyrianApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kirian',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // Keep the context-free accessor (Flame world, data classes) on the
+      // locale the app resolved to.
+      builder: (context, child) {
+        L10n.current = AppLocalizations.of(context);
+        return child!;
+      },
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
       ),
@@ -435,19 +445,16 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: Text('Could not connect to $hostName',
+        title: Text(ctx.l10n.nearbyJoinFailedTitle(hostName),
             style: const TextStyle(color: Colors.cyanAccent)),
-        content: const Text(
-          'The host was visible but the link did not come up.\n\n'
-          'Nearby play needs peer-to-peer Wi-Fi, which iOS turns off while a '
-          'Personal Hotspot is on — switch the hotspot off on both devices and '
-          'try again, or put both devices on the same Wi-Fi.',
-          style: TextStyle(color: Colors.white70, fontSize: 14),
+        content: Text(
+          ctx.l10n.nearbyJoinFailedBody,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK', style: TextStyle(color: Colors.cyanAccent)),
+            child: Text(ctx.l10n.ok, style: const TextStyle(color: Colors.cyanAccent)),
           ),
         ],
       ),
@@ -835,8 +842,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 score: _game.vessel.score,
                 credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
                 subtitle: _game.mode == GameMode.campaign
-                    ? 'Mission failed — loadout and credits retained. Retry from the Com Center.'
-                    : 'Rebuilding at Sector 1 — loadout and credits retained',
+                    ? context.l10n.gameOverCampaign
+                    : context.l10n.gameOverEndless,
                 onClose: _game.mode == GameMode.campaign
                     ? _retryCampaignNode
                     : (_game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector),
@@ -856,25 +863,25 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   Widget _buildWaitingOverlay() {
     return Container(
       color: Colors.black87,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Colors.cyanAccent),
-            SizedBox(height: 16),
+            const CircularProgressIndicator(color: Colors.cyanAccent),
+            const SizedBox(height: 16),
             Text(
-              'Waiting for host...',
-              style: TextStyle(
+              context.l10n.waitingForHost,
+              style: const TextStyle(
                 color: Colors.cyanAccent,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Game will start when host is ready',
-              style: TextStyle(color: Colors.white54, fontSize: 13),
+              context.l10n.waitingForHostHint,
+              style: const TextStyle(color: Colors.white54, fontSize: 13),
             ),
           ],
         ),
@@ -1034,9 +1041,9 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'VESSEL LOST',
-                style: TextStyle(
+              Text(
+                context.l10n.vesselLost,
+                style: const TextStyle(
                   color: Colors.red,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -1051,12 +1058,12 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Score: ${fmtNum(widget.score)}',
+                context.l10n.scoreValue(fmtNum(widget.score)),
                 style: const TextStyle(color: Colors.cyanAccent, fontSize: 18),
               ),
               const SizedBox(height: 4),
               Text(
-                'Credits: ${fmtNum(widget.credit)}',
+                context.l10n.creditsValue(fmtNum(widget.credit)),
                 style: const TextStyle(color: Colors.greenAccent, fontSize: 18),
               ),
               if (widget.credit2 != null) ...[
@@ -1077,7 +1084,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                     backgroundColor: Colors.cyanAccent,
                     foregroundColor: Colors.black,
                   ),
-                  child: const Text('LEADERBOARD'),
+                  child: Text(context.l10n.leaderboard),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -1088,7 +1095,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                     backgroundColor: Colors.amberAccent,
                     foregroundColor: Colors.black,
                   ),
-                  child: const Text('ACHIEVEMENTS'),
+                  child: Text(context.l10n.achievements),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -1098,7 +1105,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                   backgroundColor: Colors.white24,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('REDEPLOY'),
+                child: Text(context.l10n.redeploy),
               ),
             ],
           ),
@@ -1136,14 +1143,14 @@ class _PauseMenuState extends State<_PauseMenu> {
   bool _prevUp = false, _prevDown = false, _prevConfirm = false, _prevBack = false;
 
   List<(String, VoidCallback)> get _items => [
-        ('RESUME', widget.onResume),
-        ('SKINS', widget.onSkins),
-        (SoundService.instance.muted ? 'SOUND: OFF' : 'SOUND: ON',
+        (context.l10n.resume, widget.onResume),
+        (context.l10n.skins, widget.onSkins),
+        (SoundService.instance.muted ? context.l10n.soundOff : context.l10n.soundOn,
             () => setState(SoundService.instance.toggleMute)),
-        (MusicService.instance.muted ? 'MUSIC: OFF' : 'MUSIC: ON',
+        (MusicService.instance.muted ? context.l10n.musicOff : context.l10n.musicOn,
             () => setState(MusicService.instance.toggleMute)),
-        if (widget.onMainMenu != null) ('MAIN MENU', () => widget.onMainMenu!()),
-        if (widget.onQuit != null) ('QUIT TO DESKTOP', () => widget.onQuit!()),
+        if (widget.onMainMenu != null) (context.l10n.mainMenu, () => widget.onMainMenu!()),
+        if (widget.onQuit != null) (context.l10n.quitToDesktop, () => widget.onQuit!()),
       ];
 
   @override
@@ -1220,8 +1227,8 @@ class _PauseMenuState extends State<_PauseMenu> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('PAUSED',
-                    style: TextStyle(
+                Text(context.l10n.paused,
+                    style: const TextStyle(
                       color: Colors.cyanAccent,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

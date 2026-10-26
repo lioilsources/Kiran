@@ -11,6 +11,7 @@ import '../services/asset_library.dart';
 import '../systems/campaign.dart';
 import 'campaign_result.dart';
 import 'ui_theme.dart';
+import '../l10n/l10n.dart';
 
 /// Vertical spacing between nodes on the route.
 const double _nodeGap = 96;
@@ -229,11 +230,11 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
           IconButton(
             onPressed: widget.onBack,
             icon: Icon(Icons.arrow_back, color: _theme.accent),
-            tooltip: 'Main menu',
+            tooltip: context.l10n.mainMenuTooltip,
           ),
           Expanded(
             child: Text(
-              'CAMPAIGN',
+              context.l10n.campaign,
               style: _theme.styled(TextStyle(
                 color: _theme.accent,
                 fontSize: 20,
@@ -286,8 +287,8 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
               ),
               Text(
                 node.isBoss
-                    ? 'LEVEL ${node.level} · BOSS ${'I' * node.bossOrdinal!}'
-                    : 'LEVEL ${node.level}',
+                    ? context.l10n.nodeLevelBoss(node.level, 'I' * node.bossOrdinal!)
+                    : context.l10n.nodeLevel(node.level),
                 style: _theme.styled(TextStyle(
                   color: node.isBoss ? _theme.danger : _theme.textSecondary,
                   fontSize: 11,
@@ -301,7 +302,7 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
             ObjectiveLines.briefing(node.objectives, theme: _theme)
           else
             Text(
-              'Locked. Clear the node before it.',
+              context.l10n.nodeLockedHint,
               style: _theme.styled(TextStyle(
                 color: _theme.textSecondary,
                 fontSize: 12,
@@ -324,7 +325,9 @@ class _CampaignMapScreenState extends State<CampaignMapScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    open ? (done ? 'FLY AGAIN' : 'LAUNCH') : 'LOCKED',
+                    open
+                        ? (done ? context.l10n.flyAgain : context.l10n.launch)
+                        : context.l10n.locked,
                     style: _theme.styled(TextStyle(
                       color: open ? _theme.accent : _theme.textSecondary,
                       fontSize: 14,
@@ -382,7 +385,7 @@ class _RoutePainter extends CustomPainter {
       );
       final label = TextPainter(
         text: TextSpan(
-          text: 'ZONE ${zone + 1}',
+          text: L10n.current.zoneLabel(zone + 1),
           style: TextStyle(
             color: theme.accent.withAlpha(90),
             fontSize: 10,

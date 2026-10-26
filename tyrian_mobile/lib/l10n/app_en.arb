@@ -1,0 +1,371 @@
+{
+  "@@locale": "en",
+  "ok": "OK",
+  "cancel": "CANCEL",
+  "connect": "CONNECT",
+  "nearbyJoinFailedTitle": "Could not connect to {hostName}",
+  "@nearbyJoinFailedTitle": {
+    "placeholders": {
+      "hostName": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyJoinFailedBody": "The host was visible but the link did not come up.\n\nNearby play needs peer-to-peer Wi-Fi, which iOS turns off while a Personal Hotspot is on — switch the hotspot off on both devices and try again, or put both devices on the same Wi-Fi.",
+  "gameOverCampaign": "Mission failed — loadout and credits retained. Retry from the Com Center.",
+  "gameOverEndless": "Rebuilding at Sector 1 — loadout and credits retained",
+  "waitingForHost": "Waiting for host...",
+  "waitingForHostHint": "Game will start when host is ready",
+  "vesselLost": "VESSEL LOST",
+  "scoreValue": "Score: {score}",
+  "@scoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "creditsValue": "Credits: {credits}",
+  "@creditsValue": {
+    "placeholders": {
+      "credits": {
+        "type": "String"
+      }
+    }
+  },
+  "creditsPrefix": "Credits: ",
+  "leaderboard": "LEADERBOARD",
+  "achievements": "ACHIEVEMENTS",
+  "redeploy": "REDEPLOY",
+  "resume": "RESUME",
+  "pause": "PAUSE",
+  "paused": "PAUSED",
+  "skins": "SKINS",
+  "skin": "SKIN",
+  "soundOn": "SOUND: ON",
+  "soundOff": "SOUND: OFF",
+  "musicOn": "MUSIC: ON",
+  "musicOff": "MUSIC: OFF",
+  "mainMenu": "MAIN MENU",
+  "quitToDesktop": "QUIT TO DESKTOP",
+  "selectSkin": "SELECT SKIN",
+  "difficulty": "DIFFICULTY",
+  "difficultyEasy": "EASY",
+  "difficultyNormal": "NORMAL",
+  "difficultyHard": "HARD",
+  "difficultyLord": "LORD",
+  "campaign": "CAMPAIGN",
+  "quit": "QUIT",
+  "restorePurchases": "RESTORE PURCHASES",
+  "locked": "LOCKED",
+  "mainMenuTooltip": "Main menu",
+  "nodeLevel": "LEVEL {level}",
+  "@nodeLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "nodeLevelBoss": "LEVEL {level} · BOSS {ordinal}",
+  "@nodeLevelBoss": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "ordinal": {
+        "type": "String"
+      }
+    }
+  },
+  "nodeLockedHint": "Locked. Clear the node before it.",
+  "flyAgain": "FLY AGAIN",
+  "launch": "LAUNCH",
+  "zoneLabel": "ZONE {zone}",
+  "@zoneLabel": {
+    "placeholders": {
+      "zone": {
+        "type": "int"
+      }
+    }
+  },
+  "objectiveStar": "STAR",
+  "continueButton": "CONTINUE",
+  "replayNode": "REPLAY NODE",
+  "retry": "RETRY",
+  "nodeCleared": "NODE CLEARED",
+  "nodeFailed": "NODE FAILED",
+  "weaponTierUnlocked": "WEAPON TIER UNLOCKED",
+  "onSaleInComCenter": "On sale in the Com Center.",
+  "requiredTasksHint": "The required tasks decide the node. Fly it again — what you earned stays with you.",
+  "objClear": "Clear the sector",
+  "objKills": "{count, plural, =1{Shoot down 1 hostile} other{Shoot down {count} hostiles}}",
+  "@objKills": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "objUntouched": "Take no hull damage",
+  "objHull": "Finish above {percent}% hull",
+  "@objHull": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "objWeaponKills": "{count, plural, =1{Kill 1 with the {weapon}} other{Kill {count} with the {weapon}}}",
+  "@objWeaponKills": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "weapon": {
+        "type": "String"
+      }
+    }
+  },
+  "objSideGunKills": "{count, plural, =1{Kill 1 with your side guns} other{Kill {count} with your side guns}}",
+  "@objSideGunKills": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "objFlyWithFront": "Launch with the {weapon} up front",
+  "@objFlyWithFront": {
+    "placeholders": {
+      "weapon": {
+        "type": "String"
+      }
+    }
+  },
+  "objFlyWithSide": "Launch with the {weapon} on a side mount",
+  "@objFlyWithSide": {
+    "placeholders": {
+      "weapon": {
+        "type": "String"
+      }
+    }
+  },
+  "objBuySideGun": "Buy a side gun in the Com Center",
+  "objUpgradeGenerator": "Upgrade your generator to level {level}",
+  "@objUpgradeGenerator": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "objUpgradeFrontGun": "Upgrade your front gun to level {level}",
+  "@objUpgradeFrontGun": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "objUpgradeSideGun": "Upgrade a side gun to level {level}",
+  "@objUpgradeSideGun": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "objPickups": "{count, plural, =1{Catch 1 pickup} other{Catch {count} pickups}}",
+  "@objPickups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "objFleets": "{count, plural, =1{Wipe 1 whole formation} other{Wipe {count} whole formations}}",
+  "@objFleets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "objNoRam": "Ram no asteroids",
+  "objUnderTime": "Finish within {seconds}s",
+  "@objUnderTime": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "objStripBoss": "Destroy every boss part before the core",
+  "joinCoopTitle": "Join co-op",
+  "cannotSearchNetwork": "Cannot search this network",
+  "joinHintNearby": "Same Wi-Fi works on every device. iPhone, iPad and Mac also find each other nearby without one — with Personal Hotspot off on both.",
+  "joinHintWifi": "Both players must be on the same Wi-Fi — a Personal Hotspot works too.",
+  "noHostsYet": "No hosts yet. {hint}",
+  "@noHostsYet": {
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "lookingForHosts": "Looking for hosts on this Wi-Fi and nearby…",
+  "hostNearby": "Nearby · Bluetooth / peer-to-peer Wi-Fi",
+  "hostSameWifi": "{address} · same Wi-Fi",
+  "@hostSameWifi": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "enterIpManually": "Enter IP manually",
+  "hudHp": "HP",
+  "hudShield": "SH",
+  "hudPower": "PWR",
+  "hudGen": "GEN",
+  "bossShielded": "{name} — SHIELDED",
+  "@bossShielded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bossPartTurret": "Turret",
+  "bossPartShieldPod": "Shield Pod",
+  "bossPartThruster": "Thruster",
+  "bossPartCannon": "Cannon",
+  "sectorUnknownSpace": "Sector {level} — Unknown Space",
+  "@sectorUnknownSpace": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "player2Joined": "Player 2 joined!",
+  "player2Disconnected": "Player 2 disconnected",
+  "hostDisconnected": "Host disconnected",
+  "maxLevelSold": "Max. level! Sold for ${amount}",
+  "@maxLevelSold": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "weaponLevelUnlocked": "Weapon level {tier} unlocked",
+  "@weaponLevelUnlocked": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "cheatsEnabled": "Cheats enabled",
+  "cheatsDisabled": "Cheats disabled",
+  "cheatsMaxed": "CHEAT: credits maxed, all weapons unlocked",
+  "cheats": "CHEATS",
+  "maxCredits": "MAX CREDITS",
+  "sectionStats": "STATS",
+  "sectionLoadout": "LOADOUT",
+  "sectionOutfitting": "OUTFITTING",
+  "sectionShop": "SHOP",
+  "tabFront": "FRONT",
+  "tabSide": "SIDE",
+  "tabGen": "GEN",
+  "sideLeft": "LEFT",
+  "sideRight": "RIGHT",
+  "noWeaponInstalled": "NO WEAPON INSTALLED",
+  "levelShort": "Lv.{level}",
+  "@levelShort": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "statDamageSpeed": "DMG:{damage} SPD:{speed}",
+  "@statDamageSpeed": {
+    "placeholders": {
+      "damage": {
+        "type": "int"
+      },
+      "speed": {
+        "type": "int"
+      }
+    }
+  },
+  "statPower": "PWR:{power}",
+  "@statPower": {
+    "placeholders": {
+      "power": {
+        "type": "int"
+      }
+    }
+  },
+  "beam": "BEAM",
+  "guided": "GUIDED",
+  "owned": "OWNED",
+  "max": "MAX",
+  "upgrade": "UPGRADE",
+  "upgradeShort": "UPG",
+  "sell": "SELL",
+  "buy": "BUY",
+  "noCredits": "NO CREDITS",
+  "commandCenter": "COMMAND CENTER",
+  "pilot": "Pilot",
+  "dps": "DPS",
+  "score": "SCORE",
+  "nextWeapon": "NEXT WEAPON",
+  "pointsValue": "{points} pts",
+  "@pointsValue": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "slotFront": "Front",
+  "slotLeft": "Left",
+  "slotRight": "Right",
+  "slotGen": "Gen",
+  "power": "PWR",
+  "generator": "GENERATOR",
+  "genOutput": "PWR: +{value}/fr",
+  "@genOutput": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "genCapacity": "Cap: {value}",
+  "@genCapacity": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "launchMission": "LAUNCH MISSION",
+  "startMission": "START MISSION",
+  "continueMission": "CONTINUE MISSION",
+  "padControlsHint": "[↑↓] Select   [←→] Columns   [LB/RB] Tabs   [A] L/R slot    —    [B] Buy/Upgrade selected   [X/Y] Sell selected   [OPTIONS] Continue",
+  "host": "HOST",
+  "hostingAs": "HOSTING as {name}",
+  "@hostingAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "JOIN"
+}
