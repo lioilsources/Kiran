@@ -226,6 +226,11 @@ class TyrianGame extends FlameGame
   VoidCallback? onShowComCenter;
   VoidCallback? onSectorComplete;
   VoidCallback? onLoaded;
+
+  /// Bot control for the headless RL environment (test/rl/). When set it
+  /// replaces touch, keyboard and gamepad input for the local vessel: called
+  /// once per playing frame, dx/dy in -1..1 like a stick, fire like the button.
+  ({double dx, double dy, bool fire}) Function()? botInput;
   VoidCallback? onPauseToggle;
   VoidCallback? onSkinRequested;
   bool skinSelectorOpen = false;
@@ -557,7 +562,13 @@ class TyrianGame extends FlameGame
     }
 
     // Desktop keyboard + gamepad input (handles pause toggle even when paused)
-    _processDesktopInput(dt);
+    if (botInput == null) {
+      _processDesktopInput(dt);
+    } else if (state == GameState.playing) {
+      final a = botInput!();
+      _applyMovement(vessel, a.dx, a.dy, _kbSpeed, dt);
+      vessel.fire = a.fire;
+    }
 
     // Only the `playing` state runs the full simulation. paused, comCenter AND
     // gameOver keep just the visual backdrop alive — previously gameOver was
