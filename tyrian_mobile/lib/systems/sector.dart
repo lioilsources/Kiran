@@ -10,6 +10,7 @@ import '../entities/structure.dart';
 import '../entities/collectable.dart';
 import 'fleet.dart';
 import 'path_system.dart';
+import '../l10n/l10n.dart';
 
 part 'sector_parts.dart';
 
@@ -283,7 +284,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
     final numFleets = (rng.nextDouble() * 15 + 5).round();
 
     final s = Sector(
-      caption: 'Sector $level — Unknown Space',
+      caption: L10n.current.sectorUnknownSpace(level),
       level: level,
       // VB6: sectorBonus = CLng(fleetCount) * CLng(2500) * level
       sectorBonus: numFleets * 2500 * level,

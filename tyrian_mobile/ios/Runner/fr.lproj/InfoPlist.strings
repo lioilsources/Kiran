@@ -1,0 +1,3 @@
+/* Permission prompts (Info.plist NS*UsageDescription), localized. */
+"NSLocalNetworkUsageDescription" = "Kirian recherche les parties coop hébergées sur votre Wi-Fi et permet aux autres joueurs de trouver la vôtre.";
+"NSMicrophoneUsageDescription" = "Kirian n'utilise pas le micro. Cette autorisation est exigée par le framework audio.";

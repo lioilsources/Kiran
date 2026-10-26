@@ -1,0 +1,182 @@
+{
+  "@@locale": "en",
+  "cancel": "CANCEL",
+  "connect": "CONNECT",
+  "gameOverEndless": "Rebuilding at Sector 1 — loadout and credits retained",
+  "waitingForHost": "Waiting for host...",
+  "waitingForHostHint": "Game will start when host is ready",
+  "vesselLost": "VESSEL LOST",
+  "scoreValue": "Score: {score}",
+  "@scoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "creditsValue": "Credits: {credits}",
+  "@creditsValue": {
+    "placeholders": {
+      "credits": {
+        "type": "String"
+      }
+    }
+  },
+  "creditsPrefix": "Credits: ",
+  "leaderboard": "LEADERBOARD",
+  "achievements": "ACHIEVEMENTS",
+  "redeploy": "REDEPLOY",
+  "resume": "RESUME",
+  "pause": "PAUSE",
+  "paused": "PAUSED",
+  "skins": "SKINS",
+  "skin": "SKIN",
+  "soundOn": "SOUND: ON",
+  "soundOff": "SOUND: OFF",
+  "musicOn": "MUSIC: ON",
+  "musicOff": "MUSIC: OFF",
+  "quitToDesktop": "QUIT TO DESKTOP",
+  "selectSkin": "SELECT SKIN",
+  "quit": "QUIT",
+  "restorePurchases": "RESTORE PURCHASES",
+  "locked": "LOCKED",
+  "hudHp": "HP",
+  "hudShield": "SH",
+  "hudPower": "PWR",
+  "hudGen": "GEN",
+  "sectorUnknownSpace": "Sector {level} — Unknown Space",
+  "@sectorUnknownSpace": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "player2Joined": "Player 2 joined!",
+  "player2Disconnected": "Player 2 disconnected",
+  "hostDisconnected": "Host disconnected",
+  "maxLevelSold": "Max. level! Sold for ${amount}",
+  "@maxLevelSold": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "weaponLevelUnlocked": "Weapon level {tier} unlocked",
+  "@weaponLevelUnlocked": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "cheatsEnabled": "Cheats enabled",
+  "cheatsDisabled": "Cheats disabled",
+  "cheatsMaxed": "CHEAT: credits maxed, all weapons unlocked",
+  "cheats": "CHEATS",
+  "maxCredits": "MAX CREDITS",
+  "sectionStats": "STATS",
+  "sectionLoadout": "LOADOUT",
+  "sectionOutfitting": "OUTFITTING",
+  "sectionShop": "SHOP",
+  "tabFront": "FRONT",
+  "tabSide": "SIDE",
+  "tabGen": "GEN",
+  "sideLeft": "LEFT",
+  "sideRight": "RIGHT",
+  "noWeaponInstalled": "NO WEAPON INSTALLED",
+  "levelShort": "Lv.{level}",
+  "@levelShort": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "statDamageSpeed": "DMG:{damage} SPD:{speed}",
+  "@statDamageSpeed": {
+    "placeholders": {
+      "damage": {
+        "type": "int"
+      },
+      "speed": {
+        "type": "int"
+      }
+    }
+  },
+  "statPower": "PWR:{power}",
+  "@statPower": {
+    "placeholders": {
+      "power": {
+        "type": "int"
+      }
+    }
+  },
+  "beam": "BEAM",
+  "guided": "GUIDED",
+  "owned": "OWNED",
+  "max": "MAX",
+  "upgrade": "UPGRADE",
+  "upgradeShort": "UPG",
+  "sell": "SELL",
+  "buy": "BUY",
+  "noCredits": "NO CREDITS",
+  "commandCenter": "COMMAND CENTER",
+  "pilot": "Pilot",
+  "dps": "DPS",
+  "score": "SCORE",
+  "nextWeapon": "NEXT WEAPON",
+  "pointsValue": "{points} pts",
+  "@pointsValue": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "slotFront": "Front",
+  "slotLeft": "Left",
+  "slotRight": "Right",
+  "slotGen": "Gen",
+  "power": "PWR",
+  "generator": "GENERATOR",
+  "genOutput": "PWR: +{value}/fr",
+  "@genOutput": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "genCapacity": "Cap: {value}",
+  "@genCapacity": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "startMission": "START MISSION",
+  "continueMission": "CONTINUE MISSION",
+  "padControlsHint": "[B] Buy/Upgrade   [X/Y] Sell   [LB/RB] Tabs   [OPTIONS] Continue mission",
+  "host": "HOST",
+  "connectToHost": "Connect to host",
+  "hostingAt": "HOSTING  {ip}",
+  "@hostingAt": {
+    "placeholders": {
+      "ip": {
+        "type": "String"
+      }
+    }
+  },
+  "ipValue": "IP: {ip}",
+  "@ipValue": {
+    "placeholders": {
+      "ip": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "JOIN"
+}
