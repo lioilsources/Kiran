@@ -387,10 +387,11 @@ generovat přes **flux-schnell** (rychlé, ne flux-dev).
 - Varianty: `-n <N>`, výstup `output/assets/skins/<skin>/ui/comcenter_bg_v<i>.jpg`;
   výběr se zapisuje do `selections/<skin>.json` (`"comcenter_bg": <i>`) a
   `cmd/postprocess` bere vybranou variantu.
-- SPARK broker: služba `flux-schnell` je v profilech `comfy` (comfyui +
-  flux-schnell + tts), `gemma` i `llm`; pipeline mluví s ComfyUI API
-  (`COMFYUI_API_URL`), takže stage potřebuje `comfyui,flux-schnell`
-  (= profil `comfy`). Strop priority projektu `kirian` je 30; výš jen okno
+- SPARK broker: od 2026-10-27 07:25 je profil `comfy` jen comfyui + tts
+  (NIM `flux-schnell` bral ComfyUI 17 GiB, render jel z části na CPU,
+  ~97 s/obrázek). Preset `schnell` načítá `flux1-schnell.safetensors`
+  přímo v ComfyUI, takže stage potřebuje jen `comfyui`; kombinaci
+  `comfyui,flux-schnell` dnes žádný profil nesplní a úloha by visela. Strop priority projektu `kirian` je 30; výš jen okno
   uživatele (priorita 100, doslovná slova) nebo `sparkctl approve` na jeho pokyn.
 
 ### Kroky
@@ -411,7 +412,7 @@ generovat přes **flux-schnell** (rychlé, ne flux-dev).
    (viz [[kiran-iteration-style]]: pilot-first, re-roll outliers).
 3. **Generování** (dávka na tomhle stroji přes broker, ne ručně):
    ```
-   id=$(sparkctl exec kirian comfyui,flux-schnell 90 30 "Kirian: comcenter_bg ×24 skinů, 8 variant, schnell" -- \
+   id=$(sparkctl exec kirian comfyui 90 30 "Kirian: comcenter_bg ×24 skinů, 8 variant, schnell" -- \
      go run ./cmd/generate -asset-type comcenter_bg -n 8 -force -comfyui-preset schnell -tuned-dir tuned)
    ```
    `exec` obstará heartbeat i done/fail. Odhad: 24 × 8 = 192 obrázků
@@ -435,7 +436,7 @@ lease prodlužuje do 06:30, uživatel jí dává přednost; knihovnu 1025-24
 Zařazeno z tohoto Macu (nohup + `caffeinate -i`, log
 `pipeline/output/comcenter_v2/exec.log`, id v `pipeline/output/comcenter_v2/job.id`):
 ```
-sparkctl exec kirian comfyui,flux-schnell 90 30 "Kirian: ComCenter pozadí 24×8 (schnell)" --at 06:35 \
+sparkctl exec kirian comfyui 90 30 "Kirian: ComCenter pozadí 24×8 (schnell)" --at 06:35 \
   --dir pipeline -- go run ./cmd/generate -asset-type comcenter_bg -n 8 -comfyui-preset schnell \
   -out output/comcenter_v2/skins
 ```
