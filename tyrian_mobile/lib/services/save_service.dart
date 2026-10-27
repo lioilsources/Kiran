@@ -27,6 +27,7 @@ class SaveService {
     required int level,
     required int nextWeaponLevel,
     required List<Map<String, dynamic>> weapons,
+    List<Map<String, dynamic>> hangar = const [],
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final state = {
@@ -47,6 +48,10 @@ class SaveService {
       // reset). Absent in v2 saves — load falls back to the score derivation.
       'nextWeaponLevel': nextWeaponLevel,
       'weapons': weapons,
+      // Owned-but-unfitted weapons (ComCenter loadout). Optional: older saves
+      // have no key and load an empty hangar, so saveVersion stays 2 —
+      // bumping it would push v2 saves through the legacy index migration.
+      'hangar': hangar,
     };
     await prefs.setString(_keyGameState, jsonEncode(state));
   }

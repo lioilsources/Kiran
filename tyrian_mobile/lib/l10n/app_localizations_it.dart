@@ -400,58 +400,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sectionLoadout => 'ARMAMENTO';
 
   @override
-  String get sectionOutfitting => 'EQUIPAGGIAMENTO';
-
-  @override
-  String get sectionShop => 'NEGOZIO';
-
-  @override
-  String get tabFront => 'FRONTE';
-
-  @override
-  String get tabSide => 'LATO';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => 'SINISTRA';
-
-  @override
-  String get sideRight => 'DESTRA';
-
-  @override
-  String get noWeaponInstalled => 'NESSUN\'ARMA INSTALLATA';
-
-  @override
   String levelShort(int level) {
     return 'Liv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'DAN:$damage VEL:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'EN:$power';
-  }
-
-  @override
-  String get beam => 'RAGGIO';
-
-  @override
-  String get guided => 'GUIDATA';
-
-  @override
-  String get owned => 'POSSEDUTA';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => 'POTENZIA';
 
   @override
   String get upgradeShort => 'POT';
@@ -461,9 +415,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get buy => 'COMPRA';
-
-  @override
-  String get noCredits => 'CREDITI INSUFF.';
 
   @override
   String get commandCenter => 'CENTRO DI COMANDO';
@@ -501,19 +452,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get power => 'EN';
 
   @override
-  String get generator => 'GENERATORE';
-
-  @override
-  String genOutput(String value) {
-    return 'EN: +$value/fr';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Cap.: $value';
-  }
-
-  @override
   String get launchMission => 'LANCIA MISSIONE';
 
   @override
@@ -524,7 +462,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] Scegli   [←→] Colonne   [LB/RB] Schede   [A] Slot S/D    —    [B] Compra/potenzia   [X/Y] Vendi   [OPTIONS] Continua';
+      '[↑↓] Riga   [←→] Scegli   [B] Compra/Potenzia/Cambia   [X/Y] Vendi   [OPTIONS] Continua';
 
   @override
   String get host => 'OSPITA';
@@ -536,4 +474,32 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get join => 'UNISCITI';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'SOVRACCARICO';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon SPENTO — generatore troppo debole';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Si sblocca a $points punti';
+  }
 }

@@ -12,7 +12,7 @@
     "boss_turret": 3,
     "bouncer": 1,
     "bubble": 1,
-    "comcenter_bg": 1,
+    "comcenter_bg": 4,
     "explosion": 1,
     "falcon": 1,
     "falcon1": 1,
@@ -53,8 +53,6 @@
     "ship_frames": 3,
     "starg": 2,
     "ui_button": 1,
-    "ui_card_bg": 1,
-    "ui_tab_active": 1,
     "vulcan": 1
   }
 }

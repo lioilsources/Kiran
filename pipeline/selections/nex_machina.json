@@ -1,4 +1,5 @@
 {
+  "skin": "nex_machina",
   "assets": {
     "asteroid": 1,
     "asteroid1": 1,
@@ -7,7 +8,7 @@
     "blaster": 1,
     "bouncer": 1,
     "bubble": 1,
-    "comcenter_bg": 1,
+    "comcenter_bg": 8,
     "explosion": 1,
     "falcon": 1,
     "falcon1": 1,
@@ -48,9 +49,6 @@
     "ship_frames": 1,
     "starg": 1,
     "ui_button": 1,
-    "ui_card_bg": 1,
-    "ui_tab_active": 1,
     "vulcan": 1
-  },
-  "skin": "nex_machina"
+  }
 }

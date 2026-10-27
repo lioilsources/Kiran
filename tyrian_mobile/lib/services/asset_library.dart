@@ -249,7 +249,7 @@ class AssetLibrary {
     _icons.clear();
     for (final name in [
       'icon_life', 'icon_bomb', 'icon_shield', 'icon_credit', 'icon_gen',
-      'comcenter_bg', 'ui_card_bg', 'ui_button',
+      'comcenter_bg', 'ui_button',
     ]) {
       final path = 'skins/$_skinId/ui/$name.png';
       if (!await _assetExists(path)) continue;

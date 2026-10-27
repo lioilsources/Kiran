@@ -91,30 +91,18 @@ Symmetrical, centered composition, dramatic scale, atmospheric background with s
 Atmospheric, eye-catching thumbnail for a selection screen. No text overlay.`,
 
 	"comcenter_bg": `{{.ArtDirective}}
-A dramatic illustrated science fiction scene viewed from a spacecraft cockpit or space station observation deck.
-Rich atmospheric composition: nebulae, distant planets, star fields, or alien landscapes in the far background.
+A tall portrait view out of a large spacecraft observation window. The top two thirds of the image, including the whole vertical center, is an almost empty, very dark window of deep black space with only sparse faint pinpoint stars: no nebula, no clouds, no planets, no glow, no bright objects there, because rows of text are overlaid on it and must stay readable.
+The only bright, detailed elements are a dim cockpit console along the bottom fifth of the image and, at most, one small planet or nebula wisp cut off by the far left or far right edge.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing.
-The central area of the image must be naturally dark so that text and UI panels overlaid on top remain readable.
-No text, no HUD elements, no UI widgets, no ship in foreground.
+{{.SceneTechnique}}
+No horizon line or bright band across the middle. No text, no HUD elements, no UI widgets, no ship in foreground.
 No people, no characters, no pilots, no faces, no mascots — the deck is empty, the view is the scene outside. Portrait aspect ratio 1:2.`,
-
-	"ui_card_bg": `A sci-fi game inventory card panel surface texture.
-Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Dark background panel with subtle geometric or circuit-board micro-pattern etched into the surface.
-Slightly lighter beveled edges on all sides to give depth and a natural panel border.
-Square format. No text, no icons, no characters. Flat opaque surface, no transparency.`,
 
 	"ui_button": `A sci-fi game action button texture, wide horizontal format 4:1.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Dark elongated panel with a glowing accent trim along the long horizontal edges.
 Subtle inner gradient from dark center to slightly lighter edges. Symmetric left-right design.
 No text, no letters, no icons. Game HUD element.`,
-
-	"ui_tab_active": `A sci-fi game navigation tab texture, wide horizontal strip 4:1.
-Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Active selected state: a crisp glowing accent line along the top edge, panel surface slightly brighter than background.
-Clean flat surface with very subtle inner highlight. No text, no icons.`,
 }
 
 var compiledTemplates = make(map[string]*template.Template)
@@ -190,20 +178,10 @@ dramatic atmospheric scene, nebulae, distant planets, alien landscape,
 bold cel-shaded, vibrant colors, cinematic composition, dark center area for UI readability,
 portrait format, no text, no HUD, no ship in foreground`,
 
-	"ui_card_bg": ponyQuality + `, sci-fi game UI panel texture, inventory card surface,
-dark background, subtle circuit board pattern, beveled edges, panel depth,
-{{.StyleKeywords}}, {{.PaletteDescription}},
-flat opaque surface, square format, no text, no icons, no characters`,
-
 	"ui_button": ponyQuality + `, sci-fi game UI button texture, wide horizontal panel 4:1,
 dark elongated panel, glowing trim on edges, inner gradient,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 symmetric design, no text, no letters, game HUD element`,
-
-	"ui_tab_active": ponyQuality + `, sci-fi game navigation tab texture, wide horizontal strip,
-active selected state, glowing top edge accent, slightly bright panel,
-{{.StyleKeywords}}, {{.PaletteDescription}},
-flat surface, subtle highlight, no text, no icons`,
 }
 
 var compiledPonyTemplates = make(map[string]*template.Template)
@@ -256,6 +234,7 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"PaletteDescription": palette,
 		"BackgroundMood":     s.BackgroundMood,
 		"SceneNoun":          sceneNoun(s),
+		"SceneTechnique":     sceneTechnique(s),
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
 		"BossDirective":      s.BossDirective,
@@ -282,6 +261,25 @@ func sceneNoun(s skin.SkinDef) string {
 		return s.SceneNoun
 	}
 	return "deep space"
+}
+
+// sceneTechnique names the rendering medium for full-scene illustrations
+// (comcenter_bg). A fixed "cel-shaded cartoon" line there overrode the skin's
+// era: 8-bit and VGA skins came back as smooth poster art with only the
+// palette left. Retro media are spelled out; everything else keeps the
+// illustrated look.
+func sceneTechnique(s skin.SkinDef) string {
+	style := strings.ToLower(s.ArtDirective + " " + s.StyleKeywords)
+	switch {
+	case strings.Contains(style, "wireframe"):
+		return "The entire scene is drawn as glowing vector lines on pure black: outlines only, no filled surfaces, no textures, no gradients, no painted shading, cinematic framing."
+	case strings.Contains(style, "low poly") || strings.Contains(style, "low-poly"):
+		return "The entire scene is flat-shaded low-poly 3D: untextured polygons, one flat color per face, visible facets, no gradients, no textures, cinematic framing."
+	case strings.Contains(style, "pixel art") || strings.Contains(style, "16-bit"):
+		return "The entire scene is pixel art at a low native resolution, upscaled with nearest neighbour: hard square pixels with a visible pixel grid, limited palette, flat color bands or dithering instead of smooth gradients, no anti-aliasing, no painterly blur, cinematic framing."
+	default:
+		return "Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing."
+	}
 }
 
 // BuildPrompt renders a prompt template for the given asset type and skin using the default (Flux) style.

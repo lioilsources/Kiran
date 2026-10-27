@@ -731,101 +731,17 @@ abstract class AppLocalizations {
   /// **'LOADOUT'**
   String get sectionLoadout;
 
-  /// No description provided for @sectionOutfitting.
-  ///
-  /// In en, this message translates to:
-  /// **'OUTFITTING'**
-  String get sectionOutfitting;
-
-  /// No description provided for @sectionShop.
-  ///
-  /// In en, this message translates to:
-  /// **'SHOP'**
-  String get sectionShop;
-
-  /// No description provided for @tabFront.
-  ///
-  /// In en, this message translates to:
-  /// **'FRONT'**
-  String get tabFront;
-
-  /// No description provided for @tabSide.
-  ///
-  /// In en, this message translates to:
-  /// **'SIDE'**
-  String get tabSide;
-
-  /// No description provided for @tabGen.
-  ///
-  /// In en, this message translates to:
-  /// **'GEN'**
-  String get tabGen;
-
-  /// No description provided for @sideLeft.
-  ///
-  /// In en, this message translates to:
-  /// **'LEFT'**
-  String get sideLeft;
-
-  /// No description provided for @sideRight.
-  ///
-  /// In en, this message translates to:
-  /// **'RIGHT'**
-  String get sideRight;
-
-  /// No description provided for @noWeaponInstalled.
-  ///
-  /// In en, this message translates to:
-  /// **'NO WEAPON INSTALLED'**
-  String get noWeaponInstalled;
-
   /// No description provided for @levelShort.
   ///
   /// In en, this message translates to:
   /// **'Lv.{level}'**
   String levelShort(int level);
 
-  /// No description provided for @statDamageSpeed.
-  ///
-  /// In en, this message translates to:
-  /// **'DMG:{damage} SPD:{speed}'**
-  String statDamageSpeed(int damage, int speed);
-
-  /// No description provided for @statPower.
-  ///
-  /// In en, this message translates to:
-  /// **'PWR:{power}'**
-  String statPower(int power);
-
-  /// No description provided for @beam.
-  ///
-  /// In en, this message translates to:
-  /// **'BEAM'**
-  String get beam;
-
-  /// No description provided for @guided.
-  ///
-  /// In en, this message translates to:
-  /// **'GUIDED'**
-  String get guided;
-
-  /// No description provided for @owned.
-  ///
-  /// In en, this message translates to:
-  /// **'OWNED'**
-  String get owned;
-
   /// No description provided for @max.
   ///
   /// In en, this message translates to:
   /// **'MAX'**
   String get max;
-
-  /// No description provided for @upgrade.
-  ///
-  /// In en, this message translates to:
-  /// **'UPGRADE'**
-  String get upgrade;
 
   /// No description provided for @upgradeShort.
   ///
@@ -844,12 +760,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'BUY'**
   String get buy;
-
-  /// No description provided for @noCredits.
-  ///
-  /// In en, this message translates to:
-  /// **'NO CREDITS'**
-  String get noCredits;
 
   /// No description provided for @commandCenter.
   ///
@@ -917,24 +827,6 @@ abstract class AppLocalizations {
   /// **'PWR'**
   String get power;
 
-  /// No description provided for @generator.
-  ///
-  /// In en, this message translates to:
-  /// **'GENERATOR'**
-  String get generator;
-
-  /// No description provided for @genOutput.
-  ///
-  /// In en, this message translates to:
-  /// **'PWR: +{value}/fr'**
-  String genOutput(String value);
-
-  /// No description provided for @genCapacity.
-  ///
-  /// In en, this message translates to:
-  /// **'Cap: {value}'**
-  String genCapacity(int value);
-
   /// No description provided for @launchMission.
   ///
   /// In en, this message translates to:
@@ -956,7 +848,7 @@ abstract class AppLocalizations {
   /// No description provided for @padControlsHint.
   ///
   /// In en, this message translates to:
-  /// **'[↑↓] Select   [←→] Columns   [LB/RB] Tabs   [A] L/R slot    —    [B] Buy/Upgrade selected   [X/Y] Sell selected   [OPTIONS] Continue'**
+  /// **'[↑↓] Row   [←→] Select   [B] Buy/Upgrade/Switch   [X/Y] Sell   [OPTIONS] Continue mission'**
   String get padControlsHint;
 
   /// No description provided for @host.
@@ -976,6 +868,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JOIN'**
   String get join;
+
+  /// Weapon family name on a loadout chip. Proper noun — keep identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'BUBBLE'**
+  String get familyBubble;
+
+  /// Weapon family name on a loadout chip. Proper noun — keep identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'VULCAN'**
+  String get familyVulcan;
+
+  /// Weapon family name on a loadout chip. Proper noun — keep identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'BLASTER'**
+  String get familyBlaster;
+
+  /// Weapon family name on a loadout chip. Proper noun — keep identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'STAR'**
+  String get familyStar;
+
+  /// Weapon family name on a loadout chip. Proper noun — keep identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'LASER'**
+  String get familyLaser;
+
+  /// No description provided for @overload.
+  ///
+  /// In en, this message translates to:
+  /// **'OVERLOAD'**
+  String get overload;
+
+  /// No description provided for @weaponOff.
+  ///
+  /// In en, this message translates to:
+  /// **'{weapon} OFF — generator too weak'**
+  String weaponOff(String weapon);
+
+  /// No description provided for @unlocksAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocks at {points} pts'**
+  String unlocksAt(String points);
 }
 
 class _AppLocalizationsDelegate

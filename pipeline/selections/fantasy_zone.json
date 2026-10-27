@@ -7,7 +7,7 @@
     "asteroid3": 1,
     "blaster": 1,
     "bubble": 1,
-    "comcenter_bg": 3,
+    "comcenter_bg": 6,
     "falcon1": 1,
     "falcon2": 1,
     "falcon3": 1,
@@ -46,7 +46,6 @@
     "ship_frames": 2,
     "starg": 1,
     "ui_button": 1,
-    "ui_card_bg": 1,
     "vulcan": 1
   }
 }

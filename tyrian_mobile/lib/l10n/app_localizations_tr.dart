@@ -391,58 +391,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sectionLoadout => 'TEÇHİZAT';
 
   @override
-  String get sectionOutfitting => 'DONANIM';
-
-  @override
-  String get sectionShop => 'MAĞAZA';
-
-  @override
-  String get tabFront => 'ÖN';
-
-  @override
-  String get tabSide => 'YAN';
-
-  @override
-  String get tabGen => 'JEN';
-
-  @override
-  String get sideLeft => 'SOL';
-
-  @override
-  String get sideRight => 'SAĞ';
-
-  @override
-  String get noWeaponInstalled => 'SİLAH TAKILI DEĞİL';
-
-  @override
   String levelShort(int level) {
     return 'Sv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'HSR:$damage HIZ:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'GÜÇ:$power';
-  }
-
-  @override
-  String get beam => 'IŞIN';
-
-  @override
-  String get guided => 'GÜDÜMLÜ';
-
-  @override
-  String get owned => 'SAHİPSİN';
-
-  @override
   String get max => 'MAKS';
-
-  @override
-  String get upgrade => 'YÜKSELT';
 
   @override
   String get upgradeShort => 'YÜKS';
@@ -452,9 +406,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get buy => 'SATIN AL';
-
-  @override
-  String get noCredits => 'KREDİ YETERSİZ';
 
   @override
   String get commandCenter => 'KOMUTA MERKEZİ';
@@ -492,19 +443,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get power => 'GÜÇ';
 
   @override
-  String get generator => 'JENERATÖR';
-
-  @override
-  String genOutput(String value) {
-    return 'GÜÇ: +$value/kare';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Kap.: $value';
-  }
-
-  @override
   String get launchMission => 'GÖREVE BAŞLA';
 
   @override
@@ -515,7 +453,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] Seç   [←→] Sütunlar   [LB/RB] Sekmeler   [A] Sol/Sağ yuva    —    [B] Al/Yükselt   [X/Y] Sat   [OPTIONS] Devam';
+      '[↑↓] Satır   [←→] Seç   [B] Al/Yükselt/Değiştir   [X/Y] Sat   [OPTIONS] Devam';
 
   @override
   String get host => 'SUNUCU OL';
@@ -527,4 +465,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get join => 'KATIL';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'AŞIRI YÜK';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon KAPALI — jeneratör çok zayıf';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return '$points puanda açılır';
+  }
 }
