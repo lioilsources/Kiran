@@ -149,58 +149,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionLoadout => 'LOADOUT';
 
   @override
-  String get sectionOutfitting => 'OUTFITTING';
-
-  @override
-  String get sectionShop => 'SHOP';
-
-  @override
-  String get tabFront => 'FRONT';
-
-  @override
-  String get tabSide => 'SIDE';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => 'LEFT';
-
-  @override
-  String get sideRight => 'RIGHT';
-
-  @override
-  String get noWeaponInstalled => 'NO WEAPON INSTALLED';
-
-  @override
   String levelShort(int level) {
     return 'Lv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'DMG:$damage SPD:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'PWR:$power';
-  }
-
-  @override
-  String get beam => 'BEAM';
-
-  @override
-  String get guided => 'GUIDED';
-
-  @override
-  String get owned => 'OWNED';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => 'UPGRADE';
 
   @override
   String get upgradeShort => 'UPG';
@@ -210,9 +164,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buy => 'BUY';
-
-  @override
-  String get noCredits => 'NO CREDITS';
 
   @override
   String get commandCenter => 'COMMAND CENTER';
@@ -250,19 +201,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get power => 'PWR';
 
   @override
-  String get generator => 'GENERATOR';
-
-  @override
-  String genOutput(String value) {
-    return 'PWR: +$value/fr';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Cap: $value';
-  }
-
-  @override
   String get startMission => 'START MISSION';
 
   @override
@@ -270,7 +208,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[B] Buy/Upgrade   [X/Y] Sell   [LB/RB] Tabs   [OPTIONS] Continue mission';
+      '[↑↓] Row   [←→] Select   [B] Buy/Upgrade/Switch   [X/Y] Sell   [OPTIONS] Continue mission';
 
   @override
   String get host => 'HOST';
@@ -290,4 +228,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get join => 'JOIN';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'OVERLOAD';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon OFF — generator too weak';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Unlocks at $points pts';
+  }
 }

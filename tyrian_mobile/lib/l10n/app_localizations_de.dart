@@ -151,58 +151,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sectionLoadout => 'BEWAFFNUNG';
 
   @override
-  String get sectionOutfitting => 'AUSRÜSTUNG';
-
-  @override
-  String get sectionShop => 'SHOP';
-
-  @override
-  String get tabFront => 'FRONT';
-
-  @override
-  String get tabSide => 'SEITE';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => 'LINKS';
-
-  @override
-  String get sideRight => 'RECHTS';
-
-  @override
-  String get noWeaponInstalled => 'KEINE WAFFE MONTIERT';
-
-  @override
   String levelShort(int level) {
     return 'St.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'SCH:$damage GES:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'EN:$power';
-  }
-
-  @override
-  String get beam => 'STRAHL';
-
-  @override
-  String get guided => 'GELENKT';
-
-  @override
-  String get owned => 'IM BESITZ';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => 'AUFRÜSTEN';
 
   @override
   String get upgradeShort => 'AUF';
@@ -212,9 +166,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get buy => 'KAUFEN';
-
-  @override
-  String get noCredits => 'ZU WENIG CREDITS';
 
   @override
   String get commandCenter => 'KOMMANDOZENTRUM';
@@ -252,19 +203,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get power => 'EN';
 
   @override
-  String get generator => 'GENERATOR';
-
-  @override
-  String genOutput(String value) {
-    return 'EN: +$value/Fr';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Kap.: $value';
-  }
-
-  @override
   String get startMission => 'MISSION BEGINNEN';
 
   @override
@@ -272,7 +210,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[B] Kaufen/Aufrüsten   [X/Y] Verkaufen   [LB/RB] Tabs   [OPTIONS] Mission fortsetzen';
+      '[↑↓] Zeile   [←→] Auswahl   [B] Kaufen/Verbessern/Wechseln   [X/Y] Verkaufen   [OPTIONS] Weiter';
 
   @override
   String get host => 'HOSTEN';
@@ -292,4 +230,32 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get join => 'BEITRETEN';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'ÜBERLAST';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon AUS — Generator zu schwach';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Freigeschaltet ab $points Pkt.';
+  }
 }

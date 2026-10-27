@@ -17,7 +17,12 @@ void main() {
       expect(l.maxLevelSold('500'), contains('500'), reason: '$locale');
       expect(l.sectorUnknownSpace(7), contains('7'), reason: '$locale');
       expect(l.levelShort(3), contains('3'), reason: '$locale');
-      expect(l.statDamageSpeed(12, 8), allOf(contains('12'), contains('8')),
+      expect(l.weaponOff('LASER'), contains('LASER'), reason: '$locale');
+      expect(l.unlocksAt('400 000'), contains('400 000'), reason: '$locale');
+      // Weapon family names are proper nouns: identical in every language.
+      expect(
+          [l.familyBubble, l.familyVulcan, l.familyBlaster, l.familyStar, l.familyLaser],
+          ['BUBBLE', 'VULCAN', 'BLASTER', 'STAR', 'LASER'],
           reason: '$locale');
       expect(l.hostingAt('host.example'), contains('host.example'), reason: '$locale');
       expect(l.ipValue('host.example'), contains('host.example'), reason: '$locale');
