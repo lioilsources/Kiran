@@ -91,11 +91,10 @@ Symmetrical, centered composition, dramatic scale, atmospheric background with s
 Atmospheric, eye-catching thumbnail for a selection screen. No text overlay.`,
 
 	"comcenter_bg": `{{.ArtDirective}}
-A dramatic illustrated science fiction scene viewed from a spacecraft cockpit or space station observation deck.
-Rich atmospheric composition: nebulae, distant planets, star fields, or alien landscapes in the far background.
+A tall portrait view out of a large spacecraft observation window. The top two thirds of the image, including the whole vertical center, is an almost empty, very dark window of deep black space with only sparse faint pinpoint stars: no nebula, no clouds, no planets, no glow, no bright objects there, because rows of text are overlaid on it and must stay readable.
+The only bright, detailed elements are a dim cockpit console along the bottom fifth of the image and, at most, one small planet or nebula wisp cut off by the far left or far right edge.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing.
-The upper half and the vertical center of the image must be naturally dark and low-detail (deep space, shadow, dim haze) so that text rows and UI panels overlaid on top remain readable; keep the bright, detailed elements (planets, nebula cores, structures) near the left and right edges and along the bottom.
+{{.SceneTechnique}}
 No horizon line or bright band across the middle. No text, no HUD elements, no UI widgets, no ship in foreground.
 No people, no characters, no pilots, no faces, no mascots — the deck is empty, the view is the scene outside. Portrait aspect ratio 1:2.`,
 
@@ -235,6 +234,7 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"PaletteDescription": palette,
 		"BackgroundMood":     s.BackgroundMood,
 		"SceneNoun":          sceneNoun(s),
+		"SceneTechnique":     sceneTechnique(s),
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
 		"BossDirective":      s.BossDirective,
@@ -261,6 +261,25 @@ func sceneNoun(s skin.SkinDef) string {
 		return s.SceneNoun
 	}
 	return "deep space"
+}
+
+// sceneTechnique names the rendering medium for full-scene illustrations
+// (comcenter_bg). A fixed "cel-shaded cartoon" line there overrode the skin's
+// era: 8-bit and VGA skins came back as smooth poster art with only the
+// palette left. Retro media are spelled out; everything else keeps the
+// illustrated look.
+func sceneTechnique(s skin.SkinDef) string {
+	style := strings.ToLower(s.ArtDirective + " " + s.StyleKeywords)
+	switch {
+	case strings.Contains(style, "wireframe"):
+		return "The entire scene is drawn as glowing vector lines on pure black: outlines only, no filled surfaces, no textures, no gradients, no painted shading, cinematic framing."
+	case strings.Contains(style, "low poly") || strings.Contains(style, "low-poly"):
+		return "The entire scene is flat-shaded low-poly 3D: untextured polygons, one flat color per face, visible facets, no gradients, no textures, cinematic framing."
+	case strings.Contains(style, "pixel art") || strings.Contains(style, "16-bit"):
+		return "The entire scene is pixel art at a low native resolution, upscaled with nearest neighbour: hard square pixels with a visible pixel grid, limited palette, flat color bands or dithering instead of smooth gradients, no anti-aliasing, no painterly blur, cinematic framing."
+	default:
+		return "Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing."
+	}
 }
 
 // BuildPrompt renders a prompt template for the given asset type and skin using the default (Flux) style.
