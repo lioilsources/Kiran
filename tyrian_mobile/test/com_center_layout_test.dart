@@ -74,6 +74,15 @@ void main() {
     expect(find.text('BUBBLE'), findsNWidgets(3));
   });
 
+  // 2.9.x has no co-op: main.dart passes no HOST/JOIN callbacks.
+  testWidgets('without co-op callbacks there is no HOST or JOIN', (
+    tester,
+  ) async {
+    await pump(tester, const Locale('en'));
+    expect(find.text('HOST'), findsNothing);
+    expect(find.text('JOIN'), findsNothing);
+  });
+
   testWidgets('tapping a hangar chip switches for free', (tester) async {
     final game = await pump(tester, const Locale('en'));
     final credit = game.vessel.credit;

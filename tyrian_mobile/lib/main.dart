@@ -116,6 +116,9 @@ void main() async {
   runApp(const TyrianApp());
 }
 
+/// LAN co-op stays in the code for the 3.x line but is off on 2.9.x.
+const kCoopEnabled = false;
+
 class TyrianApp extends StatelessWidget {
   const TyrianApp({super.key});
 
@@ -616,8 +619,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ComCenterScreen(
                 game: _game,
                 onStart: _onComCenterStart,
-                onJoinIp: _showManualIpDialog,
-                onHost: _startHosting,
+                // Co-op ships with 3.x; on 2.9.x HOST/JOIN only got in the way.
+                onJoinIp: kCoopEnabled ? _showManualIpDialog : null,
+                onHost: kCoopEnabled ? _startHosting : null,
               ),
 
             // Client waiting overlay (P2)
