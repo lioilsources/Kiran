@@ -25,6 +25,7 @@ import '../entities/hostile.dart';
 import '../systems/sector.dart';
 import '../systems/fleet.dart';
 import '../systems/dev_type.dart';
+import '../systems/device.dart';
 import '../systems/weapon_family.dart';
 import 'death_effect_config.dart';
 import '../entities/projectile.dart';
@@ -691,6 +692,7 @@ class TyrianGame extends FlameGame
       level: currentSectorIndex,
       nextWeaponLevel: m['nextWeaponLevel'] as int,
       weapons: List<Map<String, dynamic>>.from(m['weapons'] as List),
+      hangar: List<Map<String, dynamic>>.from(m['hangar'] as List),
     );
   }
 
@@ -1191,6 +1193,16 @@ class TyrianGame extends FlameGame
       for (int i = 0; i < srcDev.level; i++) {
         newDev.upgrade();
       }
+    }
+    dst.hangar.clear();
+    for (final srcDev in src.hangar) {
+      final wt = _findWeaponType(srcDev.name);
+      if (wt == null) continue;
+      final newDev = Device.fromType(wt, srcDev.slot)..parentVessel = dst;
+      for (int i = 0; i < srcDev.level; i++) {
+        newDev.upgrade();
+      }
+      dst.hangar.add(newDev);
     }
   }
 

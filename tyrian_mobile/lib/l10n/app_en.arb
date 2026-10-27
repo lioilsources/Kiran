@@ -78,14 +78,6 @@
   "maxCredits": "MAX CREDITS",
   "sectionStats": "STATS",
   "sectionLoadout": "LOADOUT",
-  "sectionOutfitting": "OUTFITTING",
-  "sectionShop": "SHOP",
-  "tabFront": "FRONT",
-  "tabSide": "SIDE",
-  "tabGen": "GEN",
-  "sideLeft": "LEFT",
-  "sideRight": "RIGHT",
-  "noWeaponInstalled": "NO WEAPON INSTALLED",
   "levelShort": "Lv.{level}",
   "@levelShort": {
     "placeholders": {
@@ -94,34 +86,10 @@
       }
     }
   },
-  "statDamageSpeed": "DMG:{damage} SPD:{speed}",
-  "@statDamageSpeed": {
-    "placeholders": {
-      "damage": {
-        "type": "int"
-      },
-      "speed": {
-        "type": "int"
-      }
-    }
-  },
-  "statPower": "PWR:{power}",
-  "@statPower": {
-    "placeholders": {
-      "power": {
-        "type": "int"
-      }
-    }
-  },
-  "beam": "BEAM",
-  "guided": "GUIDED",
-  "owned": "OWNED",
   "max": "MAX",
-  "upgrade": "UPGRADE",
   "upgradeShort": "UPG",
   "sell": "SELL",
   "buy": "BUY",
-  "noCredits": "NO CREDITS",
   "commandCenter": "COMMAND CENTER",
   "pilot": "Pilot",
   "dps": "DPS",
@@ -140,26 +108,9 @@
   "slotRight": "Right",
   "slotGen": "Gen",
   "power": "PWR",
-  "generator": "GENERATOR",
-  "genOutput": "PWR: +{value}/fr",
-  "@genOutput": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "genCapacity": "Cap: {value}",
-  "@genCapacity": {
-    "placeholders": {
-      "value": {
-        "type": "int"
-      }
-    }
-  },
   "startMission": "START MISSION",
   "continueMission": "CONTINUE MISSION",
-  "padControlsHint": "[B] Buy/Upgrade   [X/Y] Sell   [LB/RB] Tabs   [OPTIONS] Continue mission",
+  "padControlsHint": "[↑↓] Row   [←→] Select   [B] Buy/Upgrade/Switch   [X/Y] Sell   [OPTIONS] Continue mission",
   "host": "HOST",
   "connectToHost": "Connect to host",
   "hostingAt": "HOSTING  {ip}",
@@ -178,5 +129,42 @@
       }
     }
   },
-  "join": "JOIN"
+  "join": "JOIN",
+  "familyBubble": "BUBBLE",
+  "@familyBubble": {
+    "description": "Weapon family name on a loadout chip. Proper noun — keep identical in every language."
+  },
+  "familyVulcan": "VULCAN",
+  "@familyVulcan": {
+    "description": "Weapon family name on a loadout chip. Proper noun — keep identical in every language."
+  },
+  "familyBlaster": "BLASTER",
+  "@familyBlaster": {
+    "description": "Weapon family name on a loadout chip. Proper noun — keep identical in every language."
+  },
+  "familyStar": "STAR",
+  "@familyStar": {
+    "description": "Weapon family name on a loadout chip. Proper noun — keep identical in every language."
+  },
+  "familyLaser": "LASER",
+  "@familyLaser": {
+    "description": "Weapon family name on a loadout chip. Proper noun — keep identical in every language."
+  },
+  "overload": "OVERLOAD",
+  "weaponOff": "{weapon} OFF — generator too weak",
+  "@weaponOff": {
+    "placeholders": {
+      "weapon": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocksAt": "Unlocks at {points} pts",
+  "@unlocksAt": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  }
 }

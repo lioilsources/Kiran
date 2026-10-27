@@ -149,58 +149,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get sectionLoadout => 'อาวุธที่ติดตั้ง';
 
   @override
-  String get sectionOutfitting => 'ติดตั้งอุปกรณ์';
-
-  @override
-  String get sectionShop => 'ร้านค้า';
-
-  @override
-  String get tabFront => 'หน้า';
-
-  @override
-  String get tabSide => 'ข้าง';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => 'ซ้าย';
-
-  @override
-  String get sideRight => 'ขวา';
-
-  @override
-  String get noWeaponInstalled => 'ยังไม่ได้ติดอาวุธ';
-
-  @override
   String levelShort(int level) {
     return 'Lv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'ดาเมจ:$damage ความเร็ว:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'พลัง:$power';
-  }
-
-  @override
-  String get beam => 'ลำแสง';
-
-  @override
-  String get guided => 'นำวิถี';
-
-  @override
-  String get owned => 'มีแล้ว';
-
-  @override
   String get max => 'สูงสุด';
-
-  @override
-  String get upgrade => 'อัปเกรด';
 
   @override
   String get upgradeShort => 'อัป';
@@ -210,9 +164,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get buy => 'ซื้อ';
-
-  @override
-  String get noCredits => 'เครดิตไม่พอ';
 
   @override
   String get commandCenter => 'ศูนย์บัญชาการ';
@@ -250,19 +201,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get power => 'พลัง';
 
   @override
-  String get generator => 'เครื่องกำเนิดไฟฟ้า';
-
-  @override
-  String genOutput(String value) {
-    return 'พลัง: +$value/เฟรม';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'ความจุ: $value';
-  }
-
-  @override
   String get startMission => 'เริ่มภารกิจ';
 
   @override
@@ -270,7 +208,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[B] ซื้อ/อัปเกรด   [X/Y] ขาย   [LB/RB] แท็บ   [OPTIONS] ทำภารกิจต่อ';
+      '[↑↓] แถว   [←→] เลือก   [B] ซื้อ/อัปเกรด/สลับ   [X/Y] ขาย   [OPTIONS] ไปต่อ';
 
   @override
   String get host => 'เป็นโฮสต์';
@@ -290,4 +228,32 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get join => 'เข้าร่วม';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'โอเวอร์โหลด';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon ปิด — เครื่องกำเนิดไฟฟ้าอ่อนเกินไป';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'ปลดล็อกที่ $points คะแนน';
+  }
 }

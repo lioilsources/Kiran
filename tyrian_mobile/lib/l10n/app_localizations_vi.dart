@@ -149,58 +149,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get sectionLoadout => 'VŨ KHÍ';
 
   @override
-  String get sectionOutfitting => 'TRANG BỊ';
-
-  @override
-  String get sectionShop => 'CỬA HÀNG';
-
-  @override
-  String get tabFront => 'TRƯỚC';
-
-  @override
-  String get tabSide => 'BÊN';
-
-  @override
-  String get tabGen => 'MP';
-
-  @override
-  String get sideLeft => 'TRÁI';
-
-  @override
-  String get sideRight => 'PHẢI';
-
-  @override
-  String get noWeaponInstalled => 'CHƯA LẮP VŨ KHÍ';
-
-  @override
   String levelShort(int level) {
     return 'Cấp $level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'ST:$damage TĐ:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'NL:$power';
-  }
-
-  @override
-  String get beam => 'TIA';
-
-  @override
-  String get guided => 'DẪN ĐƯỜNG';
-
-  @override
-  String get owned => 'ĐÃ CÓ';
-
-  @override
   String get max => 'TỐI ĐA';
-
-  @override
-  String get upgrade => 'NÂNG CẤP';
 
   @override
   String get upgradeShort => 'NC';
@@ -210,9 +164,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get buy => 'MUA';
-
-  @override
-  String get noCredits => 'THIẾU TÍN DỤNG';
 
   @override
   String get commandCenter => 'TRUNG TÂM CHỈ HUY';
@@ -250,19 +201,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get power => 'NL';
 
   @override
-  String get generator => 'MÁY PHÁT';
-
-  @override
-  String genOutput(String value) {
-    return 'NL: +$value/khung';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Dung lượng: $value';
-  }
-
-  @override
   String get startMission => 'BẮT ĐẦU NHIỆM VỤ';
 
   @override
@@ -270,7 +208,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[B] Mua/nâng cấp   [X/Y] Bán   [LB/RB] Thẻ   [OPTIONS] Tiếp tục nhiệm vụ';
+      '[↑↓] Hàng   [←→] Chọn   [B] Mua/Nâng cấp/Đổi   [X/Y] Bán   [OPTIONS] Tiếp tục';
 
   @override
   String get host => 'TẠO PHÒNG';
@@ -290,4 +228,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get join => 'THAM GIA';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'QUÁ TẢI';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon TẮT — máy phát quá yếu';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Mở khóa ở $points điểm';
+  }
 }

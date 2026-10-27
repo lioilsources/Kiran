@@ -148,58 +148,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sectionLoadout => '目前武裝';
 
   @override
-  String get sectionOutfitting => '整備';
-
-  @override
-  String get sectionShop => '商店';
-
-  @override
-  String get tabFront => '前方';
-
-  @override
-  String get tabSide => '側翼';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => '左';
-
-  @override
-  String get sideRight => '右';
-
-  @override
-  String get noWeaponInstalled => '未裝備武器';
-
-  @override
   String levelShort(int level) {
     return 'Lv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return '傷害:$damage 速度:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return '能量:$power';
-  }
-
-  @override
-  String get beam => '光束';
-
-  @override
-  String get guided => '導引';
-
-  @override
-  String get owned => '已擁有';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => '升級';
 
   @override
   String get upgradeShort => '升級';
@@ -209,9 +163,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get buy => '購買';
-
-  @override
-  String get noCredits => '點數不足';
 
   @override
   String get commandCenter => '指揮中心';
@@ -249,19 +200,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get power => '能量';
 
   @override
-  String get generator => '發電機';
-
-  @override
-  String genOutput(String value) {
-    return '能量:+$value/幀';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return '容量:$value';
-  }
-
-  @override
   String get startMission => '開始任務';
 
   @override
@@ -269,7 +207,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[B] 購買/升級   [X/Y] 賣出   [LB/RB] 分頁   [OPTIONS] 繼續任務';
+      '[↑↓] 行   [←→] 选择   [B] 购买/升级/切换   [X/Y] 出售   [OPTIONS] 继续';
 
   @override
   String get host => '建立主機';
@@ -289,6 +227,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get join => '加入';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => '过载';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon 关闭 — 发电机功率不足';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return '$points 分解锁';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -435,58 +401,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get sectionLoadout => '目前武裝';
 
   @override
-  String get sectionOutfitting => '整備';
-
-  @override
-  String get sectionShop => '商店';
-
-  @override
-  String get tabFront => '前方';
-
-  @override
-  String get tabSide => '側翼';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => '左';
-
-  @override
-  String get sideRight => '右';
-
-  @override
-  String get noWeaponInstalled => '未裝備武器';
-
-  @override
   String levelShort(int level) {
     return 'Lv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return '傷害:$damage 速度:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return '能量:$power';
-  }
-
-  @override
-  String get beam => '光束';
-
-  @override
-  String get guided => '導引';
-
-  @override
-  String get owned => '已擁有';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => '升級';
 
   @override
   String get upgradeShort => '升級';
@@ -496,9 +416,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get buy => '購買';
-
-  @override
-  String get noCredits => '點數不足';
 
   @override
   String get commandCenter => '指揮中心';
@@ -536,19 +453,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get power => '能量';
 
   @override
-  String get generator => '發電機';
-
-  @override
-  String genOutput(String value) {
-    return '能量:+$value/幀';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return '容量:$value';
-  }
-
-  @override
   String get startMission => '開始任務';
 
   @override
@@ -556,7 +460,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get padControlsHint =>
-      '[B] 購買/升級   [X/Y] 賣出   [LB/RB] 分頁   [OPTIONS] 繼續任務';
+      '[↑↓] 行   [←→] 選擇   [B] 購買/升級/切換   [X/Y] 出售   [OPTIONS] 繼續';
 
   @override
   String get host => '建立主機';
@@ -576,4 +480,32 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get join => '加入';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => '過載';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon 關閉 — 發電機功率不足';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return '$points 分解鎖';
+  }
 }
