@@ -406,58 +406,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sectionLoadout => 'ВООРУЖЕНИЕ';
 
   @override
-  String get sectionOutfitting => 'СНАРЯЖЕНИЕ';
-
-  @override
-  String get sectionShop => 'МАГАЗИН';
-
-  @override
-  String get tabFront => 'ПЕРЕД';
-
-  @override
-  String get tabSide => 'БОК';
-
-  @override
-  String get tabGen => 'ГЕН';
-
-  @override
-  String get sideLeft => 'ЛЕВО';
-
-  @override
-  String get sideRight => 'ПРАВО';
-
-  @override
-  String get noWeaponInstalled => 'ОРУЖИЕ НЕ УСТАНОВЛЕНО';
-
-  @override
   String levelShort(int level) {
     return 'Ур.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'УРН:$damage СКР:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'ЭН:$power';
-  }
-
-  @override
-  String get beam => 'ЛУЧ';
-
-  @override
-  String get guided => 'САМОНАВОД.';
-
-  @override
-  String get owned => 'КУПЛЕНО';
-
-  @override
   String get max => 'МАКС';
-
-  @override
-  String get upgrade => 'УЛУЧШИТЬ';
 
   @override
   String get upgradeShort => 'УЛУЧ';
@@ -467,9 +421,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get buy => 'КУПИТЬ';
-
-  @override
-  String get noCredits => 'НЕТ КРЕДИТОВ';
 
   @override
   String get commandCenter => 'КОМАНДНЫЙ ЦЕНТР';
@@ -507,19 +458,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get power => 'ЭН';
 
   @override
-  String get generator => 'ГЕНЕРАТОР';
-
-  @override
-  String genOutput(String value) {
-    return 'ЭН: +$value/кадр';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Ёмк.: $value';
-  }
-
-  @override
   String get launchMission => 'НАЧАТЬ МИССИЮ';
 
   @override
@@ -530,7 +468,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] Выбор   [←→] Столбцы   [LB/RB] Вкладки   [A] Слот Л/П    —    [B] Купить/улучшить   [X/Y] Продать   [OPTIONS] Далее';
+      '[↑↓] Ряд   [←→] Выбор   [B] Купить/Улучшить/Сменить   [X/Y] Продать   [OPTIONS] Продолжить';
 
   @override
   String get host => 'СОЗДАТЬ';
@@ -542,4 +480,32 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get join => 'ВОЙТИ';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'ПЕРЕГРУЗКА';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon ОТКЛ. — генератор слишком слаб';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Откроется при $points очк.';
+  }
 }

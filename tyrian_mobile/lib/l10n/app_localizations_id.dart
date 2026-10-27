@@ -391,58 +391,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get sectionLoadout => 'PERSENJATAAN';
 
   @override
-  String get sectionOutfitting => 'PERLENGKAPAN';
-
-  @override
-  String get sectionShop => 'TOKO';
-
-  @override
-  String get tabFront => 'DEPAN';
-
-  @override
-  String get tabSide => 'SAMPING';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => 'KIRI';
-
-  @override
-  String get sideRight => 'KANAN';
-
-  @override
-  String get noWeaponInstalled => 'TIDAK ADA SENJATA';
-
-  @override
   String levelShort(int level) {
     return 'Lv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'DMG:$damage SPD:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'DAYA:$power';
-  }
-
-  @override
-  String get beam => 'SINAR';
-
-  @override
-  String get guided => 'BERPEMANDU';
-
-  @override
-  String get owned => 'DIMILIKI';
-
-  @override
   String get max => 'MAKS';
-
-  @override
-  String get upgrade => 'TINGKATKAN';
 
   @override
   String get upgradeShort => 'UPG';
@@ -452,9 +406,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get buy => 'BELI';
-
-  @override
-  String get noCredits => 'KREDIT KURANG';
 
   @override
   String get commandCenter => 'PUSAT KOMANDO';
@@ -492,19 +443,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get power => 'DAYA';
 
   @override
-  String get generator => 'GENERATOR';
-
-  @override
-  String genOutput(String value) {
-    return 'DAYA: +$value/fr';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Kap: $value';
-  }
-
-  @override
   String get launchMission => 'LUNCURKAN MISI';
 
   @override
@@ -515,7 +453,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] Pilih   [←→] Kolom   [LB/RB] Tab   [A] Slot Ki/Ka    —    [B] Beli/tingkatkan   [X/Y] Jual   [OPTIONS] Lanjut';
+      '[↑↓] Baris   [←→] Pilih   [B] Beli/Tingkatkan/Ganti   [X/Y] Jual   [OPTIONS] Lanjut';
 
   @override
   String get host => 'JADI HOST';
@@ -527,4 +465,32 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get join => 'GABUNG';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'KELEBIHAN BEBAN';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon MATI — generator terlalu lemah';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Terbuka di $points poin';
+  }
 }

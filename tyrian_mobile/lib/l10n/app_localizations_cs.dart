@@ -402,58 +402,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sectionLoadout => 'VÝZBROJ';
 
   @override
-  String get sectionOutfitting => 'VYBAVENÍ';
-
-  @override
-  String get sectionShop => 'OBCHOD';
-
-  @override
-  String get tabFront => 'PŘEDNÍ';
-
-  @override
-  String get tabSide => 'BOČNÍ';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => 'LEVÁ';
-
-  @override
-  String get sideRight => 'PRAVÁ';
-
-  @override
-  String get noWeaponInstalled => 'ŽÁDNÁ ZBRAŇ';
-
-  @override
   String levelShort(int level) {
     return 'Úr.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'POŠ:$damage RYCH:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'ENG:$power';
-  }
-
-  @override
-  String get beam => 'PAPRSEK';
-
-  @override
-  String get guided => 'NAVÁDĚNÁ';
-
-  @override
-  String get owned => 'VLASTNÍŠ';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => 'VYLEPŠIT';
 
   @override
   String get upgradeShort => 'VYL';
@@ -463,9 +417,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get buy => 'KOUPIT';
-
-  @override
-  String get noCredits => 'MÁLO KREDITŮ';
 
   @override
   String get commandCenter => 'VELITELSKÉ CENTRUM';
@@ -503,19 +454,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get power => 'ENG';
 
   @override
-  String get generator => 'GENERÁTOR';
-
-  @override
-  String genOutput(String value) {
-    return 'ENG: +$value/sn';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Kap.: $value';
-  }
-
-  @override
   String get launchMission => 'SPUSTIT MISI';
 
   @override
@@ -526,7 +464,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] Výběr   [←→] Sloupce   [LB/RB] Karty   [A] L/P slot    —    [B] Koupit/vylepšit   [X/Y] Prodat   [OPTIONS] Pokračovat';
+      '[↑↓] Řádek   [←→] Výběr   [B] Koupit/Vylepšit/Přepnout   [X/Y] Prodat   [OPTIONS] Pokračovat';
 
   @override
   String get host => 'HOSTOVAT';
@@ -538,4 +476,32 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get join => 'PŘIPOJIT';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'PŘETÍŽENÍ';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon VYPNUT — slabý generátor';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Odemkne se při $points b.';
+  }
 }

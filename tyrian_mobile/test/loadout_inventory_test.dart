@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tyrian_mobile/entities/vessel.dart';
 import 'package:tyrian_mobile/systems/dev_type.dart';
-import 'package:tyrian_mobile/systems/device.dart';
 
 /// The ComCenter loadout lets a pilot own several weapons per slot and switch
 /// between them for free. These pin the hangar rules the screen relies on.

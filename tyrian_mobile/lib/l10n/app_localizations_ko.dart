@@ -388,58 +388,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sectionLoadout => '장착 무기';
 
   @override
-  String get sectionOutfitting => '장비';
-
-  @override
-  String get sectionShop => '상점';
-
-  @override
-  String get tabFront => '전방';
-
-  @override
-  String get tabSide => '측면';
-
-  @override
-  String get tabGen => 'GEN';
-
-  @override
-  String get sideLeft => '왼쪽';
-
-  @override
-  String get sideRight => '오른쪽';
-
-  @override
-  String get noWeaponInstalled => '무기 미장착';
-
-  @override
   String levelShort(int level) {
     return 'Lv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return '공격:$damage 속도:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'EN:$power';
-  }
-
-  @override
-  String get beam => '빔';
-
-  @override
-  String get guided => '유도';
-
-  @override
-  String get owned => '보유';
-
-  @override
   String get max => 'MAX';
-
-  @override
-  String get upgrade => '강화';
 
   @override
   String get upgradeShort => '강화';
@@ -449,9 +403,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buy => '구매';
-
-  @override
-  String get noCredits => '크레딧 부족';
 
   @override
   String get commandCenter => '사령부';
@@ -489,19 +440,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get power => 'EN';
 
   @override
-  String get generator => '발전기';
-
-  @override
-  String genOutput(String value) {
-    return 'EN: +$value/fr';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return '용량: $value';
-  }
-
-  @override
   String get launchMission => '임무 개시';
 
   @override
@@ -512,7 +450,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] 선택   [←→] 열   [LB/RB] 탭   [A] 좌/우 슬롯    —    [B] 구매/강화   [X/Y] 판매   [OPTIONS] 계속';
+      '[↑↓] 줄   [←→] 선택   [B] 구매/강화/교체   [X/Y] 판매   [OPTIONS] 계속';
 
   @override
   String get host => '호스트';
@@ -524,4 +462,32 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get join => '참가';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => '과부하';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon 꺼짐 — 발전기 출력 부족';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return '$points점에서 해금';
+  }
 }

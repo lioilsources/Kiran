@@ -399,58 +399,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sectionLoadout => 'ARMAMENTO';
 
   @override
-  String get sectionOutfitting => 'EQUIPAMENTO';
-
-  @override
-  String get sectionShop => 'LOJA';
-
-  @override
-  String get tabFront => 'FRENTE';
-
-  @override
-  String get tabSide => 'LATERAL';
-
-  @override
-  String get tabGen => 'GER';
-
-  @override
-  String get sideLeft => 'ESQ.';
-
-  @override
-  String get sideRight => 'DIR.';
-
-  @override
-  String get noWeaponInstalled => 'NENHUMA ARMA INSTALADA';
-
-  @override
   String levelShort(int level) {
     return 'Nv.$level';
   }
 
   @override
-  String statDamageSpeed(int damage, int speed) {
-    return 'DANO:$damage VEL:$speed';
-  }
-
-  @override
-  String statPower(int power) {
-    return 'ENE:$power';
-  }
-
-  @override
-  String get beam => 'RAIO';
-
-  @override
-  String get guided => 'TELEGUIADA';
-
-  @override
-  String get owned => 'ADQUIRIDA';
-
-  @override
   String get max => 'MÁX';
-
-  @override
-  String get upgrade => 'MELHORAR';
 
   @override
   String get upgradeShort => 'MELH';
@@ -460,9 +414,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get buy => 'COMPRAR';
-
-  @override
-  String get noCredits => 'SEM CRÉDITOS';
 
   @override
   String get commandCenter => 'CENTRO DE COMANDO';
@@ -500,19 +451,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get power => 'ENE';
 
   @override
-  String get generator => 'GERADOR';
-
-  @override
-  String genOutput(String value) {
-    return 'ENE: +$value/qd';
-  }
-
-  @override
-  String genCapacity(int value) {
-    return 'Cap.: $value';
-  }
-
-  @override
   String get launchMission => 'LANÇAR MISSÃO';
 
   @override
@@ -523,7 +461,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get padControlsHint =>
-      '[↑↓] Escolher   [←→] Colunas   [LB/RB] Abas   [A] Slot E/D    —    [B] Comprar/melhorar   [X/Y] Vender   [OPTIONS] Continuar';
+      '[↑↓] Linha   [←→] Escolher   [B] Comprar/Melhorar/Trocar   [X/Y] Vender   [OPTIONS] Continuar';
 
   @override
   String get host => 'HOSPEDAR';
@@ -535,4 +473,32 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get join => 'ENTRAR';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'SOBRECARGA';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon DESLIGADO — gerador fraco demais';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Desbloqueia com $points pts';
+  }
 }
