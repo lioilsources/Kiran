@@ -48,8 +48,6 @@
     "ship_frames": 1,
     "starg": 1,
     "ui_button": 1,
-    "ui_card_bg": 1,
-    "ui_tab_active": 1,
     "vulcan": 1
   },
   "skin": "geometry_wars"

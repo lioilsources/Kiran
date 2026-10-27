@@ -99,22 +99,11 @@ The upper half and the vertical center of the image must be naturally dark and l
 No horizon line or bright band across the middle. No text, no HUD elements, no UI widgets, no ship in foreground.
 No people, no characters, no pilots, no faces, no mascots — the deck is empty, the view is the scene outside. Portrait aspect ratio 1:2.`,
 
-	"ui_card_bg": `A sci-fi game inventory card panel surface texture.
-Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Dark background panel with subtle geometric or circuit-board micro-pattern etched into the surface.
-Slightly lighter beveled edges on all sides to give depth and a natural panel border.
-Square format. No text, no icons, no characters. Flat opaque surface, no transparency.`,
-
 	"ui_button": `A sci-fi game action button texture, wide horizontal format 4:1.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Dark elongated panel with a glowing accent trim along the long horizontal edges.
 Subtle inner gradient from dark center to slightly lighter edges. Symmetric left-right design.
 No text, no letters, no icons. Game HUD element.`,
-
-	"ui_tab_active": `A sci-fi game navigation tab texture, wide horizontal strip 4:1.
-Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Active selected state: a crisp glowing accent line along the top edge, panel surface slightly brighter than background.
-Clean flat surface with very subtle inner highlight. No text, no icons.`,
 }
 
 var compiledTemplates = make(map[string]*template.Template)
@@ -190,20 +179,10 @@ dramatic atmospheric scene, nebulae, distant planets, alien landscape,
 bold cel-shaded, vibrant colors, cinematic composition, dark center area for UI readability,
 portrait format, no text, no HUD, no ship in foreground`,
 
-	"ui_card_bg": ponyQuality + `, sci-fi game UI panel texture, inventory card surface,
-dark background, subtle circuit board pattern, beveled edges, panel depth,
-{{.StyleKeywords}}, {{.PaletteDescription}},
-flat opaque surface, square format, no text, no icons, no characters`,
-
 	"ui_button": ponyQuality + `, sci-fi game UI button texture, wide horizontal panel 4:1,
 dark elongated panel, glowing trim on edges, inner gradient,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 symmetric design, no text, no letters, game HUD element`,
-
-	"ui_tab_active": ponyQuality + `, sci-fi game navigation tab texture, wide horizontal strip,
-active selected state, glowing top edge accent, slightly bright panel,
-{{.StyleKeywords}}, {{.PaletteDescription}},
-flat surface, subtle highlight, no text, no icons`,
 }
 
 var compiledPonyTemplates = make(map[string]*template.Template)

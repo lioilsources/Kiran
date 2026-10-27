@@ -35,7 +35,7 @@ go run ./cmd/generate -skin geometry_wars
 # Filter by asset type
 go run ./cmd/generate -skin geometry_wars -asset-type ship
 # asset-type values: ship, explosion, bullet, enemy, structure, background,
-#                    hud_icon, preview, comcenter_bg, ui_card_bg, ui_button, ui_tab_active
+#                    hud_icon, preview, comcenter_bg, ui_button
 
 # Use pony workflow (SDXL)
 go run ./cmd/generate -skin space_invaders -comfyui-workflow pony \
@@ -164,7 +164,7 @@ Converts raw JPEG variations → final game PNGs:
 - **ship_frames**: generates N animation frames via glow modulation (brightness oscillation)
 - **explosion**: maps v1–v4 → `explosion1–4.png`
 - **backgrounds**: exact resize to 512×1024, lossy WebP via `cwebp`; `layer_0*` opaque (`-noalpha`), `layer_1+` get alpha from luminance, not a chroma key (`AlphaFromLuminance`, cut-offs 8/70) — the overlays are luminous forms on black, and a key deletes the soft falloff that should read as translucent. Superseded `layer_*.png` are pruned. Requires `cwebp` (`brew install webp`)
-- **UI sprites** (`comcenter_bg`, `ui_card_bg`, `ui_button`, `ui_tab_active`): opaque exact resize, no bg removal
+- **UI sprites** (`comcenter_bg`, `ui_button`): opaque exact resize, no bg removal
 - **SFX**: ffmpeg MP3 → OGG/Opus with `loudnorm` volume normalization
 
 ```bash
@@ -267,9 +267,7 @@ dart run tool/pack_atlas.dart
 | `hud_icon` | ui/ | bg remove → resize |
 | `preview` | ui/ | bg remove → resize |
 | `comcenter_bg` | ui/ | exact resize, opaque |
-| `ui_card_bg` | ui/ | exact resize, opaque |
 | `ui_button` | ui/ | exact resize, opaque |
-| `ui_tab_active` | ui/ | exact resize, opaque |
 | `sfx` | sfx/ | ffmpeg MP3→OGG loudnorm (I=-14) |
 | `music` | music/ | ffmpeg MP3→OGG loudnorm (I=-16, 128k) |
 
