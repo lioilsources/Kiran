@@ -1,4 +1,5 @@
 {
+  "skin": "river_raid",
   "assets": {
     "asteroid": 1,
     "asteroid1": 1,
@@ -49,6 +50,5 @@
     "starg": 1,
     "ui_button": 1,
     "vulcan": 1
-  },
-  "skin": "river_raid"
+  }
 }

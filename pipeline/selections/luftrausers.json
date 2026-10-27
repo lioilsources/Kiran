@@ -1,4 +1,5 @@
 {
+  "skin": "luftrausers",
   "assets": {
     "asteroid": 1,
     "asteroid1": 1,
@@ -7,7 +8,7 @@
     "blaster": 1,
     "bouncer": 1,
     "bubble": 1,
-    "comcenter_bg": 1,
+    "comcenter_bg": 5,
     "explosion": 1,
     "falcon": 1,
     "falcon1": 1,
@@ -49,6 +50,5 @@
     "starg": 1,
     "ui_button": 1,
     "vulcan": 1
-  },
-  "skin": "luftrausers"
+  }
 }
