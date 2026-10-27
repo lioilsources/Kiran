@@ -72,9 +72,13 @@ class _JoinDialogState extends State<JoinDialog> {
   }
 
   void _connectTyped() {
-    final ip = _ip.text.trim();
-    if (ip.isEmpty) return;
-    widget.onJoin(CoopHostInfo(name: ip, address: ip, port: CoopHost.defaultPort));
+    final typed = _ip.text.trim();
+    if (typed.isEmpty) return;
+    // "ip:port" reaches a host on a non-default port; a bare IP keeps the default.
+    final colon = typed.lastIndexOf(':');
+    final port = colon > 0 ? int.tryParse(typed.substring(colon + 1)) : null;
+    final ip = port != null ? typed.substring(0, colon) : typed;
+    widget.onJoin(CoopHostInfo(name: ip, address: ip, port: port ?? CoopHost.defaultPort));
   }
 
   @override

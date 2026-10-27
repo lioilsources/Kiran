@@ -355,5 +355,22 @@
         "type": "String"
       }
     }
+  },
+  "joinConnecting": "Connecting to {target}…",
+  "lanJoinFailedBody": "The host did not answer: {reason}.\n\nBoth players need to be on the same Wi-Fi (a Personal Hotspot works too) and the host must have pressed HOST. Check the address and try again.",
+  "lanJoinNoAnswer": "no reply",
+  "@joinConnecting": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "@lanJoinFailedBody": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -566,17 +566,33 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     if (mounted) setState(() {});
   }
 
+  /// Connects over the LAN to a host from the JOIN list or a typed address.
+  /// A failed CONNECT used to fall back to hosting silently: from the
+  /// ComCenter, where the device was already hosting, that looked like
+  /// nothing happened, and it reset the run on the way. Now the attempt shows
+  /// its progress, a failure says why and leaves everything as it was, and
+  /// the run is only reset and our own hosting stopped once the host answers.
   Future<void> _joinAsClient(String ip, int port) async {
-    _game.resetForNewGame();
     print('Joining $ip:$port');
     final client = CoopClient();
+    final target = port == CoopHost.defaultPort ? ip : '$ip:$port';
+    final navigator = Navigator.of(context, rootNavigator: true);
+    unawaited(showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _ConnectingDialog(target: target),
+    ));
     final ok = await client.connect(ip, port, _game.vessel.pilotName);
+    navigator.pop();
     if (!ok) {
-      // Connection failed → fall back to auto-host
-      if (mounted) await _startAsAutoHost();
+      if (mounted) _showLanJoinFailed(target, client.lastError);
       return;
     }
 
+    // A pilot who was hosting stops advertising before becoming a client.
+    _disposeAutoHost();
+    await _game.disposeCoop();
+    _game.resetForNewGame();
     await _game.setupCoopClient(client);
 
     if (mounted) {
@@ -585,6 +601,27 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         _clientWaiting = true;
       });
     }
+  }
+
+  void _showLanJoinFailed(String target, String? reason) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(ctx.l10n.nearbyJoinFailedTitle(target),
+            style: const TextStyle(color: Colors.cyanAccent)),
+        content: Text(
+          ctx.l10n.lanJoinFailedBody(reason ?? ctx.l10n.lanJoinNoAnswer),
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(ctx.l10n.ok, style: const TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _disposeAutoHost() {
@@ -1256,6 +1293,33 @@ class _PauseMenuState extends State<_PauseMenu> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Shown while a LAN connect is in flight (up to the 5 s socket timeout).
+class _ConnectingDialog extends StatelessWidget {
+  final String target;
+  const _ConnectingDialog({required this.target});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.grey[900],
+      content: Row(
+        children: [
+          const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.cyanAccent),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(context.l10n.joinConnecting(target),
+                style: const TextStyle(color: Colors.white70, fontSize: 14)),
+          ),
+        ],
       ),
     );
   }

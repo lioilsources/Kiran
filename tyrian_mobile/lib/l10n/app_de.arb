@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "ÜBERLAST",
   "weaponOff": "{weapon} AUS — Generator zu schwach",
-  "unlocksAt": "Freigeschaltet ab {points} Pkt."
+  "unlocksAt": "Freigeschaltet ab {points} Pkt.",
+  "joinConnecting": "Verbinde mit {target}…",
+  "lanJoinFailedBody": "Der Host hat nicht geantwortet: {reason}.\n\nBeide Spieler müssen im selben WLAN sein (ein persönlicher Hotspot geht auch) und der Host muss HOST gedrückt haben. Prüfe die Adresse und versuche es erneut.",
+  "lanJoinNoAnswer": "keine Antwort"
 }

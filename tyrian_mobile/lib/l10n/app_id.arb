@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "KELEBIHAN BEBAN",
   "weaponOff": "{weapon} MATI — generator terlalu lemah",
-  "unlocksAt": "Terbuka di {points} poin"
+  "unlocksAt": "Terbuka di {points} poin",
+  "joinConnecting": "Menghubungkan ke {target}…",
+  "lanJoinFailedBody": "Host tidak menjawab: {reason}.\n\nKedua pemain harus berada di Wi-Fi yang sama (Hotspot Pribadi juga bisa) dan host harus sudah menekan HOST. Periksa alamatnya lalu coba lagi.",
+  "lanJoinNoAnswer": "tidak ada balasan"
 }

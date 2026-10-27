@@ -916,6 +916,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlocks at {points} pts'**
   String unlocksAt(String points);
+
+  /// No description provided for @joinConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to {target}…'**
+  String joinConnecting(String target);
+
+  /// No description provided for @lanJoinFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The host did not answer: {reason}.\n\nBoth players need to be on the same Wi-Fi (a Personal Hotspot works too) and the host must have pressed HOST. Check the address and try again.'**
+  String lanJoinFailedBody(String reason);
+
+  /// No description provided for @lanJoinNoAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'no reply'**
+  String get lanJoinNoAnswer;
 }
 
 class _AppLocalizationsDelegate

@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "SOVRACCARICO",
   "weaponOff": "{weapon} SPENTO — generatore troppo debole",
-  "unlocksAt": "Si sblocca a {points} punti"
+  "unlocksAt": "Si sblocca a {points} punti",
+  "joinConnecting": "Connessione a {target}…",
+  "lanJoinFailedBody": "L'host non ha risposto: {reason}.\n\nEntrambi i giocatori devono essere sulla stessa Wi-Fi (va bene anche un hotspot personale) e l'host deve aver premuto HOST. Controlla l'indirizzo e riprova.",
+  "lanJoinNoAnswer": "nessuna risposta"
 }

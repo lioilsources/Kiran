@@ -490,4 +490,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points점에서 해금';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return '$target에 연결 중…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return '호스트가 응답하지 않습니다: $reason.\n\n두 플레이어가 같은 Wi-Fi(개인용 핫스팟도 가능)에 있어야 하고 호스트가 HOST를 눌러야 합니다. 주소를 확인하고 다시 시도하세요.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => '응답 없음';
 }

@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "ПЕРЕГРУЗКА",
   "weaponOff": "{weapon} ОТКЛ. — генератор слишком слаб",
-  "unlocksAt": "Откроется при {points} очк."
+  "unlocksAt": "Откроется при {points} очк.",
+  "joinConnecting": "Подключение к {target}…",
+  "lanJoinFailedBody": "Хост не ответил: {reason}.\n\nОба игрока должны быть в одной сети Wi-Fi (подойдёт и режим модема), а хост должен нажать HOST. Проверьте адрес и попробуйте снова.",
+  "lanJoinNoAnswer": "нет ответа"
 }

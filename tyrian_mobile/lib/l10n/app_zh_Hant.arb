@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "過載",
   "weaponOff": "{weapon} 關閉 — 發電機功率不足",
-  "unlocksAt": "{points} 分解鎖"
+  "unlocksAt": "{points} 分解鎖",
+  "joinConnecting": "正在連線至 {target}…",
+  "lanJoinFailedBody": "主機沒有回應：{reason}。\n\n兩位玩家需要連上同一個 Wi-Fi（個人熱點也可以），而且主機需要已按下 HOST。請檢查位址後再試一次。",
+  "lanJoinNoAnswer": "沒有回應"
 }

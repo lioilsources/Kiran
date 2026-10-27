@@ -494,4 +494,17 @@ class AppLocalizationsTh extends AppLocalizations {
   String unlocksAt(String points) {
     return 'ปลดล็อกที่ $points คะแนน';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return 'กำลังเชื่อมต่อกับ $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'โฮสต์ไม่ตอบกลับ: $reason\n\nผู้เล่นทั้งสองต้องอยู่ใน Wi-Fi เดียวกัน (ฮอตสปอตส่วนบุคคลก็ใช้ได้) และโฮสต์ต้องกด HOST แล้ว ตรวจสอบที่อยู่แล้วลองอีกครั้ง';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'ไม่มีการตอบกลับ';
 }

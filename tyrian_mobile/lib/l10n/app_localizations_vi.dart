@@ -493,4 +493,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Mở khóa ở $points điểm';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return 'Đang kết nối tới $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'Máy chủ không phản hồi: $reason.\n\nCả hai người chơi phải cùng một mạng Wi-Fi (Điểm truy cập cá nhân cũng được) và máy chủ phải đã nhấn HOST. Hãy kiểm tra địa chỉ rồi thử lại.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'không có phản hồi';
 }

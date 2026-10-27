@@ -504,4 +504,17 @@ class AppLocalizationsCs extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Odemkne se při $points b.';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return 'Připojuji se k $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'Hostitel neodpověděl: $reason.\n\nOba hráči musí být na stejné Wi-Fi (funguje i osobní hotspot) a hostitel musí mít stisknuté HOST. Zkontrolujte adresu a zkuste to znovu.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'bez odpovědi';
 }

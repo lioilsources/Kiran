@@ -493,4 +493,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points puanda açılır';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return '$target adresine bağlanılıyor…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'Ana makine yanıt vermedi: $reason.\n\nİki oyuncu da aynı Wi-Fi ağında olmalı (Kişisel Erişim Noktası da olur) ve ana makine HOST\'a basmış olmalı. Adresi kontrol edip tekrar deneyin.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'yanıt yok';
 }
