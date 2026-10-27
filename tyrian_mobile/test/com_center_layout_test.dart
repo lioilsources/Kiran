@@ -15,8 +15,11 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  Future<TyrianGame> pump(WidgetTester tester, Locale locale,
-      {Size size = const Size(375, 812)}) async {
+  Future<TyrianGame> pump(
+    WidgetTester tester,
+    Locale locale, {
+    Size size = const Size(375, 812),
+  }) async {
     tester.view.physicalSize = size * 3;
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
@@ -31,25 +34,33 @@ void main() {
     v.credit = 123456789;
     v.score = 1234567;
 
-    await tester.pumpWidget(MaterialApp(
-      locale: locale,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        backgroundColor: Colors.black,
-        body: ComCenterScreen(game: game, onStart: () {}),
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: locale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          backgroundColor: Colors.black,
+          body: ComCenterScreen(game: game, onStart: () {}),
+        ),
       ),
-    ));
+    );
     await tester.pump(const Duration(milliseconds: 50));
     return game;
   }
 
-  for (final locale in const [Locale('en'), Locale('de'), Locale('ru')]) {
+  for (final locale in const [
+    Locale('en'),
+    Locale('cs'),
+    Locale('de'),
+    Locale('ru'),
+    Locale('ja'),
+  ]) {
     testWidgets('loadout fits a 375pt phone ($locale)', (tester) async {
       await pump(tester, locale);
       expect(find.text('BUBBLE'), findsNWidgets(3));
@@ -68,24 +79,35 @@ void main() {
     final credit = game.vessel.credit;
     await tester.tap(find.text('BUBBLE').first);
     await tester.pump(const Duration(milliseconds: 50));
-    expect(game.vessel.getDevice(WeaponSlot.frontGun)!.name,
-        DevType.bubbleGun.name);
+    expect(
+      game.vessel.getDevice(WeaponSlot.frontGun)!.name,
+      DevType.bubbleGun.name,
+    );
     expect(game.vessel.getDevice(WeaponSlot.frontGun)!.level, 1);
     expect(game.vessel.credit, credit);
   });
 
-  testWidgets('tapping an unowned chip arms BUY, which fits it', (tester) async {
+  testWidgets('tapping an unowned chip arms BUY, which fits it', (
+    tester,
+  ) async {
     final game = await pump(tester, const Locale('en'));
     await tester.tap(find.text('VULCAN').at(1)); // LEFT row
     await tester.pump(const Duration(milliseconds: 50));
-    expect(game.vessel.getDevice(WeaponSlot.leftGun)!.name,
-        DevType.smallBubble.name, reason: 'selecting does not buy');
+    expect(
+      game.vessel.getDevice(WeaponSlot.leftGun)!.name,
+      DevType.smallBubble.name,
+      reason: 'selecting does not buy',
+    );
     await tester.tap(find.textContaining('BUY'));
     await tester.pump(const Duration(milliseconds: 50));
-    expect(game.vessel.getDevice(WeaponSlot.leftGun)!.name,
-        DevType.smallVulcan.name);
-    expect(game.vessel.hangarEntry(DevType.smallBubble.name, WeaponSlot.leftGun),
-        isNotNull);
+    expect(
+      game.vessel.getDevice(WeaponSlot.leftGun)!.name,
+      DevType.smallVulcan.name,
+    );
+    expect(
+      game.vessel.hangarEntry(DevType.smallBubble.name, WeaponSlot.leftGun),
+      isNotNull,
+    );
     await tester.pump(const Duration(seconds: 2));
   });
 }

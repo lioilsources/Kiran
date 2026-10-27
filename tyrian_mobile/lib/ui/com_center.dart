@@ -615,28 +615,37 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Long-press the title to toggle the hidden cheats panel.
-              GestureDetector(
-                onLongPress: () {
-                  setState(() => _cheatsEnabled = !_cheatsEnabled);
-                  game.showMessage(
-                    _cheatsEnabled ? _l.cheatsEnabled : _l.cheatsDisabled,
-                  );
-                },
-                child: Text(
-                  _l.commandCenter,
-                  style: _theme.styled(
-                    TextStyle(
-                      color: _theme.accent,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 3,
+              // The title shrinks before it pushes the pilot name off a
+              // narrow phone (long localized titles, wide pixel fonts).
+              Flexible(
+                flex: 3,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.bottomLeft,
+                  child: // Long-press the title to toggle the hidden cheats panel.
+                  GestureDetector(
+                    onLongPress: () {
+                      setState(() => _cheatsEnabled = !_cheatsEnabled);
+                      game.showMessage(
+                        _cheatsEnabled ? _l.cheatsEnabled : _l.cheatsDisabled,
+                      );
+                    },
+                    child: Text(
+                      _l.commandCenter,
+                      style: _theme.styled(
+                        TextStyle(
+                          color: _theme.accent,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 3,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(child: _buildPilotName()),
+              Expanded(flex: 2, child: _buildPilotName()),
             ],
           ),
           if (game.isCoop && game.vessel2 != null)
