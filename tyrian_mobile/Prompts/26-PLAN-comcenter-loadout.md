@@ -454,3 +454,23 @@ z workflow (sdílené s dev). Nové flagy `-comfyui-steps`, `-comfyui-guidance`,
 `sampler_override_test.go`. Krok 2 (prompt pro nový layout) je taky v
 `prompts.go`. Pozn.: `TestGenerateInjectsWorkflow` v `client_test.go` padá už na
 HEAD (kontroluje pony node ID proti flux workflow) — nesouvisí, opravit zvlášť.
+
+---
+
+## 11. Stav implementace (2026-10-27, noc)
+
+| Linie | Větev | Stav |
+|---|---|---|
+| 2.9.x | `feat/comcenter-loadout-2.9` (z `feat/l10n-2.9.x`) | hangár, nový ComCenter, l10n klíče, smazaný `ui_card_bg`, verze **2.9.4**; 119 testů zelených |
+| 3.x | `feat/comcenter-loadout-3x` (z `feat/l10n-main`) | totéž + skiny jako pad region, obtížnost v hlavičce, LAUNCH MISSION; pipeline bez `ui_card_bg`/`ui_tab_active`; verze **3.8.0**; 214 testů zelených |
+| main l10n | `feat/l10n-main` | cherry-pick původní main lokalizace `57a2ccb` (ne ořezané `2a2b3ca`), všech 15 jazyků |
+
+Odchylky od plánu výše:
+- **`saveVersion` zůstává 2.** Loader porovnává uloženou verzi s konstantou a starší savy posílá přes migraci starých indexů sektorů; zvýšení na 3 by savy z verze 2 rozbilo. Hangár je volitelný klíč `hangar`.
+- **GEN řádek má jen buňku UPG** (čip generátoru nic nedělá, kurzor ho přeskakuje).
+- **SELL prodává jen vybavenou zbraň.** Zbraň z hangáru se prodá tak, že se na ni nejdřív přepne. `Vessel.sellFromHangar` existuje, UI ho nevolá.
+- **Dvousloupcový desktop až od šířky 900 px**, užší okno dostane mobilní layout.
+- **Pipeline na 2.9.x se nemění** (generuje se z main), smazání `ui_card_bg` z pipeline je jen na 3.x.
+- Widget testy (`test/com_center_layout_test.dart`) hlídají přetečení na 375 pt v en/cs/de/ru/ja a tok přepnutí/nákupu; testovací font má znaky široké 1 em, zhruba jako Press Start 2P.
+
+Zbývá: nová pozadí `comcenter_bg` (úloha 1027-49 v 06:35, pak výběr uživatelem) do obou linií, push větví, PR, tagy `v2.9.4` a `v3.8.0`.
