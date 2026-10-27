@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "AŞIRI YÜK",
   "weaponOff": "{weapon} KAPALI — jeneratör çok zayıf",
-  "unlocksAt": "{points} puanda açılır"
+  "unlocksAt": "{points} puanda açılır",
+  "joinConnecting": "{target} adresine bağlanılıyor…",
+  "lanJoinFailedBody": "Ana makine yanıt vermedi: {reason}.\n\nİki oyuncu da aynı Wi-Fi ağında olmalı (Kişisel Erişim Noktası da olur) ve ana makine HOST'a basmış olmalı. Adresi kontrol edip tekrar deneyin.",
+  "lanJoinNoAnswer": "yanıt yok"
 }

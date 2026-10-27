@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "SURCHARGE",
   "weaponOff": "{weapon} HORS SERVICE — générateur trop faible",
-  "unlocksAt": "Débloqué à {points} pts"
+  "unlocksAt": "Débloqué à {points} pts",
+  "joinConnecting": "Connexion à {target}…",
+  "lanJoinFailedBody": "L'hôte n'a pas répondu : {reason}.\n\nLes deux joueurs doivent être sur le même Wi-Fi (un partage de connexion fonctionne aussi) et l'hôte doit avoir appuyé sur HOST. Vérifiez l'adresse et réessayez.",
+  "lanJoinNoAnswer": "aucune réponse"
 }

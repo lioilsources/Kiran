@@ -489,6 +489,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points 分解锁';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return '正在连接 $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return '主机没有响应：$reason。\n\n两位玩家需要连接同一个 Wi-Fi（个人热点也可以），并且主机需要已按下 HOST。请检查地址后重试。';
+  }
+
+  @override
+  String get lanJoinNoAnswer => '无响应';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -976,4 +989,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String unlocksAt(String points) {
     return '$points 分解鎖';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return '正在連線至 $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return '主機沒有回應：$reason。\n\n兩位玩家需要連上同一個 Wi-Fi（個人熱點也可以），而且主機需要已按下 HOST。請檢查位址後再試一次。';
+  }
+
+  @override
+  String get lanJoinNoAnswer => '沒有回應';
 }

@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "過負荷",
   "weaponOff": "{weapon} 停止 — ジェネレーター出力不足",
-  "unlocksAt": "{points} ptで解放"
+  "unlocksAt": "{points} ptで解放",
+  "joinConnecting": "{target} に接続中…",
+  "lanJoinFailedBody": "ホストから応答がありません：{reason}。\n\n両方のプレイヤーが同じWi-Fi（インターネット共有も可）に接続し、ホストがHOSTを押している必要があります。アドレスを確認して、もう一度お試しください。",
+  "lanJoinNoAnswer": "応答なし"
 }

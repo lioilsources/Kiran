@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "PŘETÍŽENÍ",
   "weaponOff": "{weapon} VYPNUT — slabý generátor",
-  "unlocksAt": "Odemkne se při {points} b."
+  "unlocksAt": "Odemkne se při {points} b.",
+  "joinConnecting": "Připojuji se k {target}…",
+  "lanJoinFailedBody": "Hostitel neodpověděl: {reason}.\n\nOba hráči musí být na stejné Wi-Fi (funguje i osobní hotspot) a hostitel musí mít stisknuté HOST. Zkontrolujte adresu a zkuste to znovu.",
+  "lanJoinNoAnswer": "bez odpovědi"
 }

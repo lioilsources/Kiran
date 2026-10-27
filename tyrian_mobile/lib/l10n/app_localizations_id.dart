@@ -493,4 +493,17 @@ class AppLocalizationsId extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Terbuka di $points poin';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return 'Menghubungkan ke $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'Host tidak menjawab: $reason.\n\nKedua pemain harus berada di Wi-Fi yang sama (Hotspot Pribadi juga bisa) dan host harus sudah menekan HOST. Periksa alamatnya lalu coba lagi.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'tidak ada balasan';
 }

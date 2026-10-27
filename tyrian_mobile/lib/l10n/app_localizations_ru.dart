@@ -508,4 +508,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Откроется при $points очк.';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return 'Подключение к $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'Хост не ответил: $reason.\n\nОба игрока должны быть в одной сети Wi-Fi (подойдёт и режим модема), а хост должен нажать HOST. Проверьте адрес и попробуйте снова.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'нет ответа';
 }

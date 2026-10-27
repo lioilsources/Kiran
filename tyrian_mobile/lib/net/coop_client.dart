@@ -24,15 +24,25 @@ class CoopClient {
   void Function(int eventType, double x, double y, String text)? onGameEvent;
   void Function(Uint8List payload)? onShopState;
 
+  /// Why the last [connect] failed, for the player; null after a success.
+  String? lastError;
+
   /// Connect to a host on the LAN.
   Future<bool> connect(String host, int port, String pilotName) async {
     print('Client: connecting to $host:$port');
+    lastError = null;
     try {
       final socket = await Socket.connect(host, port,
           timeout: const Duration(seconds: 5));
       attach(SocketChannel(socket), pilotName);
       return true;
+    } on SocketException catch (e) {
+      // A connect timeout also lands here, as "Connection timed out".
+      lastError = e.osError?.message ?? e.message;
+      print('Client: connect failed: $e');
+      return false;
     } catch (e) {
+      lastError = '$e';
       print('Client: connect failed: $e');
       return false;
     }

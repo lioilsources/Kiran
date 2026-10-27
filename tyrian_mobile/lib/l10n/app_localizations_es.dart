@@ -501,4 +501,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Se desbloquea con $points pts';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return 'Conectando con $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'El anfitrión no respondió: $reason.\n\nAmbos jugadores deben estar en la misma Wi-Fi (también sirve un punto de acceso personal) y el anfitrión debe haber pulsado HOST. Comprueba la dirección e inténtalo de nuevo.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'sin respuesta';
 }

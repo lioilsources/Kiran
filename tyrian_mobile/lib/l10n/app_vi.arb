@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "QUÁ TẢI",
   "weaponOff": "{weapon} TẮT — máy phát quá yếu",
-  "unlocksAt": "Mở khóa ở {points} điểm"
+  "unlocksAt": "Mở khóa ở {points} điểm",
+  "joinConnecting": "Đang kết nối tới {target}…",
+  "lanJoinFailedBody": "Máy chủ không phản hồi: {reason}.\n\nCả hai người chơi phải cùng một mạng Wi-Fi (Điểm truy cập cá nhân cũng được) và máy chủ phải đã nhấn HOST. Hãy kiểm tra địa chỉ rồi thử lại.",
+  "lanJoinNoAnswer": "không có phản hồi"
 }

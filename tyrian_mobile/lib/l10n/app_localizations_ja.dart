@@ -490,4 +490,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points ptで解放';
   }
+
+  @override
+  String joinConnecting(String target) {
+    return '$target に接続中…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'ホストから応答がありません：$reason。\n\n両方のプレイヤーが同じWi-Fi（インターネット共有も可）に接続し、ホストがHOSTを押している必要があります。アドレスを確認して、もう一度お試しください。';
+  }
+
+  @override
+  String get lanJoinNoAnswer => '応答なし';
 }

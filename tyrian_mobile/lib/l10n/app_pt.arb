@@ -131,5 +131,8 @@
   "familyLaser": "LASER",
   "overload": "SOBRECARGA",
   "weaponOff": "{weapon} DESLIGADO — gerador fraco demais",
-  "unlocksAt": "Desbloqueia com {points} pts"
+  "unlocksAt": "Desbloqueia com {points} pts",
+  "joinConnecting": "Conectando a {target}…",
+  "lanJoinFailedBody": "O anfitrião não respondeu: {reason}.\n\nOs dois jogadores precisam estar na mesma Wi-Fi (um Acesso Pessoal também serve) e o anfitrião precisa ter tocado em HOST. Verifique o endereço e tente de novo.",
+  "lanJoinNoAnswer": "sem resposta"
 }
