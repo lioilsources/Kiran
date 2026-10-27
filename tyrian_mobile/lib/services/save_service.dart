@@ -8,6 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SaveService {
   static const _keyGameState = 'game_state';
 
+  /// Save format version. v1 saves (no marker) predate the 18-part sector
+  /// table — their 'level' field holds one-sector-per-level indices and is
+  /// migrated on load via [Sector.migrateLegacyIndex].
+  static const int saveVersion = 2;
+
   /// Save game state (vessel stats, credit, level)
   static Future<void> saveGameState({
     required String pilotName,
@@ -20,10 +25,13 @@ class SaveService {
     required double genMax,
     required double genPower,
     required int level,
+    required int nextWeaponLevel,
     required List<Map<String, dynamic>> weapons,
+    List<Map<String, dynamic>> hangar = const [],
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final state = {
+      'saveVersion': saveVersion,
       'pilotName': pilotName,
       'credit': credit,
       'score': score,
@@ -34,7 +42,16 @@ class SaveService {
       'genMax': genMax,
       'genPower': genPower,
       'level': level,
+      // Weapon tier used to be derived from score on load. Now that a death
+      // keeps the run going, an unlock has to be permanent even when the
+      // derivation would come out lower (the ComCenter cheat, a future score
+      // reset). Absent in v2 saves — load falls back to the score derivation.
+      'nextWeaponLevel': nextWeaponLevel,
       'weapons': weapons,
+      // Owned-but-unfitted weapons (ComCenter loadout). Optional: older saves
+      // have no key and load an empty hangar, so saveVersion stays 2 —
+      // bumping it would push v2 saves through the legacy index migration.
+      'hangar': hangar,
     };
     await prefs.setString(_keyGameState, jsonEncode(state));
   }
@@ -51,5 +68,37 @@ class SaveService {
   static Future<void> clearGameState() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyGameState);
+  }
+
+  // ── Campaign ──
+  //
+  // The campaign keeps its own key with its own version, so a campaign
+  // session never rewrites the endless run's save and neither format has to
+  // migrate when the other changes.
+
+  static const _keyCampaignState = 'campaign_state';
+  static const int campaignSaveVersion = 1;
+
+  static Future<void> saveCampaignState(Map<String, dynamic> state) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        _keyCampaignState,
+        jsonEncode({
+          'campaignSaveVersion': campaignSaveVersion,
+          ...state,
+        }));
+  }
+
+  /// Returns null when no campaign has been started.
+  static Future<Map<String, dynamic>?> loadCampaignState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_keyCampaignState);
+    if (jsonStr == null) return null;
+    return jsonDecode(jsonStr) as Map<String, dynamic>;
+  }
+
+  static Future<void> clearCampaignState() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyCampaignState);
   }
 }

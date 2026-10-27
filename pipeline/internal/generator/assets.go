@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"fmt"
+
 	"tyrian-pipeline/internal/skin"
 )
 
@@ -26,8 +28,12 @@ var bulletSpecs = []struct{ name, directive string }{
 // proportion words (small, narrow, wide, bulky, large, oversized) are deliberately
 // avoided: every enemy is normalized to a uniform square reference footprint in
 // postprocess, so non-square art would just get letterboxed and render small.
+// No plain "falcon" and no "bouncer": HostType maps to falcon1..6 and the
+// falconx family, and the boss is always rododendron (Boss.spriteName's
+// bouncer fallback is unreachable — pack_atlas.dart now fails the build if a
+// skin lacks rododendron). Generating them cost 4 diffusion runs per skin and
+// a slice of every atlas for art nothing ever drew.
 var enemySpecs = []struct{ name, directive string }{
-	{"falcon", "standard fighter, angular wings"},
 	{"falcon1", "scout fighter, swept-back wings"},
 	{"falcon2", "armored interceptor, reinforced hull plates"},
 	{"falcon3", "bomber variant, visible weapon pods"},
@@ -39,8 +45,22 @@ var enemySpecs = []struct{ name, directive string }{
 	{"falconx3", "experimental mark IV, heavily armed, prominent cannons"},
 	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
-	{"bouncer", "agile drone, spherical body, unpredictable movement design"},
 	{"rododendron", "boss dreadnought, layered armor plating, dominating silhouette, ornate command superstructure"},
+}
+
+// bossPartSpecs are the modules that bolt onto the dreadnought. They get their
+// own prompt kind rather than riding the enemy one: that template insists on a
+// "single craft" with a nose and a menacing hostile design, which is exactly
+// what a part must not be. The first pass through the enemy template produced
+// four complete fighters, engine plumes and all.
+var bossPartSpecs = []struct{ name, directive string }{
+	{"boss_turret", "a round armored gun drum seen from directly above, two short muzzle openings breaking its top rim"},
+	{"boss_shield", "a shield emitter: a dish ringed by coils around a glowing projector core"},
+	{"boss_thruster", "an engine block: a cluster of exhaust bells behind cooling fins"},
+	// Deliberately not the word "cannon": it drags in wheeled field artillery
+	// no matter how the template argues. A launch-tube bank is the same thing
+	// for the game — the part fires spread volleys — and reads from above.
+	{"boss_cannon", "an armored launch-tube bank, a rectangular block of vertical tubes with their open mouths facing the top edge"},
 }
 
 var structureSpecs = []struct{ name, directive string }{
@@ -50,19 +70,117 @@ var structureSpecs = []struct{ name, directive string }{
 	{"asteroid3", "tiny asteroid shard, sharp angular fragment"},
 }
 
+// isolatedOnBlack is the composition contract for every chroma-keyed layer.
+// Postprocess derives their alpha by keying out whatever sits within a colour
+// distance of the corner pixels (postprocess/bgremove.go), so anything the
+// model draws dark is deleted, not made translucent.
+//
+// Both halves are load-bearing, and both were learned the hard way: asking only
+// for "isolated on a flat pure black background" got dark full-frame landscapes
+// that the key erased outright — one layer came back 100% transparent. The
+// elements have to be explicitly luminous, and the scene words have to be
+// explicitly banned, or the model reaches for a horizon every time.
+//
+// The last clause is load-bearing for the same reason the rest is. "Bright" and
+// "luminous" with no hue attached mean white to the model: measured on the v3
+// batch, layer_2 came back #8D8D8D on the four-shade green handheld and
+// #75706C on the neon vector skin. Naming the palette in a later sentence does
+// not reach the elements — the constraint has to sit on the elements
+// themselves, in the same breath as the word bright.
+const isolatedOnBlack = "The elements float in an empty pure black void with " +
+	"nothing behind them — no horizon, no ground, no terrain, no landscape, " +
+	"no skyline, no planet surface. Every element is bright and clearly " +
+	"separated from the black; the background stays pure flat black everywhere. " +
+	"Each element glows in one of the colours listed above, at full saturation, " +
+	"as if lit from within by that colour"
+
+// backgroundLayers describe the four parallax planes. Layers 1-3 are composited
+// over layer_0 with alpha derived by chroma key, hence isolatedOnBlack; layer_0
+// is the opaque plate and is free to be a full scene.
+//
+// perZone layers are generated once per entry in backgroundZones; the rest are
+// generated once per skin and reused across every zone. layer_0 and layer_1
+// carry the colour, so they are the two worth varying.
 var backgroundLayers = []struct {
-	name     string
+	name      string
 	layerDesc string
+	perZone   bool
 }{
-	{"layer_0", "distant stars, very sparse tiny dots, deepest background layer"},
-	{"layer_1", "nebula clouds and gas, mid-distance, translucent wisps"},
-	{"layer_2", "medium stars and space dust, moderate density"},
-	{"layer_3", "foreground debris, closest layer, larger particles and rocks"},
+	{"layer_0", "the sky/void itself — the opaque base plate, fills the entire frame edge to edge with no gaps, furthest away, low detail, soft and unfocused", true},
+	{"layer_1", "mid-distance atmosphere — luminous gas clouds and glowing haze, self-lit and much brighter than the void behind them, soft feathered edges fading out to pure black. " + isolatedOnBlack, true},
+	{"layer_2", "mid-detail particulate — densely scattered bright motes, dust and glowing specks, each one clearly luminous. " + isolatedOnBlack, false},
+	{"layer_3", "foreground pass — larger near objects, brightly lit debris chunks and fragments catching the light, sparse. " + isolatedOnBlack, false},
 }
+
+// backgroundZones mirror the seven hand-scripted sectors in
+// tyrian_mobile/lib/systems/sector.dart (System Perimeter .. Unknown Space).
+// The zone index is the game's currentSectorIndex; sectors past the last zone
+// clamp to it and keep escalating through a runtime tint instead. The count
+// must stay in sync with BgZones.count in tyrian_mobile/lib/rendering/bg_zones.dart.
+//
+// zoneDesc is deliberately domain-neutral ("territory", "large body",
+// "surface" rather than "space", "planet", "orbit") so one table serves skins
+// that are not set in space at all — river_raid's river valley, luftrausers'
+// wartime sky. The domain word comes from the skin's SceneNoun instead.
+//
+// dangerMood is a *shift* of the skin's own BackgroundMood, never a replacement
+// palette: that is what lets the danger ramp escalate without erasing the skin's
+// identity. It climbs on three axes at once — temperature (indigo -> teal ->
+// amber -> orange -> red -> crimson), saturation and density.
+var backgroundZones = []struct {
+	zoneDesc   string
+	dangerMood string
+}{
+	{
+		"the outermost frontier of the territory, far from everything, almost empty — a vast open expanse, a few tiny distant landmarks, nothing threatening in sight",
+		"hold the base palette at its coldest and calmest — desaturated, cool, low contrast, large areas of empty darkness, only the faintest cold highlights",
+	},
+	{
+		"further inside the territory, lightly travelled — scattered mining debris and drifting rubble, the first signs the place is used",
+		"the base palette barely shifted — still cool, a first faint highlight, density and contrast one notch up",
+	},
+	{
+		"the outer boundary of a huge body — its curved edge entering the frame, a boundary ring or shoreline crossing the scene, a thin haze layer where the open expanse meets the body",
+		"cool the base palette toward green-teal, with the first warm accent on the boundary line, moderate contrast, distance softened by haze",
+	},
+	{
+		"a contested patrol corridor above the surface — a defence grid, marker beacons, sweeping searchlight cones from below, geometric perimeter markings on the ground",
+		"shift the base palette warmer — alert amber and gold cutting into the cold shadows, hard-edged pools of light, contrast clearly raised",
+	},
+	{
+		"skimming low and fast over the body — the surface fills the frame, defence platforms and the terminator line between lit and unlit ground, upper atmosphere burning past",
+		"push the base palette hot — strong orange rim light against deep shadow, high saturation, dramatic directional light, a sense of speed",
+	},
+	{
+		"a heavy industrial region — refinery stacks, molten channels, slag heaps and pipe runs, thick pollution haze, drifting embers and smoke",
+		"push the base palette into burning red-orange and toxic yellow-green through black smoke, heavy saturation, harsh contrast, glowing hot spots, dirty and oppressive",
+	},
+	{
+		"unmapped hostile territory — nothing here matches the charts, wrong geometry, torn voids and structures that should not exist, an anomaly bleeding light",
+		"push the base palette to its most aggressive — malignant crimson and violet-magenta against near-black, extreme saturation and contrast, colours that read as wrong and hostile, dense, almost no calm space left",
+	},
+}
+
+// Fillers for the shared layers, which are reused under every zone and so must
+// commit to none of them.
+//
+// sharedDangerMood used to read "the base palette held neutral, mid-tone, no
+// strong colour cast". It meant "add no sector-specific cast"; the model read
+// it as "be grey", and next to isolatedOnBlack's "bright" that won outright.
+// Measured on the v3 batch: layer_2 came back #868686 on the four-shade green
+// handheld and #585554 on the neon vector skin, while the same layer on
+// space_invaders is #41AA37 and on luftrausers #B88A60 — the older skins
+// survived only because their base palette is loud enough to outshout it.
+// It now says what it always meant: hold the skin's own palette, refuse the
+// zone's. Shipped skins are unaffected — generation skips assets that exist.
+const (
+	sharedZoneDesc   = "generic mid-territory, no distinctive landmarks — ambient detail that must sit believably over any sector of this setting"
+	sharedDangerMood = "stay on the base palette exactly as described above, at mid intensity — take none of the sector-specific colour shifts, but never fall back to grey or white: every element keeps the palette's own hues"
+)
 
 // AssetsForSkin returns all asset specs needed for a given skin.
 func AssetsForSkin(s skin.SkinDef) []AssetSpec {
-	specs := make([]AssetSpec, 0, 32)
+	specs := make([]AssetSpec, 0, 48)
 
 	// Ship: ONE craft on a square canvas. The N animation frames are synthesized
 	// in postprocess by glow modulation — generating multi-frame strips in one
@@ -75,14 +193,9 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		Resolution:  "1k",
 	})
 
-	// Explosion
-	specs = append(specs, AssetSpec{
-		Name:        "explosion",
-		AssetType:   "explosion",
-		OutputDir:   "sprites",
-		AspectRatio: "1:1",
-		Resolution:  "1k",
-	})
+	// No explosion sheet: entities/explosion.dart draws them procedurally, so
+	// the four 720x720 frames postprocess used to slice out of it were a
+	// quarter of every atlas that nothing ever sampled.
 
 	// Projectiles (match game imgNames)
 	for _, b := range bulletSpecs {
@@ -108,6 +221,18 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		})
 	}
 
+	// Boss parts
+	for _, bp := range bossPartSpecs {
+		specs = append(specs, AssetSpec{
+			Name:        bp.name,
+			AssetType:   "boss_part",
+			OutputDir:   "sprites",
+			AspectRatio: "1:1",
+			Resolution:  "1k",
+			ExtraVars:   map[string]string{"PartDirective": bp.directive},
+		})
+	}
+
 	// Structures
 	for _, st := range structureSpecs {
 		specs = append(specs, AssetSpec{
@@ -120,16 +245,32 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		})
 	}
 
-	// Background layers
+	// Background layers. Per-zone layers get a "_z<N>" suffix on the asset name;
+	// that name is what the orchestrator, the manifest and postprocess all key
+	// on, so the zone dimension propagates end to end without a new field.
 	for _, layer := range backgroundLayers {
-		specs = append(specs, AssetSpec{
-			Name:        layer.name,
-			AssetType:   "background",
-			OutputDir:   "backgrounds",
-			AspectRatio: "1:2",
-			Resolution:  "2k",
-			ExtraVars:   map[string]string{"LayerDesc": layer.layerDesc},
-		})
+		bg := func(name, zoneDesc, dangerMood string) AssetSpec {
+			return AssetSpec{
+				Name:        name,
+				AssetType:   "background",
+				OutputDir:   "backgrounds",
+				AspectRatio: "1:2",
+				Resolution:  "2k",
+				ExtraVars: map[string]string{
+					"LayerDesc":  layer.layerDesc,
+					"ZoneDesc":   zoneDesc,
+					"DangerMood": dangerMood,
+				},
+			}
+		}
+		if !layer.perZone {
+			specs = append(specs, bg(layer.name, sharedZoneDesc, sharedDangerMood))
+			continue
+		}
+		for z, zone := range backgroundZones {
+			specs = append(specs, bg(
+				fmt.Sprintf("%s_z%d", layer.name, z), zone.zoneDesc, zone.dangerMood))
+		}
 	}
 
 	// HUD icons
@@ -168,9 +309,7 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		Resolution:  "2k",
 	})
 	for _, uiSpec := range []struct{ name, assetType, aspect string }{
-		{"ui_card_bg",    "ui_card_bg",    "1:1"},
-		{"ui_button",     "ui_button",     "4:1"},
-		{"ui_tab_active", "ui_tab_active", "4:1"},
+		{"ui_button", "ui_button", "4:1"},
 	} {
 		specs = append(specs, AssetSpec{
 			Name:        uiSpec.name,

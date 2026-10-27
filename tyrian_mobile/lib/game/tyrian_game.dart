@@ -1,5 +1,7 @@
+import 'dart:async' show unawaited;
 import 'dart:math' show pi, exp, min;
 import 'dart:typed_data';
+import 'package:cute_kid_fonts/cute_kid_fonts.dart' show KidPalette;
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -7,22 +9,32 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'challenge.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
 import '../input/keyboard_input.dart';
 import '../input/gamepad_input.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
+import '../rendering/offscreen_markers.dart';
+import '../rendering/bg_zones.dart';
 import '../entities/vessel.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
+import '../entities/death_effect.dart';
 import '../entities/collectable.dart';
 import '../entities/structure.dart';
 import '../entities/hostile.dart';
 import '../systems/sector.dart';
+import '../systems/campaign.dart';
+import '../systems/campaign_tracker.dart';
 import '../systems/fleet.dart';
 import '../systems/dev_type.dart';
+import '../systems/device.dart';
+import '../systems/weapon_family.dart';
+import 'death_effect_config.dart';
 import '../entities/projectile.dart';
+import '../services/achievement_service.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../services/music_service.dart';
@@ -37,9 +49,15 @@ import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
+import '../l10n/l10n.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
+
+/// Endless is the roguelike run; campaign is the node map with its own vessel
+/// and save. Everything keyed on a sector index — level, art zone, which
+/// content loads, where progress is written — dispatches on this.
+enum GameMode { endless, campaign }
 
 class TyrianGame extends FlameGame
     with DragCallbacks, TapCallbacks, KeyboardEvents {
@@ -83,6 +101,9 @@ class TyrianGame extends FlameGame
   /// Callback when a client joins (for UI notification)
   VoidCallback? onClientJoined;
 
+  /// Callback when the client drops — the seat is free again.
+  VoidCallback? onClientLeft;
+
   /// All active (visible) vessels for collision iteration
   List<Vessel> get allVessels => [
         vessel,
@@ -103,10 +124,54 @@ class TyrianGame extends FlameGame
   final List<Collectable> activeCollectables = [];
   final ShardPool shardPool = ShardPool();
   late ExplosionRenderer explosionRenderer;
+  late DeathEffectRenderer deathEffects;
   final List<Projectile> enemyProjectiles = [];
 
   Sector? currentSector;
   int currentSectorIndex = 0;
+
+  GameMode mode = GameMode.endless;
+
+  /// The challenge in force right now. A campaign carries its own, fixed at
+  /// creation; endless follows the menu selection live, so changing it in
+  /// the main menu takes effect from the next sector of the current run.
+  Challenge get challenge => mode == GameMode.campaign
+      ? (campaign?.challenge ?? Challenge.normal)
+      : Challenge.selected;
+  CampaignState? campaign;
+
+  /// Counts objective progress through a campaign node. Null in endless, which
+  /// is what keeps the hooks in Fleet and Vessel free.
+  CampaignTracker? campaignTracker;
+
+  /// How the node that just finished was graded — read by the result card.
+  NodeResult? lastNodeResult;
+
+  /// Weapons a boss kill just opened up, for the result card to announce.
+  /// Null when the node opened nothing.
+  String? lastNodeUnlock;
+
+  /// VB6 difficulty level of a sector index in the current mode. The campaign
+  /// tables its own levels: Sector.levelForIndex would read node 19 as the
+  /// second procedural level (8) and pay the max-level bounty for it.
+  int levelForIndex(int index) => mode == GameMode.campaign
+      ? Campaign.levelForNode(index)
+      : Sector.levelForIndex(index);
+
+  int zoneForIndex(int index) => BgZones.forLevel(levelForIndex(index));
+
+  /// Sector.complete is a one-way latch and the ComCenter only opens two
+  /// seconds later, so without this the whole end-of-sector block ran on every
+  /// frame of that window — ~120 times at 60fps, ~240 on a 120Hz display. That
+  /// paid the sector bonus and queued advanceToNextSector once per frame, so
+  /// finishing sector 1 landed the player at sector ~121 with ~120x the
+  /// credits, and restarted the victory fanfare every 70ms. Reset in
+  /// [loadSector], which is the only way a new sector begins.
+  bool _sectorCompleteFired = false;
+
+  /// Any hull HP lost during the current sector — the "untouchable"
+  /// achievement checks this on sector completion. Set by Vessel.
+  bool sectorHullDamage = false;
   double elapsed = 0;
   double _osdTimer = 0;
 
@@ -138,6 +203,10 @@ class TyrianGame extends FlameGame
     }
     return null;
   }
+
+  /// That boss's pieces, dead ones included — the HP bar shows one pip each
+  /// so the player can see what is still bolted on.
+  List<BossPart> get activeBossParts => activeBoss?.parts ?? const [];
 
   /// Adaptive-music director — created in onLoad, ticked while playing.
   MusicDirector? musicDirector;
@@ -193,6 +262,9 @@ class TyrianGame extends FlameGame
     explosionRenderer = ExplosionRenderer();
     world.add(explosionRenderer);
 
+    deathEffects = DeathEffectRenderer();
+    world.add(deathEffects);
+
     vessel = Vessel();
     await vessel.init();
     world.add(vessel);
@@ -214,6 +286,12 @@ class TyrianGame extends FlameGame
     state = GameState.comCenter;
     vessel.visible = false;
     musicDirector = MusicDirector(this);
+
+    // Re-point every live entity the instant a skin's atlas is swapped.
+    // Registered last, because refreshSprites touches `vessel` and the
+    // parallax, which only exist by this point.
+    AssetLibrary.instance.onSkinAssetsChanged = refreshSprites;
+
     isLoaded = true;
     onLoaded?.call();
   }
@@ -267,6 +345,13 @@ class TyrianGame extends FlameGame
         camera.viewfinder.position = Vector2.zero();
       }
     }
+
+    // Both branches above replace the viewport object outright, which discards
+    // whatever was attached to the old one — so anything living in the viewport
+    // has to be re-attached here rather than once in onLoad. On iOS the cold
+    // start always lands here a second time (see the 0x0 guard), which is how
+    // the edge markers silently disappeared.
+    camera.viewport.add(OffscreenEnemyMarkers());
   }
 
   @override
@@ -288,6 +373,9 @@ class TyrianGame extends FlameGame
   void refreshSprites() {
     vessel.refreshSprite();
     vessel2?.refreshSprite();
+    // Covers a skin change made from the main menu, before any sector loaded.
+    requestZoneBackgrounds(currentSectorIndex);
+    parallaxBg.setLevel(levelForIndex(currentSectorIndex));
     parallaxBg.loadLayers();
 
     // Refresh all live entities
@@ -309,6 +397,19 @@ class TyrianGame extends FlameGame
     for (final p in enemyProjectiles) {
       p.refreshSprite();
     }
+    // Pickups are fetched once at spawn and were never on this list, so any
+    // still falling kept a Sprite whose image loadSkin had just disposed.
+    // Drawing that throws, the world render catch swallows it, and the game
+    // ran on as a black screen with a live HUD until the pickup scrolled off
+    // — which is why a pause/resume seemed to "fix" it. Reported on the iPad
+    // after a switch to the default skin from the pause menu.
+    for (final c in activeCollectables) {
+      c.refreshSprite();
+    }
+    // Shards snapshot the dying entity's Sprite (image + source rect) at spawn
+    // and cannot be re-pointed at the new atlas, so drop them. A skin switch
+    // is already a full stall; nobody misses a second of debris.
+    shardPool.clearAll();
 
     // Reconfigure shaders for new skin
     final skinId = AssetLibrary.instance.skinId;
@@ -335,6 +436,10 @@ class TyrianGame extends FlameGame
     }
     loadSector(currentSectorIndex);
     _startSectorMusic();
+    // After loadSector, which resets the node's counters.
+    campaignTracker?.onLaunch(vessel);
+    AchievementService.instance
+        .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
   }
 
   /// Kick off the heroic intro + reset the adaptive-music director for a sector.
@@ -344,18 +449,39 @@ class TyrianGame extends FlameGame
   }
 
   void loadSector(int index) {
+    _sectorCompleteFired = false;
     // Clean up previous sector
     _clearActiveObjects();
     currentSector?.removeFromParent();
 
-    currentSector = Sector.create(index, this);
+    currentSector = mode == GameMode.campaign
+        ? Campaign.buildNode(index, this)
+        : Sector.create(index, this);
     if (currentSector != null) {
       world.add(currentSector!);
     }
     currentSectorIndex = index;
-    vessel.lvlNum = index + 1;
-    if (vessel2 != null) vessel2!.lvlNum = index + 1;
+    // Difficulty level, not sector index — several sectors can share a level.
+    // lvlNum feeds the max-level weapon payout (sectorLevel * 125000 in
+    // Device), so paying it out per index would inflate the economy.
+    final level = currentSector?.level ?? levelForIndex(index);
+    vessel.lvlNum = level;
+    if (vessel2 != null) vessel2!.lvlNum = level;
+    requestZoneBackgrounds(index);
+    parallaxBg.setLevel(level);
+    sectorHullDamage = false;
     elapsed = 0;
+    campaignTracker?.beginNode(index, credits: vessel.credit);
+  }
+
+  /// Fire-and-forget background zone swap. Deliberately not awaited: loadSector
+  /// is synchronous and must stay that way, and ParallaxBackground keeps
+  /// rendering the previous zone until the new images decode. The ComCenter
+  /// sits between sectors, so in practice the load always finishes unseen.
+  /// Takes a sector index and resolves the art zone here, so every caller can
+  /// keep passing the index it already has.
+  void requestZoneBackgrounds(int sectorIndex) {
+    unawaited(AssetLibrary.instance.loadZoneBackgrounds(zoneForIndex(sectorIndex)));
   }
 
   void _clearActiveObjects() {
@@ -377,6 +503,7 @@ class TyrianGame extends FlameGame
     }
     activeCollectables.clear();
     explosionRenderer.clearAll();
+    deathEffects.clearAll();
     shardPool.clearAll();
     for (final p in [...enemyProjectiles]) {
       p.removeFromParent();
@@ -389,6 +516,27 @@ class TyrianGame extends FlameGame
           p.removeFromParent();
         }
         d.clearProjectiles();
+      }
+    }
+  }
+
+  /// One throwing component aborts the whole world render: update() keeps
+  /// running (HUD counters tick) while the canvas stays black — reported once
+  /// on Android after a death redeploy, unreproducible from code reading.
+  /// Catching here keeps the next frame trying instead of freezing black, and
+  /// the throttled print reaches adb logcat in release builds, so if it ever
+  /// happens again the stack finally names the culprit.
+  double _lastRenderErrorLog = 0;
+
+  @override
+  void render(Canvas canvas) {
+    try {
+      super.render(canvas);
+    } catch (e, st) {
+      if (elapsed - _lastRenderErrorLog > 5.0 || _lastRenderErrorLog == 0) {
+        _lastRenderErrorLog = elapsed == 0 ? 0.001 : elapsed;
+        // ignore: avoid_print
+        print('[RENDER] world render threw: $e\n$st');
       }
     }
   }
@@ -406,6 +554,7 @@ class TyrianGame extends FlameGame
         coopClient!.latestSnapshot = null;
       }
       super.update(dt);
+      shardPool.update(dt);
       _updateWorldShift(dt);
       return;
     }
@@ -426,6 +575,7 @@ class TyrianGame extends FlameGame
 
     super.update(dt);
     elapsed += dt;
+    AchievementService.instance.addPlayTime(dt);
     shardPool.update(dt);
     _updateWorldShift(dt);
 
@@ -465,8 +615,11 @@ class TyrianGame extends FlameGame
     // Immersive experiment: pan the zoomed-in camera to follow the vessel.
     _updateImmersiveCamera(dt);
 
-    // Check sector completion
-    if (currentSector != null && currentSector!.isComplete) {
+    // Check sector completion — once per sector, see _sectorCompleteFired.
+    if (currentSector != null &&
+        currentSector!.isComplete &&
+        !_sectorCompleteFired) {
+      _sectorCompleteFired = true;
       _onSectorComplete();
     }
 
@@ -529,6 +682,40 @@ class TyrianGame extends FlameGame
   void _onSectorComplete() {
     SoundService.instance.play(SfxEvent.sectorComplete);
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
+
+    if (mode == GameMode.campaign) {
+      final node = kCampaignNodes[currentSectorIndex];
+      final result = campaignTracker!.evaluate(
+        node: node,
+        vessel: vessel,
+        hullDamage: sectorHullDamage,
+        elapsed: elapsed,
+      );
+      lastNodeResult = result;
+      lastNodeUnlock = null;
+      if (result.requiredMet) {
+        lastNodeUnlock = Campaign.applyBossUnlock(node, vessel);
+        // The first successful clear pays the sector bonus; a replay for stars
+        // earns only what it shoots down, or the bonus would be farmable. A
+        // run that reached the end without its required tasks pays nothing —
+        // it did not clear the node. Endless achievements and the depth board
+        // stay out of the campaign entirely.
+        if (!(campaign?.isCompleted(currentSectorIndex) ?? false)) {
+          vessel.credit += currentSector!.sectorBonus;
+        }
+      }
+      onSectorComplete?.call();
+      return;
+    }
+
+    AchievementService.instance.onSectorCompleted(
+      // Level of the sector the player advances to — with three parts per
+      // level, finishing Inner Zone II must not claim "reached sector 3".
+      // Under the old one-sector-per-level table this equals the old
+      // completedSector + 1, so pre-v2.4 progress semantics are unchanged.
+      Sector.levelForIndex(currentSectorIndex + 1),
+      tookHullDamage: sectorHullDamage,
+    );
     vessel.credit += currentSector!.sectorBonus;
     if (vessel2 != null) vessel2!.credit += currentSector!.sectorBonus;
 
@@ -561,13 +748,19 @@ class TyrianGame extends FlameGame
   /// generate random sectors (handled by Sector.create).
   void jumpToSector(int index) {
     if (index < 0) return;
+    if (mode == GameMode.campaign && index >= Campaign.nodeCount) return;
     loadSector(index);
   }
 
   /// Persist the player's between-sector progress (credits, weapons, stats,
   /// pilot name, current sector). Fire-and-forget from the ComCenter.
+  ///
+  /// Dispatches on [mode] first: the ComCenter and main.dart call this from
+  /// a dozen places, and every one of them would otherwise write the campaign
+  /// vessel over the endless run's save.
   Future<void> saveProgress() async {
     if (coopRole == CoopRole.client) return; // client mirrors host, never owns state
+    if (mode == GameMode.campaign) return _saveCampaignProgress();
     final m = vessel.toSaveMap();
     await SaveService.saveGameState(
       pilotName: m['pilotName'] as String,
@@ -580,17 +773,49 @@ class TyrianGame extends FlameGame
       genMax: (m['genMax'] as num).toDouble(),
       genPower: (m['genPower'] as num).toDouble(),
       level: currentSectorIndex,
+      nextWeaponLevel: m['nextWeaponLevel'] as int,
       weapons: List<Map<String, dynamic>>.from(m['weapons'] as List),
+      hangar: List<Map<String, dynamic>>.from(m['hangar'] as List),
     );
   }
 
   /// Restore saved progress at startup. Returns true if a saved game was loaded.
   Future<bool> loadProgress() async {
+    // Awaited once at startup; from here on Challenge.selected is a plain
+    // static read on the hot path.
+    await Challenge.init();
     final state = await SaveService.loadGameState();
     if (state == null) return false;
     vessel.loadFromSave(state);
-    currentSectorIndex = (state['level'] as num?)?.toInt() ?? 0;
+    final rawIndex = (state['level'] as num?)?.toInt() ?? 0;
+    final version = (state['saveVersion'] as num?)?.toInt() ?? 1;
+    // v1 saves predate the 18-part table: 'level' held one-sector-per-level
+    // indices, so an old run resumes at the first part of its level.
+    currentSectorIndex =
+        version >= SaveService.saveVersion ? rawIndex : Sector.migrateLegacyIndex(rawIndex);
+    // onLoad's loadLayers() ran before the save was read, so a run resumed deep
+    // in the game would otherwise come back with zone 0's art. Awaiting is free
+    // here — loadProgress is already awaited during startup.
+    await AssetLibrary.instance
+        .loadZoneBackgrounds(Sector.zoneForIndex(currentSectorIndex));
+    parallaxBg.setLevel(Sector.levelForIndex(currentSectorIndex));
     return true;
+  }
+
+  /// Roguelike death: rewind to the first sector while keeping everything the
+  /// pilot earned — weapons, credits, cumulative score, upgraded stats and the
+  /// codename. Contrast [resetForNewGame], which wipes the vessel back to a
+  /// stock Bubble Gun and is only for starting over from nothing.
+  void restartRun() {
+    _clearActiveObjects();
+    currentSector?.removeFromParent();
+    currentSector = null;
+    currentSectorIndex = 0;
+    requestZoneBackgrounds(0);
+    parallaxBg.setLevel(1);
+    vessel.resetVessel();
+    vessel.resetPosition();
+    elapsed = 0;
   }
 
   /// Reset all game state for a fresh new game.
@@ -599,7 +824,105 @@ class TyrianGame extends FlameGame
     currentSector?.removeFromParent();
     currentSector = null;
     currentSectorIndex = 0;
+    requestZoneBackgrounds(0);
+    parallaxBg.setLevel(1);
     vessel.newGame();
+    elapsed = 0;
+  }
+
+  // ── Campaign ──
+
+  Future<void> _saveCampaignProgress() async {
+    final c = campaign;
+    if (c == null) return;
+    c.vessel = vessel.toSaveMap();
+    await SaveService.saveCampaignState(c.toJson());
+  }
+
+  /// Switch to the campaign: its own vessel and progress, restored from the
+  /// campaign save or started from a stock ship. The endless vessel state is
+  /// simply replaced — it lives in its own save and returns via
+  /// [enterEndless].
+  Future<void> enterCampaign() async {
+    _leaveMission();
+    mode = GameMode.campaign;
+    campaignTracker = CampaignTracker();
+    lastNodeResult = null;
+    final saved = await SaveService.loadCampaignState();
+    if (saved == null) {
+      // newGame() also rolls a fresh codename; the pilot is the same person.
+      final name = vessel.pilotName;
+      vessel.newGame();
+      vessel.pilotName = name;
+      // The menu's current pick becomes this campaign's challenge for good.
+      campaign = CampaignState(
+          vessel: vessel.toSaveMap(), challenge: Challenge.selected);
+    } else {
+      campaign = CampaignState.fromJson(saved);
+      vessel.loadFromSave(campaign!.vessel);
+    }
+    currentSectorIndex = campaign!.currentNode;
+    requestZoneBackgrounds(currentSectorIndex);
+    parallaxBg.setLevel(levelForIndex(currentSectorIndex));
+    state = GameState.comCenter;
+  }
+
+  /// Back to the endless run. Returns whether a saved run was restored; with
+  /// nothing restored the caller starts from stock via [resetForNewGame].
+  Future<bool> enterEndless() async {
+    _leaveMission();
+    mode = GameMode.endless;
+    campaign = null;
+    campaignTracker = null;
+    lastNodeResult = null;
+    return loadProgress();
+  }
+
+  /// Build a campaign node and open the shop in front of it; the ComCenter's
+  /// START then resumes into the already-built sector.
+  void launchCampaignNode(int index) {
+    currentSectorIndex = index;
+    loadSector(index);
+    vessel.resetPosition();
+    openComCenter();
+  }
+
+  /// Campaign death: the same node again, through the shop, keeping what the
+  /// attempt earned. No rewind — that is the endless loop's rule.
+  void retryNode() {
+    _leaveMission();
+    loadSector(currentSectorIndex);
+    vessel.resetVessel();
+    vessel.resetPosition();
+    state = GameState.comCenter;
+  }
+
+  /// Close out a finished node: a cleared one is recorded and opens the next,
+  /// a failed one leaves the campaign where it was. Either way the field is
+  /// cleared, because the result card takes the screen from here.
+  void finishCampaignNode(NodeResult result) {
+    if (result.requiredMet) {
+      campaign?.markCompleted(currentSectorIndex,
+          starsEarned: result.starsEarned);
+    }
+    _leaveMission();
+    state = GameState.comCenter;
+  }
+
+  /// Leave whatever is on the field, for the main menu or a mode switch.
+  /// Progress since the last save is dropped, exactly as a death drops it.
+  void abandonMission() {
+    _leaveMission();
+    vessel.resetVessel();
+    MusicService.instance.setPaused(false);
+    MusicService.instance.stop();
+    state = GameState.comCenter;
+  }
+
+  void _leaveMission() {
+    _clearActiveObjects();
+    currentSector?.removeFromParent();
+    currentSector = null;
     elapsed = 0;
   }
 
@@ -622,6 +945,9 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     _startSectorMusic();
+    // The shop has just closed, so this is the loadout the node is flown with
+    // — what every loadout task is graded against.
+    campaignTracker?.onLaunch(vessel);
   }
 
   void togglePause() {
@@ -798,11 +1124,13 @@ class TyrianGame extends FlameGame
     }
     _prevPauseKey = pauseKb;
 
-    // ── Skin selector: Start/Option opens it, auto-pauses game ──
+    // ── Gamepad pause (Start/Option) ──
+    // Plain pause toggle; the pause menu overlay in main.dart offers Skins,
+    // mute and Quit from there. Previously Start force-opened the skin
+    // selector, so a pad had no way to simply pause (Steam plan, Fix 6).
     final skinGp = gamepadInput.primary.pause; // Start = Option on PS, Menu on Xbox
     if (skinGp && !_prevSkinGp && !skinSelectorOpen) {
-      if (state == GameState.playing) togglePause();
-      if (state == GameState.paused) onSkinRequested?.call();
+      if (state == GameState.playing || state == GameState.paused) togglePause();
     }
     _prevSkinGp = skinGp;
 
@@ -846,6 +1174,7 @@ class TyrianGame extends FlameGame
     world.add(FloatText(
       text: msg,
       color: const Color(0xFF00FFFF),
+      palette: KidPalette.sky,
       fontSize: 18,
       position: Vector2(config.gameWidth / 2, config.gameHeight * 0.3),
     ));
@@ -902,6 +1231,7 @@ class TyrianGame extends FlameGame
             c.position.y < v.position.y + v.size.y / 2 &&
             c.position.y + c.size.y > v.position.y - v.size.y / 2) {
           c.applyEffect(v, this);
+          campaignTracker?.onPickup();
           break; // applyEffect calls removeCollectable, which removes from list
         }
       }
@@ -916,7 +1246,9 @@ class TyrianGame extends FlameGame
       position: Vector2(x, y),
       speed: speed, // positive = downward
       vx: vx,
-      damage: dmg.toDouble(),
+      // Every enemy shot in the game is born here — fleets, boss core, boss
+      // parts — which is what makes this the one place challenge scales damage.
+      damage: dmg * challenge.damage,
       scale: scale,
     );
     enemyProjectiles.add(proj);
@@ -926,6 +1258,38 @@ class TyrianGame extends FlameGame
   // Spawn helpers used by Sector/Fleet
   void addExplosion(double x, double y, int size) {
     explosionRenderer.acquire(x, y, size);
+  }
+
+  /// Client-side death effect from a host explosion event. Empty/legacy text
+  /// degrades to the generic explosion. The hostile is looked up before the
+  /// removing snapshot lands (the event is sent mid-frame, the snapshot at
+  /// frame end, and snapshots apply deferred), so its sprite is still
+  /// available for shards; if it is already gone, particles-only.
+  void spawnRemoteDeathEffect(double x, double y, String text) {
+    if (text.isEmpty) {
+      addExplosion(x, y, 2);
+      return;
+    }
+    final parts = text.split(':');
+    final family = WeaponFamily.values.asNameMap()[parts[0]];
+    if (family == null) {
+      addExplosion(x, y, 2);
+      return;
+    }
+    Hostile? h;
+    if (parts.length >= 3) {
+      final fleetId = int.tryParse(parts[1]);
+      final hostileId = int.tryParse(parts[2]);
+      if (fleetId != null && hostileId != null) {
+        h = clientHostiles[fleetId * 1000 + hostileId];
+      }
+    }
+    deathEffects.spawn(family, x, y, h?.size.x ?? 40.0, h?.size.y ?? 40.0,
+        hitX: x, hitY: y);
+    if (h != null && h.sprite != null) {
+      shardPool.spawn(h.sprite!, x, y, x, y, h.size.x, h.size.y, h.spriteName,
+          deathEffectSpecs[family]!.shardPreset);
+    }
   }
 
   void addCollectable(Collectable c) {
@@ -978,13 +1342,14 @@ class TyrianGame extends FlameGame
         vessel2!.visible = false;
       }
 
-      showMessage('Player 2 joined!');
+      showMessage(L10n.current.player2Joined);
       onClientJoined?.call();
     };
 
     host.onClientDisconnected = () {
       vessel2?.visible = false;
-      showMessage('Player 2 disconnected');
+      showMessage(L10n.current.player2Disconnected);
+      onClientLeft?.call();
     };
   }
 
@@ -1019,6 +1384,16 @@ class TyrianGame extends FlameGame
         newDev.upgrade();
       }
     }
+    dst.hangar.clear();
+    for (final srcDev in src.hangar) {
+      final wt = _findWeaponType(srcDev.name);
+      if (wt == null) continue;
+      final newDev = Device.fromType(wt, srcDev.slot)..parentVessel = dst;
+      for (int i = 0; i < srcDev.level; i++) {
+        newDev.upgrade();
+      }
+      dst.hangar.add(newDev);
+    }
   }
 
   /// Initialize co-op as client. Call after onLoad.
@@ -1034,7 +1409,7 @@ class TyrianGame extends FlameGame
     client.onGameEvent = (eventType, x, y, text) {
       switch (eventType) {
         case EventType.explosion:
-          addExplosion(x, y, 2);
+          spawnRemoteDeathEffect(x, y, text);
         case EventType.message:
           showMessage(text);
         case EventType.sectorComplete:
@@ -1054,7 +1429,7 @@ class TyrianGame extends FlameGame
     };
 
     client.onDisconnected = () {
-      showMessage('Host disconnected');
+      showMessage(L10n.current.hostDisconnected);
       onDisconnected?.call();
     };
 
@@ -1201,6 +1576,13 @@ class TyrianGame extends FlameGame
         state = newState;
       }
     }
+    // Guard on change: snapshots arrive continuously, and an unguarded call
+    // would allocate a Future per snapshot. The client's zone follows the host;
+    // nothing in gameplay reads it, so a few frames of lag are invisible.
+    if (snap.sectorIndex != currentSectorIndex) {
+      requestZoneBackgrounds(snap.sectorIndex);
+      parallaxBg.setLevel(Sector.levelForIndex(snap.sectorIndex));
+    }
     currentSectorIndex = snap.sectorIndex;
     elapsed = snap.elapsed;
 
@@ -1332,6 +1714,7 @@ class TyrianGame extends FlameGame
     coopClient = null;
     coopRole = CoopRole.none;
     onClientJoined = null;
+    onClientLeft = null;
 
     if (vessel2 != null) {
       vessel2!.removeFromParent();

@@ -19,6 +19,12 @@ class UiTheme {
   final double cornerRadius;
   final TextStyle Function(TextStyle)? applyFont;
 
+  /// Rendered-size compensation for the skin's font. Nominal font sizes are
+  /// tuned for a "normal" face; VT323 is condensed and reads a third smaller
+  /// at the same size, while Press Start 2P is enormous and wide. Scaling here
+  /// fixes every styled() call site at once instead of chasing them one by one.
+  final double fontScale;
+
   const UiTheme({
     required this.accent,
     required this.accentDim,
@@ -32,10 +38,17 @@ class UiTheme {
     required this.upgrade,
     required this.cornerRadius,
     this.applyFont,
+    this.fontScale = 1.0,
   });
 
-  /// Returns a TextStyle optionally wrapped in the skin's Google Font.
-  TextStyle styled(TextStyle base) => applyFont?.call(base) ?? base;
+  /// Returns a TextStyle optionally wrapped in the skin's Google Font, with
+  /// the size compensated for how large that font actually renders.
+  TextStyle styled(TextStyle base) {
+    final scaled = base.fontSize == null
+        ? base
+        : base.copyWith(fontSize: base.fontSize! * fontScale);
+    return applyFont?.call(scaled) ?? scaled;
+  }
 
   static UiTheme forSkin(String skinId) =>
       _themes[skinId] ?? _themes['default']!;
@@ -52,6 +65,7 @@ class UiTheme {
       upgrade:  const Color(0xFF44FF88),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.pressStart2p(textStyle: s),
+      fontScale: 0.8,
     ),
     'asteroids': UiTheme(
       accent:       const Color(0xFF44FF44),
@@ -76,6 +90,7 @@ class UiTheme {
       upgrade:  const Color(0xFFFFEE44),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.vt323(textStyle: s),
+      fontScale: 1.35,
     ),
     'rtype': UiTheme(
       accent:       const Color(0xFF44FFCC),
@@ -99,7 +114,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'tyrian_dos': UiTheme(
       accent:       const Color(0xFFFFCC44),
@@ -112,6 +127,7 @@ class UiTheme {
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.vt323(textStyle: s),
+      fontScale: 1.35,
     ),
     'ikaruga': UiTheme(
       accent:       const Color(0xFF8888FF),
@@ -123,7 +139,7 @@ class UiTheme {
       success:  const Color(0xFF88FFCC),
       upgrade:  const Color(0xFF8888FF),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.rajdhani(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'geometry_wars': UiTheme(
       accent:       const Color(0xFF00FFFF),
@@ -135,7 +151,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFF00FFFF),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.orbitron(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'gradius_v': UiTheme(
       accent:       const Color(0xFF44AAFF),
@@ -147,7 +163,137 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFF44AAFF),
       cornerRadius: 6.0,
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
+    ),
+    // ---- v3.0 skins ----------------------------------------------------
+    // accent/danger/success/upgrade come straight from each skin's
+    // PaletteDescription in pipeline/internal/skin/definitions.go, so the
+    // ComCenter matches the art it is framing. cornerRadius 0 for the
+    // pixel-art eras, 6 for the illustrated ones.
+    'tempest': UiTheme(
+      accent:       const Color(0xFF40E0FF),
+      accentDim:    const Color(0xFF0A3844),
+      surfaceDark:  const Color(0xFF000000),
+      surfaceMid:   const Color(0xFF060A0C),
+      surfaceLight: const Color(0xFF0C1418),
+      danger:   const Color(0xFFFF2040),
+      success:  const Color(0xFF80FF40),
+      upgrade:  const Color(0xFFFFE500),
+      cornerRadius: 0.0,
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
+    ),
+    'zaxxon': UiTheme(
+      accent:       const Color(0xFFF0D040),
+      accentDim:    const Color(0xFF3A3410),
+      surfaceDark:  const Color(0xFF101820),
+      surfaceMid:   const Color(0xFF1A2430),
+      surfaceLight: const Color(0xFF2A3644),
+      danger:   const Color(0xFFB03030),
+      success:  const Color(0xFF60A060),
+      upgrade:  const Color(0xFF4060A0),
+      cornerRadius: 0.0,
+      applyFont: (s) => GoogleFonts.pressStart2p(textStyle: s),
+      fontScale: 0.8,
+    ),
+    'twinbee': UiTheme(
+      accent:       const Color(0xFF40A0FF),
+      accentDim:    const Color(0xFF10304C),
+      surfaceDark:  const Color(0xFF0A1826),
+      surfaceMid:   const Color(0xFF12283E),
+      surfaceLight: const Color(0xFF1C3A58),
+      danger:   const Color(0xFFFF3040),
+      success:  const Color(0xFF60E0A0),
+      upgrade:  const Color(0xFFFFE040),
+      cornerRadius: 6.0,
+      applyFont: (s) => GoogleFonts.bungee(textStyle: s),
+    ),
+    'fantasy_zone': UiTheme(
+      accent:       const Color(0xFFFF9AD0),
+      accentDim:    const Color(0xFF4A2C3C),
+      surfaceDark:  const Color(0xFF201824),
+      surfaceMid:   const Color(0xFF302438),
+      surfaceLight: const Color(0xFF44344E),
+      danger:   const Color(0xFFFF6080),
+      success:  const Color(0xFFA0F0D0),
+      upgrade:  const Color(0xFFFFF0A0),
+      cornerRadius: 6.0,
+      applyFont: (s) => GoogleFonts.fredoka(textStyle: s),
+    ),
+    'abadox': UiTheme(
+      accent:       const Color(0xFFA02020),
+      accentDim:    const Color(0xFF340A0A),
+      surfaceDark:  const Color(0xFF080404),
+      surfaceMid:   const Color(0xFF160808),
+      surfaceLight: const Color(0xFF260E0E),
+      danger:   const Color(0xFFE04040),
+      success:  const Color(0xFF80A030),
+      upgrade:  const Color(0xFFE8D8C0),
+      cornerRadius: 0.0,
+      applyFont: (s) => GoogleFonts.vt323(textStyle: s),
+      fontScale: 1.35,
+    ),
+    'solar_striker': UiTheme(
+      accent:       const Color(0xFF8BAC0F),
+      accentDim:    const Color(0xFF1E3A1E),
+      surfaceDark:  const Color(0xFF0F380F),
+      surfaceMid:   const Color(0xFF164716),
+      surfaceLight: const Color(0xFF306230),
+      danger:   const Color(0xFF9BBC0F),
+      success:  const Color(0xFF9BBC0F),
+      upgrade:  const Color(0xFF8BAC0F),
+      textPrimary:   const Color(0xFF9BBC0F),
+      textSecondary: const Color(0xFF8BAC0F),
+      cornerRadius: 0.0,
+      applyFont: (s) => GoogleFonts.pressStart2p(textStyle: s),
+      fontScale: 0.8,
+    ),
+    'axelay': UiTheme(
+      accent:       const Color(0xFF3060A0),
+      accentDim:    const Color(0xFF0E1C30),
+      surfaceDark:  const Color(0xFF06080C),
+      surfaceMid:   const Color(0xFF12181F),
+      surfaceLight: const Color(0xFF232C36),
+      danger:   const Color(0xFFFF7020),
+      success:  const Color(0xFF9AA4B0),
+      upgrade:  const Color(0xFFFF7020),
+      cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.rajdhani(textStyle: s),
+    ),
+    'thunder_force': UiTheme(
+      accent:       const Color(0xFFA0D0FF),
+      accentDim:    const Color(0xFF10203C),
+      surfaceDark:  const Color(0xFF040A20),
+      surfaceMid:   const Color(0xFF0A1436),
+      surfaceLight: const Color(0xFF16224E),
+      danger:   const Color(0xFFE040A0),
+      success:  const Color(0xFF2050C0),
+      upgrade:  const Color(0xFFFF8000),
+      cornerRadius: 0.0,
+      applyFont: (s) => GoogleFonts.orbitron(textStyle: s),
+    ),
+    'star_fox': UiTheme(
+      accent:       const Color(0xFF3050D0),
+      accentDim:    const Color(0xFF101838),
+      surfaceDark:  const Color(0xFF000000),
+      surfaceMid:   const Color(0xFF0C0C12),
+      surfaceLight: const Color(0xFF1A1A24),
+      danger:   const Color(0xFFD03030),
+      success:  const Color(0xFF30A050),
+      upgrade:  const Color(0xFFE0C030),
+      cornerRadius: 6.0,
+      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+    ),
+    'lords_of_thunder': UiTheme(
+      accent:       const Color(0xFFD8A030),
+      accentDim:    const Color(0xFF3C2C0C),
+      surfaceDark:  const Color(0xFF1A1A22),
+      surfaceMid:   const Color(0xFF242430),
+      surfaceLight: const Color(0xFF343442),
+      danger:   const Color(0xFFB01020),
+      success:  const Color(0xFF60C0FF),
+      upgrade:  const Color(0xFFFF6010),
+      cornerRadius: 6.0,
+      applyFont: (s) => GoogleFonts.cinzel(textStyle: s),
     ),
     'luftrausers': UiTheme(
       accent:       const Color(0xFFFF9944),
@@ -159,7 +305,7 @@ class UiTheme {
       success:  const Color(0xFF88FF44),
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'nuclear_throne': UiTheme(
       accent:       const Color(0xFFFF8800),
@@ -171,7 +317,7 @@ class UiTheme {
       success:  const Color(0xFF88FF44),
       upgrade:  const Color(0xFFFF8800),
       cornerRadius: 0.0,
-      applyFont: (s) => GoogleFonts.oswald(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'nex_machina': UiTheme(
       accent:       const Color(0xFFFF4444),
@@ -183,7 +329,7 @@ class UiTheme {
       success:  const Color(0xFF44FF88),
       upgrade:  const Color(0xFFFF8844),
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.exo2(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
     'river_raid': UiTheme(
       accent:       const Color(0xFFFF4422),
@@ -196,6 +342,7 @@ class UiTheme {
       upgrade:  const Color(0xFFFFCC44),
       cornerRadius: 0.0,
       applyFont: (s) => GoogleFonts.pressStart2p(textStyle: s),
+      fontScale: 0.8,
     ),
     'default': UiTheme(
       accent:       const Color(0xFF00FFEE),
@@ -207,7 +354,7 @@ class UiTheme {
       success:  Colors.greenAccent,
       upgrade:  Colors.yellowAccent,
       cornerRadius: 6.0,
-      applyFont: (s) => GoogleFonts.orbitron(textStyle: s),
+      applyFont: (s) => GoogleFonts.shareTechMono(textStyle: s),
     ),
   };
 }

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.0.3
+version: 3.8.0
 
 environment:
   sdk: ^3.11.1
@@ -30,21 +30,58 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flame: ^1.35.1
+  # Shared kid typography. For local development next to the package, add
+  #   dependency_overrides: {cute_kid_fonts: {path: <path to CuteKidFonts>}}
+  cute_kid_fonts:
+    git:
+      url: https://github.com/lioilsources/CuteKidFonts.git
+      ref: v0.1.0
   just_audio: ^0.9.40
+  # Direct dependency because main() configures the one shared session and
+  # MusicService owns interruption handling — see their comments.
+  audio_session: ^0.1.25
+  # Kept as a rollback for media_kit on Windows (see main.dart's
+  # JustAudioMediaKit.ensureInitialized). Once a clean-VM audio test passes,
+  # this and the coroutine define in windows/CMakeLists.txt can both go.
   just_audio_windows: ^0.2.2
   shared_preferences: ^2.5.4
   google_fonts: ^8.0.2
   device_info_plus: ^12.3.0
   window_manager: ^0.4.3
   games_services: ^4.1.1
+  in_app_purchase: ^3.2.0
+  # Vendored copy of 2.1.0 with a two-line seek fix for sub-second clips —
+  # see packages/just_audio_media_kit/VENDORED.md.
+  just_audio_media_kit:
+    path: packages/just_audio_media_kit
+  media_kit_libs_linux: ^1.2.1
+  media_kit_libs_windows_audio: ^1.0.9
+  # Ogg Opus decoding on iOS < 18.4 (CoreAudio has no Ogg support there);
+  # registered at runtime only on those versions — see main.dart.
+  media_kit_libs_ios_audio: ^1.1.4
+  # Pinned: 7.1.5 pulls bonsoir_android 7.1.3, which needs Dart 3.12, and the
+  # macOS/Linux/Windows release workflows pin Flutter 3.41 (Dart 3.11).
+  bonsoir: 7.1.4
+  # bonsoir 7.1.4 allows ^7.1.2, and a Dart 3.12 machine locks 7.1.3 — pin
+  # the transitive plugin too, or the lockfile carries the same failure to CI.
+  bonsoir_android: 7.1.2
+  # Apple Multipeer Connectivity for co-op with no shared Wi-Fi — local
+  # plugin, iOS + macOS only; see packages/multipeer_coop.
+  multipeer_coop:
+    path: packages/multipeer_coop
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  flutter_driver:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -66,6 +103,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  generate: true
 
   shaders:
     - shaders/vignette_color.frag
@@ -78,103 +116,153 @@ flutter:
     - shaders/pixel_explosion.frag
 
   assets:
-    - assets/skins/default/sprites/
+    # sprites/ is deliberately absent: those PNGs are the masters that
+    # tool/pack_atlas.dart packs into atlas.png, and the atlas is what the
+    # game loads. Shipping both put 75 MB of duplicates in the bundle.
     - assets/skins/default/ui/
     - assets/skins/default/sfx/
     - assets/skins/default/music/
-    - assets/skins/default/atlas.png
+    - assets/skins/default/backgrounds/
+    - assets/skins/default/atlas.webp
     - assets/skins/default/atlas.json
-    - assets/skins/geometry_wars/sprites/
     - assets/skins/geometry_wars/ui/
     - assets/skins/geometry_wars/sfx/
     - assets/skins/geometry_wars/music/
     - assets/skins/geometry_wars/backgrounds/
-    - assets/skins/geometry_wars/atlas.png
+    - assets/skins/geometry_wars/atlas.webp
     - assets/skins/geometry_wars/atlas.json
-    - assets/skins/space_invaders/sprites/
     - assets/skins/space_invaders/ui/
     - assets/skins/space_invaders/sfx/
     - assets/skins/space_invaders/music/
     - assets/skins/space_invaders/backgrounds/
-    - assets/skins/space_invaders/atlas.png
+    - assets/skins/space_invaders/atlas.webp
     - assets/skins/space_invaders/atlas.json
-    - assets/skins/galaga/sprites/
     - assets/skins/galaga/ui/
     - assets/skins/galaga/sfx/
     - assets/skins/galaga/music/
     - assets/skins/galaga/backgrounds/
-    - assets/skins/galaga/atlas.png
+    - assets/skins/galaga/atlas.webp
     - assets/skins/galaga/atlas.json
-    - assets/skins/asteroids/sprites/
+    - assets/skins/tempest/ui/
+    - assets/skins/tempest/sfx/
+    - assets/skins/tempest/music/
+    - assets/skins/tempest/backgrounds/
+    - assets/skins/tempest/atlas.webp
+    - assets/skins/tempest/atlas.json
     - assets/skins/asteroids/ui/
     - assets/skins/asteroids/sfx/
     - assets/skins/asteroids/music/
     - assets/skins/asteroids/backgrounds/
-    - assets/skins/asteroids/atlas.png
+    - assets/skins/asteroids/atlas.webp
     - assets/skins/asteroids/atlas.json
-    - assets/skins/ikaruga/sprites/
     - assets/skins/ikaruga/ui/
     - assets/skins/ikaruga/sfx/
     - assets/skins/ikaruga/music/
     - assets/skins/ikaruga/backgrounds/
-    - assets/skins/ikaruga/atlas.png
+    - assets/skins/ikaruga/atlas.webp
     - assets/skins/ikaruga/atlas.json
-    - assets/skins/nuclear_throne/sprites/
     - assets/skins/nuclear_throne/ui/
     - assets/skins/nuclear_throne/sfx/
     - assets/skins/nuclear_throne/music/
     - assets/skins/nuclear_throne/backgrounds/
-    - assets/skins/nuclear_throne/atlas.png
+    - assets/skins/nuclear_throne/atlas.webp
     - assets/skins/nuclear_throne/atlas.json
-    - assets/skins/luftrausers/sprites/
     - assets/skins/luftrausers/ui/
     - assets/skins/luftrausers/sfx/
     - assets/skins/luftrausers/music/
     - assets/skins/luftrausers/backgrounds/
-    - assets/skins/luftrausers/atlas.png
+    - assets/skins/luftrausers/atlas.webp
     - assets/skins/luftrausers/atlas.json
-    - assets/skins/nex_machina/sprites/
     - assets/skins/nex_machina/ui/
     - assets/skins/nex_machina/sfx/
     - assets/skins/nex_machina/music/
     - assets/skins/nex_machina/backgrounds/
-    - assets/skins/nex_machina/atlas.png
+    - assets/skins/nex_machina/atlas.webp
     - assets/skins/nex_machina/atlas.json
-    - assets/skins/tyrian_dos/sprites/
     - assets/skins/tyrian_dos/ui/
     - assets/skins/tyrian_dos/sfx/
     - assets/skins/tyrian_dos/music/
     - assets/skins/tyrian_dos/backgrounds/
-    - assets/skins/tyrian_dos/atlas.png
+    - assets/skins/tyrian_dos/atlas.webp
     - assets/skins/tyrian_dos/atlas.json
-    - assets/skins/gradius_v/sprites/
     - assets/skins/gradius_v/ui/
     - assets/skins/gradius_v/sfx/
     - assets/skins/gradius_v/music/
     - assets/skins/gradius_v/backgrounds/
-    - assets/skins/gradius_v/atlas.png
+    - assets/skins/gradius_v/atlas.webp
     - assets/skins/gradius_v/atlas.json
-    - assets/skins/rtype/sprites/
     - assets/skins/rtype/ui/
     - assets/skins/rtype/sfx/
     - assets/skins/rtype/music/
     - assets/skins/rtype/backgrounds/
-    - assets/skins/rtype/atlas.png
+    - assets/skins/rtype/atlas.webp
     - assets/skins/rtype/atlas.json
-    - assets/skins/blazing_lazers/sprites/
     - assets/skins/blazing_lazers/ui/
     - assets/skins/blazing_lazers/sfx/
     - assets/skins/blazing_lazers/music/
     - assets/skins/blazing_lazers/backgrounds/
-    - assets/skins/blazing_lazers/atlas.png
+    - assets/skins/blazing_lazers/atlas.webp
     - assets/skins/blazing_lazers/atlas.json
-    - assets/skins/river_raid/sprites/
+    - assets/skins/solar_striker/ui/
+    - assets/skins/solar_striker/sfx/
+    - assets/skins/solar_striker/music/
+    - assets/skins/solar_striker/backgrounds/
+    - assets/skins/solar_striker/atlas.webp
+    - assets/skins/solar_striker/atlas.json
+    - assets/skins/star_fox/ui/
+    - assets/skins/star_fox/sfx/
+    - assets/skins/star_fox/music/
+    - assets/skins/star_fox/backgrounds/
+    - assets/skins/star_fox/atlas.webp
+    - assets/skins/star_fox/atlas.json
     - assets/skins/river_raid/ui/
     - assets/skins/river_raid/sfx/
     - assets/skins/river_raid/music/
     - assets/skins/river_raid/backgrounds/
-    - assets/skins/river_raid/atlas.png
+    - assets/skins/river_raid/atlas.webp
     - assets/skins/river_raid/atlas.json
+    - assets/skins/zaxxon/ui/
+    - assets/skins/zaxxon/sfx/
+    - assets/skins/zaxxon/music/
+    - assets/skins/zaxxon/backgrounds/
+    - assets/skins/zaxxon/atlas.webp
+    - assets/skins/zaxxon/atlas.json
+    - assets/skins/axelay/ui/
+    - assets/skins/axelay/sfx/
+    - assets/skins/axelay/music/
+    - assets/skins/axelay/backgrounds/
+    - assets/skins/axelay/atlas.webp
+    - assets/skins/axelay/atlas.json
+    - assets/skins/thunder_force/ui/
+    - assets/skins/thunder_force/sfx/
+    - assets/skins/thunder_force/music/
+    - assets/skins/thunder_force/backgrounds/
+    - assets/skins/thunder_force/atlas.webp
+    - assets/skins/thunder_force/atlas.json
+    - assets/skins/twinbee/ui/
+    - assets/skins/twinbee/sfx/
+    - assets/skins/twinbee/music/
+    - assets/skins/twinbee/backgrounds/
+    - assets/skins/twinbee/atlas.webp
+    - assets/skins/twinbee/atlas.json
+    - assets/skins/fantasy_zone/ui/
+    - assets/skins/fantasy_zone/sfx/
+    - assets/skins/fantasy_zone/music/
+    - assets/skins/fantasy_zone/backgrounds/
+    - assets/skins/fantasy_zone/atlas.webp
+    - assets/skins/fantasy_zone/atlas.json
+    - assets/skins/abadox/ui/
+    - assets/skins/abadox/sfx/
+    - assets/skins/abadox/music/
+    - assets/skins/abadox/backgrounds/
+    - assets/skins/abadox/atlas.webp
+    - assets/skins/abadox/atlas.json
+    - assets/skins/lords_of_thunder/ui/
+    - assets/skins/lords_of_thunder/sfx/
+    - assets/skins/lords_of_thunder/music/
+    - assets/skins/lords_of_thunder/backgrounds/
+    - assets/skins/lords_of_thunder/atlas.webp
+    - assets/skins/lords_of_thunder/atlas.json
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

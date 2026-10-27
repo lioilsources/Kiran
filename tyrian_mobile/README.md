@@ -1,58 +1,49 @@
-# Tyrian 2026
+# Kirian — app development notes
 
-## Proces: nový skin od A do Z
+The full pipeline reference lives in `../pipeline/SKILL.md`; the project-wide
+overview in `../README.md`. This file is the short skin-authoring loop.
 
-1. **Vygeneruj AI assety (xAI Grok)**  
-   32 JPEGů x N variací.
+## Process: a new skin from A to Z
+
+1. **Generate AI assets (ComfyUI / Flux)** — ~30 specs × N variations.
 
 ```bash
-cd /Volumes/YOTTA/Dev/TyrianVB/pipeline
+cd ../pipeline
 go run ./cmd/generate -skin geometry_wars -n 4
 ```
 
-2. **Postprocess obrázků**  
-   JPG -> PNG s alpha, resize, přejmenování.
+2. **Postprocess** — JPG → PNG with alpha, resize, background removal.
 
 ```bash
 go run ./cmd/postprocess -skin geometry_wars
 ```
 
-3. **Hotovo**  
-   Assety jsou rovnou v `tyrian_mobile/assets/skins/geometry_wars/`.
+Chosen variations are recorded in `../pipeline/selections/geometry_wars.json`;
+re-pick a single asset with `-only <name> -variation <n>`.
 
-Ověř:
+3. **Verify**
 
 ```bash
-ls tyrian_mobile/assets/skins/geometry_wars/sprites/
-ls tyrian_mobile/assets/skins/geometry_wars/ui/preview.png
+ls assets/skins/geometry_wars/sprites/
+ls assets/skins/geometry_wars/ui/preview.png
 ```
 
-4. **Spusť na iPadu**
+4. **Rebuild the atlas and run**
 
 ```bash
-cd /Volumes/YOTTA/Dev/TyrianVB/tyrian_mobile
+dart run tool/pack_atlas.dart
 flutter run
 ```
 
-## Postprocess MP3 -> OGG
+## Audio postprocess (MP3 → OGG)
 
 ```bash
-go run ./cmd/postprocess \
-  -skin geometry_wars \
-  -input /Volumes/YOTTA/Dev/TyrianVB/pipeline/output/assets/skins \
-  -output /Volumes/YOTTA/Dev/TyrianVB/tyrian_mobile/assets/skins
+cd ../pipeline
+go run ./cmd/postprocess -skin geometry_wars
+# sfx/music conversion runs as part of the same pass
 ```
 
-# Skins
-- Nuclear Throne
-- Luftrausers
-- Nech Machina
-- Geometry Wars
-- Tyrion
-- Gradius V
-- R-Type
-- Blazing Lazers
-- Ikaruga
-- Galaga
-- Space Invaders
-- Asteroids
+## Skins
+
+14 originals, one per era of the genre — display names in
+`lib/services/skin_registry.dart`, themes in `../SKINS.md`.

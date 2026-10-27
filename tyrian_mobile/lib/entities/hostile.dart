@@ -6,6 +6,8 @@ import '../game/tyrian_game.dart';
 import '../systems/path_system.dart';
 import '../systems/fleet.dart';
 import '../systems/device.dart';
+import '../systems/dev_type.dart';
+import '../systems/weapon_family.dart';
 import '../services/asset_library.dart';
 import 'vessel.dart';
 
@@ -38,7 +40,21 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   int hit = 0; // Flash counter
   double lastHitX = 0;
   double lastHitY = 0;
+
+  /// Weapon family of the killing blow — drives the death effect. Null for
+  /// non-weapon deaths (path-destroy, off-field reap), which keep the generic
+  /// explosion.
+  WeaponFamily? deathFamily;
+
+  /// Which slot's gun landed the killing blow. Same rule as [deathFamily]:
+  /// recorded only on the fatal hit, so a non-weapon death carries none.
+  WeaponSlot? deathSlot;
   int collisionDmg;
+
+  /// Kill payout, when it must not follow [hpMax]. Boss parts use it: their
+  /// fleet's creditOverride is the whole boss's bounty, and paying that per
+  /// piece would hand out five bounties for one boss.
+  int? creditValue;
   PathSystem? trace;
   Device? weapon;
   Fleet? parentFleet;
@@ -50,6 +66,30 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   final double _depthPhase = Random().nextDouble() * 2 * pi; // desync per enemy
 
   bool get isDead => hp <= 0;
+
+  /// Whether the off-field safety net may reap this hostile. False for
+  /// anything carried by another entity rather than by a path of its own — a
+  /// boss part has no trace, so the net would read it as parked and kill it
+  /// during the boss's entrance or at the far end of a strafe.
+  bool get reapWhenStranded => true;
+
+  /// Seconds this hostile has been stranded outside the play field with no way
+  /// back. Reset the moment it is in-field or still flying a path.
+  double _offFieldTime = 0.0;
+
+  /// Whether a sprite box overlaps the play field at all.
+  ///
+  /// Deliberately the play field and not the camera window: the immersive
+  /// camera shows 80% of the width, so an enemy parked at x=2 or x=542 is
+  /// off-camera yet perfectly reachable by flying over. Culling on visibility
+  /// would delete whole legitimate formations.
+  static bool inPlayField(double x, double y, double w, double h) =>
+      x + w > 0 && x < config.gameWidth && y + h > 0 && y < config.gameHeight;
+
+  /// Clamp a cycle anchor into [0, upper]. `upper` can be negative when the
+  /// sprite has not been laid out yet, hence the guard.
+  static double clampAnchor(double v, double upper) =>
+      v.clamp(0.0, upper < 0 ? 0.0 : upper);
 
   double get x2 => position.x + size.x;
   double get y2 => position.y + size.y;
@@ -174,13 +214,39 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     // Client: positions set by snapshot, skip all game logic
     if (game.coopRole == CoopRole.client) return;
 
-    // Follow path
+    // Follow path, in wall-clock time. Node spacing encodes the original 40fps,
+    // so advancing one node per rendered frame made enemies 1.5x faster at 60Hz
+    // and 3x at 120Hz — while the player's weapons, timed in seconds, did not
+    // speed up at all.
     if (trace != null && trace!.current != null) {
-      position.setValues(trace!.current!.x, trace!.current!.y);
-      if (!trace!.advance()) {
+      final at = trace!.interpolated ?? trace!.current!;
+      position.setValues(at.x, at.y);
+      if (!trace!.advanceBy(dt * config.originalFps)) {
         // Path ended
         _onPathEnd();
       }
+    }
+
+    // Safety net for hostiles that can no longer move under their own power and
+    // sit entirely outside the play field. Such an enemy is unreachable — the
+    // player's projectiles cull off-field and Fleet gates its return fire on an
+    // in-field muzzle — yet it keeps its fleet active forever, which blocks
+    // both the dead-time skip and sector completion.
+    //
+    // The trigger is deliberately narrow. Waves legitimately spend seconds
+    // off-field on the way in (sector 3's swarm starts at -180,-180), so the
+    // timer only arms once the hostile is parked or cycling, i.e. its path can
+    // never carry it back.
+    final stranded = reapWhenStranded &&
+        (trace == null || trace!.current == null || trace!.cycled) &&
+        !inPlayField(position.x, position.y, size.x, size.y);
+    if (stranded) {
+      _offFieldTime += dt;
+      if (_offFieldTime > config.hostileOffFieldGrace) {
+        hp = 0; // same route as PathAction.destroy; Fleet.update sweeps it
+      }
+    } else {
+      _offFieldTime = 0.0;
     }
 
     // Hit flash decay
@@ -199,21 +265,32 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
       case PathAction.noop:
         break;
       case PathAction.freezeFleet:
+        // Freeze every live sibling WHERE IT STANDS. The VB6 port teleported
+        // them all onto the shared final node, which collapsed a "formation"
+        // into a stack of overlapping sprites on one pixel; halting in place
+        // yields the strung-out row the waves are designed around. Authoring
+        // contract: the fleet must be fully on-field by first arrival, or the
+        // off-field net reaps stragglers and voids the fleet bonus.
         if (parentFleet != null) {
           for (final ho in parentFleet!.hostiles) {
             if (ho.isDead || ho.trace == null) continue;
-            ho.trace!.finish();
-            final last = ho.trace!.current;
-            if (last != null) {
-              ho.position.setValues(last.x, last.y);
-            }
-            ho.trace!.onExit = PathAction.stay;
+            ho.trace!.halt();
           }
         }
       case PathAction.replacePath:
         if (parentFleet != null) {
           for (final ho in parentFleet!.hostiles) {
             if (ho.isDead) continue;
+            // Skip members that have not flown in yet. Path advance is one node
+            // per frame while spawning is wall-clock, so above 40fps the first
+            // arrival can trigger this while later members are still sitting at
+            // their off-field spawn point (srcX -50 / gameWidth+5). Re-pathing
+            // them there anchors the cycle outside the play area, where the
+            // player cannot reach them and they never shoot — the fleet then
+            // never empties and the sector can never complete. Each straggler
+            // re-runs this itself on arrival; its cloned path carries the same
+            // onExit.
+            if (ho.trace != null && !ho.trace!.isComplete) continue;
             ho.cyclePath(
               parentFleet!.altParam1,
               parentFleet!.altParam2,
@@ -227,8 +304,14 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   /// VB6 Hostile.CyclePath — create oscillating out-and-back cyclic path
   void cyclePath(int steps, int dx, int dy, PathType pt) {
-    final x = trace?.current?.x ?? position.x;
-    final y = trace?.current?.y ?? position.y;
+    // Clamp the anchor into the play field. An anchor already inside it is
+    // untouched, so this can only ever affect a hostile that would otherwise
+    // oscillate somewhere unreachable. The far end (anchor + d) needs no clamp:
+    // the widest real case is 534 + 20 + sprite, still inside gameWidth.
+    final x = clampAnchor(
+        trace?.current?.x ?? position.x, config.gameWidth - size.x);
+    final y = clampAnchor(
+        trace?.current?.y ?? position.y, config.gameHeight - size.y);
     final ampl = sqrt((dx * dx + dy * dy).toDouble());
     final newTrace = PathSystem();
     newTrace.generate(steps, x, y, x + dx, y + dy, pt,
@@ -261,10 +344,18 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     }
   }
 
-  void takeDamage(int dmg, TyrianGame gameInstance, {Vessel? attacker}) {
+  void takeDamage(int dmg, TyrianGame gameInstance,
+      {Vessel? attacker, Device? source}) {
     hp -= dmg;
     if (hit == 0) hit = 2;
-    if (hp <= 0) hp = 0;
+    if (hp <= 0) {
+      hp = 0;
+      // Recorded only on the killing blow, so hp-zeroing that bypasses
+      // takeDamage (path-destroy, off-field reap) never inherits a stale
+      // weapon.
+      deathFamily = source == null ? null : weaponFamilyFromImgName(source.imgName);
+      deathSlot = source?.slot;
+    }
   }
 
   // Rendering is handled by HostileBatchRenderer — this is intentionally empty.

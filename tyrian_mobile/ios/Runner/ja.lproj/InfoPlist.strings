@@ -1,0 +1,5 @@
+/* Permission prompts (Info.plist NS*UsageDescription), localized. */
+"NSBluetoothAlwaysUsageDescription" = "Kirianは、同じWi-Fiにいないときに近くのプレイヤーを見つけてローカル協力プレイをするためにBluetoothを使用します。";
+"NSBluetoothPeripheralUsageDescription" = "Kirianは、同じWi-Fiにいないときに近くのプレイヤーを見つけてローカル協力プレイをするためにBluetoothを使用します。";
+"NSLocalNetworkUsageDescription" = "Kirianは、お使いのWi-Fiや近くの端末でホストされている協力プレイを探し、他のプレイヤーがあなたのゲームを見つけられるようにします。";
+"NSMicrophoneUsageDescription" = "Kirianはマイクを使用しません。この許可はオーディオフレームワークで必要とされます。";

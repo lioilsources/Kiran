@@ -1,6 +1,9 @@
+import 'dart:math' show pi;
+
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
+import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
@@ -42,6 +45,14 @@ class Collectable extends PositionComponent
 
   @override
   Future<void> onLoad() async {
+    refreshSprite();
+  }
+
+  /// Re-fetch the icon. Called on load and again after a skin change: the
+  /// switch disposes every cached image, and a pickup still on screen would
+  /// otherwise draw from a dead one — which throws, and one throwing
+  /// component blacks out the whole world render.
+  void refreshSprite() {
     _sprite = AssetLibrary.instance.getIcon(_iconNameForType());
   }
 
@@ -106,9 +117,19 @@ class Collectable extends PositionComponent
           vessel.shieldRegen *= 1.025;
         }
       case CollType.generatorUpgrade:
-        // VB6: genPower ×1.255, genMax ×1.2
-        vessel.genPower *= 1.255;
-        vessel.genMax *= 1.2;
+        // Must go through the device (VB6 Collectable.cls:292 calls d.Upgrade).
+        // Raising vessel.genPower directly leaves device.pwrGen behind, and
+        // Device.upgrade *assigns* genPower from it — so the next shop purchase
+        // silently erased every pickup ever collected, while genMax kept
+        // compounding. The result was a huge tank refilling at the un-upgraded
+        // rate, i.e. a generator that cannot keep up.
+        final gen = vessel.getDevice(WeaponSlot.generator);
+        if (gen != null) {
+          gen.upgrade();
+        } else {
+          vessel.genPower *= config.upgPwrGenMultiplier;
+          vessel.genMax *= config.upgGenMaxMultiplier;
+        }
       case CollType.bonusCredit:
         vessel.credit += value;
       case CollType.none:
@@ -123,6 +144,14 @@ class Collectable extends PositionComponent
   void render(Canvas canvas) {
     // Banking world shift — render-only; pickup AABB uses logic positions
     canvas.translate(game.worldShiftX, 0);
+
+    // Counter the landscape camera rotation so the icon and its label read
+    // upright; rotate about the sprite centre so the pickup stays in place.
+    if (platform.isLandscape) {
+      canvas.translate(size.x / 2, size.y / 2);
+      canvas.rotate(-pi / 2);
+      canvas.translate(-size.x / 2, -size.y / 2);
+    }
 
     if (_sprite != null) {
       _sprite!.render(canvas, size: size);

@@ -1,15 +1,20 @@
 import 'dart:math';
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import '../entities/boss.dart';
 import '../entities/hostile.dart';
 import '../entities/collectable.dart';
 import '../entities/vessel.dart';
+import '../systems/fire_pattern.dart';
 import '../systems/path_system.dart';
 import '../systems/device.dart';
 import '../rendering/pixel_explosion_overlay.dart';
+import '../game/death_effect_config.dart';
+import '../net/protocol.dart';
 
 /// Ported from Fleet.cls — a wave/group of enemies.
 class Fleet extends Component with HasGameReference<TyrianGame> {
@@ -42,8 +47,17 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   // Enemy weapon (VB6 Fleet.weap / weapCharge / weapCD)
   Device? weapon;
-  int weapCharge = 0;   // frames between shots (recharge)
-  int weapCD = 0;       // current cooldown counter
+  int weapCharge = 0;   // VB6 frames between shots (recharge), at 40fps
+  /// Shape of the fleet's fire. Set by addWeapon, defaulting by hostile tier.
+  FirePattern pattern = FirePattern.straight;
+  // Burst bookkeeping: shots still owed and frames until the next one.
+  int _burstLeft = 0;
+  double _burstCD = 0;
+  /// Cooldown accumulator in VB6 frame units. Advanced by `dt * originalFps`
+  /// rather than incremented per rendered frame — the latter made enemies fire
+  /// 1.5x more often at 60Hz and 3x at 120Hz, while the player's weapons are
+  /// timed in seconds and did not speed up at all.
+  double weapCD = 0;
   int weapDamage = 0;   // enemy weapon damage
   double weapScale = 0.5; // projectile scale ratio (dmg/75 clamped 0.3-0.99)
 
@@ -69,7 +83,12 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   double get triggerInterval => triggerSteps * config.frameDelay / 1000.0;
 
+  /// Shape of the main path — carried for tests and tooling that assert wave
+  /// variety without re-deriving geometry from nodes.
+  final PathType pathType;
+
   Fleet({
+    this.pathType = PathType.linear,
     required this.caption,
     required this.id,
     this.showDamage = true,
@@ -103,17 +122,40 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
     // Fleet weapon firing (centralized — prevents multi-fire bug from parallel hostile updates)
     if (weapCharge > 0 && hostiles.isNotEmpty) {
-      weapCD++;
-      if (weapCD >= weapCharge) {
+      final frames = dt * config.originalFps;
+      weapCD += frames;
+      final cadence = weapCharge *
+          game.challenge.cadence *
+          (pattern == FirePattern.volley ? FirePattern.volleyCadence : 1.0);
+      if (weapCD >= cadence) {
         final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
         if (alive.isNotEmpty) {
-          final shooter = alive[Random().nextInt(alive.length)];
-          final xm = shooter.position.x + shooter.size.x / 2;
-          if (xm > 0 && xm < config.gameWidth) {
-            game.spawnEnemyProjectile(xm, shooter.y2 + 10, weapDamage, weapScale);
+          if (pattern == FirePattern.volley) {
+            for (final h in alive) {
+              _shootFrom(h, FirePattern.straight);
+            }
+          } else {
+            final shooter = alive[Random().nextInt(alive.length)];
+            _shootFrom(shooter, pattern);
+            if (pattern == FirePattern.burst) {
+              _burstLeft = 2;
+              _burstCD = FirePattern.burstGap.toDouble();
+            }
           }
         }
         weapCD = 0;
+      }
+      // The rest of a burst, a few frames apart, from whoever is still alive.
+      if (_burstLeft > 0) {
+        _burstCD -= frames;
+        if (_burstCD <= 0) {
+          final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
+          if (alive.isNotEmpty) {
+            _shootFrom(alive[Random().nextInt(alive.length)], FirePattern.straight);
+          }
+          _burstLeft--;
+          _burstCD = FirePattern.burstGap.toDouble();
+        }
       }
     }
 
@@ -122,7 +164,24 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       if (h.isDead) {
         final cx = h.position.x + h.size.x / 2;
         final cy = h.position.y + h.size.y / 2;
-        game.addExplosion(cx, cy, 2);
+        final family = h.deathFamily;
+        if (family == null) {
+          game.addExplosion(cx, cy, 2);
+        } else {
+          game.deathEffects.spawn(family, cx, cy, h.size.x, h.size.y,
+              hitX: h.lastHitX, hitY: h.lastHitY);
+        }
+        // Mirror the death to the co-op client (which otherwise only sees the
+        // hostile vanish from the snapshot). Weapon family rides the free-form
+        // text field — no wire-format change, older clients ignore it.
+        if (game.coopRole == CoopRole.host &&
+            game.coopHost != null &&
+            game.coopHost!.hasClient) {
+          game.coopHost!.sendEvent(EventType.explosion,
+              x: cx,
+              y: cy,
+              text: family == null ? '' : '${family.name}:$id:${h.id}');
+        }
         // Spawn sprite shatter shards
         if (h.sprite != null) {
           game.shardPool.spawn(
@@ -134,6 +193,9 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
             h.size.x,
             h.size.y,
             h.spriteName,
+            family == null
+                ? defaultShardPreset
+                : deathEffectSpecs[family]!.shardPreset,
           );
 
           // Boss-tier hostiles get a pixel explosion shader effect
@@ -166,7 +228,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     if (_spawned >= count && hostiles.isEmpty) {
       active = false;
       // VB6: bonus only drops when ALL enemies were killed (not path-destroyed)
-      if (kills >= count) _spawnBonus();
+      if (kills >= count) {
+        game.campaignTracker?.onFleetCleared();
+        _spawnBonus();
+      }
     }
   }
 
@@ -177,7 +242,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   }
 
   void _spawnHostile() {
-    final hpMax = hpOverride ?? Hostile.getHpMax(hostType);
+    final baseHp = hpOverride ?? Hostile.getHpMax(hostType);
+    // Challenge scales HP here, at the one place every hostile is born. Boss
+    // parts size themselves off the core's hpMax, so they inherit it.
+    final hpMax = (baseHp * game.challenge.hp).round();
     final clonedPath = path.clone();
     clonedPath.onExit = defaultPathAction;
     if (extraPath != null) {
@@ -208,14 +276,33 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
             position: spawnPos,
           );
     h.parentFleet = this;
+    // Kill credit follows hpMax by default, which would make Hard the richest
+    // economy. Pin it to the unscaled value; bosses already carry a bounty
+    // through creditOverride and are left alone.
+    if (hpMax != baseHp && bossSpec == null && creditOverride == null) {
+      h.creditValue = baseHp;
+    }
     hostiles.add(h);
     game.world.add(h);
 
+    // A composite boss brings its pieces up with it, synchronously: they must
+    // exist before the first bounds update, and building them here rather
+    // than from the boss's own update keeps this list from being mutated
+    // mid-sweep. They live in `hostiles` like any other enemy, so collision,
+    // bounds and depletion need no special case.
+    if (h is Boss) {
+      for (final part in h.createParts()) {
+        part.parentFleet = this;
+        hostiles.add(part);
+        game.world.add(part);
+      }
+    }
+
     // Debug: log fleet spawn info
-    if (_spawned == 0) {
+    if (kDebugMode && _spawned == 0) {
       final first = clonedPath.nodes.first;
       final last = clonedPath.nodes.last;
-      print('[FLEET] "$caption" id=$id type=${hostType.name} count=$count '
+      debugPrint('[FLEET] "$caption" id=$id type=${hostType.name} count=$count '
           'pathType=${path.nodes.length} nodes '
           'start=(${first.x.toStringAsFixed(0)}, ${first.y.toStringAsFixed(0)}) '
           'end=(${last.x.toStringAsFixed(0)}, ${last.y.toStringAsFixed(0)})');
@@ -239,6 +326,8 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   void onHostileKilled(Hostile h, TyrianGame gameInstance, {Vessel? attacker}) {
     kills++;
+    AchievementService.instance.onKill(h.hostType, isBoss: h is Boss);
+    gameInstance.campaignTracker?.onKill(h);
     lastKillX = h.position.x + h.size.x / 2;
     lastKillY = h.position.y + h.size.y / 2;
 
@@ -248,8 +337,10 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
     // Add score and credit to the vessel that got the kill
     final target = attacker ?? gameInstance.vessel;
-    target.addScore(h.hpMax);
-    target.credit += creditOverride ?? h.hpMax;
+    // hpMax is already challenge-scaled; the score multiplier compounds on
+    // top by design — see Challenge.
+    target.addScore((h.hpMax * gameInstance.challenge.score).round());
+    target.credit += h.creditValue ?? creditOverride ?? h.hpMax;
   }
 
   void _spawnBonus() {
@@ -291,11 +382,57 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     }
   }
 
-  /// VB6 Sector.AddWeapon — set enemy weapon for this fleet
-  void addWeapon(int dmg, int recharge) {
+  /// VB6 Sector.AddWeapon — set enemy weapon for this fleet. The pattern
+  /// defaults by hostile tier so existing calls gain variety unchanged; pass
+  /// one to author a specific shape (a volley wall, a burst from a swarm).
+  void addWeapon(int dmg, int recharge, {FirePattern? pattern}) {
     weapDamage = dmg;
     weapCharge = recharge;
     weapScale = (dmg / 75.0).clamp(0.3, 0.99);
+    this.pattern = pattern ?? FirePattern.defaultFor(hostType);
+  }
+
+  /// One shot (or fan) from [h] in the given shape. Straight and aimed are a
+  /// single projectile; spread is three. Burst and volley are sequencing
+  /// decisions made by the caller, which is why they land here as straight.
+  void _shootFrom(Hostile h, FirePattern shape) {
+    final xm = h.position.x + h.size.x / 2;
+    if (xm <= 0 || xm >= config.gameWidth) return;
+    final y = h.y2 + 10;
+    switch (shape) {
+      case FirePattern.aimed:
+        final target = _nearestVessel(xm, y);
+        if (target == null) {
+          game.spawnEnemyProjectile(xm, y, weapDamage, weapScale);
+          return;
+        }
+        final (vx, vy) = FirePattern.aim(
+            target.position.x - xm, target.position.y - y, 15.0);
+        game.spawnEnemyProjectile(xm, y, weapDamage, weapScale, vx: vx, speed: vy);
+      case FirePattern.spread:
+        for (final vx in const [-FirePattern.spreadVx, 0.0, FirePattern.spreadVx]) {
+          game.spawnEnemyProjectile(xm, y, weapDamage, weapScale, vx: vx, speed: 14.0);
+        }
+      case FirePattern.straight:
+      case FirePattern.burst:
+      case FirePattern.volley:
+        game.spawnEnemyProjectile(xm, y, weapDamage, weapScale);
+    }
+  }
+
+  Vessel? _nearestVessel(double x, double y) {
+    Vessel? best;
+    var bestD = double.infinity;
+    for (final v in [game.vessel, game.vessel2]) {
+      if (v == null || !v.visible) continue;
+      final d = (v.position.x - x) * (v.position.x - x) +
+          (v.position.y - y) * (v.position.y - y);
+      if (d < bestD) {
+        bestD = d;
+        best = v;
+      }
+    }
+    return best;
   }
 
   /// Factory: create fleet with path
@@ -330,6 +467,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
         amplitude: amplitude, cycles: cycles, amplMultiplier: amplMultiplier);
 
     return Fleet(
+      pathType: pathType,
       caption: caption,
       id: id,
       showDamage: showDamage,

@@ -5,35 +5,161 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
+
+import 'l10n/l10n.dart';
 
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
 import 'input/gamepad_input.dart';
+import 'systems/campaign.dart';
+import 'ui/campaign_map.dart';
+import 'ui/campaign_result.dart';
 import 'ui/com_center.dart';
+import 'ui/format.dart';
+import 'ui/join_dialog.dart';
 import 'ui/osd_panel.dart';
 import 'ui/skin_selector.dart';
+import 'services/achievement_service.dart';
+import 'services/asset_library.dart';
+import 'services/audio_log.dart';
 import 'services/leaderboard_service.dart';
-import 'services/save_service.dart';
+import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
+import 'package:multipeer_coop/multipeer_coop.dart';
+
+import 'net/channel.dart';
 import 'net/coop_host.dart';
 import 'net/coop_client.dart';
 import 'net/discovery.dart';
 import 'net/protocol.dart';
 
+/// Absolute path to the libmpv we ship next to the Linux executable, or null
+/// to let media_kit search the system loader path.
+///
+/// Nothing on Linux bundles libmpv for us: `media_kit_libs_linux` only wires up
+/// mimalloc, so a plain `flutter build linux` produces a bundle that needs a
+/// distro-provided libmpv. The Steam depot and the AppImage therefore carry
+/// their own copy in `lib/` (see tool/bundle_linux_libmpv.sh), and we hand
+/// media_kit the exact path rather than trusting dlopen to pick it up from the
+/// runner's RPATH — that resolution depends on which ELF object happens to
+/// call dlopen, which is not something to bet a store build on.
+///
+/// Windows needs none of this: media_kit_libs_windows_audio drops its DLLs
+/// beside the .exe, where the loader finds them without help.
+String? _bundledLibmpv() {
+  if (!Platform.isLinux) return null;
+  final beside = File(Platform.resolvedExecutable).parent.path;
+  for (final name in const ['libmpv.so.2', 'libmpv.so.1', 'libmpv.so']) {
+    final f = File('$beside/lib/$name');
+    if (f.existsSync()) return f.path;
+  }
+  return null;
+}
+
+/// True on iOS releases older than 18.4 — the first version whose CoreAudio
+/// opens Ogg containers. Parses "Version 17.5 (Build 21F90)"; on any parse
+/// surprise we claim the decoder exists and stay on the native backend.
+bool _iosLacksOggDecoder() {
+  final m = RegExp(r'(\d+)\.(\d+)').firstMatch(Platform.operatingSystemVersion);
+  if (m == null) return false;
+  final major = int.parse(m.group(1)!);
+  final minor = int.parse(m.group(2)!);
+  return major < 18 || (major == 18 && minor < 4);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (platform.isDesktop) {
+    // Route just_audio through media_kit (libmpv) on Linux and Windows.
+    // Linux has no other backend at all — without this the game is silent on
+    // Steam Deck. Windows nominally has just_audio_windows, but that decodes
+    // through Media Foundation, which only handles our .ogg assets when the
+    // removable "Web Media Extensions" store pack happens to be installed.
+    // One backend removes the codec lottery. macOS/Android keep their
+    // native just_audio implementations.
+    //
+    // Guarded for the same reason as the iOS branch below, and with more cause:
+    // media_kit throws from ensureInitialized when it cannot dlopen libmpv, and
+    // on Linux that is a live possibility (no distro guarantee, and the Steam
+    // Deck runtime is not ours to control). Unguarded, that exception lands
+    // before runApp and the game never draws a frame — a store build that dies
+    // on launch is far worse than one that runs silent.
+    final libmpv = _bundledLibmpv();
+    try {
+      JustAudioMediaKit.ensureInitialized(
+          linux: true, windows: true, libmpv: libmpv);
+      MusicService.manualLoop = true; // libmpv has no working loop — see field
+      SoundService.leanPools = true; // one audio device per player on this one
+      audioLog('${Platform.operatingSystem} '
+          '${Platform.operatingSystemVersion} — backend: media_kit (libmpv'
+          '${libmpv == null ? ', system' : ': $libmpv'})');
+    } catch (e) {
+      // Linux has no second backend to fall back to, so this is silence, not
+      // recovery. Windows keeps just_audio_windows in pubspec as a manual
+      // rollback, but media_kit already registered itself as the just_audio
+      // platform by the time this throws, so we do not switch here.
+      audioLog('${Platform.operatingSystem} '
+          '${Platform.operatingSystemVersion} — media_kit init FAILED '
+          '(${e.runtimeType}: $e), continuing without audio');
+    }
     await windowManager.ensureInitialized();
-    await windowManager.setTitle('Tyrian');
-    await windowManager.setFullScreen(true);
+    await windowManager.setTitle('Kirian');
+    // Fullscreen by default, but honour a windowed preference saved by the
+    // F11/Alt+Enter toggle — before this there was no way out of fullscreen.
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('fullscreen') ?? true) {
+      await windowManager.setFullScreen(true);
+    }
   } else {
+    if (Platform.isIOS && _iosLacksOggDecoder()) {
+      // Apple's CoreAudio only learned to open Ogg containers in iOS 18.4;
+      // every asset here is Ogg Opus, so on older iOS all of them fail to
+      // load and SoundService trips its failure breaker into total silence
+      // (first seen on an iPad stuck on 17.x). Route those devices through
+      // the same libmpv backend the desktop builds use; 18.4+ stays native.
+      try {
+        JustAudioMediaKit.ensureInitialized(iOS: true);
+        MusicService.manualLoop = true; // libmpv has no working loop
+        SoundService.leanPools = true; // one audio device per player here
+        audioLog('iOS ${Platform.operatingSystemVersion} — no CoreAudio Ogg '
+            'demuxer, backend: media_kit (libmpv)');
+      } catch (e) {
+        // If libmpv cannot come up, the game still has to start: the native
+        // backend leaves the device silent, which is exactly where it was
+        // before this fix — a crash on the splash screen would be worse.
+        audioLog('iOS ${Platform.operatingSystemVersion} — media_kit init '
+            'FAILED (${e.runtimeType}: $e), falling back to native');
+      }
+    } else {
+      audioLog('${Platform.operatingSystem} '
+          '${Platform.operatingSystemVersion} — backend: native');
+    }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
   }
+  // One audio session for the whole game, configured and activated once.
+  // Every AudioPlayer is built with handleAudioSessionActivation:false, so
+  // this is the only place that touches it — thirty-six players each calling
+  // setActive() on their own play() thrashed the session hard enough that iOS
+  // interrupted playback and left the music paused (iPad, iOS 17).
+  try {
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.music());
+    await session.setActive(true);
+    audioLog('audio session configured (music) and active');
+  } catch (e) {
+    // A session we cannot configure is not a reason to refuse to start; the
+    // platform default is what the game used to run on anyway.
+    audioLog('audio session setup FAILED (${e.runtimeType}: $e)');
+  }
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   runApp(const TyrianApp());
@@ -45,8 +171,16 @@ class TyrianApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tyrian',
+      title: 'Kirian',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // Keep the context-free accessor (Flame world, data classes) on the
+      // locale the app resolved to.
+      builder: (context, child) {
+        L10n.current = AppLocalizations.of(context);
+        return child!;
+      },
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
       ),
@@ -67,7 +201,15 @@ enum _ScreenState { mainMenu, game }
 class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   late TyrianGame _game;
   _ScreenState _screen = _ScreenState.mainMenu;
+
+  /// True once a run exists that must not be wiped by pressing PLAY — either
+  /// resumed from disk at startup or started in this session. The roguelike
+  /// loop keeps weapons, credits and cumulative score across deaths, so the
+  /// only thing that may reset them is an explicit fresh start.
+  bool _runInProgress = false;
   bool _showComCenter = false;
+  bool _showCampaignMap = false;
+  bool _showCampaignResult = false;
 
   // Pause skin selector
   bool _showPauseSkinSelector = false;
@@ -75,6 +217,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   // Auto-host state (active from ComCenter through gameplay)
   CoopHost? _autoHost;
   CoopDiscovery? _autoDiscovery;
+  // Nearby (Multipeer) players who accepted the host's advertisement
+  StreamSubscription<MultipeerEvent>? _nearbySub;
 
   // Client waiting overlay (P2 waiting for host to start)
   bool _clientWaiting = false;
@@ -83,13 +227,22 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (platform.isDesktop) {
+      HardwareKeyboard.instance.addHandler(_handleGlobalKey);
+    }
     _game = TyrianGame();
     _setupGameCallbacks();
-    LeaderboardService.instance.init();
+    // Achievements piggyback on the leaderboard's sign-in, so init them after
+    // it settles — the first flush then pushes any progress accumulated
+    // while signed out.
+    LeaderboardService.instance
+        .init()
+        .then((_) => AchievementService.instance.init());
     SoundService.instance.init();
     SoundService.instance.loadSkin('default');
     MusicService.instance.init();
     MusicService.instance.loadSkin('default');
+    SkinStoreService.instance.init();
   }
 
   void _setupGameCallbacks() {
@@ -100,6 +253,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       if (!resumed) {
         _game.vessel.newGame();
       }
+      _runInProgress = resumed;
       if (mounted) setState(() {});
     };
 
@@ -119,11 +273,25 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
 
     _game.onGameOver = () async {
-      // Submit the run's score to the native leaderboard (Game Center / Play
-      // Games). No-op on Windows/Linux or when not signed in — there is no
-      // local table anymore. The _GameOverOverlay stays up; the player opens
-      // the leaderboard from its button if one is available.
-      await LeaderboardService.instance.submit(_game.vessel.credit);
+      // Rebuild so _GameOverOverlay actually appears. Nothing else will do it:
+      // the only thing driving setState during a run is onOsdUpdate, and that
+      // fires from inside update() *after* the `state != playing` early-return
+      // — which triggerGameOver has just armed. Without this the run freezes
+      // mid-frame with no overlay, which is exactly what it looks like: a hang.
+      // Must come before the await; the submit below can take seconds.
+      if (mounted) setState(() {});
+
+      // Submit to both native leaderboards (Game Center / Play Games). No-op
+      // on Windows/Linux or when not signed in — there is no local table
+      // anymore. The overlay stays up; the player opens the board from its
+      // button if one is available.
+      AchievementService.instance.onGameOver();
+      // The boards rank endless runs; a campaign score is a different game.
+      if (_game.mode == GameMode.endless) {
+        await LeaderboardService.instance.submitScore(_game.vessel.score);
+        await LeaderboardService.instance
+            .submitDepth(AchievementService.instance.maxSectorLevel);
+      }
 
       if (_game.coopRole == CoopRole.host && _game.coopHost != null) {
         _game.coopHost!.sendEvent(EventType.gameOver);
@@ -132,15 +300,26 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
     _game.onSectorComplete = () {
       Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          if (_game.coopRole != CoopRole.client) {
-            _game.advanceToNextSector();
-            _game.openComCenter();
-            _game.saveProgress(); // persist advanced sector + current loadout
-          } else {
-            // P2: show waiting overlay while host shops
-            setState(() => _clientWaiting = true);
-          }
+        if (!mounted) return;
+        if (_game.mode == GameMode.campaign) {
+          final result = _game.lastNodeResult;
+          if (result != null) _game.finishCampaignNode(result);
+          _game.saveProgress();
+          setState(() => _showCampaignResult = true);
+          return;
+        }
+        if (_game.coopRole != CoopRole.client) {
+          _game.advanceToNextSector();
+          _game.openComCenter();
+          _game.saveProgress(); // persist advanced sector + current loadout
+          // Post progress now too: the run has no end, and both boards keep
+          // the player's best, so a session killed mid-run still counts.
+          LeaderboardService.instance.submitScore(_game.vessel.score);
+          LeaderboardService.instance
+              .submitDepth(AchievementService.instance.maxSectorLevel);
+        } else {
+          // P2: show waiting overlay while host shops
+          setState(() => _clientWaiting = true);
         }
       });
     };
@@ -171,10 +350,28 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
   }
 
+  /// F11 or Alt+Enter toggles fullscreen anywhere — menu, shop, mid-game.
+  /// Registered on HardwareKeyboard so it works regardless of widget focus.
+  bool _handleGlobalKey(KeyEvent event) {
+    if (event is! KeyDownEvent) return false;
+    final isToggle = event.logicalKey == LogicalKeyboardKey.f11 ||
+        (HardwareKeyboard.instance.isAltPressed &&
+            event.logicalKey == LogicalKeyboardKey.enter);
+    if (!isToggle) return false;
+    () async {
+      final fs = await windowManager.isFullScreen();
+      await windowManager.setFullScreen(!fs);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('fullscreen', !fs);
+    }();
+    return true;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
+      AchievementService.instance.flush();
       if (_game.state == GameState.playing) {
         _game.togglePause(); // co-op events handled inside togglePause()
         if (mounted) setState(() {});
@@ -184,6 +381,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    if (platform.isDesktop) {
+      HardwareKeyboard.instance.removeHandler(_handleGlobalKey);
+    }
     WidgetsBinding.instance.removeObserver(this);
     _disposeAutoHost();
     _game.disposeCoop();
@@ -215,70 +415,96 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     return '?';
   }
 
-  void _showManualIpDialog() {
-    final controller = TextEditingController();
-    showDialog(
+  /// JOIN: one list of the hosts found on this Wi-Fi (Bonjour) and nearby
+  /// (Multipeer, Apple devices with no network in common); tap to connect.
+  /// Typing an IP is still there underneath for networks where mDNS does
+  /// not get through.
+  void _showJoinDialog() {
+    final discovery = CoopDiscovery();
+    Future<void>? joining;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => JoinDialog(
+        discovery: discovery,
+        pilotName: _game.vessel.pilotName,
+        onJoin: (host) {
+          Navigator.pop(ctx);
+          joining = _joinHost(host, discovery);
+        },
+      ),
+    ).whenComplete(() async {
+      // A nearby join must keep browsing until the session is up — Multipeer
+      // drops an invitation whose browser is gone — so dispose after it.
+      await joining;
+      await discovery.dispose();
+    });
+  }
+
+  void _showNearbyJoinFailed(String hostName) {
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text('Connect to host', style: TextStyle(color: Colors.cyanAccent)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.url,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          decoration: const InputDecoration(
-            hintText: '192.168.x.x',
-            hintStyle: TextStyle(color: Colors.white38),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
-          ),
+        title: Text(ctx.l10n.nearbyJoinFailedTitle(hostName),
+            style: const TextStyle(color: Colors.cyanAccent)),
+        content: Text(
+          ctx.l10n.nearbyJoinFailedBody,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('CANCEL', style: TextStyle(color: Colors.white54)),
-          ),
-          TextButton(
-            onPressed: () {
-              final input = controller.text.trim();
-              if (input.isNotEmpty) {
-                Navigator.pop(ctx);
-                // Accept "192.168.x.x" or "192.168.x.x:port"
-                final colon = input.lastIndexOf(':');
-                final ip = colon > 0 ? input.substring(0, colon) : input;
-                final port = colon > 0
-                    ? (int.tryParse(input.substring(colon + 1)) ??
-                        CoopHost.defaultPort)
-                    : CoopHost.defaultPort;
-                _joinAsClient(ip, port);
-              }
-            },
-            child: const Text('CONNECT', style: TextStyle(color: Colors.cyanAccent)),
+            child: Text(ctx.l10n.ok, style: const TextStyle(color: Colors.cyanAccent)),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _startAsAutoHost() async {
+  Future<void> _joinHost(CoopHostInfo host, CoopDiscovery discovery) async {
+    if (!host.isNearby) return _joinAsClient(host.address, host.port);
+    // We are the one inviting: the host-side seat listener must not grab
+    // this peer as if it were our client.
+    _nearbySub?.cancel();
+    _nearbySub = null;
+    print('Joining nearby ${host.name}');
+    final channel = await discovery.connectNearby(host.peerId!);
+    if (channel == null) {
+      // Not the TCP path's silent auto-host fallback: a nearby host that was
+      // visible but would not connect almost always means peer-to-peer Wi-Fi
+      // is off — iOS disables it while a Personal Hotspot is on — and the
+      // player needs to hear that, not find themselves hosting.
+      if (mounted) _showNearbyJoinFailed(host.name);
+      return;
+    }
     _game.resetForNewGame();
+    final client = CoopClient()..attach(channel, _game.vessel.pilotName);
+    await _game.setupCoopClient(client);
+    if (mounted) {
+      setState(() {
+        _screen = _ScreenState.game;
+        _clientWaiting = true;
+      });
+    }
+  }
 
-    _autoHost = CoopHost();
-    final port = await _autoHost!.start(_game.vessel.pilotName);
-
-    _game.setupAutoHost(_autoHost!);
-    _game.hostIp = await _getLocalIp();
-    print('Host: local IP = ${_game.hostIp}, TCP port = $port');
-
-    // Wire up client-joined notification for UI
-    _game.onClientJoined = () {
-      if (mounted) setState(() {});
-    };
-
-    // Start UDP broadcast
-    _autoDiscovery = CoopDiscovery();
-    await _autoDiscovery!.startBroadcast(port, _game.vessel.pilotName);
+  /// PLAY: single-player, no sockets. Hosting used to start unconditionally
+  /// here, which meant every solo launch bound a TCP listener and broadcast on
+  /// the LAN — and on Windows popped a firewall prompt hidden behind the
+  /// fullscreen window (Steam plan, Fix 7). Hosting is opt-in via the HOST
+  /// button in ComCenter, which calls [_startHosting].
+  Future<void> _startAsAutoHost() async {
+    // Coming back from the campaign the vessel holds campaign state, so the
+    // endless run is reloaded from its own save first.
+    if (_game.mode == GameMode.campaign) {
+      _runInProgress = await _game.enterEndless();
+    }
+    // Only a pilot with nothing to lose gets a clean slate. Resetting a run
+    // that already exists would wipe the weapons, credits and cumulative
+    // score the roguelike loop is built on — and cumulative score is what
+    // unlocks the higher weapon tiers.
+    if (!_runInProgress) _game.resetForNewGame();
+    _runInProgress = true;
 
     if (mounted) {
       setState(() {
@@ -288,100 +514,166 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _joinAsClient(String ip, int port) async {
-    print('Joining $ip:$port');
+  /// Start hosting a co-op game on demand (ComCenter HOST button).
+  Future<void> _startHosting() async {
+    if (_autoHost != null || _game.coopHost != null) return; // already hosting
 
-    // Progress dialog — Socket.connect can take up to 5s before timing out
-    if (mounted) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          backgroundColor: Colors.grey[900],
-          content: Row(
-            children: [
-              const CircularProgressIndicator(color: Colors.cyanAccent),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Text(
-                  'Connecting to $ip:$port...',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+    _autoHost = CoopHost();
+    final port = await _autoHost!.start(_game.vessel.pilotName);
+
+    _game.setupAutoHost(_autoHost!);
+    _game.hostIp = await _getLocalIp();
+    print('Host: local IP = ${_game.hostIp}, TCP port = $port');
+
+    // Advertise over Bonjour while the seat is free. The host takes one
+    // client, so the service is withdrawn the moment one connects and comes
+    // back if it drops — a joiner never picks a full game from the list.
+    final discovery = _autoDiscovery = CoopDiscovery();
+    final pilotName = _game.vessel.pilotName;
+    Future<void> advertise() async {
+      try {
+        await discovery.advertise(port, pilotName);
+      } catch (e) {
+        // Bonjour refused — local-network permission denied, no Avahi on
+        // Linux. Hosting still works; the IP in ComCenter is the fallback.
+        print('Host: Bonjour advertise failed: $e');
+      }
     }
 
+    _game.onClientJoined = () {
+      discovery.stopAdvertising();
+      if (mounted) setState(() {});
+    };
+    _game.onClientLeft = () {
+      if (_autoDiscovery == discovery) advertise();
+      if (mounted) setState(() {});
+    };
+
+    // A nearby player who took the advertisement shows up as a connected
+    // Multipeer peer; seat them exactly like a TCP client.
+    if (MultipeerCoop.isSupported) {
+      final host = _autoHost!;
+      _nearbySub?.cancel();
+      _nearbySub = MultipeerCoop.instance.events.listen((e) {
+        if (e is MultipeerPeerStateChanged &&
+            e.state == MultipeerPeerState.connected) {
+          host.attach(MultipeerChannel(MultipeerCoop.instance, e.id, e.name));
+        }
+      });
+    }
+    await advertise();
+
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _joinAsClient(String ip, int port) async {
+    _game.resetForNewGame();
+    print('Joining $ip:$port');
     final client = CoopClient();
     final ok = await client.connect(ip, port, _game.vessel.pilotName);
-
-    if (mounted) {
-      Navigator.of(context, rootNavigator: true).pop(); // close progress
-    }
-
     if (!ok) {
-      // Stay in our own hosted ComCenter and tell the user why it failed
-      await client.dispose();
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: Colors.grey[900],
-            title: const Text('Connection failed',
-                style: TextStyle(color: Colors.redAccent)),
-            content: Text(
-              'Could not reach $ip:$port'
-              '${client.lastError != null ? '\n(${client.lastError})' : ''}\n\n'
-              'Check that both devices are on the same WiFi and the host '
-              'is on the ComCenter screen (its IP is shown in the top bar).',
-              style: const TextStyle(color: Colors.white70, fontSize: 13),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('OK',
-                    style: TextStyle(color: Colors.cyanAccent)),
-              ),
-            ],
-          ),
-        );
-      }
+      // Connection failed → fall back to auto-host
+      if (mounted) await _startAsAutoHost();
       return;
     }
 
-    // Connected as client — stop hosting/broadcasting our own game
-    _disposeAutoHost();
-    await _game.disposeCoop();
-
-    _game.resetForNewGame();
     await _game.setupCoopClient(client);
 
     if (mounted) {
       setState(() {
         _screen = _ScreenState.game;
-        _showComCenter = false;
         _clientWaiting = true;
       });
     }
   }
 
   void _disposeAutoHost() {
+    _nearbySub?.cancel();
+    _nearbySub = null;
     _autoDiscovery?.dispose();
     _autoDiscovery = null;
+    // Leaving co-op altogether: drop the Multipeer session on either side.
+    if (MultipeerCoop.isSupported) {
+      MultipeerCoop.instance.disconnect().catchError((Object _) {});
+    }
     // Don't dispose _autoHost here — it's owned by _game.coopHost after setupAutoHost
     _autoHost = null;
+  }
+
+  /// Solo death is not the end of the game. The pilot keeps weapons, credits
+  /// and cumulative score and is rewound to sector 1, landing in the shop so
+  /// the losses can be spent before the next attempt.
+  void _respawnAtFirstSector() {
+    _game.restartRun();
+    _game.state = GameState.comCenter;
+    _game.saveProgress();
+    if (mounted) {
+      setState(() {
+        _showComCenter = true;
+      });
+    }
+  }
+
+  /// CAMPAIGN from the main menu: the campaign's own vessel and save, then
+  /// the node map.
+  Future<void> _startCampaign() async {
+    await _game.enterCampaign();
+    if (!mounted) return;
+    setState(() {
+      _screen = _ScreenState.game;
+      _showComCenter = false;
+      _showCampaignMap = true;
+    });
+  }
+
+  void _launchCampaignNode(int index) {
+    _game.launchCampaignNode(index);
+    setState(() {
+      _showCampaignMap = false;
+      _showCampaignResult = false;
+      _showComCenter = true;
+    });
+  }
+
+  /// Campaign death: the same node again, via the shop.
+  void _retryCampaignNode() {
+    _game.retryNode();
+    _game.saveProgress();
+    if (mounted) setState(() => _showComCenter = true);
+  }
+
+  /// MAIN MENU from the pause menu or the campaign map. Drops the current
+  /// mission (progress since the last save, as a death would) and returns to
+  /// the skin grid, from where either mode can be entered.
+  Future<void> _quitToMainMenu() async {
+    _disposeAutoHost();
+    await _game.disposeCoop();
+    _game.abandonMission();
+    if (!mounted) return;
+    setState(() {
+      _screen = _ScreenState.mainMenu;
+      _showComCenter = false;
+      _showCampaignMap = false;
+      _showCampaignResult = false;
+      _showPauseSkinSelector = false;
+      _clientWaiting = false;
+    });
   }
 
   void _returnToMainMenu() async {
     _disposeAutoHost();
     await _game.disposeCoop();
-    // Run ended — discard saved progress so the next launch starts fresh
-    // (newGame() also assigns a new generated codename).
-    await SaveService.clearGameState();
-    _game.vessel.newGame();
-    _game.currentSectorIndex = 0;
+    // A run now survives death and app restarts, so this path — reachable only
+    // when a co-op peer drops — must not discard it. Reload the pilot's own
+    // save over whatever co-op mirrored into the vessel; only a pilot with no
+    // save at all gets a fresh codename and a stock loadout.
+    _runInProgress = await _game.loadProgress();
+    if (!_runInProgress) {
+      _game.vessel.newGame();
+      _game.currentSectorIndex = 0;
+      _game.requestZoneBackgrounds(0);
+      _game.parallaxBg.setLevel(1);
+    }
     _game.state = GameState.comCenter;
     if (mounted) {
       setState(() {
@@ -407,12 +699,19 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   /// ComCenter START button handler (host/solo)
-  void _onComCenterStart() {
+  Future<void> _onComCenterStart() async {
     _game.saveProgress(); // persist final loadout before the mission
     // Prevent the same Start press that closed ComCenter from also
     // triggering the skin selector in TyrianGame's _processDesktopInput.
+    // Must stay ahead of the first await, or the edge leaks through the yield.
     _game.suppressStartEdge();
     setState(() => _showComCenter = false);
+    // ComCenter is an unbounded UI screen, so the zone load kicked off by
+    // advanceToNextSector has almost certainly finished — this is the backstop
+    // for when it has not. Costs a single microtask when already loaded.
+    await AssetLibrary.instance
+        .loadZoneBackgrounds(_game.zoneForIndex(_game.currentSectorIndex));
+    if (!mounted) return;
     if (_game.currentSector == null) {
       _game.startGame();
     } else {
@@ -432,25 +731,44 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
           // Main menu with skin selector
           if (_game.isLoaded && _screen == _ScreenState.mainMenu)
-            SkinSelector(onPlay: () {
-              _game.refreshSprites();
-              _startAsAutoHost();
-            }),
+            SkinSelector(
+                showQuit: true,
+                onPlay: () {
+                  _game.refreshSprites();
+                  _startAsAutoHost();
+                },
+                onCampaign: _startCampaign),
 
           // Game screen overlays
           if (_game.isLoaded && _screen == _ScreenState.game) ...[
             // Dimming overlay when paused
             if (_game.state == GameState.paused && !_showPauseSkinSelector)
-              Container(color: Colors.black26),
+              _PauseMenu(
+                onResume: () {
+                  if (_game.state == GameState.paused) _game.togglePause();
+                  setState(() {});
+                },
+                onSkins: () {
+                  _game.skinSelectorOpen = true;
+                  setState(() => _showPauseSkinSelector = true);
+                },
+                onMainMenu: _quitToMainMenu,
+                onQuit: platform.isDesktop
+                    ? () async {
+                        await windowManager.destroy();
+                        exit(0);
+                      }
+                    : null,
+              ),
 
             // Boss HP bar (visible while a phased boss is on the field)
-            if (!_showComCenter && !_clientWaiting &&
-                _game.state != GameState.gameOver)
+            if (!_showComCenter && !_showCampaignMap && !_showCampaignResult &&
+                !_clientWaiting && _game.state != GameState.gameOver)
               BossHealthBar(game: _game),
 
             // OSD HUD
-            if (!_showComCenter && !_clientWaiting &&
-                _game.state != GameState.gameOver)
+            if (!_showComCenter && !_showCampaignMap && !_showCampaignResult &&
+                !_clientWaiting && _game.state != GameState.gameOver)
               OsdPanel(
                 game: _game,
                 onMuteToggle: () => setState(() {}),
@@ -477,12 +795,40 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 },
               ),
 
-            // ComCenter (host/solo only — P2 never sees this)
+            // ComCenter (host/solo only — P2 never sees this). The campaign is
+            // single-player: co-op mirrors hostiles by type only, which a
+            // composite boss cannot survive, so JOIN/HOST are withheld there.
             if (_showComCenter)
               ComCenterScreen(
                 game: _game,
                 onStart: _onComCenterStart,
-                onJoinIp: _showManualIpDialog,
+                onJoin:
+                    _game.mode == GameMode.campaign ? null : _showJoinDialog,
+                onHost: _game.mode == GameMode.campaign ? null : _startHosting,
+              ),
+
+            // Campaign node map (between missions)
+            if (_showCampaignMap && !_showCampaignResult)
+              CampaignMapScreen(
+                game: _game,
+                onLaunch: _launchCampaignNode,
+                onBack: _quitToMainMenu,
+              ),
+
+            // Campaign end-of-node score sheet
+            if (_showCampaignResult && _game.lastNodeResult != null)
+              CampaignResultCard(
+                node: kCampaignNodes[_game.lastNodeResult!.nodeIndex],
+                result: _game.lastNodeResult!,
+                creditsEarned: _game.vessel.credit -
+                    (_game.campaignTracker?.creditsAtStart ?? 0),
+                unlocked: _game.lastNodeUnlock,
+                onContinue: () => setState(() {
+                  _showCampaignResult = false;
+                  _showCampaignMap = true;
+                }),
+                onRetry: () =>
+                    _launchCampaignNode(_game.lastNodeResult!.nodeIndex),
               ),
 
             // Client waiting overlay (P2)
@@ -493,13 +839,21 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             if (_game.state == GameState.gameOver)
               _GameOverOverlay(
                 credit: _game.vessel.credit,
+                score: _game.vessel.score,
                 credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
-                onClose: _game.isCoop ? _returnToCoopComCenter : _returnToMainMenu,
+                subtitle: _game.mode == GameMode.campaign
+                    ? context.l10n.gameOverCampaign
+                    : context.l10n.gameOverEndless,
+                onClose: _game.mode == GameMode.campaign
+                    ? _retryCampaignNode
+                    : (_game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector),
               ),
           ],
 
           // FPS overlay (visible during gameplay)
-          if (_game.isLoaded && _screen == _ScreenState.game)
+          if (showFpsOverlay &&
+              _game.isLoaded &&
+              _screen == _ScreenState.game)
             _FpsOverlay(game: _game),
         ],
       ),
@@ -509,25 +863,25 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   Widget _buildWaitingOverlay() {
     return Container(
       color: Colors.black87,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Colors.cyanAccent),
-            SizedBox(height: 16),
+            const CircularProgressIndicator(color: Colors.cyanAccent),
+            const SizedBox(height: 16),
             Text(
-              'Waiting for host...',
-              style: TextStyle(
+              context.l10n.waitingForHost,
+              style: const TextStyle(
                 color: Colors.cyanAccent,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Game will start when host is ready',
-              style: TextStyle(color: Colors.white54, fontSize: 13),
+              context.l10n.waitingForHostHint,
+              style: const TextStyle(color: Colors.white54, fontSize: 13),
             ),
           ],
         ),
@@ -535,6 +889,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     );
   }
 }
+
+/// Off only for store screenshots (test_driver/store_app.dart).
+bool showFpsOverlay = true;
 
 /// Lightweight FPS + entity count overlay (Flutter widget, outside game render).
 class _FpsOverlay extends StatefulWidget {
@@ -592,14 +949,21 @@ class _FpsOverlayState extends State<_FpsOverlay> {
 /// Game over panel with gamepad/keyboard navigation.
 class _GameOverOverlay extends StatefulWidget {
   final int credit;
+  final int score;
   final int? credit2;
 
-  /// Leave the game-over screen (main menu solo, or ComCenter in co-op).
+  /// What happens next — the endless rewind or the campaign retry.
+  final String subtitle;
+
+  /// Leave the death screen — back to sector 1 via the shop (solo), the
+  /// co-op ComCenter, or the same campaign node.
   final VoidCallback onClose;
 
   const _GameOverOverlay({
     required this.credit,
+    required this.score,
     this.credit2,
+    required this.subtitle,
     required this.onClose,
   });
 
@@ -677,9 +1041,9 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'GAME OVER',
-                style: TextStyle(
+              Text(
+                context.l10n.vesselLost,
+                style: const TextStyle(
                   color: Colors.red,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -688,13 +1052,24 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Credits: ${widget.credit}',
+                widget.subtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                context.l10n.scoreValue(fmtNum(widget.score)),
+                style: const TextStyle(color: Colors.cyanAccent, fontSize: 18),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                context.l10n.creditsValue(fmtNum(widget.credit)),
                 style: const TextStyle(color: Colors.greenAccent, fontSize: 18),
               ),
               if (widget.credit2 != null) ...[
                 const SizedBox(height: 4),
                 Text(
-                  'P2: ${widget.credit2}',
+                  'P2: ${fmtNum(widget.credit2!)}',
                   style: const TextStyle(color: Color(0xFF00FF80), fontSize: 16),
                 ),
               ],
@@ -709,7 +1084,18 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                     backgroundColor: Colors.cyanAccent,
                     foregroundColor: Colors.black,
                   ),
-                  child: const Text('LEADERBOARD'),
+                  child: Text(context.l10n.leaderboard),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (AchievementService.instance.available) ...[
+                ElevatedButton(
+                  onPressed: AchievementService.instance.showAchievements,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amberAccent,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: Text(context.l10n.achievements),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -719,9 +1105,155 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                   backgroundColor: Colors.white24,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('CONTINUE'),
+                child: Text(context.l10n.redeploy),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pause overlay: Resume / Skins / sound toggles / Quit, navigable by pad and
+/// keyboard, tappable on touch. Replaces the bare dim Container — a pad-only
+/// player previously had nothing to interact with while paused (Steam Fix 6);
+/// the OSD strip stays for touch muscle memory.
+class _PauseMenu extends StatefulWidget {
+  final VoidCallback onResume;
+  final VoidCallback onSkins;
+  final VoidCallback? onMainMenu;
+  final Future<void> Function()? onQuit;
+
+  const _PauseMenu(
+      {required this.onResume,
+      required this.onSkins,
+      this.onMainMenu,
+      this.onQuit});
+
+  @override
+  State<_PauseMenu> createState() => _PauseMenuState();
+}
+
+class _PauseMenuState extends State<_PauseMenu> {
+  final _focusNode = FocusNode();
+  final GamepadInput _gamepad = GamepadInput();
+  Timer? _pollTimer;
+  int _index = 0;
+  bool _prevUp = false, _prevDown = false, _prevConfirm = false, _prevBack = false;
+
+  List<(String, VoidCallback)> get _items => [
+        (context.l10n.resume, widget.onResume),
+        (context.l10n.skins, widget.onSkins),
+        (SoundService.instance.muted ? context.l10n.soundOff : context.l10n.soundOn,
+            () => setState(SoundService.instance.toggleMute)),
+        (MusicService.instance.muted ? context.l10n.musicOff : context.l10n.musicOn,
+            () => setState(MusicService.instance.toggleMute)),
+        if (widget.onMainMenu != null) (context.l10n.mainMenu, () => widget.onMainMenu!()),
+        if (widget.onQuit != null) (context.l10n.quitToDesktop, () => widget.onQuit!()),
+      ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (platform.isDesktop) {
+      _pollTimer = Timer.periodic(
+          const Duration(milliseconds: 16), (_) => _pollGamepad());
+    }
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _pollGamepad() async {
+    await _gamepad.poll();
+    if (!mounted) return;
+    final gp = _gamepad.primary;
+    final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
+    final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
+    final confirm = gp.buttonB;
+    final back = gp.buttonA || gp.back;
+    if (up && !_prevUp) setState(() => _index = (_index - 1).clamp(0, _items.length - 1));
+    if (down && !_prevDown) setState(() => _index = (_index + 1).clamp(0, _items.length - 1));
+    if (confirm && !_prevConfirm) _items[_index].$2();
+    if (back && !_prevBack) widget.onResume();
+    _prevUp = up;
+    _prevDown = down;
+    _prevConfirm = confirm;
+    _prevBack = back;
+  }
+
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final k = event.logicalKey;
+    if (k == LogicalKeyboardKey.arrowUp) {
+      setState(() => _index = (_index - 1).clamp(0, _items.length - 1));
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.arrowDown) {
+      setState(() => _index = (_index + 1).clamp(0, _items.length - 1));
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.space) {
+      _items[_index].$2();
+      return KeyEventResult.handled;
+    }
+    // Escape reaches TyrianGame's own handler, which resumes — don't eat it.
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = _items;
+    return Positioned.fill(
+      child: Focus(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: _onKey,
+        child: Container(
+          color: Colors.black54,
+          alignment: Alignment.center,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+            decoration: BoxDecoration(
+              color: const Color(0xEE0a0a1e),
+              border: Border.all(color: Colors.cyanAccent.withAlpha(120)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(context.l10n.paused,
+                    style: const TextStyle(
+                      color: Colors.cyanAccent,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 6,
+                    )),
+                const SizedBox(height: 24),
+                for (int i = 0; i < items.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: InkWell(
+                      onTap: items[i].$2,
+                      child: Text(
+                        items[i].$1,
+                        style: TextStyle(
+                          color: i == _index ? Colors.cyanAccent : Colors.white70,
+                          fontSize: 18,
+                          fontWeight:
+                              i == _index ? FontWeight.bold : FontWeight.normal,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -32,11 +32,18 @@ func main() {
 	assetType := flag.String("asset-type", "", "Filter by asset type (ship, explosion, bullet, enemy, structure, background, hud_icon, preview)")
 	n := flag.Int("n", 4, "Number of variations per asset")
 	resolution := flag.String("resolution", "1k", "Image resolution (1k, 2k)")
-	sfxMode := flag.Bool("sfx", false, "Generate SFX via ElevenLabs instead of images")
-	musicMode := flag.Bool("music", false, "Generate adaptive music via Eleven Music instead of images")
+	// Legacy audio cesta. Produkční generování jede přes cmd/audiogen, které
+	// čte manifest, zaznamenává seed a nechá službu udělat post-processing;
+	// tyhle dva režimy píšou nenormalizované .mp3 bez seedu. Zůstávají kvůli
+	// reprodukci historických assetů — viz docs/AUDIO.md.
+	sfxMode := flag.Bool("sfx", false, "LEGACY: SFX přímo z ElevenLabs (produkce: cmd/audiogen)")
+	musicMode := flag.Bool("music", false, "LEGACY: hudba přímo z Eleven Music (produkce: cmd/audiogen)")
 	comfyJobTimeout := flag.Duration("comfyui-job-timeout", 15*time.Minute, "Max time to wait for a single ComfyUI job")
 	comfyWorkflow := flag.String("comfyui-workflow", "flux", "ComfyUI workflow: flux or pony")
 	comfyCheckpoint := flag.String("comfyui-checkpoint", "", "Override checkpoint name in ComfyUI workflow node 4")
+	comfyPreset := flag.String("comfyui-preset", "", "Sampler preset: schnell = flux1-schnell.safetensors UNET, 4 steps, guidance 1.0 (flux workflow only); explicit -comfyui-checkpoint/-steps/-guidance still win")
+	comfySteps := flag.Int("comfyui-steps", 0, "Override KSampler steps (0 = workflow default, 20)")
+	comfyGuidance := flag.Float64("comfyui-guidance", 0, "Override FluxGuidance (0 = workflow default, 3.5)")
 	comfyLora := flag.String("comfyui-lora", "", "LoRA .safetensors to splice into the ComfyUI workflow (pony only)")
 	comfyLoraStrength := flag.Float64("comfyui-lora-strength", 0.9, "Injected LoRA model+clip strength")
 	loraTrigger := flag.String("lora-trigger", "", "Trigger word(s) prepended to every prompt so the LoRA activates, e.g. \"st4rhu11s, spaceship, starship, \"")
@@ -44,7 +51,7 @@ func main() {
 	flag.Parse()
 
 	if *sfxMode {
-		runSfxGeneration(*skinID, *outDir, *dryRun)
+		runSfxGeneration(*skinID, *outDir, *dryRun, *force)
 		return
 	}
 
@@ -81,8 +88,35 @@ func main() {
 				comfyuiimage.WithNodeRoles(comfyuiimage.PonyNodeRoles()),
 			)
 		}
-		if *comfyCheckpoint != "" {
-			comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(*comfyCheckpoint))
+		checkpoint, steps, guidance := *comfyCheckpoint, *comfySteps, *comfyGuidance
+		switch *comfyPreset {
+		case "":
+		case "schnell":
+			if *comfyWorkflow != "flux" {
+				fmt.Fprintln(os.Stderr, "Error: -comfyui-preset schnell needs -comfyui-workflow flux")
+				os.Exit(1)
+			}
+			if checkpoint == "" {
+				checkpoint = "flux1-schnell.safetensors"
+			}
+			if steps == 0 {
+				steps = 4
+			}
+			if guidance == 0 {
+				guidance = 1.0
+			}
+		default:
+			fmt.Fprintf(os.Stderr, "Error: unknown -comfyui-preset %q (schnell)\n", *comfyPreset)
+			os.Exit(1)
+		}
+		if checkpoint != "" {
+			comfyOpts = append(comfyOpts, comfyuiimage.WithCheckpoint(checkpoint))
+		}
+		if steps > 0 {
+			comfyOpts = append(comfyOpts, comfyuiimage.WithSteps(steps))
+		}
+		if guidance > 0 {
+			comfyOpts = append(comfyOpts, comfyuiimage.WithGuidance(guidance))
 		}
 		if *comfyLora != "" {
 			comfyOpts = append(comfyOpts, comfyuiimage.WithLora(*comfyLora, *comfyLoraStrength))
@@ -191,7 +225,7 @@ func loadEnvFile(path string) {
 	}
 }
 
-func runSfxGeneration(skinID, outDir string, dryRun bool) {
+func runSfxGeneration(skinID, outDir string, dryRun bool, force bool) {
 	apiKey := os.Getenv("ELEVENLABS_API_KEY")
 	if apiKey == "" && !dryRun {
 		fmt.Fprintln(os.Stderr, "Error: ELEVENLABS_API_KEY is required for SFX generation (or use -dry-run)")
@@ -237,15 +271,17 @@ func runSfxGeneration(skinID, outDir string, dryRun bool) {
 
 		for _, spec := range sfxgen.SfxSpecs {
 			outPath := filepath.Join(sfxDir, spec.Name+".mp3")
-			if _, err := os.Stat(outPath); err == nil {
-				fmt.Printf("  [skip] %s (exists)\n", spec.Name)
-				skipped++
-				continue
-			}
-
 			prompt := sfxgen.BuildSfxPrompt(s.SfxStyle, spec)
+
+			// Print before the exists check, so -dry-run shows what *would* be
+			// sent even for a skin that has already been generated once.
 			if dryRun {
 				fmt.Printf("  [dry] %s: %s\n", spec.Name, prompt)
+				continue
+			}
+			if _, err := os.Stat(outPath); err == nil && !force {
+				fmt.Printf("  [skip] %s (exists)\n", spec.Name)
+				skipped++
 				continue
 			}
 

@@ -35,7 +35,7 @@ go run ./cmd/generate -skin geometry_wars
 # Filter by asset type
 go run ./cmd/generate -skin geometry_wars -asset-type ship
 # asset-type values: ship, explosion, bullet, enemy, structure, background,
-#                    hud_icon, preview, comcenter_bg, ui_card_bg, ui_button, ui_tab_active
+#                    hud_icon, preview, comcenter_bg, ui_button
 
 # Use pony workflow (SDXL)
 go run ./cmd/generate -skin space_invaders -comfyui-workflow pony \
@@ -59,7 +59,26 @@ go run ./cmd/generate -skin rtype -dry-run
 
 Output: `output/assets/skins/<skin_id>/<subdir>/<asset>_v{1..N}.jpg` + `manifest.json`
 
-## Stage 2 — Generate SFX
+## Stage 2 — Generate SFX and music
+
+Audio goes through **`cmd/audiogen`** and `assets/audio/manifest.yaml`, which
+carry the prompt, seed and model of all 384 assets so any of them can be
+regenerated exactly. Default provider is the local AiStack service (ACE-Step 1.5
+for music, MOSS-SoundEffect v2.0 for SFX) — both output normalised, seamlessly
+looping OGG. Full workflow: `docs/AUDIO.md`.
+
+```bash
+go run ./cmd/audiogen -init                    # refresh manifest from skin defs
+go run ./cmd/audiogen                          # generate what is missing
+go run ./cmd/audiogen -only all -skin galaga   # regenerate one skin
+go run ./cmd/audiogen -qa -only all            # check without generating
+```
+
+### Legacy: direct ElevenLabs path
+
+`cmd/generate -sfx` / `-music` still work, but they write unnormalised `.mp3`
+into `output/` and record no seed, so their output cannot be reproduced. Use
+them only to recreate something historical.
 
 ```bash
 # All skins with SfxStyle defined
@@ -144,8 +163,8 @@ Converts raw JPEG variations → final game PNGs:
 - **Sprites**: background removal (color-distance), trim transparent padding, fit to canonical reference canvas
 - **ship_frames**: generates N animation frames via glow modulation (brightness oscillation)
 - **explosion**: maps v1–v4 → `explosion1–4.png`
-- **backgrounds**: exact resize to 512×1024; `layer_0` opaque, `layer_1+` bg-removed
-- **UI sprites** (`comcenter_bg`, `ui_card_bg`, `ui_button`, `ui_tab_active`): opaque exact resize, no bg removal
+- **backgrounds**: exact resize to 512×1024, lossy WebP via `cwebp`; `layer_0*` opaque (`-noalpha`), `layer_1+` get alpha from luminance, not a chroma key (`AlphaFromLuminance`, cut-offs 8/70) — the overlays are luminous forms on black, and a key deletes the soft falloff that should read as translucent. Superseded `layer_*.png` are pruned. Requires `cwebp` (`brew install webp`)
+- **UI sprites** (`comcenter_bg`, `ui_button`): opaque exact resize, no bg removal
 - **SFX**: ffmpeg MP3 → OGG/Opus with `loudnorm` volume normalization
 
 ```bash
@@ -155,15 +174,45 @@ go run ./cmd/postprocess -skin geometry_wars
 # All skins found in input dir
 go run ./cmd/postprocess
 
+# Re-pick ONE bad asset without touching the rest of the skin
+go run ./cmd/postprocess -skin gradius_v -only falcon3 -variation 3
+
 # Key flags
 #   -skin <id>            one skin or empty = all
+#   -only <asset>         process a single asset by name (requires -skin)
 #   -input <dir>          pipeline output dir (default: output/assets/skins)
 #   -output <dir>         game assets dir (default: ../tyrian_mobile/assets/skins)
-#   -variation <n>        which _v{N} to use (default 1)
+#   -variation <n>        variation for assets with no recorded choice; when
+#                         passed explicitly it overrides the record for whatever
+#                         this run processes, and is then recorded
+#   -root <dir>           where selections/ lives (default: .)
+#                         WARNING: any run with an explicit -variation writes to
+#                         this root's selections/ file for every asset it touches
+#                         — including a whole-skin preview/contact-sheet run with
+#                         no -only. Point -root at a scratch dir for anything that
+#                         isn't a real, intended choice.
 #   -size <px>            max dimension for sprites without reference size (default 128)
 #   -threshold <n>        bg removal color-distance threshold (default 60)
 #   -margin <n>           bg removal soft-edge ramp width px (default 20)
 ```
+
+### Which variation shipped: `selections/<skin>.json`
+
+The chosen variation used to be recorded nowhere, so every shipped sprite was
+*presumed* to be `_v1` — and an audit found that presumption false in several
+places, including one sprite that came from no variation at all. Each run now
+writes what it actually built:
+
+```json
+{ "skin": "gradius_v", "assets": { "falcon3": 3, "bouncer": 2, "falcon1": 1 } }
+```
+
+- These files are committed. Rebuilding a skin from its record reproduces the
+  shipped art byte for byte.
+- `-only` exists so fixing one sprite does not re-derive the whole skin from a
+  single `-variation` — which is how good art got clobbered while chasing a bad
+  one. It also skips audio re-encoding, since sound has no variations.
+- Hand-editing a record is fine; `0` or a negative value falls back to `-variation`.
 
 Output: `tyrian_mobile/assets/skins/<skin_id>/sprites/*.png`, `ui/*.png`, `backgrounds/*.png`, `sfx/*.ogg`
 
@@ -214,13 +263,11 @@ dart run tool/pack_atlas.dart
 | `bullet` | sprites/ | bg remove → resize to reference |
 | `enemy` | sprites/ | bg remove → fit to reference square |
 | `structure` | sprites/ | bg remove → fit to reference |
-| `background` | backgrounds/ | exact 512×1024; layer_0 opaque |
+| `background` | backgrounds/ | exact 512×1024 → `.webp`; `layer_0*` opaque |
 | `hud_icon` | ui/ | bg remove → resize |
 | `preview` | ui/ | bg remove → resize |
 | `comcenter_bg` | ui/ | exact resize, opaque |
-| `ui_card_bg` | ui/ | exact resize, opaque |
 | `ui_button` | ui/ | exact resize, opaque |
-| `ui_tab_active` | ui/ | exact resize, opaque |
 | `sfx` | sfx/ | ffmpeg MP3→OGG loudnorm (I=-14) |
 | `music` | music/ | ffmpeg MP3→OGG loudnorm (I=-16, 128k) |
 

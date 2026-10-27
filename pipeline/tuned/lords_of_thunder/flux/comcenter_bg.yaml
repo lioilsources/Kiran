@@ -1,0 +1,23 @@
+skin_id: lords_of_thunder
+workflow: flux
+asset_name: comcenter_bg
+# Hand-written, not tuned by cmd/tune. "Armored flying knights" in the art
+# directive puts a knight into every ComCenter background no matter what the
+# template forbids (4/4). Same cure as twinbee: keep the scene, drop the
+# figure-inducing words. Block scalar on purpose — a plain scalar would end
+# at the first " #RRGGBB", which YAML reads as a comment.
+positive: >-
+  Early-90s heavy-metal fantasy cover painting of a landscape with nobody in
+  it — a stormy night sky over a burning fantasy kingdom seen from the empty
+  stone rail of a castle tower: lightning-lit thunderclouds, gothic spires and
+  a river of lava far below, a red sun on the horizon. The upper half is deep
+  night so the middle of the image stays dark for text and UI panels laid
+  over it. Painted manga cover art, dramatic rim light, ornate gothic metal
+  trim on the rail; palette burnished gold #D8A030, blood red #B01020,
+  lightning blue #60C0FF, flame orange #FF6010, black steel #1A1A22. Empty
+  scene — no knights, no warriors, no people, no characters, no creatures,
+  no dragons, no faces, no text, no HUD, no ship in the foreground. Portrait
+  aspect ratio 1:2.
+score: 0
+iters: 0
+updated_at: "2026-09-06T16:40:00Z"

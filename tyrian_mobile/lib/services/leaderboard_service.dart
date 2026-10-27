@@ -19,6 +19,14 @@ class LeaderboardService {
   static const String _iosLeaderboardId = 'kiran_topscore';
   static const String _androidLeaderboardId = 'REPLACE_WITH_PLAY_LEADERBOARD_ID';
 
+  /// Second board: how deep the pilot has ever pushed. The run loops forever
+  /// and a death only rewinds to sector 1, so depth is the other half of the
+  /// ranking — score says how much you killed, this says how far you got.
+  /// Must be created in App Store Connect / Play Console before it resolves;
+  /// until then submits fail silently like any other unavailable board.
+  static const String _iosDepthLeaderboardId = 'kiran_deepest';
+  static const String _androidDepthLeaderboardId = 'REPLACE_WITH_PLAY_DEPTH_LEADERBOARD_ID';
+
   bool _signedIn = false;
 
   /// Platforms that ship a native leaderboard SDK. Deliberately checks
@@ -44,19 +52,28 @@ class LeaderboardService {
     }
   }
 
-  /// Submit a run's score (the vessel's credit). No-op unless [available].
-  Future<void> submit(int score) async {
+  /// Submit the pilot's cumulative score. Deliberately not `credit`, which is
+  /// a spendable balance — ranking on it meant buying a weapon dropped you
+  /// down the board. No-op unless [available].
+  Future<void> submitScore(int score) => _submit(
+      _iosLeaderboardId, _androidLeaderboardId, score);
+
+  /// Submit the deepest sector level ever reached.
+  Future<void> submitDepth(int level) => _submit(
+      _iosDepthLeaderboardId, _androidDepthLeaderboardId, level);
+
+  Future<void> _submit(String iosId, String androidId, int value) async {
     if (!available) return;
     try {
       await GamesServices.submitScore(
         score: Score(
-          iOSLeaderboardID: _iosLeaderboardId,
-          androidLeaderboardID: _androidLeaderboardId,
-          value: score,
+          iOSLeaderboardID: iosId,
+          androidLeaderboardID: androidId,
+          value: value,
         ),
       );
     } catch (_) {
-      // Non-fatal: a failed submit shouldn't disrupt the game-over flow.
+      // Non-fatal: a failed submit shouldn't disrupt the death flow.
     }
   }
 

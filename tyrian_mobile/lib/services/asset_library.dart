@@ -25,8 +25,38 @@ class AssetLibrary {
   final Map<String, Sprite> _sprites = {};
   final Map<String, ui.Image> _images = {};
   final List<Sprite> _vesselFrames = [];
+
+  /// Bumped once per [loadSkin], before the old images are disposed.
+  ///
+  /// Flutter overlays are not part of the component tree that
+  /// [onSkinAssetsChanged] re-points: they capture a Sprite when they build and
+  /// keep repainting from it on the ticker, so a skin switch leaves them
+  /// drawing an atlas that `Flame.images.clearCache()` already disposed —
+  /// "non-genuine Image" out of drawImageRect, which aborts the whole overlay's
+  /// paint. They compare this against the value they captured and skip the draw
+  /// instead. See _ShipPreviewPainter in ui/com_center.dart.
+  int _generation = 0;
+  int get generation => _generation;
   final List<ui.Image> _bgLayers = [];
   List<ui.Image> get bgLayers => _bgLayers;
+
+  /// Flame cache keys backing [_bgLayers], index-aligned. Needed so a zone swap
+  /// evicts exactly the images it replaced — shared layers appear in both the
+  /// old and the new key set and are therefore never disposed.
+  final List<String> _bgKeys = [];
+
+  /// Art zone currently resident. -1 = none; reset by [loadSkin].
+  int _bgZone = -1;
+
+  /// Art zone the game wants. Deliberately survives [loadSkin] so changing skin
+  /// at sector 12 reloads zone 6, not zone 0.
+  int _desiredZone = 0;
+
+  /// Monotonic token so overlapping loads (ComCenter sector-jump spam) resolve
+  /// last-wins instead of interleaving.
+  int _bgLoadSeq = 0;
+
+  int get bgZone => _bgZone;
 
   ui.Image? _atlasImage;
   final Map<String, Rect> _atlasRects = {};
@@ -46,36 +76,71 @@ class AssetLibrary {
   String get skinId => _skinId;
 
   /// Switch to a different skin. Clears all caches and reloads.
+  /// Called right after a skin's assets have been swapped.
+  ///
+  /// loadSkin disposes every cached image before decoding the new atlas, which
+  /// leaves every live entity holding a Sprite backed by a dead image until
+  /// something re-points it. That used to be the job of a UI callback three
+  /// awaits downstream — behind two audio loads that can take tens of seconds
+  /// on a cold backend, and behind a `if (!mounted) return` — so closing the
+  /// ComCenter mid-switch left the player's ship drawing from a disposed
+  /// image, which throws and aborts the world render at that component.
+  /// TyrianGame registers refreshSprites here so the swap and the re-point are
+  /// one step and no UI path can skip or delay it.
+  void Function()? onSkinAssetsChanged;
+
   Future<void> loadSkin(String skinId) async {
     _sprites.clear();
     _images.clear();
     _bgLayers.clear();
+    _bgKeys.clear();
+    _bgZone = -1;
+    // _desiredZone is deliberately NOT reset: a skin change mid-run must land on
+    // the sector the player is actually in.
     _icons.clear();
     _atlasImage = null;
     _atlasRects.clear();
     _fragments.clear();
     _loaded = false;
-    _placeholder = null;
     _manifest = null;
-    // Clear Flame's image cache so it reloads from the new paths
+    // loadAll() rebuilds these, but only once the new atlas has decoded. Until
+    // then they point at the atlas cleared below, and _buildShipPreview reads
+    // them on every rebuild — so empty them here and let it draw its
+    // placeholder for the length of the swap.
+    _vesselFrames.clear();
+    _generation++;
+    // Clear Flame's image cache so it reloads from the new paths. This disposes
+    // the atlas too, which every live Sprite references — correct for a skin
+    // change (already a full stall), and exactly why a zone swap must never
+    // reach it. loadZoneBackgrounds() evicts single keys instead.
     Flame.images.clearCache();
     _skinId = skinId;
     await loadAll();
+    // Before anything else can await: every live entity is still pointing at
+    // the images clearCache() just disposed.
+    onSkinAssetsChanged?.call();
   }
 
-  /// Load preview images for all skins (for the skin selector screen).
+  /// Skin previews, decoded once for the app's lifetime. Deliberately NOT in
+  /// Flame's image cache: [loadSkin] clears that cache and disposes everything
+  /// in it, and these images are painted by selector/shop grids that stay on
+  /// screen across a skin switch.
+  final Map<String, ui.Image> _previewCache = {};
+
+  /// Load preview images for all skins (skin selector / ComCenter shop).
   Future<Map<String, ui.Image>> loadPreviews() async {
-    Flame.images.prefix = 'assets/';
-    final previews = <String, ui.Image>{};
     for (final skin in kSkins) {
+      if (_previewCache.containsKey(skin.id)) continue;
       try {
-        final img = await Flame.images.load(skin.previewPath);
-        previews[skin.id] = img;
+        final data = await rootBundle.load('assets/${skin.previewPath}');
+        final codec =
+            await ui.instantiateImageCodec(data.buffer.asUint8List());
+        _previewCache[skin.id] = (await codec.getNextFrame()).image;
       } catch (e) {
         print('Preview load failed for ${skin.id}: $e');
       }
     }
-    return previews;
+    return Map.of(_previewCache);
   }
 
   Future<void> loadAll() async {
@@ -108,79 +173,83 @@ class AssetLibrary {
       }
 
       // Background layers are NOT in the atlas — load separately
-      _bgLayers.clear();
-      for (int i = 0; i < 4; i++) {
-        final img =
-            await _tryLoadImage('skins/$_skinId/backgrounds/layer_$i.png');
-        if (img != null) _bgLayers.add(img);
-      }
+      _bgZone = -1;
+      await loadZoneBackgrounds(_desiredZone);
 
       await _loadIcons();
       _loaded = true;
       return;
     }
 
-    // Fallback: individual PNG loading (existing code)
-    String p(String name) => 'skins/$_skinId/sprites/$name.png';
-
-    // Player — animated vessel frames (fall back to single vessel.png)
-    _vesselFrames.clear();
-    for (int i = 0; i < 6; i++) {
-      final loaded = await _tryLoad('vessel_$i', p('vessel_$i'));
-      if (loaded) _vesselFrames.add(_sprites['vessel_$i']!);
-    }
-    if (_vesselFrames.isEmpty) {
-      await _load('vessel', p('vessel'));
-    }
-
-    // Enemies — falcon variants
-    await _load('falcon', p('falcon'));
-    for (int i = 1; i <= 6; i++) {
-      await _load('falcon$i', p('falcon$i'));
-    }
-    await _load('falconx', p('falconx'));
-    await _load('falconx2', p('falconx2'));
-    await _load('falconx3', p('falconx3'));
-    await _load('falconxb', p('falconxb'));
-    await _load('falconxt', p('falconxt'));
-    await _load('bouncer', p('bouncer'));
-    // Boss sprite — optional per skin, Boss falls back to bouncer when absent
-    await _tryLoad('rododendron', p('rododendron'));
-
-    // Structures
-    await _load('asteroid', p('asteroid'));
-    await _load('asteroid1', p('asteroid1'));
-    await _load('asteroid2', p('asteroid2'));
-    await _load('asteroid3', p('asteroid3'));
-
-    // Projectiles
-    await _load('bubble', p('bubble'));
-    await _load('vulcan', p('vulcan'));
-    await _load('blaster', p('blaster'));
-    await _load('laser', p('laser'));
-    await _load('starg', p('starg'));
-
-    // Explosions (4 variations)
-    for (int i = 1; i <= 4; i++) {
-      await _load('explosion$i', p('explosion$i'));
-    }
-
     // Background layers (optional — only AI skins have them)
-    _bgLayers.clear();
-    for (int i = 0; i < 4; i++) {
-      final img = await _tryLoadImage('skins/$_skinId/backgrounds/layer_$i.png');
-      if (img != null) _bgLayers.add(img);
-    }
+    _bgZone = -1;
+    await loadZoneBackgrounds(_desiredZone);
 
     await _loadIcons();
     _loaded = true;
+  }
+
+  /// Swap the parallax layers to art [zone]. Callers resolve the zone from a
+  /// sector index via `Sector.zoneForIndex` — index stopped being a proxy for
+  /// zone once one level could span several sectors.
+  ///
+  /// layer_0/layer_1 ship per-zone variants; layer_2/layer_3 are shared and stay
+  /// resident across the swap. Each of the four slots resolves independently
+  /// through zone WebP → shared WebP → legacy PNG, so a skin without zone art
+  /// still gets a complete four-layer set and this becomes a no-op for it after
+  /// the first call.
+  ///
+  /// Safe to call from a synchronous path without awaiting: the live [bgLayers]
+  /// list — which ParallaxBackground aliases — is only mutated once every new
+  /// image has decoded, so a torn layer set is never observable.
+  Future<void> loadZoneBackgrounds(int zone) async {
+    _desiredZone = zone;
+    if (zone == _bgZone && _bgLayers.isNotEmpty) return;
+    final seq = ++_bgLoadSeq;
+
+    final next = <ui.Image>[];
+    final keys = <String>[];
+    for (int i = 0; i < 4; i++) {
+      for (final key in [
+        'skins/$_skinId/backgrounds/layer_${i}_z$zone.webp',
+        'skins/$_skinId/backgrounds/layer_$i.webp',
+        'skins/$_skinId/backgrounds/layer_$i.png',
+      ]) {
+        final img = await _tryLoadImage(key);
+        if (img != null) {
+          next.add(img);
+          keys.add(key);
+          break;
+        }
+      }
+    }
+
+    if (seq != _bgLoadSeq) return; // superseded mid-flight
+
+    // Order matters, and there must be no await between these steps:
+    // Flame.images.clear() disposes the image it evicts, so the new set has to
+    // be installed before the old keys are dropped. Dart schedules no frame
+    // inside a synchronous block, so the swap is atomic from the renderer's
+    // point of view. Breaking this yields an intermittent "Cannot use a
+    // disposed Image" under sector-jump spam.
+    final stale = [for (final k in _bgKeys) if (!keys.contains(k)) k];
+    _bgLayers
+      ..clear()
+      ..addAll(next);
+    _bgKeys
+      ..clear()
+      ..addAll(keys);
+    _bgZone = zone;
+    for (final k in stale) {
+      Flame.images.clear(k);
+    }
   }
 
   Future<void> _loadIcons() async {
     _icons.clear();
     for (final name in [
       'icon_life', 'icon_bomb', 'icon_shield', 'icon_credit', 'icon_gen',
-      'comcenter_bg', 'ui_card_bg', 'ui_button', 'ui_tab_active',
+      'comcenter_bg', 'ui_button',
     ]) {
       final path = 'skins/$_skinId/ui/$name.png';
       if (!await _assetExists(path)) continue;
@@ -196,16 +265,34 @@ class AssetLibrary {
   }
 
   /// Try to load a pre-built texture atlas for the current skin.
-  /// Returns true if the atlas was loaded successfully, false otherwise.
+  ///
+  /// The atlas is the only source of sprites now that sprites/ is no longer
+  /// bundled, so a failure here would mean an invisible game: unlike audio,
+  /// there is no per-sprite fallback to the default skin — getSprite just
+  /// returns null. Retrying with the default skin's atlas turns that into
+  /// "the game looks like default", which a player can recover from.
   Future<bool> _tryLoadAtlas() async {
+    if (await _tryLoadAtlasFor(_skinId)) return true;
+    if (_skinId == 'default') return false;
+    print('Atlas missing for $_skinId — falling back to the default skin');
+    return _tryLoadAtlasFor('default');
+  }
+
+  Future<bool> _tryLoadAtlasFor(String skinId) async {
     try {
-      // Load atlas image
-      final img = await _tryLoadImage('skins/$_skinId/atlas.png');
+      // WebP first, PNG second: the candidate-list idiom the backgrounds
+      // already use. It lets a single skin sit on PNG — a rollback if one
+      // atlas ever compresses badly — without touching this code.
+      ui.Image? img;
+      for (final key in ['skins/$skinId/atlas.webp', 'skins/$skinId/atlas.png']) {
+        img = await _tryLoadImage(key);
+        if (img != null) break;
+      }
       if (img == null) return false;
 
       // Load atlas JSON
       final jsonStr =
-          await rootBundle.loadString('assets/skins/$_skinId/atlas.json');
+          await rootBundle.loadString('assets/skins/$skinId/atlas.json');
       final json = jsonDecode(jsonStr) as Map<String, dynamic>;
       final frames = json['frames'] as Map<String, dynamic>;
 
@@ -259,32 +346,6 @@ class AssetLibrary {
     }
   }
 
-  Future<void> _load(String name, String path) async {
-    try {
-      final image = await Flame.images.load(path);
-      _images[name] = image;
-      final sprite = Sprite(image);
-      sprite.paint.filterQuality = config.spriteFilterQuality;
-      _sprites[name] = sprite;
-    } catch (e) {
-      print('Asset load failed [$name]: $e');
-    }
-  }
-
-  /// Like _load but returns false on failure (no error log).
-  Future<bool> _tryLoad(String name, String path) async {
-    try {
-      final image = await Flame.images.load(path);
-      _images[name] = image;
-      final sprite = Sprite(image);
-      sprite.paint.filterQuality = config.spriteFilterQuality;
-      _sprites[name] = sprite;
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
   /// Returns true if the asset at [path] (relative to assets/) is in the bundle.
   /// Caches the manifest across calls within the same loadAll() invocation.
   Future<bool> _assetExists(String path) async {
@@ -312,16 +373,4 @@ class AssetLibrary {
 
   ui.Image? getImage(String name) => _images[name];
 
-  /// Get sprite or a colored rectangle placeholder
-  Sprite getOrPlaceholder(String name) {
-    return _sprites[name] ?? _createPlaceholder();
-  }
-
-  static Sprite? _placeholder;
-  Sprite _createPlaceholder() {
-    if (_placeholder != null) return _placeholder!;
-    // Use any loaded image as fallback; if none, this will be handled at render
-    _placeholder = _sprites.values.isNotEmpty ? _sprites.values.first : null;
-    return _placeholder ?? Sprite(Flame.images.fromCache('skins/$_skinId/sprites/vessel.png'));
-  }
 }

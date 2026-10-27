@@ -1,0 +1,10 @@
+[
+  {"id": "rose_fighter", "title": "Růžice s lodí", "prompt": "the existing brand emblem evolved: a polished metallic eight-pointed compass star in steel and gold, with a small sleek fighter spacecraft seen from directly above sitting at its centre, nose pointing up, cyan engine glow, ring of orange and blue plasma behind the star"},
+  {"id": "hero_topdown", "title": "Stíhačka shora", "prompt": "a sleek angular fighter spacecraft seen from directly above, nose pointing straight up, symmetrical wings, twin cyan engine flames trailing downward, hull in white and steel blue with orange accents"},
+  {"id": "bullet_fan", "title": "Vějíř střel", "prompt": "a small fighter spacecraft at the bottom centre firing a wide symmetrical fan of bright glowing energy bullets upward, bullet-hell arcade shooter, the bullets form a radiant crown shape"},
+  {"id": "visor", "title": "Hledí pilota", "prompt": "close-up of a space pilot helmet visor filling the frame, the curved glass reflects a swarm of enemy ships and orange explosions, no face visible behind the reflective visor"},
+  {"id": "planet_pass", "title": "Planeta a loď", "prompt": "a single fighter spacecraft silhouette crossing in front of a huge ringed gas giant, strong rim light, the ship pointed upward on a diagonal, dramatic cinematic contrast"},
+  {"id": "pixel_fighter", "title": "Pixelová loď", "prompt": "a 16-bit pixel art fighter spacecraft seen from above, nose up, chunky crisp pixels, limited bright palette, small pixel exhaust flames, retro arcade shooter sprite enlarged"},
+  {"id": "neon_vector", "title": "Neonový vektor", "prompt": "a fighter spacecraft drawn only with thick glowing neon vector lines in cyan and magenta, seen from above, nose up, retro vector arcade style, faint perspective grid below"},
+  {"id": "shield_burst", "title": "Štít a výbuch", "prompt": "a fighter spacecraft seen from above inside a glowing hexagonal energy shield bubble, enemy shots shattering against the shield in bright orange sparks"}
+]

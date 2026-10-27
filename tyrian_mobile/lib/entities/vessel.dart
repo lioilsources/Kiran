@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import '../services/pilot_name_generator.dart';
 import '../systems/device.dart';
@@ -10,6 +11,7 @@ import '../systems/dev_type.dart';
 import '../services/asset_library.dart';
 import '../rendering/dissolve_effect.dart';
 import 'hostile.dart';
+import '../l10n/l10n.dart';
 
 /// Ported from Vessel.cls — the player's ship.
 class Vessel extends PositionComponent
@@ -33,8 +35,21 @@ class Vessel extends PositionComponent
   double fireRateMult = 1.0; // 0.0–1.0; scales weapon cooldown (RT analog control)
   int dmgTaken = 0; // Damage flash counter
 
+  // Asteroid ram combo — escalating collision punishment. Consecutive rams
+  // within _asteroidComboWindow seconds ramp up: 1st drops shields, 2nd costs
+  // half of max HP, 3rd is fatal. The window resets once it lapses.
+  int _asteroidComboStage = 0;
+  double _asteroidComboTimer = 0;
+  static const double _asteroidComboWindow = 3.0; // seconds to chain rams
+
   // Weapons
   final List<Device> devices = [];
+
+  /// Owned but not fitted. Each entry keeps its slot and level, so switching
+  /// back to it in the ComCenter costs nothing and loses no upgrades. Hangar
+  /// devices never fire and never count toward [generatorLoad] or [totalDps];
+  /// co-op peers only ever see [devices].
+  final List<Device> hangar = [];
   bool guidedWeapon = false;
   Hostile? closestEnemy;
   int nextWeaponLevel = 0;
@@ -140,6 +155,8 @@ class Vessel extends PositionComponent
     shield = shieldMax;
     genValue = genMax;
     dmgTaken = 0;
+    _asteroidComboStage = 0;
+    _asteroidComboTimer = 0;
     fire = false;
     visible = true;
     bank = 0;
@@ -151,6 +168,7 @@ class Vessel extends PositionComponent
 
   /// Full reset for new game — VB6 ResetVessel: all stats back to defaults
   void newGame() {
+    AchievementService.instance.onRunStarted();
     score = 0;
     credit = 0;
     nextWeaponLevel = 0;
@@ -168,6 +186,7 @@ class Vessel extends PositionComponent
       d.clearProjectiles();
     }
     devices.clear();
+    hangar.clear();
     guidedWeapon = false;
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
     equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
@@ -185,7 +204,9 @@ class Vessel extends PositionComponent
         'shieldMax': shieldMax,
         'genMax': genMax,
         'genPower': genPower,
+        'nextWeaponLevel': nextWeaponLevel,
         'weapons': devices.map((d) => d.toJson()).toList(),
+        'hangar': hangar.map((d) => d.toJson()).toList(),
       };
 
   /// Restore progress from a saved state map. Rebuilds the device list directly
@@ -200,13 +221,17 @@ class Vessel extends PositionComponent
     shield = (state['shield'] as num?)?.toDouble() ?? shieldMax;
     genMax = (state['genMax'] as num?)?.toDouble() ?? genMax;
     genPower = (state['genPower'] as num?)?.toDouble() ?? genPower;
-    // Weapon unlock tier is score-derived (VB6 WepLevScores) — recompute so it
-    // stays correct even though SaveService doesn't persist it directly.
+    // Weapon unlock tier: derive from score (VB6 WepLevScores), then take
+    // whichever is higher — the persisted tier or the derivation. An unlock is
+    // permanent, so a save written before the field existed still upgrades
+    // correctly, and a cheat-granted tier is never silently revoked.
     nextWeaponLevel = 0;
     while (nextWeaponLevel < wepLevScores.length &&
         score > wepLevScores[nextWeaponLevel]) {
       nextWeaponLevel++;
     }
+    final savedTier = (state['nextWeaponLevel'] as num?)?.toInt() ?? 0;
+    if (savedTier > nextWeaponLevel) nextWeaponLevel = savedTier;
 
     for (final d in devices) {
       d.clearProjectiles();
@@ -217,6 +242,14 @@ class Vessel extends PositionComponent
       final device = Device.fromJson(Map<String, dynamic>.from(w as Map));
       device.parentVessel = this;
       devices.add(device);
+    }
+    // Saves written before the hangar existed simply have no key.
+    hangar.clear();
+    final stored = (state['hangar'] as List?) ?? const [];
+    for (final w in stored) {
+      final device = Device.fromJson(Map<String, dynamic>.from(w as Map));
+      device.parentVessel = this;
+      hangar.add(device);
     }
     // Always guarantee a front weapon and generator so the player can start.
     if (getDevice(WeaponSlot.frontGun) == null) {
@@ -360,6 +393,8 @@ class Vessel extends PositionComponent
 
     // Damage flash decay
     if (dmgTaken > 0) dmgTaken--;
+    // Asteroid ram-combo window decay — lapse resets the escalation
+    if (_asteroidComboTimer > 0) _asteroidComboTimer -= dt;
   }
 
   /// VB6 TestDistance — finds closest enemy within guidance cone
@@ -445,7 +480,7 @@ class Vessel extends PositionComponent
             h.position.x, h.position.y, h.x2, h.y2)) {
           h.lastHitX = projectile.position.x + projectile.size.x / 2;
           h.lastHitY = projectile.position.y + projectile.size.y / 2;
-          h.takeDamage(d.damage, game, attacker: this);
+          h.takeDamage(d.damage, game, attacker: this, source: d);
           if (h.isDead) {
             fleet.onHostileKilled(h, game, attacker: this);
           }
@@ -471,7 +506,10 @@ class Vessel extends PositionComponent
   void _processBeamCollision(Device d) {
     // Beam hits closest enemy continuously
     if (closestEnemy != null && !closestEnemy!.isDead) {
-      closestEnemy!.takeDamage(d.damage, game, attacker: this);
+      final c = closestEnemy!.hostCenter;
+      closestEnemy!.lastHitX = c.x;
+      closestEnemy!.lastHitY = c.y;
+      closestEnemy!.takeDamage(d.damage, game, attacker: this, source: d);
       if (closestEnemy!.isDead) {
         closestEnemy!.parentFleet?.onHostileKilled(closestEnemy!, game, attacker: this);
       }
@@ -497,9 +535,51 @@ class Vessel extends PositionComponent
     }
     if (amount > 0) {
       SoundService.instance.play(SfxEvent.hitHull);
+      game.sectorHullDamage = true;
     }
     hp -= amount;
     dmgTaken = 4; // Flash frames
+    game.shaderPipeline.triggerAberration();
+
+    if (hp <= 0) {
+      hp = 0;
+      if (game.isCoop) {
+        visible = false;
+        fire = false;
+        game.checkCoopGameOver();
+      } else {
+        game.triggerGameOver();
+      }
+    }
+  }
+
+  /// Asteroid ram — escalating, not a flat hit. Consecutive rams within
+  /// [_asteroidComboWindow] seconds ramp up: 1st drops shields, 2nd costs half
+  /// of max HP, 3rd is fatal. The combo resets once the window lapses.
+  void hitByAsteroid() {
+    if (_asteroidComboTimer <= 0) _asteroidComboStage = 0;
+    _asteroidComboStage++;
+    _asteroidComboTimer = _asteroidComboWindow;
+    AchievementService.instance.onAsteroidRam();
+    game.campaignTracker?.onAsteroidRam();
+
+    switch (_asteroidComboStage) {
+      case 1:
+        shield = 0; // first ram: shields down
+        SoundService.instance.play(SfxEvent.hitShield);
+      case 2:
+        shield = 0;
+        hp -= hpMax ~/ 2; // second ram in quick succession: half of max HP
+        SoundService.instance.play(SfxEvent.hitHull);
+        game.sectorHullDamage = true;
+      default:
+        shield = 0;
+        hp = 0; // third+ ram: fatal
+        SoundService.instance.play(SfxEvent.hitHull);
+        game.sectorHullDamage = true;
+    }
+
+    dmgTaken = 4; // flash frames + brief invuln (mirrors takeDamage)
     game.shaderPipeline.triggerAberration();
 
     if (hp <= 0) {
@@ -542,6 +622,64 @@ class Vessel extends PositionComponent
     return device;
   }
 
+  /// The hangar entry for weapon [name] bought for [slot], if any. Keyed by
+  /// slot as well as name: LEFT and RIGHT can each own a Small Bubble at
+  /// different levels.
+  Device? hangarEntry(String name, WeaponSlot slot) {
+    for (final d in hangar) {
+      if (d.name == name && d.slot == slot) return d;
+    }
+    return null;
+  }
+
+  /// Whether [name] is owned for [slot], fitted or in the hangar.
+  bool ownsWeapon(String name, WeaponSlot slot) =>
+      getDevice(slot)?.name == name || hangarEntry(name, slot) != null;
+
+  /// Fit [type] into [slot]. Whatever is fitted there now moves to the hangar
+  /// with its level. A hangar entry for [type] in [slot] comes back as the
+  /// same instance; otherwise a fresh level-0 device is created. Charging for
+  /// a new device is the caller's job — switching to an owned one is free.
+  Device fitWeapon(DevType type, WeaponSlot slot) {
+    final current = getDevice(slot);
+    if (current != null && current.name == type.name) return current;
+    if (current != null) {
+      current.clearProjectiles();
+      devices.remove(current);
+      hangar.add(current);
+    }
+    var device = hangarEntry(type.name, slot);
+    if (device != null) {
+      hangar.remove(device);
+    } else {
+      device = Device.fromType(type, slot);
+      device.parentVessel = this;
+    }
+    devices.add(device);
+    guidedWeapon = devices.any((d) => d.guide > 0);
+    return device;
+  }
+
+  /// Sell the device fitted in [slot] for its current price. The slot stays
+  /// empty even when the hangar holds something for it — the player picks.
+  /// The generator is not sellable. Returns the credits gained.
+  int sellFitted(WeaponSlot slot) {
+    if (slot == WeaponSlot.generator) return 0;
+    final device = getDevice(slot);
+    if (device == null) return 0;
+    final gained = device.price;
+    credit += gained;
+    removeWeapon(slot);
+    return gained;
+  }
+
+  /// Sell a hangar entry for its current price. Returns the credits gained.
+  int sellFromHangar(Device device) {
+    if (!hangar.remove(device)) return 0;
+    credit += device.price;
+    return device.price;
+  }
+
   void removeWeapon(WeaponSlot slot) {
     devices.removeWhere((d) {
       if (d.slot == slot) {
@@ -560,7 +698,7 @@ class Vessel extends PositionComponent
         score > wepLevScores[nextWeaponLevel]) {
       nextWeaponLevel++;
       const roman = ['', 'I', 'II', 'III', 'IV'];
-      game.showMessage('Weapon level ${roman[nextWeaponLevel]} unlocked');
+      game.showMessage(L10n.current.weaponLevelUnlocked(roman[nextWeaponLevel]));
       SoundService.instance.play(SfxEvent.weaponUnlock);
     }
   }

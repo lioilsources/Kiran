@@ -1,11 +1,14 @@
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../ui/format.dart';
+import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import 'dev_type.dart';
 import '../entities/projectile.dart';
 import '../entities/vessel.dart';
 import '../entities/hostile.dart';
+import '../l10n/l10n.dart';
 
 /// Ported from Device.cls — a weapon instance equipped on a vessel or hostile.
 class Device {
@@ -129,6 +132,15 @@ class Device {
   /// Port of Device.Create — fire weapon, create projectile or activate beam
   void fire(double vesselX, double vesselY, double vesselXm, double vesselWidth,
       Component world, {double fireRateMult = 1.0}) {
+    // The generator is not a gun. It sits in the same devices list as the
+    // weapons (Vessel.equipWeapon) and Vessel.update fires that list without
+    // looking at slots, so without this it went off every ten seconds: a
+    // fireBullet click, one unit of the power it had just generated spent,
+    // and an invisible 10-damage projectile — invisible because its imgName
+    // pointed at a 'generator' sprite no skin has ever contained, leaving
+    // Projectile._loadSprite on its 6x12 fallback hitbox.
+    if (slot == WeaponSlot.generator) return;
+
     if (cd > 0) return;
 
     // Check power
@@ -243,7 +255,7 @@ class Device {
         parentVessel!.credit += bonus;
         (parentVessel! as HasGameReference<TyrianGame>)
             .game
-            .showMessage('Max. level! Sold for \$$bonus');
+            .showMessage(L10n.current.maxLevelSold(fmtNum(bonus)));
       }
       return;
     }
@@ -254,6 +266,9 @@ class Device {
     price = (price * (1 + upgCost)).round();
     // VB6: update displayName with roman numeral
     displayName = '$name ${_roman[level]}';
+    if (parentVessel != null) {
+      AchievementService.instance.onWeaponLevel(name, level);
+    }
 
     if (pwrGen > 0 && parentVessel != null) {
       pwrGen *= config.upgPwrGenMultiplier;

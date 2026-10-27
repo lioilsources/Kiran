@@ -26,7 +26,6 @@ var referenceSizes = map[string][2]int{
 	"vessel": {114, 84},
 
 	// Enemies
-	"falcon":   {68, 68},
 	"falcon1":  {68, 68},
 	"falcon2":  {68, 68},
 	"falcon3":  {68, 68},
@@ -38,10 +37,16 @@ var referenceSizes = map[string][2]int{
 	"falconx3": {102, 102},
 	"falconxb": {122, 122},
 	"falconxt": {134, 134},
-	"bouncer":  {128, 142},
 
 	// Boss
 	"rododendron": {256, 256},
+
+	// Boss parts — bolted onto the core, so they read as pieces of it rather
+	// than as ships: roughly a third of its footprint.
+	"boss_turret":   {96, 96},
+	"boss_shield":   {96, 96},
+	"boss_thruster": {96, 96},
+	"boss_cannon":   {96, 96},
 
 	// Structures / asteroids
 	"asteroid":  {84, 80},
@@ -56,14 +61,9 @@ var referenceSizes = map[string][2]int{
 	"bubble":  {60, 58},
 
 	// Background stars
-	"star":  {30, 30},
 	"starg": {24, 24},
 
 	// Explosions (all four frames share the original size)
-	"explosion1": {180, 180},
-	"explosion2": {180, 180},
-	"explosion3": {180, 180},
-	"explosion4": {180, 180},
 }
 
 // ReferenceSize returns the canonical (width, height) for a game sprite name and
@@ -80,10 +80,14 @@ func ReferenceSize(gameName string) (int, int, bool) {
 // These are NOT multiplied by SupersampleFactor — they are Flutter widget
 // assets rendered at UI resolution, not game-world sprites.
 var uiSizes = map[string][2]int{
-	"comcenter_bg":  {512, 1024},
-	"ui_card_bg":    {192, 192},
-	"ui_button":     {512, 128},
-	"ui_tab_active": {256, 64},
+	"comcenter_bg": {512, 1024},
+	"ui_button":    {512, 128},
+	// The store card and the skin selector both draw preview.png as a filled
+	// tile, so it is opaque art at card resolution — not a keyed sprite. It was
+	// missing here, which sent it down the sprite path instead: the v3 batch
+	// came out chroma-keyed and downscaled to 128px against the 512px opaque
+	// previews every shipped skin has.
+	"preview": {512, 512},
 }
 
 // UiSize returns the exact (width, height) for a ComCenter UI sprite.

@@ -1,0 +1,327 @@
+{
+  "identifier": "1740D90A-6BE7-43EA-BCE6-6601D094E9FC",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "8AA62FB6-1178-4EF1-9C44-2BCF6DF08CDC",
+      "localizations": [
+        {
+          "description": "Unlocks the Monochrome Invader (1978) skin",
+          "displayName": "Monochrome Invader Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_space_invaders",
+      "referenceName": "Monochrome Invader Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "76C83A43-7B2B-4895-A15D-6A35D4B1906C",
+      "localizations": [
+        {
+          "description": "Unlocks the Vector Wireframe (1979) skin",
+          "displayName": "Vector Wireframe Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_asteroids",
+      "referenceName": "Vector Wireframe Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "D1120A52-F16B-4DA0-9486-27525C8144F5",
+      "localizations": [
+        {
+          "description": "Unlocks the 8-Bit Canyon (1982) skin",
+          "displayName": "8-Bit Canyon Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_river_raid",
+      "referenceName": "8-Bit Canyon Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "E82A5EEE-82D9-4ACB-88CE-BA0D5E87311B",
+      "localizations": [
+        {
+          "description": "Unlocks the Biomech Cruiser (1987) skin",
+          "displayName": "Biomech Cruiser Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_rtype",
+      "referenceName": "Biomech Cruiser Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "681A63B3-3103-460C-8581-ED9843FFD2E7",
+      "localizations": [
+        {
+          "description": "Unlocks the 16-Bit Laser (1989) skin",
+          "displayName": "16-Bit Laser Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_blazing_lazers",
+      "referenceName": "16-Bit Laser Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "601DDC34-1DA3-4A0D-AB63-706F76FC0B4E",
+      "localizations": [
+        {
+          "description": "Unlocks the Retro PC Pixel (1995) skin",
+          "displayName": "Retro PC Pixel Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_tyrian_dos",
+      "referenceName": "Retro PC Pixel Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "C71B5117-37FC-4EDB-A20B-8BA671A67E2D",
+      "localizations": [
+        {
+          "description": "Unlocks the Dual-Polarity (2001) skin",
+          "displayName": "Dual-Polarity Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_ikaruga",
+      "referenceName": "Dual-Polarity Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "CFFA633C-DBD7-4BEB-881B-1285178C3FF0",
+      "localizations": [
+        {
+          "description": "Unlocks the Chrome Fleet (2004) skin",
+          "displayName": "Chrome Fleet Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_gradius_v",
+      "referenceName": "Chrome Fleet Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "8103A803-BD90-4C47-BF33-E4D7AB24ED4D",
+      "localizations": [
+        {
+          "description": "Unlocks the Sepia Dogfight (2014) skin",
+          "displayName": "Sepia Dogfight Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_luftrausers",
+      "referenceName": "Sepia Dogfight Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "57CA839D-4C51-4B3F-95B3-D0F6F1BB1C51",
+      "localizations": [
+        {
+          "description": "Unlocks the Wasteland Pixel (2015) skin",
+          "displayName": "Wasteland Pixel Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_nuclear_throne",
+      "referenceName": "Wasteland Pixel Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "1A63C207-CC5B-4884-A4CB-03B8B0D80639",
+      "localizations": [
+        {
+          "description": "Unlocks the Neon Voxel (2017) skin",
+          "displayName": "Neon Voxel Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_nex_machina",
+      "referenceName": "Neon Voxel Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "4490E4B2-AEAF-5043-8F30-89CD50F3E409",
+      "localizations": [
+        {
+          "description": "Unlocks the Neon Tube (1981) skin",
+          "displayName": "Neon Tube Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_tempest",
+      "referenceName": "Neon Tube Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "8C761D4E-B226-59B0-9D14-2F62DEE4C900",
+      "localizations": [
+        {
+          "description": "Unlocks the Pocket Mono (1990) skin",
+          "displayName": "Pocket Mono Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_solar_striker",
+      "referenceName": "Pocket Mono Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "946CD108-1D55-5867-9606-128E145BA637",
+      "localizations": [
+        {
+          "description": "Unlocks the Flat Polygon (1993) skin",
+          "displayName": "Flat Polygon Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_star_fox",
+      "referenceName": "Flat Polygon Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "A3487779-FCF9-4DEB-916B-0C3237CF7B4F",
+      "localizations": [
+        {
+          "description": "Unlocks the Iso Fortress (1982) skin",
+          "displayName": "Iso Fortress Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_zaxxon",
+      "referenceName": "Iso Fortress Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "C29A2A79-0BAE-407E-8B2C-5BFBFB53407B",
+      "localizations": [
+        {
+          "description": "Unlocks the Mode-7 Steel (1992) skin",
+          "displayName": "Mode-7 Steel Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_axelay",
+      "referenceName": "Mode-7 Steel Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "0915BFD2-5382-46C2-8E82-53B0596EFB86",
+      "localizations": [
+        {
+          "description": "Unlocks the FM Thunder (1992) skin",
+          "displayName": "FM Thunder Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_thunder_force",
+      "referenceName": "FM Thunder Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "B96BFC09-5045-4929-9898-E8F94473F030",
+      "localizations": [
+        {
+          "description": "Unlocks the Chibi Squadron (1985) skin",
+          "displayName": "Chibi Squadron Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_twinbee",
+      "referenceName": "Chibi Squadron Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "AE67281A-2B7D-47E3-BDC0-2477C7135D21",
+      "localizations": [
+        {
+          "description": "Unlocks the Candy Drift (1986) skin",
+          "displayName": "Candy Drift Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_candy_drift",
+      "referenceName": "Candy Drift Skin (1986)",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "CEB6F777-318B-4988-A1EE-629E67FAA9E1",
+      "localizations": [
+        {
+          "description": "Unlocks the Flesh Maze (1989) skin",
+          "displayName": "Flesh Maze Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_abadox",
+      "referenceName": "Flesh Maze Skin",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "5D617E5C-26A6-4199-B140-D0AE2E8C01AB",
+      "localizations": [
+        {
+          "description": "Unlocks the Metal Knight (1993) skin",
+          "displayName": "Metal Knight Skin",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skin_lords_of_thunder",
+      "referenceName": "Metal Knight Skin",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {},
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

@@ -193,7 +193,11 @@ class DevType {
 
   static const generatorBasic = DevType(
     name: 'Falcon Basic',
-    imgName: 'generator',
+    // No projectile sprite: a generator has none to draw. The field is
+    // required by DevType, and the VB6 port filled it with a name nothing
+    // ever shipped, which is how the phantom shot in Device.fire went
+    // unnoticed for so long.
+    imgName: '',
     pwrGen: 4.35,
     price: 2000,
     upgCost: 0.35,

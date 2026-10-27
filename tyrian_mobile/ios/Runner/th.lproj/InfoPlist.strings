@@ -1,0 +1,5 @@
+/* Permission prompts (Info.plist NS*UsageDescription), localized. */
+"NSBluetoothAlwaysUsageDescription" = "Kirian ใช้บลูทูธเพื่อค้นหาผู้เล่นใกล้เคียงสำหรับโคออปในพื้นที่เมื่อคุณไม่ได้อยู่ใน Wi-Fi เดียวกัน";
+"NSBluetoothPeripheralUsageDescription" = "Kirian ใช้บลูทูธเพื่อค้นหาผู้เล่นใกล้เคียงสำหรับโคออปในพื้นที่เมื่อคุณไม่ได้อยู่ใน Wi-Fi เดียวกัน";
+"NSLocalNetworkUsageDescription" = "Kirian ค้นหาเกมโคออปที่โฮสต์อยู่บน Wi-Fi ของคุณหรือบนอุปกรณ์ใกล้เคียง และให้ผู้เล่นอื่นค้นพบเกมของคุณได้";
+"NSMicrophoneUsageDescription" = "Kirian ไม่ได้ใช้ไมโครโฟน แต่เฟรมเวิร์กเสียงกำหนดให้ต้องขอสิทธิ์นี้";

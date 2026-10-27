@@ -1,7 +1,9 @@
 package postprocess
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -10,6 +12,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"tyrian-pipeline/internal/skin"
@@ -19,10 +23,28 @@ import (
 type Config struct {
 	SkinDir     string // input: pipeline output/assets/skins/{id}
 	OutputDir   string // output: tyrian_mobile/assets/skins/{id}
-	Variation   int    // which _v{N} to pick (default 1; explosion always uses 1-4)
+	Variation   int    // which _v{N} to pick (default 1)
 	TargetSize  int    // max dimension in px (default 128)
 	BgThreshold int    // color distance threshold (default 60)
 	BgMargin    int    // soft-edge ramp width (default 20)
+	// PaletteDescription is the skin's own palette, used to rescue overlay
+	// layers the generator returned grey. Empty disables the rescue.
+	PaletteDescription string
+
+	// Sel records which variation each asset was built from. Assets absent
+	// from it fall back to Variation, so an unrecorded skin behaves exactly as
+	// before. Nil is valid and means "nothing recorded".
+	Sel *Selections
+	// Only restricts the run to a single asset name. Without it, fixing one
+	// bad sprite re-derived every asset in the skin from the same variation —
+	// which is how good art got clobbered while chasing a bad one.
+	Only string
+}
+
+// variationFor resolves the variation to build an asset from: its recorded
+// choice, else the run-wide default.
+func (c Config) variationFor(asset string) int {
+	return c.Sel.For(asset, c.Variation)
 }
 
 // DefaultConfig returns a Config with sensible defaults. The threshold/margin
@@ -49,6 +71,12 @@ func Run(cfg Config) error {
 			filepath.Base(cfg.SkinDir), err)
 	}
 
+	// Image failures must not take the audio down with them. The hand-authored
+	// `default` skin has a manifest but no generated sprite sources, so this
+	// block always errors for it — and used to return before processSfx ever
+	// ran, which is why that skin's sound was never reprocessed. Record the
+	// error, finish the audio, report at the end.
+	var imgErr error
 	if hasManifest {
 		// Create output directories
 		spritesDir := filepath.Join(cfg.OutputDir, "sprites")
@@ -63,8 +91,24 @@ func Run(cfg Config) error {
 		if err := os.MkdirAll(bgDir, 0755); err != nil {
 			return fmt.Errorf("create bg dir: %w", err)
 		}
+		if _, err := exec.LookPath("cwebp"); err != nil {
+			return fmt.Errorf("cwebp not found in PATH (brew install webp): %w", err)
+		}
+
+		// Background base names written this run, used to prune superseded files.
+		// bgComplete stays true only if every background in the manifest landed;
+		// a partial run must not prune the fallback art it failed to replace.
+		// A -only run is partial by construction: the loop below never reaches
+		// the other layers, so nothing would flip this to false, and rule 2 of
+		// pruneStaleBackgrounds would then delete the fifteen layers the re-pick
+		// did not touch.
+		bgWritten := map[string]bool{}
+		bgComplete := cfg.Only == ""
 
 		for _, asset := range manifest.Assets {
+			if cfg.Only != "" && asset.Name != cfg.Only {
+				continue
+			}
 			switch {
 			case asset.Type == "sfx":
 				// SFX handled separately by processSfx(); skip here.
@@ -74,45 +118,58 @@ func Run(cfg Config) error {
 				// Music handled separately by processMusic(); skip here.
 				continue
 
-			case asset.Name == "explosion":
-				// Special: load v1-v4 → explosion1-explosion4.png
-				if err := processExplosions(cfg, asset, spritesDir); err != nil {
-					return fmt.Errorf("process explosion: %w", err)
-				}
-
 			case asset.Name == "ship_frames":
 				// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
 				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
-					return fmt.Errorf("process ship_frames: %w", err)
+					imgErr = fmt.Errorf("process ship_frames: %w", err)
+					continue
 				}
 
 			case asset.Type == "background":
-				if err := processBackgrounds(cfg, asset, bgDir); err != nil {
-					return fmt.Errorf("process background %s: %w", asset.Name, err)
+				// A skin whose zone art has not been generated yet is the normal
+				// case, not an error: the manifest lists every zone for every
+				// skin, but only some skins have the source images. Missing
+				// sources are skipped so the rest of the skin still processes,
+				// and the game falls back to that skin's flat layer_N files.
+				switch err := processBackgrounds(cfg, asset, bgDir); {
+				case err == nil:
+					bgWritten[asset.Name] = true
+				case errors.Is(err, os.ErrNotExist):
+					fmt.Printf("  [bg] no source for %s — skipping\n", asset.Name)
+					bgComplete = false
+				default:
+					imgErr = fmt.Errorf("process background %s: %w", asset.Name, err)
+					continue
 				}
 
 			case asset.Type == "hud_icon":
 				// Copy HUD icons to ui/ subdir
 				if err := processAsset(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 
 			case asset.Name == "preview":
-				// Copy preview to ui/preview.png
-				if err := processAsset(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process preview: %w", err)
+				// Opaque, like the ComCenter plate: the preview is a framed
+				// illustration on the store card, so keying its background out
+				// would punch a hole in the card rather than isolate a sprite.
+				if err := processUiBg(cfg, asset, uiDir); err != nil {
+					imgErr = fmt.Errorf("process preview: %w", err)
+					continue
 				}
 
 			case asset.Type == "comcenter_bg":
 				// Full-screen ComCenter background — opaque, exact resize, no bg removal
 				if err := processUiBg(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 
-			case asset.Type == "ui_card_bg" || asset.Type == "ui_button" || asset.Type == "ui_tab_active":
-				// ComCenter panel sprites — opaque, exact resize, no bg removal
+			case asset.Type == "ui_button":
+				// ComCenter button sprite — opaque, exact resize, no bg removal
 				if err := processOpaqueUiSprite(cfg, asset, uiDir); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
 
 			default:
@@ -122,24 +179,39 @@ func Run(cfg Config) error {
 					continue
 				}
 				if err := processNamedAsset(cfg, asset, spritesDir, gameName); err != nil {
-					return fmt.Errorf("process %s: %w", asset.Name, err)
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
+					continue
 				}
+			}
+		}
+
+		if len(bgWritten) > 0 {
+			if !bgComplete {
+				fmt.Printf("  [bg] incomplete set — keeping fallback art\n")
+			}
+			if err := pruneStaleBackgrounds(bgDir, bgWritten, bgComplete); err != nil {
+				fmt.Printf("  [bg] prune failed: %v\n", err)
 			}
 		}
 	}
 
-	// Process SFX: convert MP3 → OGG with volume normalization
-	if err := processSfx(cfg); err != nil {
-		fmt.Printf("Warning: SFX processing: %v\n", err)
-	}
+	// Audio has no variations, so a single-asset image re-pick has no business
+	// re-encoding the whole soundtrack — that is minutes of ffmpeg and a churned
+	// git diff for nothing.
+	if cfg.Only == "" {
+		// Process SFX: convert MP3 → OGG with volume normalization
+		if err := processSfx(cfg); err != nil {
+			fmt.Printf("Warning: SFX processing: %v\n", err)
+		}
 
-	// Process music: convert MP3 → OGG with music-grade loudness normalization
-	if err := processMusic(cfg); err != nil {
-		fmt.Printf("Warning: music processing: %v\n", err)
+		// Process music: convert MP3 → OGG with music-grade loudness normalization
+		if err := processMusic(cfg); err != nil {
+			fmt.Printf("Warning: music processing: %v\n", err)
+		}
 	}
 
 	fmt.Printf("Postprocessed skin %s → %s\n", filepath.Base(cfg.SkinDir), cfg.OutputDir)
-	return nil
+	return imgErr
 }
 
 func processAsset(cfg Config, asset skin.ManifestAsset, outDir string) error {
@@ -147,13 +219,13 @@ func processAsset(cfg Config, asset skin.ManifestAsset, outDir string) error {
 }
 
 func processNamedAsset(cfg Config, asset skin.ManifestAsset, outDir, gameName string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	rgba := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
+	rgba := KeySprite(img, cfg.BgThreshold, cfg.BgMargin, gameName)
 	out := normalizeSprite(rgba, gameName, cfg.TargetSize)
 
 	outPath := filepath.Join(outDir, gameName+".png")
@@ -173,7 +245,7 @@ func normalizeSprite(rgba *image.NRGBA, gameName string, targetSize int) *image.
 }
 
 func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, frameCount int) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -200,7 +272,7 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 		numFrames = 6
 	}
 
-	ship := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
+	ship := KeySprite(img, cfg.BgThreshold, cfg.BgMargin, asset.Name)
 	frames := SynthesizeGlowFrames(ship, numFrames, shipGlowMinGain, shipGlowMaxGain, shipGlowLumGamma)
 
 	// Normalize all frames together so the animation keeps a steady size and
@@ -218,33 +290,9 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 	return nil
 }
 
-func processExplosions(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	available := asset.Variations
-	if available < 1 {
-		available = 1
-	}
-	for frame := 1; frame <= 4; frame++ {
-		v := ((frame - 1) % available) + 1
-		srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, v)
-		img, err := loadJPEG(srcPath)
-		if err != nil {
-			return fmt.Errorf("load explosion v%d: %w", v, err)
-		}
-
-		rgba := RemoveBackgroundFlood(img, cfg.BgThreshold, cfg.BgMargin)
-		out := normalizeSprite(rgba, fmt.Sprintf("explosion%d", frame), cfg.TargetSize)
-
-		outPath := filepath.Join(outDir, fmt.Sprintf("explosion%d.png", frame))
-		if err := savePNG(outPath, out); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // processUiBg handles the ComCenter background — opaque full-screen art, exact resize.
 func processUiBg(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -261,7 +309,7 @@ func processUiBg(cfg Config, asset skin.ManifestAsset, outDir string) error {
 // processOpaqueUiSprite handles ComCenter panel sprites (button, card, tab):
 // opaque, exact resize to reference dimensions, no background removal.
 func processOpaqueUiSprite(cfg Config, asset skin.ManifestAsset, outDir string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -275,8 +323,16 @@ func processOpaqueUiSprite(cfg Config, asset skin.ManifestAsset, outDir string) 
 	return savePNG(outPath, out)
 }
 
+// Luminance cut-offs for parallax overlay alpha. black sits just above the JPEG
+// noise floor so flat black stays flat; white is deliberately low so the dim
+// mid-tones of a gas bank still carry visible alpha rather than vanishing.
+const (
+	bgAlphaBlack = 8
+	bgAlphaWhite = 70
+)
+
 func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) error {
-	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.Variation)
+	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
 		return fmt.Errorf("load %s: %w", srcPath, err)
@@ -284,20 +340,142 @@ func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) erro
 
 	resized := ResizeExact(img, 512, 1024)
 
-	// layer_0 is opaque (no bg removal); layer_1+ get bg removal.
-	// Layers keep the global chroma key rather than RemoveBackgroundFlood:
-	// their content (cloud banks, terrain silhouettes) legitimately covers
-	// large stretches of the border, which would poison a border-sampled
-	// background model and erase the content itself.
+	// layer_0 is the opaque base plate; layer_1+ are luminous overlays drawn on
+	// black and composited over it. The decision rides on the parsed layer
+	// index, not the literal name, because zone variants are named layer_0_z3 —
+	// testing asset.Name == "layer_0" would key every zone's base plate and let
+	// the starfield bleed through the sky.
+	//
+	// Overlays get AlphaFromLuminance rather than either chroma key. A key asks
+	// a yes/no question and so deletes the soft falloff that ought to read as
+	// translucent; on real art it left these layers 97% transparent. Luminance
+	// keying turns that same falloff into proportional alpha.
+	layerIdx, _, ok := parseLayerName(asset.Name)
+	opaque := ok && layerIdx == 0
 	var out image.Image
-	if asset.Name == "layer_0" {
+	if opaque {
 		out = resized
 	} else {
-		out = RemoveBackground(resized, cfg.BgThreshold, cfg.BgMargin)
+		keyed := AlphaFromLuminance(resized, bgAlphaBlack, bgAlphaWhite)
+		// An overlay that came back grey lost its palette in generation, not in
+		// composition; see RecolourOverlay for why the hue is imposed here
+		// rather than argued with the model. Loud, because a skin whose overlays
+		// keep needing this has a background prompt worth rewriting.
+		if sat := meanSaturationOpaque(keyed); sat < overlayGreyMax {
+			if pal := PaletteFromDescription(cfg.PaletteDescription); len(pal) >= 3 {
+				fmt.Printf("  [overlay] %s came back grey (saturation %.2f) — recoloured to the skin palette\n",
+					asset.Name, sat)
+				keyed = RecolourOverlay(keyed, pal)
+			}
+		}
+		out = keyed
 	}
 
-	outPath := filepath.Join(bgDir, asset.Name+".png")
-	return savePNG(outPath, out)
+	outPath := filepath.Join(bgDir, asset.Name+".webp")
+	return saveWebP(outPath, out, opaque)
+}
+
+// parseLayerName splits a background asset name into its parallax layer index
+// and its optional zone index: "layer_0" -> (0, -1, true), "layer_1_z3" ->
+// (1, 3, true), anything else -> ok=false.
+//
+// The layer index alone decides opacity: layer 0 is always the opaque base
+// plate, every other layer is chroma-keyed. A prefix match would be subtly
+// wrong here — it would also accept "layer_01".
+func parseLayerName(name string) (layer, zone int, ok bool) {
+	rest, found := strings.CutPrefix(name, "layer_")
+	if !found {
+		return 0, 0, false
+	}
+	zone = -1
+	if i := strings.Index(rest, "_z"); i >= 0 {
+		z, err := strconv.Atoi(rest[i+2:])
+		if err != nil {
+			return 0, 0, false
+		}
+		zone, rest = z, rest[:i]
+	}
+	l, err := strconv.Atoi(rest)
+	if err != nil {
+		return 0, 0, false
+	}
+	return l, zone, true
+}
+
+// saveWebP encodes img to path as lossy WebP via the cwebp binary.
+//
+// Backgrounds are the bulk of the asset bundle and WebP buys roughly an order
+// of magnitude over Go's default png.Encode, which is what makes per-zone art
+// affordable. Opaque base plates encode with no alpha plane at all; every other
+// layer keeps a near-lossless alpha channel, because the chroma-keyed edges are
+// what sell the parallax depth and lossy alpha shows up as halos around stars.
+//
+// The image is piped in as PNG and the WebP comes back on stdout, so no
+// temporary files are involved. Note the argument order: -o must come before
+// the "--" separator, otherwise cwebp reads "-o" and "-" as further input files
+// and silently produces nothing.
+func saveWebP(path string, img image.Image, opaque bool) error {
+	var src bytes.Buffer
+	if err := png.Encode(&src, img); err != nil {
+		return fmt.Errorf("encode png for %s: %w", path, err)
+	}
+
+	args := []string{"-q", "82", "-m", "6", "-metadata", "none"}
+	if opaque {
+		args = append(args, "-noalpha")
+	} else {
+		args = append(args, "-alpha_q", "90", "-alpha_filter", "best")
+	}
+	args = append(args, "-o", "-", "--", "-")
+
+	cmd := exec.Command("cwebp", args...)
+	cmd.Stdin = &src
+	var out, stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("cwebp %s: %w\n%s", path, err, stderr.String())
+	}
+	return os.WriteFile(path, out.Bytes(), 0644)
+}
+
+// pruneStaleBackgrounds removes background files this run superseded, so a
+// migrated skin never ships both the PNG and the WebP. The pubspec entry for
+// backgrounds/ globs the whole directory, so a leftover PNG set would silently
+// double the bundle cost of the per-zone art while the game looked perfect.
+//
+// Two conservative rules:
+//  1. delete layer_X.png whenever layer_X.webp was written this run — always
+//     safe, the replacement is right there under the same name;
+//  2. delete any other layer_* file not written this run, but only when the run
+//     produced a *complete* zone set (complete=true) — i.e. nothing was skipped
+//     for a missing source.
+//
+// Rule 2 hangs on completeness rather than on "wrote at least one zone file"
+// because a half-finished generation run (an image backend dying mid-way) would
+// otherwise delete the flat art the game still falls back on for every zone the
+// run never reached, leaving those zones with no base plate at all.
+func pruneStaleBackgrounds(bgDir string, written map[string]bool, complete bool) error {
+	entries, err := os.ReadDir(bgDir)
+	if err != nil {
+		return err
+	}
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasPrefix(e.Name(), "layer_") {
+			continue // leaves .gitkeep and anything hand-added alone
+		}
+		base := strings.TrimSuffix(e.Name(), filepath.Ext(e.Name()))
+		stale := (strings.HasSuffix(e.Name(), ".png") && written[base]) ||
+			(complete && !written[base])
+		if !stale {
+			continue
+		}
+		if err := os.Remove(filepath.Join(bgDir, e.Name())); err != nil {
+			return err
+		}
+		fmt.Printf("  [bg] pruned stale %s\n", e.Name())
+	}
+	return nil
 }
 
 func variationPath(skinDir, subDir, name string, variation int) string {
@@ -332,6 +510,24 @@ func savePNG(path string, img image.Image) error {
 	return png.Encode(f, img)
 }
 
+// ManifestAssetNames lists the image assets a skin's manifest declares, in
+// manifest order. Audio entries are excluded: they have no variations, so
+// recording a variant choice for them would be meaningless.
+func ManifestAssetNames(skinDir string) ([]string, error) {
+	m, err := readManifest(skinDir)
+	if err != nil {
+		return nil, err
+	}
+	var out []string
+	for _, a := range m.Assets {
+		if a.Type == "sfx" || a.Type == "music" {
+			continue
+		}
+		out = append(out, a.Name)
+	}
+	return out, nil
+}
+
 func readManifest(skinDir string) (*skin.Manifest, error) {
 	data, err := os.ReadFile(filepath.Join(skinDir, "manifest.json"))
 	if err != nil {
@@ -350,10 +546,6 @@ func ListSpriteNames(manifest *skin.Manifest) []string {
 	var names []string
 	for _, a := range manifest.Assets {
 		switch {
-		case a.Name == "explosion":
-			for i := 1; i <= 4; i++ {
-				names = append(names, fmt.Sprintf("explosion%d", i))
-			}
 		case a.Type == "background":
 			continue
 		case a.Type == "hud_icon" || a.Name == "preview":
@@ -368,8 +560,67 @@ func ListSpriteNames(manifest *skin.Manifest) []string {
 	return names
 }
 
-// processSfx converts MP3 files in {skinDir}/sfx/ to OGG in {outputDir}/sfx/
-// using ffmpeg with loudnorm volume normalization.
+// Loudness targets for SFX, measured over the band a phone speaker can actually
+// reproduce rather than full range.
+//
+// loudnorm was the obvious tool and the wrong one. It measures integrated
+// loudness with K-weighting, which de-emphasises bass — so a sub-heavy file
+// reads as quiet and gets turned *up*, pushing yet more energy into a band the
+// hardware cannot render. Measured on the shipped set, that left the laser shot
+// 13dB above the big explosion in the only band that reaches the player's ears,
+// which is exactly how it sounded: shots everywhere, explosions with no weight.
+//
+// Measuring above sfxAudibleFloorHz instead makes the comparison the one the
+// player experiences. The gain clamp keeps a file that simply has nothing up
+// there from being dragged up by 50dB of pure noise floor.
+const (
+	sfxAudibleFloorHz = 500 // below this a phone speaker gives up
+	sfxSubCutHz       = 60  // inaudible on the target device; only eats headroom
+	// How far the audible-band peak may sit below the file's overall peak before
+	// the content counts as unreachable on a phone. Absolute level says nothing
+	// here — loudnorm sets that — so the diagnostic has to be a ratio.
+	sfxWeakRatioDb = -12.0
+)
+
+// audibleShortfall reports how far a file's peak within the phone-reproducible
+// band sits below its overall peak. Near 0 means the energy is where it can be
+// heard; a large negative means the sound lives in bass the device cannot
+// render, which no amount of levelling can recover.
+//
+// Peak, not mean. These are short one-shots with a fast transient and a long
+// quiet tail, so a mean taken over the whole file mostly measures the silence:
+// rtype's hull hit reads -29dB mean against a -6.6dB peak, and levelling on the
+// mean asked for +34dB of gain on a file that was already loud enough. Peak is
+// insensitive to how much of the clip is empty, which is what makes it the
+// right statistic here.
+func audibleShortfall(path string) (float64, error) {
+	peak := func(filter string) (float64, error) {
+		cmd := exec.Command("ffmpeg", "-hide_banner", "-i", path,
+			"-af", filter, "-f", "null", "-")
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return 0, fmt.Errorf("volumedetect: %w", err)
+		}
+		m := regexp.MustCompile(`max_volume:\s*(-?[0-9.]+) dB`).FindSubmatch(out)
+		if m == nil {
+			return 0, fmt.Errorf("no max_volume in ffmpeg output")
+		}
+		return strconv.ParseFloat(string(m[1]), 64)
+	}
+
+	full, err := peak("volumedetect")
+	if err != nil {
+		return 0, err
+	}
+	audible, err := peak(fmt.Sprintf("highpass=f=%d,volumedetect", sfxAudibleFloorHz))
+	if err != nil {
+		return 0, err
+	}
+	return audible - full, nil
+}
+
+// processSfx converts MP3 files in {skinDir}/sfx/ to OGG in {outputDir}/sfx/,
+// levelled on the phone-audible band (see audibleBandGain).
 func processSfx(cfg Config) error {
 	srcSfxDir := filepath.Join(cfg.SkinDir, "sfx")
 	entries, err := os.ReadDir(srcSfxDir)
@@ -398,10 +649,32 @@ func processSfx(cfg Config) error {
 			continue
 		}
 
-		// ffmpeg: normalize volume + convert to OGG/Opus
+		// Diagnostic only. A file with nothing up here cannot be rescued by
+		// levelling — no gain reaches content that was never generated — so the
+		// fix is to regenerate it, and the point of measuring is to say which.
+		if d, err := audibleShortfall(srcPath); err == nil && d < sfxWeakRatioDb {
+			fmt.Printf("  [sfx] %s is %.1f dB down above %dHz — its energy sits "+
+				"in bass a phone cannot render, regenerate it\n",
+				baseName, d, sfxAudibleFloorHz)
+		}
+
+		// Drop the inaudible sub before normalising. That part is unambiguous:
+		// on the target device it is silent, and all it does here is consume
+		// headroom and drag loudnorm's K-weighted measurement around. The
+		// levelling itself stays with loudnorm — a hand-rolled peak normaliser
+		// measured no better than it and is a worse tool.
+		//
+		// Explosions get a hotter target than the rest: they are the sounds
+		// that must land on top of the music bed, and the previous TP=-3 left
+		// 3dB of ceiling unused on what are sub-second one-shots.
+		target := "loudnorm=I=-14:TP=-1.5"
+		if strings.HasPrefix(baseName, "explosion") {
+			target = "loudnorm=I=-11:TP=-1.0"
+		}
+		filter := fmt.Sprintf("highpass=f=%d,%s", sfxSubCutHz, target)
 		cmd := exec.Command("ffmpeg", "-y",
 			"-i", srcPath,
-			"-af", "loudnorm=I=-14:TP=-3",
+			"-af", filter,
 			"-c:a", "libopus",
 			"-b:a", "96k",
 			dstPath,
@@ -457,12 +730,19 @@ func processMusic(cfg Config) error {
 			continue
 		}
 
-		// ffmpeg: music-grade loudnorm + convert to OGG/Opus at a higher bitrate
+		// ffmpeg: music-grade loudnorm, then Opus at 96k.
+		//
+		// 128k asked for (and VBR delivered ~152k) on material that does not
+		// need it: this is a looping game bed under gunfire and explosions,
+		// mixed at 0.45 master and ducked further on every big hit. Opus at
+		// 96k stereo is transparent for that, and across 84 tracks it is the
+		// difference between 52 MB and 33 MB of install — the largest single
+		// item left in the bundle after the atlas work.
 		cmd := exec.Command("ffmpeg", "-y",
 			"-i", srcPath,
 			"-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
 			"-c:a", "libopus",
-			"-b:a", "128k",
+			"-b:a", "96k",
 			dstPath,
 		)
 		if output, err := cmd.CombinedOutput(); err != nil {

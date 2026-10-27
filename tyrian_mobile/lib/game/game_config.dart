@@ -82,6 +82,11 @@ const double iconHeight = 70.0;
 // Sector delay
 const double delayOnComplete = 2.0; // seconds
 
+// How long a hostile may sit stranded outside the play field before it is
+// written off. Only ever armed for enemies whose path can no longer bring them
+// back (parked or cycling), so this is a deadlock backstop, not a cull.
+const double hostileOffFieldGrace = 3.0; // seconds
+
 // Structure fall speed (original: 0.05 per frame)
 const double structureFallSpeed = 0.05 * originalFps; // per second
 
@@ -101,14 +106,33 @@ const double upgGenMaxMultiplier = 1.2;
 // tick and crossfades MusicService between tiers. All values are tunable.
 const int musicTierCount = 5;            // theme_1 (calm) .. theme_5 (boss)
 const double musicCrossfadeSeconds = 1.5; // tier crossfade duration
-const double musicMinDwellSeconds = 3.0;  // min time on a tier before stepping (anti-flap)
+// A tier has to survive at least one musical phrase, or the score reads as
+// restarting rather than responding. At 3s a busy screen walked the whole
+// ladder and back inside a fleet wave.
+const double musicMinDwellSeconds = 10.0; // min time on a tier before stepping (anti-flap)
 const double musicDirectorInterval = 0.25; // threat re-evaluation period (~4 Hz)
-const double musicMasterVolume = 0.55;    // music sits under SFX
+// Music bed level. Lowered from 0.55 — the continuous bed was masking the
+// explosion transients even though the SFX files peak higher.
+const double musicMasterVolume = 0.45;
+
+// Sidechain duck: explosions momentarily push the music down to this factor,
+// recovering linearly over the given time. This is what makes an explosion
+// read as loud — the files themselves are already normalised to the ceiling.
+// Only large explosions (hpMax > 5000 kills) duck the music. Ducking every
+// kill at a 0.35 floor made the melody pump audibly in dense combat — dips
+// chained faster than the recovery, so the bed spent whole waves crawling up
+// and down. A rarer, shallower dip reads as an accent instead of a wobble.
+const double musicDuckFloor = 0.6;
+const double musicDuckRecoverSeconds = 0.6;
 const double musicMaxIntroSeconds = 20.0;  // hard cap: hand over to tiers even if intro never reports completion
 
 // Threat formula weights (see MusicDirector._computeThreat).
 const double musicWCount = 1.0;   // per active hostile on screen
-const double musicWDmg = 0.15;    // per point of summed hostile collision damage
+// Summed hostile damage grows with sector level while the thresholds below do
+// not, so at 0.15 it outweighed the headcount roughly 2:1 by mid-game and
+// pinned the score near the top tier. Kept as a modifier, not the driver: what
+// the player hears should track what the player sees.
+const double musicWDmg = 0.05;    // per point of summed hostile collision damage
 const double musicWProj = 0.4;    // per enemy projectile in flight
 const double musicKOff = 1.5;     // how much player offense lowers perceived threat
 const double musicKSurv = 1.0;    // how much low survivability raises perceived threat

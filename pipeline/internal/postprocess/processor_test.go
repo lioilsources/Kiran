@@ -7,6 +7,7 @@ import (
 	"image/color"
 	"image/jpeg"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -20,7 +21,6 @@ func TestGameName_Mapping(t *testing.T) {
 		wantOk   bool
 	}{
 		{"ship_frames", "vessel", true},
-		{"explosion", "explosion", true},
 		{"falcon", "falcon", true},
 		{"falcon1", "falcon1", true},
 		{"falconx", "falconx", true},
@@ -72,7 +72,6 @@ func TestRun_SyntheticSkin(t *testing.T) {
 		},
 		Assets: []skin.ManifestAsset{
 			{Name: "ship_frames", Type: "ship", Dir: "sprites", Variations: 4},
-			{Name: "explosion", Type: "explosion", Dir: "sprites", Variations: 4},
 			{Name: "falcon", Type: "enemy", Dir: "sprites", Variations: 4},
 			{Name: "laser", Type: "bullet", Dir: "sprites", Variations: 4},
 			{Name: "preview", Type: "preview", Dir: "ui", Variations: 4},
@@ -129,10 +128,6 @@ func TestRun_SyntheticSkin(t *testing.T) {
 		"sprites/vessel_1.png",
 		"sprites/vessel_2.png",
 		"sprites/vessel_3.png",
-		"sprites/explosion1.png",  // explosion v1
-		"sprites/explosion2.png",  // explosion v2
-		"sprites/explosion3.png",  // explosion v3
-		"sprites/explosion4.png",  // explosion v4
 		"sprites/falcon.png",      // falcon
 		"sprites/laser.png",       // laser
 		"ui/preview.png",          // preview
@@ -150,7 +145,6 @@ func TestListSpriteNames(t *testing.T) {
 	m := &skin.Manifest{
 		Assets: []skin.ManifestAsset{
 			{Name: "ship_frames", Type: "ship"},
-			{Name: "explosion", Type: "explosion"},
 			{Name: "falcon", Type: "enemy"},
 			{Name: "layer_0", Type: "background"},
 			{Name: "icon_life", Type: "hud_icon"},
@@ -159,13 +153,70 @@ func TestListSpriteNames(t *testing.T) {
 	}
 
 	names := ListSpriteNames(m)
-	expected := []string{"vessel", "explosion1", "explosion2", "explosion3", "explosion4", "falcon"}
+	expected := []string{"vessel", "falcon"}
 	if len(names) != len(expected) {
 		t.Fatalf("got %d names, want %d: %v", len(names), len(expected), names)
 	}
 	for i, name := range names {
 		if name != expected[i] {
 			t.Errorf("names[%d]=%q, want %q", i, name, expected[i])
+		}
+	}
+}
+
+// A -only re-pick of one background layer must leave the other layers alone.
+// The asset loop skips everything but the one asset, so nothing in it can mark
+// the run incomplete — and pruneStaleBackgrounds' rule 2 then deletes every
+// layer the run did not write. Seen on axelay: sixteen layers in, one out.
+func TestRun_OnlyBackgroundKeepsOtherLayers(t *testing.T) {
+	if _, err := exec.LookPath("cwebp"); err != nil {
+		t.Skip("cwebp not installed; backgrounds cannot be encoded")
+	}
+	tmpDir := t.TempDir()
+	skinDir := filepath.Join(tmpDir, "input", "test_skin")
+	bgDir := filepath.Join(skinDir, "backgrounds")
+	os.MkdirAll(bgDir, 0755)
+
+	manifest := skin.Manifest{
+		Version: "1.0.0",
+		Model:   "test",
+		Skin:    skin.ManifestSkin{ID: "test_skin", Name: "Test Skin", FrameCount: 4},
+		Assets: []skin.ManifestAsset{
+			{Name: "layer_0_z0", Type: "background", Dir: "backgrounds", Variations: 2},
+			{Name: "layer_1_z0", Type: "background", Dir: "backgrounds", Variations: 2},
+		},
+	}
+	manifestData, _ := json.MarshalIndent(manifest, "", "  ")
+	os.WriteFile(filepath.Join(skinDir, "manifest.json"), manifestData, 0644)
+
+	for _, name := range []string{"layer_0_z0", "layer_1_z0"} {
+		for v := 1; v <= 2; v++ {
+			img := image.NewRGBA(image.Rect(0, 0, 16, 32))
+			for y := 0; y < 32; y++ {
+				for x := 0; x < 16; x++ {
+					img.Set(x, y, color.RGBA{uint8(40 * v), 20, 60, 255})
+				}
+			}
+			var buf bytes.Buffer
+			jpeg.Encode(&buf, img, nil)
+			os.WriteFile(filepath.Join(bgDir, name+"_v"+string(rune('0'+v))+".jpg"), buf.Bytes(), 0644)
+		}
+	}
+
+	outDir := filepath.Join(tmpDir, "output", "test_skin")
+	cfg := Config{SkinDir: skinDir, OutputDir: outDir, Variation: 1, TargetSize: 128, BgThreshold: 30, BgMargin: 15}
+	if err := Run(cfg); err != nil {
+		t.Fatalf("full Run() error: %v", err)
+	}
+	cfg.Only = "layer_0_z0"
+	cfg.Variation = 2
+	if err := Run(cfg); err != nil {
+		t.Fatalf("-only Run() error: %v", err)
+	}
+
+	for _, f := range []string{"layer_0_z0.webp", "layer_1_z0.webp"} {
+		if _, err := os.Stat(filepath.Join(outDir, "backgrounds", f)); err != nil {
+			t.Errorf("%s missing after a -only run on layer_0_z0: %v", f, err)
 		}
 	}
 }

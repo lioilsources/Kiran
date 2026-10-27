@@ -108,7 +108,9 @@ Uint8List encodeClientInput(double dx, double dy, bool fire) {
 // ---- LobbyHandshake (0x04) ----
 // protocolVersion: uint8, pilotName: UTF-8 string (rest of payload)
 
-const int protocolVersion = 1;
+// v2: the 18-part sector table (v2.4.0) renumbered sector indices — a v1
+// client would mirror the wrong sector content, so the versions must not pair.
+const int protocolVersion = 2;
 
 Uint8List encodeLobbyHandshake(String pilotName) {
   final nameBytes = Uint8List.fromList(pilotName.codeUnits);

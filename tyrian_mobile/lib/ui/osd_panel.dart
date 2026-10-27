@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import '../game/tyrian_game.dart';
+import '../game/platform_config.dart' as platform;
+import 'credits_wave.dart';
+import 'enemy_counter.dart';
 import '../entities/vessel.dart';
 import '../rendering/health_bar.dart';
 import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import 'skin_painter.dart';
+import '../l10n/l10n.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
+/// Desktop monitors are 1080p+ where the phone-tuned sizes read as a sticker;
+/// one multiplier lifts fonts, bars and paddings together (Steam plan, Fix 8).
+final double _osdScale = platform.isDesktop ? 1.5 : 1.0;
+
+double _sc(num v) => v * _osdScale;
+
 class OsdPanel extends StatelessWidget {
   final TyrianGame game;
   final VoidCallback? onMuteToggle;
@@ -38,13 +48,13 @@ class OsdPanel extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: indent),
       child: SizedBox(
-        width: 130,
+        width: _sc(130),
         child: HealthBar(
           label: label,
           value: val,
           maxValue: max,
           color: color,
-          height: 8,
+          height: _sc(8),
           icon: _statIcon(iconKey),
           segments: 5,
         ),
@@ -82,9 +92,9 @@ class OsdPanel extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
                     sector.caption,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white70,
-                      fontSize: 11,
+                      fontSize: _sc(11),
                     ),
                   ),
                 ),
@@ -106,7 +116,17 @@ class OsdPanel extends StatelessWidget {
                   ),
                   const Spacer(),
                   if (game.state != GameState.paused)
-                    _buildCreditsWidget(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildCreditsWidget(),
+                        const SizedBox(height: 2),
+                        // Enemy tally lives under the credits so it can never
+                        // hide behind the HUD — it *is* the HUD.
+                        EnemyCounter(game: game),
+                      ],
+                    ),
                 ],
               ),
 
@@ -116,11 +136,11 @@ class OsdPanel extends StatelessWidget {
               Row(
                 children: [
                   if (game.state == GameState.paused)
-                    const Text(
-                      'PAUSED',
+                    Text(
+                      L10n.current.paused,
                       style: TextStyle(
                         color: Colors.cyanAccent,
-                        fontSize: 13,
+                        fontSize: _sc(13),
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                       ),
@@ -140,11 +160,11 @@ class OsdPanel extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: Colors.orangeAccent.withAlpha(100)),
                             ),
-                            child: const Text(
-                              'SKIN',
+                            child: Text(
+                              L10n.current.skin,
                               style: TextStyle(
                                 color: Colors.orangeAccent,
-                                fontSize: 10,
+                                fontSize: _sc(10),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -191,10 +211,12 @@ class OsdPanel extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            game.state == GameState.paused ? 'RESUME' : 'PAUSE',
-                            style: const TextStyle(
+                            game.state == GameState.paused
+                                ? L10n.current.resume
+                                : L10n.current.pause,
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 10,
+                              fontSize: _sc(10),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -228,37 +250,55 @@ class OsdPanel extends StatelessWidget {
                     : (playerLabel == 'P2'
                         ? const Color(0xFF00FF80)
                         : Colors.cyanAccent),
-                fontSize: 9,
+                fontSize: _sc(9),
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         _staggeredBar(vessel.hp.toDouble(), vessel.hpMax.toDouble(),
-            Colors.redAccent, 'HP', 'icon_life',
+            Colors.redAccent, L10n.current.hudHp, 'icon_life',
             indent: 0),
         const SizedBox(height: 3),
         _staggeredBar(vessel.shield, vessel.shieldMax,
-            Colors.cyanAccent, 'SH', 'icon_shield',
+            Colors.cyanAccent, L10n.current.hudShield, 'icon_shield',
             indent: 10),
         const SizedBox(height: 3),
         _staggeredBar(vessel.genValue, vessel.genMax,
-            Colors.amberAccent, 'PWR', 'icon_gen',
+            Colors.amberAccent, L10n.current.hudPower, 'icon_gen',
             indent: 20),
       ],
     );
   }
 
+  static final _creditsStyle = TextStyle(
+    color: Colors.greenAccent,
+    fontSize: _sc(11),
+    fontWeight: FontWeight.bold,
+  );
+
   Widget _buildCreditsWidget() {
-    return Text(
-      game.isCoop
-          ? 'P1: ${game.vessel.credit}cr\nP2: ${game.vessel2!.credit}cr'
-          : 'Credits: ${game.vessel.credit}',
-      textAlign: TextAlign.right,
-      style: const TextStyle(
-        color: Colors.greenAccent,
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
-      ),
+    if (!game.isCoop) {
+      return CreditsWave(
+        prefix: L10n.current.creditsPrefix,
+        value: game.vessel.credit,
+        style: _creditsStyle,
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CreditsWave(
+            prefix: 'P1: ',
+            value: game.vessel.credit,
+            suffix: 'cr',
+            style: _creditsStyle),
+        CreditsWave(
+            prefix: 'P2: ',
+            value: game.vessel2!.credit,
+            suffix: 'cr',
+            style: _creditsStyle),
+      ],
     );
   }
 }
@@ -274,6 +314,7 @@ class BossHealthBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final boss = game.activeBoss;
     if (boss == null) return const SizedBox.shrink();
+    final parts = game.activeBossParts;
 
     return Positioned(
       left: 0,
@@ -292,13 +333,50 @@ class BossHealthBar extends StatelessWidget {
               ],
             ),
           ),
-          child: HealthBar(
-            label: boss.caption,
-            value: boss.hp.toDouble(),
-            maxValue: boss.hpMax.toDouble(),
-            color: Colors.deepOrangeAccent,
-            height: 8,
-            segments: 20,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HealthBar(
+                label: boss.shielded
+                    ? L10n.current.bossShielded(boss.caption)
+                    : boss.caption,
+                value: boss.hp.toDouble(),
+                maxValue: boss.hpMax.toDouble(),
+                // A shielded core takes nothing: colour it as inert so the
+                // player looks for the pod instead of hammering the hull.
+                color: boss.shielded ? Colors.blueGrey : Colors.deepOrangeAccent,
+                height: 8,
+                segments: 20,
+              ),
+              // One pip per bolted-on piece, dimmed once it is gone.
+              if (parts.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (final p in parts)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3),
+                          child: Text(
+                            p.caption.toUpperCase(),
+                            style: TextStyle(
+                              color: p.isDead
+                                  ? Colors.white24
+                                  : Colors.orangeAccent,
+                              fontSize: 9,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.bold,
+                              decoration: p.isDead
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
       ),

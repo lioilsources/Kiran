@@ -48,11 +48,15 @@ Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Single projectile, centered, pointing STRAIGHT UP — perfectly vertical, zero diagonal, zero rotation, zero isometric angle. The projectile axis is exactly parallel to the vertical edge of the image.
 No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
-	"background": `Seamless tileable space background, vertical scrolling game.
+	"background": `Seamless tileable {{.SceneNoun}} background for a vertical scrolling shooter.
+{{if .ZoneDesc}}This sector: {{.ZoneDesc}}. Render it within the setting above — do not abandon the setting.
+{{end}}Colours — every element in this image is drawn in these and only these: {{.PaletteDescription}}.
 Layer: {{.LayerDesc}}.
-Style: {{.StyleKeywords}}. Color mood: {{.BackgroundMood}}.
-Must tile seamlessly vertically. No ships, no UI, purely atmospheric.
-Wide landscape format 1024x2048px.`,
+Style: {{.StyleKeywords}}.
+Base palette: {{.BackgroundMood}}.{{if .DangerMood}} Palette shift: {{.DangerMood}}.{{end}}
+Must tile seamlessly top to bottom — the top edge must continue the bottom edge exactly.
+No ships, no vehicles, no characters, no UI, no text. Purely atmospheric.
+Tall portrait format, 1024 pixels wide by 2048 pixels high.`,
 
 	"hud_icon": `Game HUD icon: {{.IconType}}. Style: {{.StyleKeywords}}.
 Pixel art, 32x32 pixels, on a flat, uniform solid-color background.
@@ -64,6 +68,15 @@ Enemy spacecraft viewed from DIRECTLY OVERHEAD — strict 90-degree top-down ort
 {{.EnemyDirective}}.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Menacing hostile design. A single craft drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
+Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
+
+	"boss_part": `{{.ArtDirective}}
+A single machine part seen from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt.
+The part is {{.PartDirective}}.
+It is a component bolted onto a much larger warship, NOT a vehicle: no cockpit, no canopy, no wings, no fuselage, no nose, no engine plume, no exhaust trail. It is also NOT a ground vehicle: no wheels, no tracks, no legs, no chassis, no ground under it, no cast shadow.
+One flat mounting face along the bottom edge shows where it attaches to the hull. Any barrel, nozzle or dish runs STRAIGHT UP the frame — its opening sits at the TOP edge of the image, never pointing sideways or diagonally.
+Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
+Heavy armored hardware, chunky and industrial. Drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin.
 Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
 	"structure": `Top-down space obstacle/debris: {{.StructureDirective}}.
@@ -78,29 +91,18 @@ Symmetrical, centered composition, dramatic scale, atmospheric background with s
 Atmospheric, eye-catching thumbnail for a selection screen. No text overlay.`,
 
 	"comcenter_bg": `{{.ArtDirective}}
-A dramatic illustrated science fiction scene viewed from a spacecraft cockpit or space station observation deck.
-Rich atmospheric composition: nebulae, distant planets, star fields, or alien landscapes in the far background.
+A tall portrait view out of a large spacecraft observation window. The top two thirds of the image, including the whole vertical center, is an almost empty, very dark window of deep black space with only sparse faint pinpoint stars: no nebula, no clouds, no planets, no glow, no bright objects there, because rows of text are overlaid on it and must stay readable.
+The only bright, detailed elements are a dim cockpit console along the bottom fifth of the image and, at most, one small planet or nebula wisp cut off by the far left or far right edge.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing.
-The central area of the image must be naturally dark so that text and UI panels overlaid on top remain readable.
-No text, no HUD elements, no UI widgets, no ship in foreground. Portrait aspect ratio 1:2.`,
-
-	"ui_card_bg": `A sci-fi game inventory card panel surface texture.
-Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Dark background panel with subtle geometric or circuit-board micro-pattern etched into the surface.
-Slightly lighter beveled edges on all sides to give depth and a natural panel border.
-Square format. No text, no icons, no characters. Flat opaque surface, no transparency.`,
+{{.SceneTechnique}}
+No horizon line or bright band across the middle. No text, no HUD elements, no UI widgets, no ship in foreground.
+No people, no characters, no pilots, no faces, no mascots — the deck is empty, the view is the scene outside. Portrait aspect ratio 1:2.`,
 
 	"ui_button": `A sci-fi game action button texture, wide horizontal format 4:1.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Dark elongated panel with a glowing accent trim along the long horizontal edges.
 Subtle inner gradient from dark center to slightly lighter edges. Symmetric left-right design.
 No text, no letters, no icons. Game HUD element.`,
-
-	"ui_tab_active": `A sci-fi game navigation tab texture, wide horizontal strip 4:1.
-Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
-Active selected state: a crisp glowing accent line along the top edge, panel surface slightly brighter than background.
-Clean flat surface with very subtle inner highlight. No text, no icons.`,
 }
 
 var compiledTemplates = make(map[string]*template.Template)
@@ -135,10 +137,11 @@ glowing energy beam, flat 2d vector pulse, core glow,
 single projectile, centered, perfectly vertical, pointing straight up, no diagonal, no rotation, no isometric,
 flat solid background, no text, no UI, no voxel, no 3d render`,
 
-	"background": ponyQuality + `, anime style space background, vertical scrolling shooter background, seamless vertical loop,
-tall composition, vertical scrolling background,
-{{.LayerDesc}},
-{{.StyleKeywords}}, {{.BackgroundMood}},
+	"background": ponyQuality + `, anime style {{.SceneNoun}} background, vertical scrolling shooter background, seamless vertical loop,
+tall portrait composition, 1024x2048,
+{{if .ZoneDesc}}{{.ZoneDesc}},
+{{end}}{{.LayerDesc}},
+{{.StyleKeywords}}, {{.BackgroundMood}},{{if .DangerMood}} {{.DangerMood}},{{end}}
 atmospheric, no ships, no characters, no UI`,
 
 	"hud_icon": ponyQuality + `, anime style game HUD icon, {{.IconType}}, simple bold readable shape,
@@ -151,6 +154,13 @@ overhead view, bird's eye view, directly above, orthographic top-down, no perspe
 menacing mecha design, detailed, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
+
+	"boss_part": ponyQuality + `, mechanical component, machine part, {{.PartDirective}},
+part of a larger warship hull, overhead view, directly above, orthographic top-down, no perspective, no isometric, no 3/4 view,
+flat mounting face at bottom edge, barrel pointing straight up toward top edge, vertical barrel axis,
+heavy armored hardware, chunky industrial, detailed, sharp clean lineart, large, centered, fills frame,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid background, no text, no UI, no spaceship, no vehicle, no cockpit, no wings, no engine flame, no exhaust trail, no wheels, no tracks, no chassis, no ground, no shadow, no humans, no 3d render, no voxel`,
 
 	"structure": ponyQuality + `, anime style top-down space obstacle, {{.StructureDirective}},
 irregular natural shape, no propulsion, no weapons, detailed, centered, fills frame,
@@ -168,20 +178,10 @@ dramatic atmospheric scene, nebulae, distant planets, alien landscape,
 bold cel-shaded, vibrant colors, cinematic composition, dark center area for UI readability,
 portrait format, no text, no HUD, no ship in foreground`,
 
-	"ui_card_bg": ponyQuality + `, sci-fi game UI panel texture, inventory card surface,
-dark background, subtle circuit board pattern, beveled edges, panel depth,
-{{.StyleKeywords}}, {{.PaletteDescription}},
-flat opaque surface, square format, no text, no icons, no characters`,
-
 	"ui_button": ponyQuality + `, sci-fi game UI button texture, wide horizontal panel 4:1,
 dark elongated panel, glowing trim on edges, inner gradient,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 symmetric design, no text, no letters, game HUD element`,
-
-	"ui_tab_active": ponyQuality + `, sci-fi game navigation tab texture, wide horizontal strip,
-active selected state, glowing top edge accent, slightly bright panel,
-{{.StyleKeywords}}, {{.PaletteDescription}},
-flat surface, subtle highlight, no text, no icons`,
 }
 
 var compiledPonyTemplates = make(map[string]*template.Template)
@@ -233,6 +233,8 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"StyleKeywords":      styleKeywords,
 		"PaletteDescription": palette,
 		"BackgroundMood":     s.BackgroundMood,
+		"SceneNoun":          sceneNoun(s),
+		"SceneTechnique":     sceneTechnique(s),
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
 		"BossDirective":      s.BossDirective,
@@ -248,6 +250,36 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		return "", fmt.Errorf("execute template %q: %w", assetType, err)
 	}
 	return buf.String(), nil
+}
+
+// sceneNoun is the domain word the background template builds on. Most skins
+// are set in space, but not all — and hardcoding "space" made the template
+// assert one setting while the skin's BackgroundMood asserted another (river
+// valley, wartime sky), leaving the model to pick.
+func sceneNoun(s skin.SkinDef) string {
+	if s.SceneNoun != "" {
+		return s.SceneNoun
+	}
+	return "deep space"
+}
+
+// sceneTechnique names the rendering medium for full-scene illustrations
+// (comcenter_bg). A fixed "cel-shaded cartoon" line there overrode the skin's
+// era: 8-bit and VGA skins came back as smooth poster art with only the
+// palette left. Retro media are spelled out; everything else keeps the
+// illustrated look.
+func sceneTechnique(s skin.SkinDef) string {
+	style := strings.ToLower(s.ArtDirective + " " + s.StyleKeywords)
+	switch {
+	case strings.Contains(style, "wireframe"):
+		return "The entire scene is drawn as glowing vector lines on pure black: outlines only, no filled surfaces, no textures, no gradients, no painted shading, cinematic framing."
+	case strings.Contains(style, "low poly") || strings.Contains(style, "low-poly"):
+		return "The entire scene is flat-shaded low-poly 3D: untextured polygons, one flat color per face, visible facets, no gradients, no textures, cinematic framing."
+	case strings.Contains(style, "pixel art") || strings.Contains(style, "16-bit"):
+		return "The entire scene is pixel art at a low native resolution, upscaled with nearest neighbour: hard square pixels with a visible pixel grid, limited palette, flat color bands or dithering instead of smooth gradients, no anti-aliasing, no painterly blur, cinematic framing."
+	default:
+		return "Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing."
+	}
 }
 
 // BuildPrompt renders a prompt template for the given asset type and skin using the default (Flux) style.

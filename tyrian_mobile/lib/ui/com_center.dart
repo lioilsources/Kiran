@@ -4,45 +4,118 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
+import 'credits_wave.dart';
+import 'format.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
-import '../services/leaderboard_service.dart';
 import '../services/asset_library.dart';
+import 'loadout_cursor.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
+import 'skin_selector.dart' show SkinShopSection, SkinShopSectionState;
+import '../l10n/l10n.dart';
 
-/// Ported from ComCenter.cls — the shop/equipment screen.
-/// Aligned with original VBA layout: ship stats + scores left, weapon cards right.
+/// Ported from ComCenter.cls — the between-sector equipment screen.
+///
+/// Loadout-first: there is no separate shop. Each of the four LOADOUT rows
+/// (FRONT / LEFT / RIGHT / GEN) shows the weapon catalogue for that slot as
+/// chips; the UPG/BUY and SELL buttons act on the selected chip. Owned
+/// weapons that are not fitted wait in [Vessel.hangar] with their level, so
+/// switching between them is a tap and costs nothing.
 class ComCenterScreen extends StatefulWidget {
   final TyrianGame game;
   final VoidCallback onStart;
-  final VoidCallback? onJoinIp;
+  final VoidCallback? onJoin;
+
+  /// Start hosting a co-op game. Hosting is opt-in from here — it used to
+  /// start on every PLAY, spamming the LAN and popping the Windows firewall
+  /// prompt behind the fullscreen window for purely solo players.
+  final VoidCallback? onHost;
 
   const ComCenterScreen({
     super.key,
     required this.game,
     required this.onStart,
-    this.onJoinIp,
+    this.onJoin,
+    this.onHost,
   });
 
   @override
   State<ComCenterScreen> createState() => _ComCenterScreenState();
 }
 
+/// One focusable cell of a loadout row, in left-to-right order.
+sealed class _Cell {
+  const _Cell();
+}
+
+class _ChipCell extends _Cell {
+  final DevType type;
+  const _ChipCell(this.type);
+}
+
+class _ActionCell extends _Cell {
+  const _ActionCell();
+}
+
+class _SellCell extends _Cell {
+  const _SellCell();
+}
+
+/// Weapon family of a [DevType], from its sprite key — the big and small
+/// variant of a weapon share one (bubble, vulcan, laser).
+enum _Family { bubble, vulcan, blaster, star, laser }
+
+_Family? _familyOf(DevType t) => switch (t.imgName) {
+  'bubble' => _Family.bubble,
+  'vulcan' => _Family.vulcan,
+  'blaster' => _Family.blaster,
+  'starg' => _Family.star,
+  'laser' => _Family.laser,
+  _ => null,
+};
+
+const _familyColors = {
+  _Family.bubble: Color(0xFF4FA8FF),
+  _Family.vulcan: Color(0xFFFF8A3D),
+  _Family.blaster: Color(0xFFB66DFF),
+  _Family.star: Color(0xFFFFD84A),
+  _Family.laser: Color(0xFF3DF2FF),
+};
+
 class _ComCenterScreenState extends State<ComCenterScreen>
     with SingleTickerProviderStateMixin {
   TyrianGame get game => widget.game;
   Vessel get vessel => game.vessel;
+  AppLocalizations get _l => context.l10n;
 
-  // Weapon selection
-  int _selectedWeaponIndex = 0;
-  int _sectionIndex = 0; // 0=front, 1=side, 2=gen
+  static const _rows = [
+    WeaponSlot.frontGun,
+    WeaponSlot.leftGun,
+    WeaponSlot.rightGun,
+    WeaponSlot.generator,
+  ];
 
-  // Side slot target for buy (LB/RB gamepad or tap →L/→R)
-  WeaponSlot _targetSideSlot = WeaponSlot.leftGun;
+  /// A not-yet-owned chip the player tapped to see its BUY price, per slot.
+  /// Null means the buttons act on the fitted weapon.
+  final Map<WeaponSlot, DevType?> _pending = {};
+
+  final LoadoutCursor _cursor = LoadoutCursor();
+
+  /// The SKINS grid is a third pad region in the desktop two-column layout:
+  /// → off the end of a loadout row enters it, ← off its left column leaves.
+  /// The grid owns its own focus, scroll and buy/select rules; this screen
+  /// only says move, activate, or "the pad went elsewhere".
+  final GlobalKey<SkinShopSectionState> _skinShopKey =
+      GlobalKey<SkinShopSectionState>();
+  bool _inSkins = false;
+  static const _skinColumns = 5;
+
+  bool get _twoColumn =>
+      platform.isDesktop && MediaQuery.sizeOf(context).width >= 900;
 
   // Pilot name field (persistent controller so the cursor doesn't reset)
   late final TextEditingController _pilotController;
@@ -61,34 +134,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   int _creditDelta = 0;
   bool _showCreditDelta = false;
 
+  // "Unlocks at …" toast throttle, so mashing a locked chip doesn't stack.
+  DateTime _lastLockedToast = DateTime.fromMillisecondsSinceEpoch(0);
+
   // Gamepad polling
   final GamepadInput _gamepad = GamepadInput();
   Timer? _pollTimer;
   bool _prevUp = false, _prevDown = false;
   bool _prevLeft = false, _prevRight = false;
   bool _prevConfirm = false, _prevStart = false, _prevBack = false;
+  bool _prevSell = false;
   bool _prevLb = false, _prevRb = false;
   final FocusNode _focusNode = FocusNode();
-
-  // ── Computed section state ──
-  bool get _showingSide => _sectionIndex == 1;
-  bool get _showingGen => _sectionIndex == 2;
-
-  List<DevType> get _frontWeapons {
-    final maxIdx = vessel.nextWeaponLevel.clamp(0, DevType.frontWeapons.length - 1);
-    return DevType.frontWeapons.sublist(0, maxIdx + 1);
-  }
-
-  List<DevType> get _sideWeapons {
-    final maxIdx = vessel.nextWeaponLevel.clamp(0, DevType.sideWeapons.length - 1);
-    return DevType.sideWeapons.sublist(0, maxIdx + 1);
-  }
-
-  List<DevType> get _currentWeapons {
-    if (_sectionIndex == 0) return _frontWeapons;
-    if (_sectionIndex == 1) return _sideWeapons;
-    return [DevType.generatorBasic];
-  }
 
   @override
   void initState() {
@@ -122,193 +179,127 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     super.dispose();
   }
 
-  // ── Gamepad ──
+  // ── Loadout model ──
 
-  void _pollGamepad() async {
-    await _gamepad.poll();
-    if (!mounted) return;
-    final gp = _gamepad.primary;
+  /// The catalogue shown in a weapon row, locked tiers included.
+  List<DevType> _catalogue(WeaponSlot slot) =>
+      slot == WeaponSlot.frontGun ? DevType.frontWeapons : DevType.sideWeapons;
 
-    final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
-    final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
-    final left = gp.dpadLeft || GamepadInput.deadzone(gp.leftStickX) < -0.5;
-    final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
-    final confirm = gp.buttonB;
-    final start = gp.start;
-    final back = gp.back;
-    final lb = gp.leftShoulder;
-    final rb = gp.rightShoulder;
+  /// Tier i is offered once the score passed wepLevScores[i - 1] — the same
+  /// rule as the old `sublist(0, nextWeaponLevel + 1)`.
+  bool _unlocked(int index) => index <= vessel.nextWeaponLevel;
 
-    if (up && !_prevUp) _moveWeapon(-1);
-    if (down && !_prevDown) _moveWeapon(1);
-    // D-pad left/right: switch side gun slot when in Side tab
-    if (left && !_prevLeft && _showingSide) setState(() => _targetSideSlot = WeaponSlot.leftGun);
-    if (right && !_prevRight && _showingSide) setState(() => _targetSideSlot = WeaponSlot.rightGun);
-    if (confirm && !_prevConfirm) _confirmAction();
-    if ((start && !_prevStart) || (back && !_prevBack)) widget.onStart();
-    // LB/RB: switch between Front / Side / Generator tabs
-    if (lb && !_prevLb) _switchSection((_sectionIndex - 1).clamp(0, 2));
-    if (rb && !_prevRb) _switchSection((_sectionIndex + 1).clamp(0, 2));
+  /// Score that unlocks catalogue tier [index] (index ≥ 1).
+  int _unlockScore(int index) =>
+      Vessel.wepLevScores[(index - 1).clamp(0, Vessel.wepLevScores.length - 1)];
 
-    _prevUp = up; _prevDown = down;
-    _prevLeft = left; _prevRight = right;
-    _prevConfirm = confirm; _prevStart = start;
-    _prevBack = back;
-    _prevLb = lb; _prevRb = rb;
+  /// The chip the buttons act on: a pending purchase, else the fitted weapon.
+  DevType? _selected(WeaponSlot slot) {
+    final pending = _pending[slot];
+    if (pending != null) return pending;
+    final fitted = vessel.getDevice(slot);
+    if (fitted == null) return null;
+    return DevType.byName(fitted.name);
   }
 
-  void _moveWeapon(int delta) {
-    final weapons = _currentWeapons;
-    if (weapons.isEmpty) return;
-    setState(() {
-      _selectedWeaponIndex = (_selectedWeaponIndex + delta).clamp(0, weapons.length - 1);
-    });
-  }
-
-  void _switchSection(int section) {
-    if (section != _sectionIndex) {
-      setState(() {
-        _sectionIndex = section;
-        _selectedWeaponIndex = 0;
-      });
+  List<_Cell> _cells(WeaponSlot slot) {
+    if (slot == WeaponSlot.generator) {
+      return vessel.getDevice(slot) == null ? const [] : const [_ActionCell()];
     }
+    final cat = _catalogue(slot);
+    final cells = <_Cell>[
+      for (var i = 0; i < cat.length; i++)
+        if (_unlocked(i)) _ChipCell(cat[i]),
+    ];
+    if (_selected(slot) != null) cells.add(const _ActionCell());
+    if (_pending[slot] == null && vessel.getDevice(slot) != null) {
+      cells.add(const _SellCell());
+    }
+    return cells;
   }
 
-  void _confirmAction() {
-    if (_currentWeapons.isEmpty) return;
-    final weapon = _currentWeapons[_selectedWeaponIndex];
-    if (_showingGen) {
-      _upgradeSlot(WeaponSlot.generator);
-      return;
-    }
-    if (_showingSide) {
-      final slot = _targetSideSlot;
-      final slotDevice = vessel.devices.cast<Device?>().firstWhere(
-        (d) => d?.slot == slot, orElse: () => null);
-      if (slotDevice != null && slotDevice.name == weapon.name) {
-        _upgradeSlot(slot);
-      } else {
-        _buyWeaponToSlot(weapon, slot);
+  List<int> get _cellCounts => [for (final s in _rows) _cells(s).length];
+
+  /// Bottom-bar buttons in the order _buildBottomBar lays them out.
+  List<String> get _bottomActions => [
+    if (widget.onHost != null &&
+        game.coopRole == CoopRole.none &&
+        game.vessel2 == null)
+      'host',
+    if (widget.onJoin != null &&
+        game.coopRole != CoopRole.client &&
+        game.vessel2 == null)
+      'join',
+    'start',
+  ];
+
+  bool _cellFocused(WeaponSlot slot, _Cell cell) {
+    if (!platform.isDesktop || _inSkins) return false;
+    if (_cursor.region != LoadoutRegion.loadout) return false;
+    if (_rows[_cursor.row] != slot) return false;
+    final cells = _cells(slot);
+    if (_cursor.cell >= cells.length) return false;
+    final c = cells[_cursor.cell];
+    return switch ((c, cell)) {
+      (_ChipCell a, _ChipCell b) => a.type.name == b.type.name,
+      (_ActionCell _, _ActionCell _) => true,
+      (_SellCell _, _SellCell _) => true,
+      _ => false,
+    };
+  }
+
+  bool _bottomFocused(String action) {
+    if (!platform.isDesktop || _inSkins) return false;
+    if (_cursor.region != LoadoutRegion.bottomBar) return false;
+    final actions = _bottomActions;
+    return actions[_cursor.bottomIndex.clamp(0, actions.length - 1)] == action;
+  }
+
+  // ── Actions ──
+
+  void _tapChip(WeaponSlot slot, int index) {
+    final type = _catalogue(slot)[index];
+    if (!_unlocked(index)) {
+      final now = DateTime.now();
+      if (now.difference(_lastLockedToast) > const Duration(seconds: 2)) {
+        _lastLockedToast = now;
+        game.showMessage(_l.unlocksAt(fmtNum(_unlockScore(index))));
       }
       return;
     }
-    final owned = vessel.devices.any((d) => d.name == weapon.name);
-    if (owned) {
-      _upgradeWeapon(weapon);
+    final fitted = vessel.getDevice(slot);
+    setState(() {
+      if (fitted?.name == type.name) {
+        _pending[slot] = null;
+      } else if (vessel.hangarEntry(type.name, slot) != null) {
+        // Owned: switching is free and keeps the level.
+        vessel.fitWeapon(type, slot);
+        _pending[slot] = null;
+        game.saveProgress();
+      } else {
+        _pending[slot] = type;
+      }
+    });
+  }
+
+  void _activateAction(WeaponSlot slot) {
+    final pending = _pending[slot];
+    if (pending != null) {
+      _buy(pending, slot);
     } else {
-      _buyWeapon(weapon);
+      _upgradeSlot(slot);
     }
   }
 
-  void _sellAction() {
-    if (_showingGen) return;
-    if (_currentWeapons.isEmpty) return;
-    if (_showingSide) {
-      _sellSlot(_targetSideSlot);
-      return;
-    }
-    final weapon = _currentWeapons[_selectedWeaponIndex];
-    final owned = vessel.devices.any((d) => d.name == weapon.name);
-    if (owned) _sellWeapon(weapon);
-  }
-
-  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
-    final key = event.logicalKey;
-
-    if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
-      _moveWeapon(-1);
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.keyS) {
-      _moveWeapon(1);
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
-      if (_showingSide) {
-        setState(() { _targetSideSlot = WeaponSlot.leftGun; _selectedWeaponIndex = 0; });
-      } else {
-        _switchSection((_sectionIndex - 1).clamp(0, 2));
-      }
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.keyD) {
-      if (_showingSide) {
-        setState(() { _targetSideSlot = WeaponSlot.rightGun; _selectedWeaponIndex = 0; });
-      } else {
-        _switchSection((_sectionIndex + 1).clamp(0, 2));
-      }
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
-      _confirmAction();
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.escape) {
-      widget.onStart();
-      return KeyEventResult.handled;
-    }
-    if (key == LogicalKeyboardKey.delete || key == LogicalKeyboardKey.backspace) {
-      _sellAction();
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
-
-  // ── Buy / Upgrade / Sell ──
-
-  void _animateCreditChange(int delta) {
-    setState(() {
-      _creditDelta = delta;
-      _showCreditDelta = true;
-    });
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) setState(() => _showCreditDelta = false);
-    });
-  }
-
-  void _buyWeapon(DevType weapon) {
-    if (vessel.credit < weapon.price) return;
-    final slot = _showingSide ? _targetSideSlot : WeaponSlot.frontGun;
-    vessel.credit -= weapon.price;
-    vessel.equipWeapon(weapon, slot);
-    _animateCreditChange(-weapon.price);
+  void _buy(DevType type, WeaponSlot slot) {
+    if (vessel.credit < type.price) return;
+    vessel.credit -= type.price;
+    vessel.fitWeapon(type, slot);
+    _pending[slot] = null;
+    _animateCreditChange(-type.price);
     game.saveProgress();
   }
 
-  /// Buy a side weapon directly into a specific slot (used by →L / →R tap buttons).
-  void _buyWeaponToSlot(DevType weapon, WeaponSlot slot) {
-    if (vessel.credit < weapon.price) return;
-    vessel.credit -= weapon.price;
-    vessel.equipWeapon(weapon, slot);
-    _animateCreditChange(-weapon.price);
-    setState(() => _targetSideSlot = slot);
-    game.saveProgress();
-  }
-
-  void _upgradeWeapon(DevType weapon) {
-    final device = vessel.devices.firstWhere((d) => d.name == weapon.name);
-    if (device.level >= Device.maxLevel) return;
-    final cost = device.price;
-    if (vessel.credit < cost) return;
-
-    vessel.credit -= cost;
-    device.upgrade();
-    _animateCreditChange(-cost);
-    game.saveProgress();
-  }
-
-  void _sellWeapon(DevType weapon) {
-    final device = vessel.devices.firstWhere((d) => d.name == weapon.name);
-    final gained = device.price;
-    vessel.credit += gained;
-    vessel.removeWeapon(device.slot);
-    _animateCreditChange(gained);
-    game.saveProgress();
-  }
-
-  /// Slot-based upgrade — reliable even when the same side weapon occupies both
-  /// left and right slots (name-based lookup would only hit the first one).
   void _upgradeSlot(WeaponSlot slot) {
     final device = vessel.getDevice(slot);
     if (device == null || device.level >= Device.maxLevel) return;
@@ -320,16 +311,209 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     game.saveProgress();
   }
 
-  /// Slot-based sell — operates on the exact slot, not the first name match.
+  /// Sell the fitted weapon. The slot stays empty even when the hangar holds
+  /// something for it: switching is the player's call.
   void _sellSlot(WeaponSlot slot) {
-    if (slot == WeaponSlot.generator) return; // generator cannot be sold
-    final device = vessel.getDevice(slot);
-    if (device == null) return;
-    final gained = device.price;
-    vessel.credit += gained;
-    vessel.removeWeapon(slot);
+    final gained = vessel.sellFitted(slot);
+    if (gained == 0) return;
+    _pending[slot] = null;
     _animateCreditChange(gained);
     game.saveProgress();
+  }
+
+  void _animateCreditChange(int delta) {
+    setState(() {
+      _creditDelta = delta;
+      _showCreditDelta = true;
+    });
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _showCreditDelta = false);
+    });
+  }
+
+  // ── Pad / keyboard ──
+
+  void _enterSkins() {
+    final shop = _skinShopKey.currentState;
+    if (shop == null) return;
+    _inSkins = true;
+    shop.setPadFocus(shop.padFocusIndex);
+  }
+
+  void _leaveSkins({bool toBottom = false}) {
+    _inSkins = false;
+    _skinShopKey.currentState?.setPadFocus(null);
+    if (toBottom) {
+      _cursor.region = LoadoutRegion.bottomBar;
+      _cursor.bottomIndex = _cursor.bottomIndex.clamp(
+        0,
+        _bottomActions.length - 1,
+      );
+    }
+  }
+
+  void _moveRow(int delta) {
+    if (_inSkins) {
+      final shop = _skinShopKey.currentState;
+      if (shop != null && shop.movePadFocus(delta * _skinColumns)) return;
+      if (delta > 0) setState(() => _leaveSkins(toBottom: true));
+      return;
+    }
+    setState(() => _cursor.moveRow(delta, _cellCounts, _bottomActions.length));
+  }
+
+  void _cycleRow(int delta) {
+    if (_inSkins) {
+      setState(() => _leaveSkins(toBottom: true));
+      return;
+    }
+    setState(() => _cursor.cycle(delta, _cellCounts, _bottomActions.length));
+  }
+
+  void _moveCell(int delta) {
+    if (_inSkins) {
+      final shop = _skinShopKey.currentState;
+      if (shop == null) return;
+      final col = shop.padFocusIndex % _skinColumns;
+      if (delta < 0 && col == 0) {
+        setState(_leaveSkins);
+      } else if (!(delta > 0 && col == _skinColumns - 1)) {
+        shop.movePadFocus(delta);
+      }
+      return;
+    }
+    var moved = false;
+    setState(
+      () => moved = _cursor.moveCell(delta, _cellCounts, _bottomActions.length),
+    );
+    if (!moved &&
+        delta > 0 &&
+        _twoColumn &&
+        _cursor.region == LoadoutRegion.loadout) {
+      setState(_enterSkins);
+    }
+  }
+
+  void _confirm() {
+    if (_inSkins) {
+      _skinShopKey.currentState?.activatePadFocus();
+      return;
+    }
+    if (_cursor.region == LoadoutRegion.bottomBar) {
+      final actions = _bottomActions;
+      switch (actions[_cursor.bottomIndex.clamp(0, actions.length - 1)]) {
+        case 'host':
+          widget.onHost?.call();
+          setState(() {});
+        case 'join':
+          widget.onJoin?.call();
+        default:
+          widget.onStart();
+      }
+      return;
+    }
+    final slot = _rows[_cursor.row];
+    final cells = _cells(slot);
+    if (cells.isEmpty) return;
+    switch (cells[_cursor.cell.clamp(0, cells.length - 1)]) {
+      case _ChipCell(:final type):
+        _tapChip(slot, _catalogue(slot).indexOf(type));
+      case _ActionCell():
+        _activateAction(slot);
+      case _SellCell():
+        _sellSlot(slot);
+    }
+    setState(() => _cursor.clamp(_cells(slot).length));
+  }
+
+  /// X/Y / Delete: sell the fitted weapon of the cursor's row, wherever in the
+  /// row the cursor sits.
+  void _sellShortcut() {
+    if (_inSkins || _cursor.region != LoadoutRegion.loadout) return;
+    final slot = _rows[_cursor.row];
+    _sellSlot(slot);
+    setState(() => _cursor.clamp(_cells(slot).length));
+  }
+
+  void _pollGamepad() async {
+    await _gamepad.poll();
+    if (!mounted) return;
+    final gp = _gamepad.primary;
+
+    final up = gp.dpadUp || GamepadInput.deadzone(gp.leftStickY) < -0.5;
+    final down = gp.dpadDown || GamepadInput.deadzone(gp.leftStickY) > 0.5;
+    final left = gp.dpadLeft || GamepadInput.deadzone(gp.leftStickX) < -0.5;
+    final right = gp.dpadRight || GamepadInput.deadzone(gp.leftStickX) > 0.5;
+    final confirm = gp.buttonB;
+    final sell = gp.buttonX || gp.buttonY;
+    final start = gp.start;
+    final back = gp.back;
+    final lb = gp.leftShoulder;
+    final rb = gp.rightShoulder;
+
+    if (up && !_prevUp) _moveRow(-1);
+    if (down && !_prevDown) _moveRow(1);
+    if (left && !_prevLeft) _moveCell(-1);
+    if (right && !_prevRight) _moveCell(1);
+    if (confirm && !_prevConfirm) _confirm();
+    // X/Y = sell — a pad-only Steam Deck player must be able to sell.
+    if (sell && !_prevSell) _sellShortcut();
+    if ((start && !_prevStart) || (back && !_prevBack)) widget.onStart();
+    if (lb && !_prevLb) _moveRow(-1);
+    if (rb && !_prevRb) _moveRow(1);
+
+    _prevUp = up;
+    _prevDown = down;
+    _prevLeft = left;
+    _prevRight = right;
+    _prevConfirm = confirm;
+    _prevSell = sell;
+    _prevStart = start;
+    _prevBack = back;
+    _prevLb = lb;
+    _prevRb = rb;
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+
+    // Same cursor model as the pad — the two must not disagree.
+    if (key == LogicalKeyboardKey.arrowUp || key == LogicalKeyboardKey.keyW) {
+      _moveRow(-1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.keyS) {
+      _moveRow(1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
+      _moveCell(-1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowRight ||
+        key == LogicalKeyboardKey.keyD) {
+      _moveCell(1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.tab) {
+      _cycleRow(HardwareKeyboard.instance.isShiftPressed ? -1 : 1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
+      _confirm();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.escape) {
+      widget.onStart();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.delete ||
+        key == LogicalKeyboardKey.backspace) {
+      _sellShortcut();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   // ── Easter-egg cheats ──
@@ -339,7 +523,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     // Unlock all weapon tiers so everything is buyable/upgradable.
     vessel.nextWeaponLevel = DevType.frontWeapons.length - 1;
     setState(() {});
-    game.showMessage('CHEAT: credits maxed, all weapons unlocked');
+    game.showMessage(_l.cheatsMaxed);
     game.saveProgress();
   }
 
@@ -366,71 +550,74 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Column(
               children: [
                 _buildHeader(),
-                if (platform.isDesktop)
+                if (_twoColumn)
+                  // Two columns: ship + loadout on the left, the skin picker
+                  // filling the right. A desktop window narrowed below that
+                  // falls back to the one-column phone layout.
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(
-                          width: 460,
+                          width: 600,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_cheatsEnabled) _buildCheatBar(),
+                                _sectionHeader(_l.sectionStats),
+                                _buildStats(),
+                                _sectionHeader(_l.sectionLoadout),
+                                _buildLoadout(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(width: 1, color: _theme.accent.withAlpha(30)),
+                        Expanded(
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (_cheatsEnabled) _buildCheatBar(),
-                              _buildStatsAndSlots(),
-                              Container(height: 1, color: _theme.accent.withAlpha(30)),
-                              _buildSectionTabs(),
-                              Container(height: 1, color: _theme.accent.withAlpha(30)),
+                              _sectionHeader(_l.skins),
                               Expanded(
                                 child: SingleChildScrollView(
                                   padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      _buildActiveSection(),
-                                      const SizedBox(height: 16),
-                                      _buildScoresPanel(),
-                                    ],
+                                  child: SkinShopSection(
+                                    key: _skinShopKey,
+                                    crossAxisCount: _skinColumns,
+                                    onSkinChanged: _onSkinChanged,
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        Container(width: 1, color: _theme.accent.withAlpha(30)),
-                        const Expanded(child: SizedBox.shrink()),
                       ],
                     ),
                   )
-                else ...[
-                  // Whole content scrolls as one unit — stats/progress bars and
-                  // section tabs scroll away with the weapon list so the list
-                  // gets the full screen height instead of the cramped leftover.
+                else
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (_cheatsEnabled) _buildCheatBar(),
-                          _buildStatsAndSlots(),
-                          Container(height: 1, color: _theme.accent.withAlpha(30)),
-                          _buildSectionTabs(),
-                          Container(height: 1, color: _theme.accent.withAlpha(30)),
+                          _sectionHeader(_l.sectionStats),
+                          _buildStats(),
+                          _sectionHeader(_l.sectionLoadout),
+                          _buildLoadout(),
+                          _sectionHeader(_l.skins),
                           Padding(
                             padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildActiveSection(),
-                                const SizedBox(height: 16),
-                                _buildScoresPanel(),
-                              ],
+                            child: SkinShopSection(
+                              crossAxisCount: 2,
+                              onSkinChanged: _onSkinChanged,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ],
                 _buildBottomBar(),
               ],
             ),
@@ -440,31 +627,29 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
-  Widget _buildStatsAndSlots() {
+  /// Section label — a short accent bar and near-white caps.
+  Widget _sectionHeader(String label) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+      child: Row(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _buildPilotName()),
-              const SizedBox(width: 12),
-              Flexible(child: _buildGenInfo()),
-            ],
+          Container(width: 4, height: 12, color: _theme.accent),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: _theme.styled(
+              TextStyle(
+                color: Colors.white.withAlpha(165),
+                fontSize: _fs(10),
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              ),
+            ),
           ),
-          const SizedBox(height: 6),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildShipPreview(),
-              const SizedBox(width: 12),
-              Expanded(child: _buildStatValues()),
-            ],
+          const SizedBox(width: 8),
+          Expanded(
+            child: Container(height: 1, color: _theme.accent.withAlpha(50)),
           ),
-          const SizedBox(height: 6),
-          _buildSlotList(),
         ],
       ),
     );
@@ -472,341 +657,15 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   double _fs(double mobile) => platform.isDesktop ? mobile + 4 : mobile + 2;
 
-  Widget _buildSectionTabs() {
-    return Row(
-      children: [
-        _buildTab('FRONT', 0),
-        Container(width: 1, color: _theme.accentDim),
-        _buildTab('SIDE', 1),
-        Container(width: 1, color: _theme.accentDim),
-        _buildTab('GENERATOR', 2),
-      ],
-    );
+  /// A skin was switched (or bought) from the SKINS section. The new skin's
+  /// assets are already loaded; restyle this screen (chip icons come from the
+  /// new atlas on the next build) and the game behind it.
+  void _onSkinChanged(String id) {
+    game.refreshSprites();
+    setState(() => _theme = UiTheme.forSkin(AssetLibrary.instance.skinId));
   }
 
-  Widget _buildTab(String label, int index) {
-    final isActive = _sectionIndex == index;
-    final tabSprite = isActive ? AssetLibrary.instance.getIcon('ui_tab_active') : null;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() {
-          _sectionIndex = index;
-          _selectedWeaponIndex = 0;
-        }),
-        child: spriteBox(
-          sprite: tabSprite,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            color: tabSprite != null
-                ? Colors.transparent
-                : (isActive ? _theme.surfaceLight : Colors.transparent),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: _theme.styled(TextStyle(
-                color: isActive ? _theme.accent : _theme.accentDim,
-                fontSize: _fs(11),
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                letterSpacing: 1,
-              )),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActiveSection() {
-    Widget section;
-    if (_sectionIndex == 2) {
-      section = _buildGeneratorSection();
-    } else if (_sectionIndex == 1) {
-      section = _buildSideSection();
-    } else {
-      section = _buildWeaponGrid(_frontWeapons);
-    }
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 180),
-      child: KeyedSubtree(key: ValueKey(_sectionIndex), child: section),
-    );
-  }
-
-  Widget _buildWeaponGrid(List<DevType> weapons) {
-    return Column(
-      children: [
-        for (int i = 0; i < weapons.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: _buildWeaponCard(weapons[i], i),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildSideSection() {
-    final slotDevice = vessel.devices.cast<Device?>().firstWhere(
-      (d) => d?.slot == _targetSideSlot,
-      orElse: () => null,
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            _buildSideSubTab(WeaponSlot.leftGun, 'LEFT'),
-            Container(width: 1, color: _theme.accentDim),
-            _buildSideSubTab(WeaponSlot.rightGun, 'RIGHT'),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          color: _theme.surfaceDark,
-          child: Text(
-            slotDevice != null
-                ? '${slotDevice.name} Lv.${slotDevice.level}'
-                : '— empty —',
-            style: _theme.styled(TextStyle(
-              color: slotDevice != null ? _theme.success : _theme.accentDim,
-              fontSize: 11,
-            )),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const SizedBox(height: 8),
-        for (int i = 0; i < _sideWeapons.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: _buildSlotWeaponCard(_sideWeapons[i], i, _targetSideSlot, true),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildSideSubTab(WeaponSlot slot, String label) {
-    final isActive = _targetSideSlot == slot;
-    final tabSprite = isActive ? AssetLibrary.instance.getIcon('ui_tab_active') : null;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() {
-          _targetSideSlot = slot;
-          _selectedWeaponIndex = 0;
-        }),
-        child: spriteBox(
-          sprite: tabSprite,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 7),
-            color: tabSprite != null
-                ? Colors.transparent
-                : (isActive ? _theme.surfaceLight : Colors.transparent),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: _theme.styled(TextStyle(
-                color: isActive ? _theme.accent : _theme.accentDim,
-                fontSize: _fs(10),
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                letterSpacing: 1,
-              )),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSlotWeaponCard(DevType weapon, int index, WeaponSlot slot, bool columnActive) {
-    final isSelected = columnActive && _selectedWeaponIndex == index;
-    final slotDevice = vessel.devices.cast<Device?>().firstWhere(
-      (d) => d?.slot == slot,
-      orElse: () => null,
-    );
-    final owned = slotDevice?.name == weapon.name;
-    final canAfford = vessel.credit >= weapon.price;
-
-    Color borderColor;
-    if (isSelected) {
-      borderColor = _theme.accent;
-    } else if (owned) {
-      borderColor = _theme.success.withAlpha(120);
-    } else {
-      borderColor = _theme.accentDim.withAlpha(60);
-    }
-
-    final cardSprite = AssetLibrary.instance.getIcon('ui_card_bg');
-    return GestureDetector(
-      onTap: () => setState(() {
-        _targetSideSlot = slot;
-        _selectedWeaponIndex = index;
-      }),
-      onDoubleTap: () {
-        setState(() {
-          _targetSideSlot = slot;
-          _selectedWeaponIndex = index;
-        });
-        if (owned) {
-          _upgradeSlot(slot);
-        } else if (canAfford) {
-          _buyWeaponToSlot(weapon, slot);
-        }
-      },
-      child: AnimatedScale(
-        scale: isSelected ? 1.04 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        child: spriteCardBox(
-          sprite: cardSprite,
-          darkOverlay: isSelected ? 0.0 : (!owned && !canAfford ? 0.6 : 0.35),
-          child: Container(
-            padding: const EdgeInsets.all(26),
-            decoration: BoxDecoration(
-              color: cardSprite != null
-                  ? Colors.transparent
-                  : (isSelected ? _theme.surfaceLight : _theme.surfaceMid),
-              border: cardSprite != null
-                  ? null
-                  : Border.all(color: borderColor, width: isSelected ? 2 : 1),
-              borderRadius: BorderRadius.circular(_theme.cornerRadius),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  owned ? '${weapon.name} ${_romanLevel(slotDevice!.level)}' : weapon.name,
-                  style: _theme.styled(TextStyle(
-                    color: owned ? _theme.success : Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 11)),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
-                  style: _theme.styled(TextStyle(
-                    color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
-                    fontSize: 11,
-                  )),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (weapon.guide > 0)
-                  Text(
-                    'GUIDED',
-                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 10, letterSpacing: 0.5)),
-                  ),
-                const SizedBox(height: 4),
-                if (owned)
-                  Row(
-                    children: [
-                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 11))),
-                      const Spacer(),
-                      if (slotDevice!.level < Device.maxLevel)
-                        Text(
-                          '${slotDevice.price.toInt()}cr',
-                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
-                        ),
-                    ],
-                  )
-                else
-                  Text(
-                    '${weapon.price} cr',
-                    style: _theme.styled(TextStyle(
-                      color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    )),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.easeInOut,
-                  child: isSelected
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 4),
-                            _buildSlotCardAction(weapon, owned, canAfford, slotDevice, slot),
-                          ],
-                        )
-                      : const SizedBox(width: double.infinity, height: 0),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSlotCardAction(DevType weapon, bool owned, bool canAfford, Device? device, WeaponSlot slot) {
-    if (owned) {
-      final atMax = device!.level >= Device.maxLevel;
-      return Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: atMax ? null : () => _upgradeSlot(slot),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 3),
-                decoration: BoxDecoration(
-                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(40),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                child: Text(
-                  atMax ? 'MAX' : 'UPGRADE',
-                  textAlign: TextAlign.center,
-                  style: _theme.styled(TextStyle(
-                    color: atMax ? _theme.accentDim : _theme.upgrade,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  )),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: () => _sellSlot(slot),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: _theme.danger.withAlpha(40),
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: Text(
-                'SELL',
-                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 11, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return GestureDetector(
-        onTap: canAfford ? () => _buyWeaponToSlot(weapon, slot) : null,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 3),
-          decoration: BoxDecoration(
-            color: canAfford ? _theme.success.withAlpha(40) : Colors.white10,
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Text(
-            canAfford ? 'BUY' : 'NO CREDITS',
-            textAlign: TextAlign.center,
-            style: _theme.styled(TextStyle(
-              color: canAfford ? _theme.success : _theme.accentDim,
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-            )),
-          ),
-        ),
-      );
-    }
-  }
+  // ── Header: title + pilot / credits + score ──
 
   Widget _buildHeader() {
     return Container(
@@ -815,82 +674,783 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         border: Border(bottom: BorderSide(color: _theme.accent.withAlpha(60))),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Row 1: title + P2 name (co-op)
           Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Long-press the title to toggle the hidden cheats panel (easter egg).
-              GestureDetector(
-                onLongPress: () {
-                  setState(() => _cheatsEnabled = !_cheatsEnabled);
-                  game.showMessage(
-                      _cheatsEnabled ? 'Cheats enabled' : 'Cheats disabled');
-                },
-                child: Text(
-                  'COMMAND CENTER',
-                  style: _theme.styled(TextStyle(
-                    color: _theme.accent,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 3,
-                  )),
+              // Title + challenge shrink together before they push the pilot
+              // name off a narrow phone.
+              Flexible(
+                flex: 3,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.bottomLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Long-press the title to toggle the hidden cheats panel.
+                      GestureDetector(
+                        onLongPress: () {
+                          setState(() => _cheatsEnabled = !_cheatsEnabled);
+                          game.showMessage(
+                            _cheatsEnabled
+                                ? _l.cheatsEnabled
+                                : _l.cheatsDisabled,
+                          );
+                        },
+                        child: Text(
+                          _l.commandCenter,
+                          style: _theme.styled(
+                            TextStyle(
+                              color: _theme.accent,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 3,
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Which challenge this mission flies at. Campaign: fixed for the
+                      // run. Endless: whatever the main menu says right now.
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, bottom: 2),
+                        child: Text(
+                          game.challenge.localizedLabel(_l),
+                          style: TextStyle(
+                            color: game.challenge.isHidden
+                                ? Colors.purpleAccent
+                                : _theme.accentDim,
+                            fontSize: 10,
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              if (game.isCoop && game.vessel2 != null) ...[
-                const Spacer(),
-                Text(
-                  'P2: ${game.vessel2!.pilotName}',
-                  style: const TextStyle(color: Color(0xFF00FF80), fontSize: 12),
-                ),
-              ],
+              const SizedBox(width: 12),
+              Expanded(flex: 2, child: _buildPilotName()),
             ],
           ),
-          const SizedBox(height: 3),
-          // Row 2: credits (with delta animation) + IP on same line, no overlap
+          if (game.isCoop && game.vessel2 != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'P2: ${game.vessel2!.pilotName}',
+                style: const TextStyle(color: Color(0xFF00FF80), fontSize: 12),
+              ),
+            ),
+          const SizedBox(height: 4),
           Row(
             children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Text(
-                    'Credits: ${vessel.credit}',
-                    style: _theme.styled(TextStyle(
-                      color: _theme.success,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    )),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CreditsWave(
+                        prefix: _l.creditsPrefix,
+                        value: vessel.credit,
+                        textAlign: TextAlign.left,
+                        style: _theme.styled(
+                          TextStyle(
+                            color: _theme.success,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      if (_showCreditDelta)
+                        Positioned(
+                          top: -16,
+                          left: 0,
+                          child: AnimatedOpacity(
+                            opacity: _showCreditDelta ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 600),
+                            child: Text(
+                              _creditDelta >= 0
+                                  ? '+${fmtNum(_creditDelta)} cr'
+                                  : '${fmtNum(_creditDelta)} cr',
+                              style: TextStyle(
+                                color: _creditDelta >= 0
+                                    ? _theme.success
+                                    : _theme.danger,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  if (_showCreditDelta)
-                    Positioned(
-                      top: -16,
-                      left: 0,
-                      child: AnimatedOpacity(
-                        opacity: _showCreditDelta ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 600),
-                        child: Text(
-                          _creditDelta >= 0
-                              ? '+$_creditDelta cr'
-                              : '$_creditDelta cr',
-                          style: TextStyle(
-                            color: _creditDelta >= 0 ? _theme.success : _theme.danger,
-                            fontSize: 11,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Score survives death and never resets: it is the weapon unlock
+              // track and the leaderboard value.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    _l.scoreValue(fmtNum(vessel.score)),
+                    style: _theme.styled(
+                      TextStyle(
+                        color: _theme.accent,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (game.coopRole == CoopRole.host && game.hostIp != null)
+            Text(
+              'IP: ${game.hostIp}',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white.withAlpha(110),
+                fontSize: 10,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPilotName() {
+    return TextField(
+      controller: _pilotController,
+      textAlign: TextAlign.right,
+      style: const TextStyle(color: Colors.white, fontSize: 15),
+      decoration: InputDecoration(
+        hintText: _l.pilot,
+        hintStyle: TextStyle(color: _theme.accentDim, fontSize: 13),
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(vertical: 4),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: _theme.accentDim.withAlpha(120)),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: _theme.accent),
+        ),
+      ),
+      onChanged: (v) {
+        vessel.pilotName = v;
+        game.saveProgress();
+      },
+      // Hand the keyboard back to the cursor model when editing ends.
+      onSubmitted: (_) => _focusNode.requestFocus(),
+    );
+  }
+
+  // ── STATS: HP / SH / GEN / PWR / DPS / NEXT WEAPON ──
+
+  Widget _buildStats() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildShipPreview(),
+          const SizedBox(width: 12),
+          Expanded(child: _buildStatValues()),
+        ],
+      ),
+    );
+  }
+
+  Widget? _statIcon(String key, {double size = 16}) {
+    final sprite = AssetLibrary.instance.getIcon(key);
+    return sprite == null
+        ? null
+        : SizedBox(
+            width: size,
+            height: size,
+            child: CustomPaint(painter: SpritePainter(sprite)),
+          );
+  }
+
+  TextStyle _labelStyle(Color c) => _theme.styled(
+    TextStyle(color: c, fontSize: 12, fontWeight: FontWeight.bold),
+  );
+
+  /// Fitted weapons that draw more per shot than the generator can hold —
+  /// they never fire. Before the loadout rewrite nothing on screen said so.
+  List<Device> get _starved => [
+    for (final d in vessel.devices)
+      if (d.slot != WeaponSlot.generator && d.pwrNeed > vessel.genMax) d,
+  ];
+
+  Widget _buildStatValues() {
+    final load = vessel.generatorLoad;
+    final overload = load > 100;
+    final pwrColor = overload
+        ? _theme.danger
+        : (load > 70 ? _theme.upgrade : _theme.success);
+    final starved = _starved;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        HealthBar(
+          label: _l.hudHp,
+          value: vessel.hp.toDouble(),
+          maxValue: vessel.hpMax.toDouble(),
+          color: _theme.danger,
+          height: 12,
+          icon: _statIcon('icon_life'),
+          labelStyle: _labelStyle(_theme.danger),
+        ),
+        const SizedBox(height: 5),
+        HealthBar(
+          label: _l.hudShield,
+          value: vessel.shield,
+          maxValue: vessel.shieldMax,
+          color: _theme.accent,
+          height: 12,
+          icon: _statIcon('icon_shield'),
+          labelStyle: _labelStyle(_theme.accent),
+        ),
+        const SizedBox(height: 5),
+        HealthBar(
+          label: _l.hudGen,
+          value: vessel.genValue,
+          maxValue: vessel.genMax,
+          color: _theme.upgrade,
+          height: 12,
+          icon: _statIcon('icon_gen'),
+          labelStyle: _labelStyle(_theme.upgrade),
+        ),
+        const SizedBox(height: 5),
+        _buildPowerRow(load, pwrColor, overload),
+        for (final d in starved)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              _l.weaponOff(_familyLabel(DevType.byName(d.name)) ?? d.name),
+              style: _theme.styled(
+                TextStyle(
+                  color: _theme.danger,
+                  fontSize: _fs(9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(height: 5),
+        Row(
+          children: [
+            Text('${_l.dps} ', style: _labelStyle(_theme.accent)),
+            Text(
+              vessel.totalDps.toStringAsFixed(1),
+              style: _theme.styled(
+                TextStyle(color: Colors.white70, fontSize: _fs(10)),
+              ),
+            ),
+          ],
+        ),
+        ..._buildNextWeapon(),
+      ],
+    );
+  }
+
+  /// PWR = generator load. Above 100 % the weapons outdraw the generator and
+  /// fire slower than their cooldown — red, full bar, OVERLOAD.
+  Widget _buildPowerRow(double load, Color color, bool overload) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 44,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(_l.power, style: _labelStyle(color)),
+          ),
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 12,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(2),
+              child: Stack(
+                children: [
+                  Container(color: Colors.black45),
+                  FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: (load / 100).clamp(0.0, 1.0),
+                    child: Container(color: color),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: Text(
+              overload
+                  ? '${load.round()}%  ${_l.overload}'
+                  : '${load.round()}%',
+              style: _theme.styled(
+                TextStyle(
+                  color: color,
+                  fontSize: _fs(9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// NEXT WEAPON: which family the next score threshold unlocks, how far off
+  /// it is, and a bar from the previous threshold. Hidden once all is open.
+  List<Widget> _buildNextWeapon() {
+    final tier = vessel.nextWeaponLevel;
+    final nextIndex = tier + 1;
+    if (tier >= Vessel.wepLevScores.length ||
+        nextIndex >= DevType.frontWeapons.length) {
+      return const [];
+    }
+    final threshold = Vessel.wepLevScores[tier];
+    final prev = tier > 0 ? Vessel.wepLevScores[tier - 1] : 0;
+    final span = (threshold - prev).clamp(1, 1 << 62);
+    final progress = ((vessel.score - prev) / span).clamp(0.0, 1.0);
+    final front = DevType.frontWeapons[nextIndex];
+    final side = DevType.sideWeapons[nextIndex];
+    final families = {_familyOf(front), _familyOf(side)}.whereType<_Family>();
+    return [
+      const SizedBox(height: 5),
+      Row(
+        children: [
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${_l.nextWeapon} ', style: _labelStyle(_theme.upgrade)),
+                  for (final f in families) ...[
+                    _familyIcon(f == _familyOf(front) ? front : side, 14),
+                    const SizedBox(width: 3),
+                    Text(
+                      _familyName(f),
+                      style: _theme.styled(
+                        TextStyle(
+                          color: _familyColors[f],
+                          fontSize: _fs(9),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: Text(
+                _l.pointsValue(fmtNum(threshold - vessel.score)),
+                style: _theme.styled(
+                  TextStyle(color: Colors.white54, fontSize: _fs(9)),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 3),
+      SizedBox(
+        height: 4,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(2),
+          child: LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.black45,
+            valueColor: AlwaysStoppedAnimation(_theme.upgrade),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  // ── LOADOUT ──
+
+  String _familyName(_Family f) => switch (f) {
+    _Family.bubble => _l.familyBubble,
+    _Family.vulcan => _l.familyVulcan,
+    _Family.blaster => _l.familyBlaster,
+    _Family.star => _l.familyStar,
+    _Family.laser => _l.familyLaser,
+  };
+
+  String? _familyLabel(DevType? t) {
+    final f = t == null ? null : _familyOf(t);
+    return f == null ? null : _familyName(f);
+  }
+
+  Widget _familyIcon(DevType t, double size) {
+    final sprite = AssetLibrary.instance.getSprite(t.imgName);
+    return SizedBox(
+      width: size,
+      height: size,
+      child: sprite == null
+          ? Icon(
+              Icons.circle,
+              size: size * 0.6,
+              color: _familyColors[_familyOf(t)],
+            )
+          : CustomPaint(painter: SpritePainter(sprite)),
+    );
+  }
+
+  Widget _buildLoadout() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildWeaponRow(_l.slotFront, WeaponSlot.frontGun),
+          _buildWeaponRow(_l.slotLeft, WeaponSlot.leftGun),
+          _buildWeaponRow(_l.slotRight, WeaponSlot.rightGun),
+          _buildGeneratorRow(),
+        ],
+      ),
+    );
+  }
+
+  Widget _rowLabel(String label) => SizedBox(
+    width: 56,
+    // FittedBox, not wrap: Press Start 2P rendered labels as a
+    // one-character-per-line ladder in narrow columns.
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Text(
+        label.toUpperCase(),
+        maxLines: 1,
+        style: _theme.styled(
+          TextStyle(
+            color: Colors.white.withAlpha(170),
+            fontSize: _fs(10),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildWeaponRow(String label, WeaponSlot slot) {
+    final cat = _catalogue(slot);
+    final fitted = vessel.getDevice(slot);
+    final pending = _pending[slot];
+    final starved = _starved;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          _rowLabel(label),
+          for (var i = 0; i < cat.length; i++)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 3),
+                child: _buildChip(
+                  slot: slot,
+                  index: i,
+                  fitted: fitted?.name == cat[i].name ? fitted : null,
+                  hangar: vessel.hangarEntry(cat[i].name, slot),
+                  pending: pending?.name == cat[i].name,
+                  starved:
+                      fitted?.name == cat[i].name && starved.contains(fitted),
+                ),
+              ),
+            ),
+          const SizedBox(width: 3),
+          _buildRowButtons(slot, fitted, pending),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChip({
+    required WeaponSlot slot,
+    required int index,
+    required Device? fitted,
+    required Device? hangar,
+    required bool pending,
+    required bool starved,
+  }) {
+    final type = _catalogue(slot)[index];
+    final family = _familyOf(type);
+    final famColor = _familyColors[family] ?? _theme.accent;
+    final unlocked = _unlocked(index);
+    final owned = fitted ?? hangar;
+    final affordable = vessel.credit >= type.price;
+    final focused = _cellFocused(slot, _ChipCell(type));
+
+    final String sub;
+    Color subColor = Colors.white60;
+    if (!unlocked) {
+      sub = _l.pointsValue(fmtNum(_unlockScore(index)));
+    } else if (owned != null) {
+      sub = _l.levelShort(owned.level);
+      subColor = fitted != null ? Colors.white : Colors.white70;
+    } else {
+      sub = fmtNum(type.price);
+      subColor = affordable ? _theme.upgrade : _theme.danger;
+    }
+
+    final Color border;
+    final double borderWidth;
+    if (starved) {
+      border = _theme.danger;
+      borderWidth = 2;
+    } else if (fitted != null) {
+      border = famColor;
+      borderWidth = 2;
+    } else if (pending) {
+      border = _theme.upgrade;
+      borderWidth = 2;
+    } else if (hangar != null) {
+      border = famColor.withAlpha(150);
+      borderWidth = 1;
+    } else {
+      border = Colors.white24;
+      borderWidth = 1;
+    }
+
+    return GestureDetector(
+      onTap: () => _tapChip(slot, index),
+      child: Opacity(
+        opacity: unlocked ? 1.0 : 0.35,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
+          decoration: BoxDecoration(
+            color: fitted != null
+                ? famColor.withAlpha(45)
+                : _theme.surfaceDark.withAlpha(170),
+            border: Border.all(
+              color: focused ? Colors.white : border,
+              width: focused ? 2.5 : borderWidth,
+            ),
+            borderRadius: BorderRadius.circular(_theme.cornerRadius),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (unlocked)
+                    _familyIcon(type, 14)
+                  else
+                    const Icon(Icons.lock, size: 12, color: Colors.white54),
+                  const SizedBox(width: 2),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        family == null ? type.name : _familyName(family),
+                        maxLines: 1,
+                        style: _theme.styled(
+                          TextStyle(
+                            color: famColor,
+                            fontSize: _fs(8),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
+                  ),
                 ],
               ),
-              if (game.coopRole == CoopRole.host && game.hostIp != null) ...[
-                const SizedBox(width: 10),
-                Text(
-                  'IP: ${game.hostIp}',
-                  style: TextStyle(color: _theme.accentDim, fontSize: 10),
+              const SizedBox(height: 2),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  sub,
+                  maxLines: 1,
+                  style: _theme.styled(
+                    TextStyle(color: subColor, fontSize: _fs(8)),
+                  ),
                 ),
-              ],
+              ),
+              // Fitted marker — the line under the weapon that flies.
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                height: 2,
+                width: 24,
+                color: fitted != null ? famColor : Colors.transparent,
+              ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _button({
+    required String label,
+    required Color color,
+    required VoidCallback? onTap,
+    required bool focused,
+    String? hint,
+  }) {
+    final enabled = onTap != null;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        // 44pt-class touch target (iPhone 12 mini is the floor). Fixed width
+        // so the chips keep their size whichever buttons the row shows.
+        width: _buttonWidth,
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        margin: const EdgeInsets.only(left: 3),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: color.withAlpha(enabled ? 45 : 15),
+          border: Border.all(
+            color: focused ? Colors.white : color.withAlpha(enabled ? 140 : 50),
+            width: focused ? 2.5 : 1,
+          ),
+          borderRadius: BorderRadius.circular(_theme.cornerRadius),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            hint == null ? label : '$label$hint',
+            textAlign: TextAlign.center,
+            style: _theme.styled(
+              TextStyle(
+                color: enabled ? color : color.withAlpha(90),
+                fontSize: _fs(9),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static const double _buttonWidth = 60;
+
+  String? _padHint(String button) => platform.isDesktop ? ' [$button]' : null;
+
+  Widget _buildRowButtons(WeaponSlot slot, Device? fitted, DevType? pending) {
+    final List<Widget> buttons = [];
+    if (pending != null) {
+      final affordable = vessel.credit >= pending.price;
+      buttons.add(
+        _button(
+          label: '${_l.buy}\n${fmtNum(pending.price)}',
+          color: affordable ? _theme.success : _theme.danger,
+          onTap: affordable ? () => _buy(pending, slot) : null,
+          focused: _cellFocused(slot, const _ActionCell()),
+          hint: _padHint('B'),
+        ),
+      );
+    } else if (fitted != null) {
+      buttons.add(_upgradeButton(slot, fitted));
+      buttons.add(
+        _button(
+          label: '${_l.sell}\n${fmtNum(fitted.price)}',
+          color: _theme.danger,
+          onTap: () => _sellSlot(slot),
+          focused: _cellFocused(slot, const _SellCell()),
+          hint: _padHint('X'),
+        ),
+      );
+    }
+    // Always reserve room for two buttons: selecting an unowned chip swaps
+    // UPG+SELL for a single BUY and the chips must not jump.
+    return SizedBox(
+      width: 2 * (_buttonWidth + 3),
+      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: buttons),
+    );
+  }
+
+  Widget _upgradeButton(WeaponSlot slot, Device device) {
+    final atMax = device.level >= Device.maxLevel;
+    final affordable = vessel.credit >= device.price;
+    return _button(
+      label: atMax ? _l.max : '${_l.upgradeShort}\n${fmtNum(device.price)}',
+      color: _theme.upgrade,
+      onTap: atMax || !affordable ? null : () => _upgradeSlot(slot),
+      focused: _cellFocused(slot, const _ActionCell()),
+      hint: atMax ? null : _padHint('B'),
+    );
+  }
+
+  Widget _buildGeneratorRow() {
+    final gen = vessel.getDevice(WeaponSlot.generator);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          _rowLabel(_l.slotGen),
+          Expanded(
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 48),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              alignment: Alignment.centerLeft,
+              decoration: BoxDecoration(
+                color: _theme.upgrade.withAlpha(30),
+                border: Border.all(color: _theme.upgrade.withAlpha(140)),
+                borderRadius: BorderRadius.circular(_theme.cornerRadius),
+              ),
+              child: Row(
+                children: [
+                  _statIcon('icon_gen', size: 18) ?? const SizedBox(width: 18),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      gen == null
+                          ? '---'
+                          : '${gen.name} ${_l.levelShort(gen.level)} · ${vessel.genMax.toInt()}',
+                      overflow: TextOverflow.ellipsis,
+                      style: _theme.styled(
+                        TextStyle(
+                          color: Colors.white,
+                          fontSize: _fs(9),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 3),
+          SizedBox(
+            width: 2 * (_buttonWidth + 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (gen != null) _upgradeButton(WeaponSlot.generator, gen),
+              ],
+            ),
           ),
         ],
       ),
@@ -914,12 +1474,14 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           ? CustomPaint(painter: _ShipPreviewPainter(sprite))
           : Center(
               child: Text(
-                'Lv ${game.currentSectorIndex + 1}',
-                style: _theme.styled(TextStyle(
-                  color: _theme.accent,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                )),
+                _l.levelShort(game.levelForIndex(game.currentSectorIndex)),
+                style: _theme.styled(
+                  TextStyle(
+                    color: _theme.accent,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
     );
@@ -931,9 +1493,9 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       color: Colors.deepPurple.withAlpha(70),
       child: Row(
         children: [
-          const Text(
-            'CHEATS',
-            style: TextStyle(
+          Text(
+            _l.cheats,
+            style: const TextStyle(
               color: Colors.purpleAccent,
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -949,12 +1511,13 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 color: Colors.green.withAlpha(60),
                 borderRadius: BorderRadius.circular(3),
               ),
-              child: const Text(
-                'MAX CREDITS',
-                style: TextStyle(
-                    color: Colors.greenAccent,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold),
+              child: Text(
+                _l.maxCredits,
+                style: const TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -964,11 +1527,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              'Lv ${game.currentSectorIndex + 1}',
+              _l.levelShort(game.levelForIndex(game.currentSectorIndex)),
               style: const TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold),
+                color: Colors.cyanAccent,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           _cheatStepButton('▶', () => _cheatJumpSector(1)),
@@ -989,598 +1553,53 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         child: Text(
           label,
           style: const TextStyle(
-              color: Colors.lightBlueAccent,
-              fontSize: 12,
-              fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPilotName() {
-    return TextField(
-      controller: _pilotController,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-      decoration: InputDecoration(
-        labelText: 'Pilot',
-        labelStyle: TextStyle(color: _theme.accentDim, fontSize: 13),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 4),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: _theme.accentDim),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: _theme.accent),
-        ),
-      ),
-      onChanged: (v) {
-        vessel.pilotName = v;
-        game.saveProgress();
-      },
-    );
-  }
-
-  Widget? _statIcon(String key, {double size = 16}) {
-    final sprite = AssetLibrary.instance.getIcon(key);
-    return sprite == null
-        ? null
-        : SizedBox(
-            width: size,
-            height: size,
-            child: CustomPaint(painter: SpritePainter(sprite)),
-          );
-  }
-
-  Widget _buildStatValues() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        HealthBar(
-          label: 'HP',
-          value: vessel.hp.toDouble(),
-          maxValue: vessel.hpMax.toDouble(),
-          color: _theme.danger,
-          height: 12,
-          icon: _statIcon('icon_life'),
-          labelStyle: _theme.styled(TextStyle(color: _theme.danger, fontSize: 12, fontWeight: FontWeight.bold)),
-        ),
-        const SizedBox(height: 5),
-        HealthBar(
-          label: 'SH',
-          value: vessel.shield,
-          maxValue: vessel.shieldMax,
-          color: _theme.accent,
-          height: 12,
-          icon: _statIcon('icon_shield'),
-          labelStyle: _theme.styled(TextStyle(color: _theme.accent, fontSize: 12, fontWeight: FontWeight.bold)),
-        ),
-        const SizedBox(height: 5),
-        HealthBar(
-          label: 'GEN',
-          value: vessel.genValue,
-          maxValue: vessel.genMax,
-          color: _theme.upgrade,
-          height: 12,
-          icon: _statIcon('icon_gen'),
-          labelStyle: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 12, fontWeight: FontWeight.bold)),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Text('DPS ', style: _theme.styled(TextStyle(color: _theme.accent, fontSize: _fs(10), fontWeight: FontWeight.bold))),
-            Text(vessel.totalDps.toStringAsFixed(1), style: _theme.styled(TextStyle(color: Colors.white70, fontSize: _fs(10)))),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSlotList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSlotRow('Front', WeaponSlot.frontGun),
-        _buildSlotRow('Left', WeaponSlot.leftGun),
-        _buildSlotRow('Right', WeaponSlot.rightGun),
-        _buildSlotRow('Gen', WeaponSlot.generator),
-      ],
-    );
-  }
-
-  Widget _buildSlotRow(String label, WeaponSlot slot) {
-    final device = vessel.devices.cast<Device?>().firstWhere(
-      (d) => d?.slot == slot,
-      orElse: () => null,
-    );
-    final name = device != null ? '${device.name} Lv.${device.level}' : '---';
-    final color = device != null ? _theme.success : _theme.accentDim;
-
-    final slotIconKey = slot == WeaponSlot.generator ? 'icon_gen' : 'icon_bomb';
-    final slotIcon = _statIcon(slotIconKey, size: 12);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 42,
-            child: Row(
-              children: [
-                if (slotIcon != null) ...[slotIcon, const SizedBox(width: 3)],
-                Expanded(
-                  child: Text(
-                    '$label:',
-                    style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: _fs(10))),
-                    overflow: TextOverflow.clip,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Text(name, style: _theme.styled(TextStyle(color: color, fontSize: _fs(10)))),
-          ),
-          if (device != null && slot != WeaponSlot.generator) ...[
-            GestureDetector(
-              onTap: device.level >= Device.maxLevel
-                  ? null
-                  : () => _upgradeSlot(slot),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                margin: const EdgeInsets.only(right: 4),
-                decoration: BoxDecoration(
-                  color: _theme.upgrade.withAlpha(40),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Text(
-                  device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(8))),
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () => _sellSlot(slot),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                decoration: BoxDecoration(
-                  color: _theme.danger.withAlpha(40),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Text(
-                  'SELL',
-                  style: _theme.styled(TextStyle(color: _theme.danger, fontSize: _fs(8))),
-                ),
-              ),
-            ),
-          ],
-          if (device != null && slot == WeaponSlot.generator)
-            GestureDetector(
-              onTap: device.level >= Device.maxLevel
-                  ? null
-                  : () => _upgradeSlot(slot),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                decoration: BoxDecoration(
-                  color: _theme.upgrade.withAlpha(40),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Text(
-                  device.level >= Device.maxLevel ? 'MAX' : 'UPG',
-                  style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: _fs(8))),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGenInfo() {
-    final load = vessel.generatorLoad;
-    final color = load > 100 ? _theme.danger : (load > 70 ? _theme.upgrade : _theme.success);
-    final barRatio = (load / 100).clamp(0.0, 1.0);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('PWR ', style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: _fs(9)))),
-            Text('${load.round()}%', style: _theme.styled(TextStyle(color: color, fontSize: _fs(9), fontWeight: FontWeight.bold))),
-          ],
-        ),
-        const SizedBox(height: 3),
-        SizedBox(
-          width: 64,
-          height: 6,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(2),
-            child: Stack(
-              children: [
-                Container(color: Colors.black45),
-                FractionallySizedBox(
-                  alignment: Alignment.centerLeft,
-                  widthFactor: barRatio,
-                  child: Container(color: color),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Collapsible TOP SCORES section shown below the weapon grid (VBA Top-10 panel).
-  /// Opens the native leaderboard (Game Center / Play Games). Shown only where
-  /// one is available — Windows/Linux and not-signed-in players get nothing
-  /// here (the on-device top-score table was removed).
-  Widget _buildScoresPanel() {
-    if (!LeaderboardService.instance.available) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(height: 1, color: _theme.accentDim.withAlpha(60)),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => LeaderboardService.instance.showLeaderboard(),
-          child: Row(
-            children: [
-              Text(
-                '🏆 LEADERBOARD',
-                style: _theme.styled(TextStyle(
-                  color: _theme.accent,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                )),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ── Weapon card ──
-
-  Widget _buildWeaponCard(DevType weapon, int index) {
-    final isSelected = !_showingGen && _selectedWeaponIndex == index;
-    final owned = vessel.devices.any((d) => d.name == weapon.name);
-    final canAfford = vessel.credit >= weapon.price;
-    final device = owned
-        ? vessel.devices.firstWhere((d) => d.name == weapon.name)
-        : null;
-
-    Color borderColor;
-    if (isSelected) {
-      borderColor = _theme.accent;
-    } else if (owned) {
-      borderColor = _theme.success.withAlpha(120);
-    } else {
-      borderColor = _theme.accentDim.withAlpha(60);
-    }
-
-    final cardSprite = AssetLibrary.instance.getIcon('ui_card_bg');
-    return GestureDetector(
-      onTap: () => setState(() => _selectedWeaponIndex = index),
-      onDoubleTap: () {
-        setState(() => _selectedWeaponIndex = index);
-        _confirmAction();
-      },
-      child: AnimatedScale(
-        scale: isSelected ? 1.04 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        child: spriteCardBox(
-          sprite: cardSprite,
-          darkOverlay: isSelected ? 0.0 : (!owned && !canAfford ? 0.6 : 0.35),
-          child: Container(
-            padding: const EdgeInsets.all(26),
-            decoration: BoxDecoration(
-              color: cardSprite != null
-                  ? Colors.transparent
-                  : (isSelected ? _theme.surfaceLight : _theme.surfaceMid),
-              border: cardSprite != null
-                  ? null
-                  : Border.all(color: borderColor, width: isSelected ? 2 : 1),
-              borderRadius: BorderRadius.circular(_theme.cornerRadius),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  owned ? '${weapon.name} ${_romanLevel(device!.level)}' : weapon.name,
-                  style: _theme.styled(TextStyle(
-                    color: owned ? _theme.success : Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'DMG:${weapon.damage} SPD:${weapon.speed}',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 11)),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  'PWR:${weapon.pwrNeed.toInt()}${weapon.beam > 0 ? " BEAM" : ""}',
-                  style: _theme.styled(TextStyle(
-                    color: weapon.beam > 0 ? _theme.accent : _theme.accentDim,
-                    fontSize: 11,
-                  )),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (weapon.guide > 0)
-                  Text(
-                    'GUIDED',
-                    style: _theme.styled(TextStyle(color: _theme.accent, fontSize: 10, letterSpacing: 0.5)),
-                  ),
-                const SizedBox(height: 4),
-                if (owned)
-                  Row(
-                    children: [
-                      Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 11))),
-                      const Spacer(),
-                      if (device!.level < Device.maxLevel)
-                        Text(
-                          '${device.price}cr',
-                          style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 10)),
-                        ),
-                    ],
-                  )
-                else
-                  Text(
-                    '${weapon.price} cr',
-                    style: _theme.styled(TextStyle(
-                      color: canAfford ? _theme.upgrade : _theme.danger.withAlpha(150),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    )),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.easeInOut,
-                  child: isSelected
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 4),
-                            _buildCardAction(weapon, owned, canAfford, device),
-                          ],
-                        )
-                      : const SizedBox(width: double.infinity, height: 0),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardAction(DevType weapon, bool owned, bool canAfford, Device? device) {
-    if (owned) {
-      final atMax = device!.level >= Device.maxLevel;
-      return Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: atMax ? null : () => _upgradeWeapon(weapon),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 3),
-                decoration: BoxDecoration(
-                  color: atMax ? Colors.white10 : _theme.upgrade.withAlpha(40),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                child: Text(
-                  atMax ? 'MAX' : 'UPGRADE',
-                  textAlign: TextAlign.center,
-                  style: _theme.styled(TextStyle(
-                    color: atMax ? _theme.accentDim : _theme.upgrade,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  )),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          GestureDetector(
-            onTap: () => _sellWeapon(weapon),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: _theme.danger.withAlpha(40),
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: Text(
-                'SELL',
-                style: _theme.styled(TextStyle(color: _theme.danger, fontSize: 11, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return GestureDetector(
-        onTap: canAfford ? () => _buyWeapon(weapon) : null,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 3),
-          decoration: BoxDecoration(
-            color: canAfford ? _theme.success.withAlpha(40) : Colors.white10,
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Text(
-            canAfford ? 'BUY' : 'NO CREDITS',
-            textAlign: TextAlign.center,
-            style: _theme.styled(TextStyle(
-              color: canAfford ? _theme.success : _theme.accentDim,
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-            )),
-          ),
-        ),
-      );
-    }
-  }
-
-  // ── Generator section ──
-
-  Widget _buildGeneratorSection() {
-    final isFocused = _showingGen;
-    final gen = DevType.generatorBasic;
-    final device = vessel.devices.cast<Device?>().firstWhere(
-      (d) => d?.slot == WeaponSlot.generator,
-      orElse: () => null,
-    );
-    final cardSprite = AssetLibrary.instance.getIcon('ui_card_bg');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'GENERATOR',
-          style: _theme.styled(TextStyle(
-            color: isFocused ? _theme.accent : _theme.accentDim,
-            fontSize: 14,
+            color: Colors.lightBlueAccent,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1,
-          )),
-        ),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => setState(() {
-            _sectionIndex = 2;
-            _selectedWeaponIndex = 0;
-          }),
-          onDoubleTap: () {
-            setState(() {
-              _sectionIndex = 2;
-              _selectedWeaponIndex = 0;
-            });
-            _confirmAction();
-          },
-          child: spriteCardBox(
-            sprite: cardSprite,
-            darkOverlay: isFocused ? 0.0 : 0.35,
-            child: Container(
-            padding: const EdgeInsets.all(26),
-            decoration: BoxDecoration(
-              color: cardSprite != null
-                  ? Colors.transparent
-                  : (isFocused ? _theme.surfaceLight : _theme.surfaceMid),
-              border: cardSprite != null
-                  ? null
-                  : Border.all(
-                      color: isFocused ? _theme.accent : _theme.success.withAlpha(120),
-                      width: isFocused ? 2 : 1,
-                    ),
-              borderRadius: BorderRadius.circular(_theme.cornerRadius),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  device != null
-                      ? '${gen.name} ${_romanLevel(device.level)}'
-                      : gen.name,
-                  style: _theme.styled(TextStyle(
-                    color: _theme.success,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  )),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'PWR: +${gen.pwrGen.toStringAsFixed(2)}/fr',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  'Cap: ${vessel.genMax.toInt()}',
-                  style: _theme.styled(TextStyle(color: _theme.accentDim, fontSize: 9)),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text('OWNED', style: _theme.styled(TextStyle(color: _theme.success, fontSize: 9))),
-                    const Spacer(),
-                    if (device != null && device.level < Device.maxLevel)
-                      Text(
-                        '${device.price.toInt()}cr',
-                        style: _theme.styled(TextStyle(color: _theme.upgrade, fontSize: 8)),
-                      ),
-                  ],
-                ),
-                if (isFocused && device != null) ...[
-                  const SizedBox(height: 4),
-                  GestureDetector(
-                    onTap: device.level >= Device.maxLevel
-                        ? null
-                        : () => _upgradeSlot(WeaponSlot.generator),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 3),
-                      decoration: BoxDecoration(
-                        color: device.level >= Device.maxLevel
-                            ? Colors.white10
-                            : _theme.upgrade.withAlpha(40),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      child: Text(
-                        device.level >= Device.maxLevel ? 'MAX' : 'UPGRADE',
-                        textAlign: TextAlign.center,
-                        style: _theme.styled(TextStyle(
-                          color: device.level >= Device.maxLevel
-                              ? _theme.accentDim
-                              : _theme.upgrade,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        )),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
           ),
         ),
-      ],
+      ),
     );
   }
-
-  String _romanLevel(int level) => 'Lv.$level';
 
   Widget _buildStartButton(String label) {
     final btnSprite = AssetLibrary.instance.getIcon('ui_button');
+    final focused = _bottomFocused('start');
     return GestureDetector(
       onTap: widget.onStart,
       child: spriteBox(
         sprite: btnSprite,
         child: Container(
           height: 48,
+          // The sprite-backed button draws its own body, so the cursor there is
+          // an added outline rather than a different fill.
           decoration: btnSprite == null
               ? BoxDecoration(
                   color: _theme.accent,
                   borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                  border: focused
+                      ? Border.all(color: Colors.white, width: 2)
+                      : null,
                 )
-              : null,
+              : (focused
+                    ? BoxDecoration(
+                        border: Border.all(color: _theme.accent, width: 2),
+                        borderRadius: BorderRadius.circular(
+                          _theme.cornerRadius,
+                        ),
+                      )
+                    : null),
           child: Center(
             child: Text(
               label,
-              style: _theme.styled(TextStyle(
-                color: btnSprite != null ? _theme.accent : Colors.black,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              )),
+              style: _theme.styled(
+                TextStyle(
+                  color: btnSprite != null ? _theme.accent : Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
             ),
           ),
         ),
@@ -1588,9 +1607,23 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
+  // ── Bottom bar ──
+
+  BoxDecoration _bottomDecoration(String action, Color color) => BoxDecoration(
+    color: _bottomFocused(action) ? color.withAlpha(35) : null,
+    border: Border.all(
+      color: _bottomFocused(action) ? Colors.white : color.withAlpha(150),
+      width: _bottomFocused(action) ? 2 : 1,
+    ),
+    borderRadius: BorderRadius.circular(_theme.cornerRadius),
+  );
+
   Widget _buildBottomBar() {
-    final label = game.currentSectorIndex == 0 ? 'START MISSION' : 'CONTINUE MISSION';
-    final showJoin = widget.onJoinIp != null &&
+    final label = game.mode == GameMode.campaign
+        ? _l.launchMission
+        : (game.currentSectorIndex == 0 ? _l.startMission : _l.continueMission);
+    final showJoin =
+        widget.onJoin != null &&
         game.coopRole != CoopRole.client &&
         game.vessel2 == null;
 
@@ -1606,34 +1639,84 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
-                '[OPTIONS / B]  Continue mission     [LB / RB]  Side slot L / R',
-                style: TextStyle(color: _theme.accentDim.withAlpha(120), fontSize: 9),
+                _l.padControlsHint,
+                style: TextStyle(
+                  color: _theme.accentDim.withAlpha(120),
+                  fontSize: 12,
+                ),
               ),
             ),
           Row(
             children: [
-              if (showJoin) ...[
+              if (widget.onHost != null &&
+                  game.coopRole == CoopRole.none &&
+                  game.vessel2 == null) ...[
                 GestureDetector(
-                  onTap: widget.onJoinIp,
+                  onTap: () {
+                    widget.onHost!();
+                    setState(() {});
+                  },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: _theme.upgrade.withAlpha(150)),
-                      borderRadius: BorderRadius.circular(_theme.cornerRadius),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
                     ),
+                    decoration: _bottomDecoration('host', _theme.accent),
                     child: Text(
-                      'JOIN',
-                      style: _theme.styled(TextStyle(
-                        color: _theme.upgrade,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      )),
+                      _l.host,
+                      style: _theme.styled(
+                        TextStyle(
+                          color: _theme.accent,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
               ],
+              if (game.coopRole == CoopRole.host && game.vessel2 == null) ...[
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Text(
+                    _l.hostingAs(game.vessel.pilotName),
+                    style: _theme.styled(
+                      TextStyle(
+                        color: _theme.accentDim,
+                        fontSize: 11,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              if (showJoin) ...[
+                GestureDetector(
+                  onTap: widget.onJoin,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: _bottomDecoration('join', _theme.upgrade),
+                    child: Text(
+                      _l.join,
+                      style: _theme.styled(
+                        TextStyle(
+                          color: _theme.upgrade,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              // The start button draws its own pad focus on this line.
               Expanded(child: _buildStartButton(label)),
             ],
           ),
@@ -1656,24 +1739,31 @@ class _SkinBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final bgSprite = AssetLibrary.instance.getIcon('comcenter_bg');
     if (bgSprite != null) {
-      return Stack(children: [
-        Positioned.fill(
-          child: CustomPaint(
-            painter: SpritePainter(bgSprite, darkOverlay: 0.55),
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: SpritePainter(bgSprite, darkOverlay: 0.55),
+            ),
           ),
-        ),
-        CustomPaint(
-          painter: _GridPainter(phase: phase, color: theme.accent),
-          size: Size.infinite,
-        ),
-      ]);
+          CustomPaint(
+            painter: _GridPainter(phase: phase, color: theme.accent),
+            size: Size.infinite,
+          ),
+        ],
+      );
     }
 
     // Fallback: animated gradient in skin's hue range
     final hue = HSLColor.fromColor(theme.accent).hue;
     final t = phase / 12.0;
     final c1 = HSLColor.fromAHSL(1, (hue + t * 20) % 360, 0.6, 0.08).toColor();
-    final c2 = HSLColor.fromAHSL(1, (hue + 30 + t * 20) % 360, 0.5, 0.03).toColor();
+    final c2 = HSLColor.fromAHSL(
+      1,
+      (hue + 30 + t * 20) % 360,
+      0.5,
+      0.03,
+    ).toColor();
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -1711,16 +1801,30 @@ class _GridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_GridPainter old) => old.phase != phase || old.color != color;
+  bool shouldRepaint(_GridPainter old) =>
+      old.phase != phase || old.color != color;
 }
 
 // Renders the current skin's vessel sprite into the ComCenter ship preview box.
 class _ShipPreviewPainter extends CustomPainter {
   final Sprite sprite;
-  _ShipPreviewPainter(this.sprite);
+
+  /// The AssetLibrary generation [sprite] was taken from.
+  ///
+  /// A skin switch disposes the atlas behind every live Sprite while the
+  /// ComCenter stays on screen and keeps repainting, so a Sprite captured
+  /// before the switch is backed by a dead ui.Image by the time the next frame
+  /// lands. Drawing one throws out of drawImageRect and takes the entire
+  /// ComCenter paint with it. Skipping leaves the box empty for the handful of
+  /// frames before the rebuild arrives with the new atlas.
+  final int generation;
+
+  _ShipPreviewPainter(this.sprite)
+    : generation = AssetLibrary.instance.generation;
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (AssetLibrary.instance.generation != generation) return;
     final src = Rect.fromLTWH(
       sprite.srcPosition.x,
       sprite.srcPosition.y,
@@ -1737,9 +1841,15 @@ class _ShipPreviewPainter extends CustomPainter {
       w,
       h,
     );
-    canvas.drawImageRect(sprite.image, src, dst, Paint()..filterQuality = FilterQuality.none);
+    canvas.drawImageRect(
+      sprite.image,
+      src,
+      dst,
+      Paint()..filterQuality = FilterQuality.none,
+    );
   }
 
   @override
-  bool shouldRepaint(_ShipPreviewPainter old) => old.sprite != sprite;
+  bool shouldRepaint(_ShipPreviewPainter old) =>
+      old.sprite != sprite || old.generation != generation;
 }

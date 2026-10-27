@@ -5,6 +5,14 @@
 /// atlas image using shelf-packing, and writes atlas.png + atlas.json.
 ///
 /// Run via: dart run tool/pack_atlas.dart
+///
+/// The atlas ships as WebP; the PNG is only cwebp's input and is deleted.
+/// Pass --keep-png to leave it in place so tool/verify_atlas.dart can measure
+/// what the lossy step cost:
+///
+///   dart run tool/pack_atlas.dart --keep-png
+///   dart run tool/verify_atlas.dart
+///   rm assets/skins/*/atlas.png
 library;
 
 import 'dart:convert';
@@ -16,8 +24,14 @@ import 'package:image/image.dart' as img;
 /// Default number of Voronoi seed points per fragmentable sprite.
 const int kDefaultFragmentCount = 6;
 
-/// 1 px padding between sprites to prevent texture bleeding.
-const int kPadding = 1;
+/// Padding between sprites, in pixels.
+///
+/// 1 px was enough while the atlas was PNG. It is not enough for lossy WebP:
+/// VP8 subsamples chroma 4:2:0 over 16x16 macroblocks, so colour leaks across
+/// a 1 px gutter and Flame's srcRect sampling shows it as a fringe. 4 px keeps
+/// every sprite inside its own chroma neighbourhood, and dropping the dead
+/// frames freed far more area than this costs.
+const int kPadding = 4;
 
 /// Minimum atlas dimension (power of 2).
 const int kMinSize = 512;
@@ -28,6 +42,10 @@ const int kMinSize = 512;
 /// next power of 2 of the actually-used area, so non-supersampled skins remain
 /// small (e.g. 512).
 const int kMaxSize = 4096;
+
+/// Basename of a sprite file without its .png extension.
+String _spriteNameOf(File f) =>
+    f.uri.pathSegments.last.replaceAll(RegExp(r'\.png$', caseSensitive: false), '');
 
 /// A loaded sprite ready for packing.
 class _SpriteEntry {
@@ -43,12 +61,42 @@ class _PlacedSprite {
   _PlacedSprite(this.name, this.x, this.y, this.w, this.h);
 }
 
+/// Every sprite name the game can ever ask [AssetLibrary] for.
+///
+/// The packer used to take whatever sat in sprites/, which is how a quarter of
+/// every atlas came to be occupied by art nothing loads: four 720x720
+/// explosion frames (explosions are drawn procedurally in
+/// entities/explosion.dart), a plain `falcon` no HostType maps to, a `star`
+/// the procedural starfield never needed, and `bouncer` — reachable only
+/// through Boss's fallback, which no shipped skin can hit because they all
+/// carry rododendron.
+///
+/// Keep this in step with: Hostile._spriteNameForType, Boss.spriteName,
+/// Structure (sector_parts.dart), DevType.imgName, and Vessel._loadFrames.
+const Set<String> kUsedSprites = {
+  'vessel_0', 'vessel_1', 'vessel_2', 'vessel_3', 'vessel_4', 'vessel_5',
+  'falcon1', 'falcon2', 'falcon3', 'falcon4', 'falcon5', 'falcon6',
+  'falconx', 'falconx2', 'falconx3', 'falconxb', 'falconxt',
+  'rododendron',
+  // Composite-boss parts. Absent from most skins for now — BossPart falls
+  // back to falconx3 until a skin's own art lands, so this stays lenient
+  // (unlike the rododendron check below, which hard-fails).
+  'boss_turret', 'boss_shield', 'boss_thruster', 'boss_cannon',
+  'asteroid', 'asteroid1', 'asteroid2', 'asteroid3',
+  'bubble', 'vulcan', 'blaster', 'laser', 'starg',
+};
+
 /// Returns true if the sprite name is fragmentable (enemies + structures).
+///
+/// `rododendron` is on the list now: it was missing, so the boss — the most
+/// watched death in the game — silently fell back to the four-quad slice in
+/// shard.dart while every trash mob shattered properly.
 bool _isFragmentable(String name) {
   final lower = name.toLowerCase();
   return lower.startsWith('falcon') ||
       lower.startsWith('falconx') ||
-      lower.startsWith('bouncer') ||
+      lower.startsWith('rododendron') ||
+      lower.startsWith('boss_') ||
       lower.startsWith('asteroid');
 }
 
@@ -229,6 +277,9 @@ List<_PlacedSprite>? _shelfPack(
 }
 
 /// Pack a single skin's sprites into an atlas.
+/// Keep atlas.png next to atlas.webp so verify_atlas.dart can diff them.
+bool _keepPng = false;
+
 Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
   final spritesDir =
       Directory('${skinsRoot.path}${Platform.pathSeparator}$skinId${Platform.pathSeparator}sprites');
@@ -238,12 +289,33 @@ Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
     return false;
   }
 
-  // Collect all PNGs
-  final pngFiles = spritesDir
+  // Collect the PNGs the game actually uses. Anything else on disk is a
+  // leftover: packing it costs atlas area, download size, and — because the
+  // atlas is a single GPU texture — resident VRAM for every player.
+  final allPngs = spritesDir
       .listSync()
       .whereType<File>()
       .where((f) => f.path.toLowerCase().endsWith('.png'))
       .toList();
+  final pngFiles = allPngs
+      .where((f) => kUsedSprites.contains(_spriteNameOf(f)))
+      .toList();
+  final skipped = allPngs.length - pngFiles.length;
+  if (skipped > 0) {
+    final names = allPngs
+        .map(_spriteNameOf)
+        .where((n) => !kUsedSprites.contains(n))
+        .toList()
+      ..sort();
+    print('  [$skinId] skipping $skipped unused sprite(s): ${names.join(', ')}');
+  }
+  // Boss.spriteName falls back to 'bouncer' when rododendron is absent, and
+  // bouncer is no longer packed. Catch that here rather than shipping a skin
+  // whose boss is invisible.
+  if (!pngFiles.any((f) => _spriteNameOf(f) == 'rododendron')) {
+    print('  [$skinId] ERROR: no rododendron.png — the boss would not render.');
+    return false;
+  }
 
   if (pngFiles.isEmpty) {
     print('  [$skinId] No PNG files found — skipping.');
@@ -352,12 +424,41 @@ Future<bool> _packSkin(String skinId, Directory skinsRoot) async {
     img.compositeImage(atlas, src, dstX: p.x, dstY: p.y);
   }
 
-  // Write atlas.png
+  // Write atlas.webp (via cwebp — package:image ships a WebP decoder but no
+  // encoder). The Go pipeline already shells out the same way for background
+  // art, see pipeline/internal/postprocess/processor.go saveWebP.
+  //
+  // -near_lossless, NOT plain lossy. Lossy WebP is VP8: DCT plus 4:2:0 chroma,
+  // which is built for photographs and mangles small flat-colour sprites. At
+  // q92 the `default` skin's vulcan bullet — the projectile on screen more
+  // than any other art in the game — came back at 17/255 error with its flat
+  // bands smeared into gradients. near_lossless is VP8L: no DCT, no chroma
+  // subsampling, 0.5/255 on that same sprite and indistinguishable from the
+  // PNG at 8x zoom. It costs 24.4 MB against lossy's 12.1 MB across the 14
+  // atlases, down from 52.3 MB of PNG. Run tool/verify_atlas.dart after any
+  // change here.
   final skinDir =
       Directory('${skinsRoot.path}${Platform.pathSeparator}$skinId');
   final atlasPng = File('${skinDir.path}${Platform.pathSeparator}atlas.png');
+  final atlasWebp = File('${skinDir.path}${Platform.pathSeparator}atlas.webp');
   final pngBytes = img.encodePng(atlas);
   atlasPng.writeAsBytesSync(pngBytes);
+
+  final cwebp = Process.runSync('cwebp', [
+    '-quiet',
+    '-near_lossless', '60',
+    '-m', '6',
+    '-metadata', 'none',
+    atlasPng.path,
+    '-o', atlasWebp.path,
+  ]);
+  if (cwebp.exitCode != 0) {
+    print('  [$skinId] ERROR: cwebp failed (brew install webp): '
+        '${cwebp.stderr}');
+    return false;
+  }
+  // The PNG is scratch: it exists only as cwebp's input and is not bundled.
+  if (!_keepPng) atlasPng.deleteSync();
 
   // Write atlas.json
   final frames = <String, dynamic>{};
@@ -401,7 +502,9 @@ int _nextPow2(int v) {
   return v;
 }
 
-void main() async {
+void main(List<String> args) async {
+  _keepPng = args.contains('--keep-png');
+
   // Determine project root (script is in tool/)
   final scriptFile = File(Platform.script.toFilePath());
   final projectRoot = scriptFile.parent.parent;
