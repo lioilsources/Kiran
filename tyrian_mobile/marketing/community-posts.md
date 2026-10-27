@@ -142,7 +142,7 @@ Controller support. 14 full visual themes, one per era of the genre.
 
 iOS now (free, no ads), Android in testing, Steam (Win + Deck) in the works.
 
-App Store: https://apps.apple.com/us/app/kirian/id6774868017
+App Store: https://apps.apple.com/cz/app/kirian/id6774868017
 
 Genuinely want the sharp feedback this sub is known for — especially on
 bullet readability and the generator economy.
@@ -181,7 +181,7 @@ shipped that came from no generated variation at all, which is what pushed me
 to make the pipeline reproducible.
 
 Free on the App Store (three skins included, the rest optional cosmetics):
-https://apps.apple.com/us/app/kirian/id6774868017
+https://apps.apple.com/cz/app/kirian/id6774868017
 
 Happy to go deep on any of it.
 
@@ -261,3 +261,18 @@ subscription, no energy and no consumables. Say it once and move on.
 agreed with him — A, B or C — write the sentence out in advance and use that
 sentence. Improvising this one in a comment box is how a private detail gets
 published by accident.
+
+## Reddit Saturnad Megathread
+
+**Kirian** — vertical scrolling space shooter, free on iOS (3 skins included, 11 more as optional cosmetic packs)
+
+https://apps.apple.com/cz/app/kirian/id6774868017
+
+A Flutter/Flame remake of a friend's old VB6/Win32 shooter — same combat
+values (enemy HP, weapon damage, shop prices) as the original, ported with
+custom GLSL shaders (bloom, CRT scanlines, chromatic aberration) running at
+60-120 Hz. All 14 visual themes were generated with a local Flux pipeline —
+sprites, backgrounds, UI, sound.
+
+Android and Steam versions are in the pipeline. Happy to answer questions
+about the port or the art pipeline.
