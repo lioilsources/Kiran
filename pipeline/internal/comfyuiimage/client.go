@@ -68,6 +68,7 @@ type NodeRoles struct {
 	SaveImage      string // SaveImage node whose inputs.filename_prefix is set
 	CheckpointNode string // loader node to override when WithCheckpoint is used
 	CheckpointKey  string // input key on that node (e.g. "unet_name" or "ckpt_name")
+	Guidance       string // FluxGuidance node (empty = workflow has none, WithGuidance is a no-op)
 }
 
 // defaultNodeRoles matches the embedded flux_sprite.json (UNETLoader architecture).
@@ -78,6 +79,7 @@ var defaultNodeRoles = NodeRoles{
 	SaveImage:      "10",
 	CheckpointNode: "1",
 	CheckpointKey:  "unet_name",
+	Guidance:       "7",
 }
 
 // ponyNodeRoles matches pony_sprite.json (CheckpointLoaderSimple architecture).
@@ -109,6 +111,8 @@ type Client struct {
 	checkpoint   string  // optional: overrides the checkpoint loader node named in roles
 	lora         string  // optional: LoRA .safetensors to splice in after the checkpoint
 	loraStrength float64 // model+clip strength for the injected LoRA
+	steps        int     // optional (>0): overrides KSampler steps — schnell wants 4, dev 20
+	guidance     float64 // optional (>0): overrides FluxGuidance; ignored when roles.Guidance is empty
 }
 
 // ClientOption configures the Client.
@@ -155,6 +159,19 @@ func WithNodeRoles(r NodeRoles) ClientOption {
 // CheckpointLoaderSimple node "4" / "ckpt_name".
 func WithCheckpoint(name string) ClientOption {
 	return func(c *Client) { c.checkpoint = name }
+}
+
+// WithSteps overrides the sampler step count (NodeRoles.Sampler, input
+// "steps"). Zero keeps whatever the workflow file says. Flux schnell is a
+// 4-step distillation; running it at the dev default of 20 only burns time.
+func WithSteps(n int) ClientOption {
+	return func(c *Client) { c.steps = n }
+}
+
+// WithGuidance overrides the FluxGuidance value (NodeRoles.Guidance). Zero
+// keeps the workflow value; a workflow with no guidance node ignores it.
+func WithGuidance(g float64) ClientOption {
+	return func(c *Client) { c.guidance = g }
 }
 
 // WithLora splices a LoraLoader into the graph after the checkpoint loader
@@ -282,6 +299,16 @@ func (c *Client) buildWorkflow(prompt, negativePrompt, filenamePrefix string, w,
 	}
 	if c.checkpoint != "" {
 		if err := setNodeInput(graph, c.roles.CheckpointNode, c.roles.CheckpointKey, c.checkpoint); err != nil {
+			return nil, err
+		}
+	}
+	if c.steps > 0 {
+		if err := setNodeInput(graph, c.roles.Sampler, "steps", c.steps); err != nil {
+			return nil, err
+		}
+	}
+	if c.guidance > 0 && c.roles.Guidance != "" {
+		if err := setNodeInput(graph, c.roles.Guidance, "guidance", c.guidance); err != nil {
 			return nil, err
 		}
 	}

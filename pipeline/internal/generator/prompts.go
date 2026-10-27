@@ -95,8 +95,8 @@ A dramatic illustrated science fiction scene viewed from a spacecraft cockpit or
 Rich atmospheric composition: nebulae, distant planets, star fields, or alien landscapes in the far background.
 Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing.
-The central area of the image must be naturally dark so that text and UI panels overlaid on top remain readable.
-No text, no HUD elements, no UI widgets, no ship in foreground.
+The upper half and the vertical center of the image must be naturally dark and low-detail (deep space, shadow, dim haze) so that text rows and UI panels overlaid on top remain readable; keep the bright, detailed elements (planets, nebula cores, structures) near the left and right edges and along the bottom.
+No horizon line or bright band across the middle. No text, no HUD elements, no UI widgets, no ship in foreground.
 No people, no characters, no pilots, no faces, no mascots — the deck is empty, the view is the scene outside. Portrait aspect ratio 1:2.`,
 
 	"ui_card_bg": `A sci-fi game inventory card panel surface texture.
