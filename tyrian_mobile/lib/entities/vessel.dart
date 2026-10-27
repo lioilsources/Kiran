@@ -44,6 +44,12 @@ class Vessel extends PositionComponent
 
   // Weapons
   final List<Device> devices = [];
+
+  /// Owned but not fitted. Each entry keeps its slot and level, so switching
+  /// back to it in the ComCenter costs nothing and loses no upgrades. Hangar
+  /// devices never fire and never count toward [generatorLoad] or [totalDps];
+  /// co-op peers only ever see [devices].
+  final List<Device> hangar = [];
   bool guidedWeapon = false;
   Hostile? closestEnemy;
   int nextWeaponLevel = 0;
@@ -180,6 +186,7 @@ class Vessel extends PositionComponent
       d.clearProjectiles();
     }
     devices.clear();
+    hangar.clear();
     guidedWeapon = false;
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
     equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
@@ -199,6 +206,7 @@ class Vessel extends PositionComponent
         'genPower': genPower,
         'nextWeaponLevel': nextWeaponLevel,
         'weapons': devices.map((d) => d.toJson()).toList(),
+        'hangar': hangar.map((d) => d.toJson()).toList(),
       };
 
   /// Restore progress from a saved state map. Rebuilds the device list directly
@@ -234,6 +242,14 @@ class Vessel extends PositionComponent
       final device = Device.fromJson(Map<String, dynamic>.from(w as Map));
       device.parentVessel = this;
       devices.add(device);
+    }
+    // Saves written before the hangar existed simply have no key.
+    hangar.clear();
+    final stored = (state['hangar'] as List?) ?? const [];
+    for (final w in stored) {
+      final device = Device.fromJson(Map<String, dynamic>.from(w as Map));
+      device.parentVessel = this;
+      hangar.add(device);
     }
     // Always guarantee a front weapon and generator so the player can start.
     if (getDevice(WeaponSlot.frontGun) == null) {
@@ -604,6 +620,64 @@ class Vessel extends PositionComponent
     guidedWeapon = devices.any((d) => d.guide > 0);
 
     return device;
+  }
+
+  /// The hangar entry for weapon [name] bought for [slot], if any. Keyed by
+  /// slot as well as name: LEFT and RIGHT can each own a Small Bubble at
+  /// different levels.
+  Device? hangarEntry(String name, WeaponSlot slot) {
+    for (final d in hangar) {
+      if (d.name == name && d.slot == slot) return d;
+    }
+    return null;
+  }
+
+  /// Whether [name] is owned for [slot], fitted or in the hangar.
+  bool ownsWeapon(String name, WeaponSlot slot) =>
+      getDevice(slot)?.name == name || hangarEntry(name, slot) != null;
+
+  /// Fit [type] into [slot]. Whatever is fitted there now moves to the hangar
+  /// with its level. A hangar entry for [type] in [slot] comes back as the
+  /// same instance; otherwise a fresh level-0 device is created. Charging for
+  /// a new device is the caller's job — switching to an owned one is free.
+  Device fitWeapon(DevType type, WeaponSlot slot) {
+    final current = getDevice(slot);
+    if (current != null && current.name == type.name) return current;
+    if (current != null) {
+      current.clearProjectiles();
+      devices.remove(current);
+      hangar.add(current);
+    }
+    var device = hangarEntry(type.name, slot);
+    if (device != null) {
+      hangar.remove(device);
+    } else {
+      device = Device.fromType(type, slot);
+      device.parentVessel = this;
+    }
+    devices.add(device);
+    guidedWeapon = devices.any((d) => d.guide > 0);
+    return device;
+  }
+
+  /// Sell the device fitted in [slot] for its current price. The slot stays
+  /// empty even when the hangar holds something for it — the player picks.
+  /// The generator is not sellable. Returns the credits gained.
+  int sellFitted(WeaponSlot slot) {
+    if (slot == WeaponSlot.generator) return 0;
+    final device = getDevice(slot);
+    if (device == null) return 0;
+    final gained = device.price;
+    credit += gained;
+    removeWeapon(slot);
+    return gained;
+  }
+
+  /// Sell a hangar entry for its current price. Returns the credits gained.
+  int sellFromHangar(Device device) {
+    if (!hangar.remove(device)) return 0;
+    credit += device.price;
+    return device.price;
   }
 
   void removeWeapon(WeaponSlot slot) {
