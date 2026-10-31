@@ -55,6 +55,24 @@ iPhone ran twice, the second time with `SHOTS_ONLY_SKINS=1` (skips the
 opening shots, walks only Retro PC Pixel and Dual-Polarity), both into the
 same folder.
 
+## Action shot and app preview (v2.10.1)
+
+The first screenshot (`action`) and the App Store app preview come from a
+second walk, `SHOTS_SCENE=boss`: the seed starts on sector index 21 (level
+10, the first with a phased boss), `simctl io recordVideo` runs from launch
+until the boss goes down, and the ship weaves across the screen in chained
+drags (a still ship reads as a still game). Swarm stills are taken along the
+way; the one with the most enemy HP bars and no kill-dissolve block becomes
+`play_action.png` in the raw folder. The capture build also kept firing
+between drags (`STORE_SHOTS` in `onDragEnd`/`onTapDown`), a local edit like
+the others.
+
+The preview is 29 s: 16 s of the densest waves (boss − 84 s), then the last
+13 s of the fight up to the boss exploding, under the game's top-tier theme.
+iPhone 886×1920 (Dynamic Island strip cropped off), iPad 1200×1600, H.264
+~2 Mbit/s so each file stays under 10 MB. Record one simulator at a time:
+with two running, `recordVideo` froze for up to 85 s.
+
 ## Output (per language)
 
 | Folder | Size | Store slot |

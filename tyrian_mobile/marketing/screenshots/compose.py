@@ -18,10 +18,9 @@ Output: marketing/screenshots-<lang>/
   appstore-creative/header-3840x1646.png      product page header (21:9)
   appstore-creative/search-3840x2560.png      search results (3:2)
 
-The game UI is English-only, so each shot is the real English screen under a
-caption in the listing language — the standard way to localize a listing
-without localizing the app. Every file is flattened RGB: App Store Connect
-rejects alpha.
+Since 2.9.3 the game UI is localized, so each language gets its own raw
+captures (simulator set to that language) under a caption in the same
+language. Every file is flattened RGB: App Store Connect rejects alpha.
 
 The header and search assets are new in App Store Connect (iOS 27+, both
 optional, attached per localization). Apple publishes sizes but no crop rule,
@@ -36,59 +35,189 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 RAW = ROOT / 'build/store_screenshots'  # -raw overrides
 
-# Hiragino Sans: W8 for headlines, W4 for the line under them. Ships with
-# macOS; the file names are Japanese.
+# (path, ttc index, weight for variable fonts) for headline and subline, per
+# script. Hiragino Sans (W8 / W4, file names in Japanese) for Japanese; SF for
+# Latin and Cyrillic — Hiragino has no Latin Extended-A (č, ř, ğ, ş);
+# Sukhumvit for Thai, which needs Pillow with libraqm (brew install libraqm)
+# or its marks stack wrong.
 FONTS = pathlib.Path('/System/Library/Fonts')
-HEAD = FONTS / 'ヒラギノ角ゴシック W8.ttc'
-BODY = FONTS / 'ヒラギノ角ゴシック W4.ttc'
+SF = ((FONTS / 'SFNS.ttf', 0, 860), (FONTS / 'SFNS.ttf', 0, 400))
+LANG_FONTS = {
+    'ja': ((FONTS / 'ヒラギノ角ゴシック W8.ttc', 0, None),
+           (FONTS / 'ヒラギノ角ゴシック W4.ttc', 0, None)),
+    'ko': ((FONTS / 'AppleSDGothicNeo.ttc', 14, None),   # ExtraBold
+           (FONTS / 'AppleSDGothicNeo.ttc', 0, None)),   # Regular
+    'th': ((FONTS / 'Supplemental/SukhumvitSet.ttc', 5, None),  # Bold
+           (FONTS / 'Supplemental/SukhumvitSet.ttc', 2, None)),  # Text
+    'zh-Hant': ((FONTS / 'Hiragino Sans GB.ttc', 2, None),  # W6
+                (FONTS / 'Hiragino Sans GB.ttc', 0, None)),  # W3
+}
+HEAD, BODY = SF  # set per language in main()
 
 CYAN = (74, 222, 232)
 BG_TOP = (10, 10, 46)      # the skin selector's gradient
 BG_BOTTOM = (0, 0, 16)
 
-# (scene, raw capture, headline, subline) per language, in store order.
-# The first two carry the listing — most people never swipe past them.
-SCENES = {
-    # v2.9.1: 14 skins, no Campaign, no difficulty selection. The v3.7.0 set
-    # (Campaign, enemy fire patterns, 24 skins) is in commit a4245b3.
+# (scene, raw capture) in store order, then (headline, subline) per listing
+# locale. 2.10.1 (ASO pass): the first shot is the densest wave of a
+# level-10 run, picked from the boss scene's stills — the page has to sell
+# the action before anything else — and headlines are 3–4
+# words. Each language's captions sit over shots captured with the simulator
+# in that language, and name things the way the game's own ARB does.
+SCENE_IDS = [
+    ('action', 'play_action'),
+    ('roguelike', 'play_default_1'),
+    ('skins', 'play_neon_grid_0'),
+    ('comcenter', 'comcenter_default'),
+    ('elemental', 'play_default_0'),
+    ('endless', 'play_pixel_0'),
+    ('nofree2play', 'skins'),
+]
+CAPTIONS = {
+    'en': [  # Google Play default listing (en-US) and App Store en-US
+        ('Blast through the swarm', 'A boss waits every fifth level'),
+        ('Die. Keep everything.', 'Weapons, credits and score carry over'),
+        ('14 skins. Total restyle.', 'Ships, enemies, backgrounds and sound'),
+        ('Upgrade. Mind the power.', 'Weapons you own swap in for free'),
+        ('Every weapon kills differently', 'Water, ice, fire, lightning, plasma'),
+        ('Endless deep space', '18 hand-built sectors, then forever'),
+        ('No ads. Buy once.', 'Three skins free, the rest one-time'),
+    ],
+    'cs': [
+        ('Prostřílej se rojem', 'Každý pátý level čeká boss'),
+        ('Zemřeš. Všechno si necháš.', 'Zbraně, kredity i skóre zůstávají'),
+        ('14 vzhledů. Všechno jinak.', 'Lodě, nepřátelé, pozadí i zvuk'),
+        ('Vylepšuj. Hlídej energii.', 'Zbraně, které máš, přezbrojíš zdarma'),
+        ('Každá zbraň zabíjí jinak', 'Voda, led, oheň, blesky, plazma'),
+        ('Vesmír bez konce', '18 ručních sektorů, pak donekonečna'),
+        ('Žádné reklamy. Koupíš jednou.', 'Tři vzhledy zdarma, ostatní jednorázově'),
+    ],
+    'de': [
+        ('Durch den Schwarm ballern', 'Jedes fünfte Level wartet ein Boss'),
+        ('Stirb. Behalte alles.', 'Waffen, Credits und Punkte bleiben'),
+        ('14 Skins. Alles neu.', 'Schiffe, Gegner, Hintergründe und Sound'),
+        ('Aufrüsten. Energie im Blick.', 'Eigene Waffen wechselst du gratis'),
+        ('Jede Waffe tötet anders', 'Wasser, Eis, Feuer, Blitz, Plasma'),
+        ('Weltraum ohne Ende', '18 handgebaute Sektoren, dann endlos'),
+        ('Keine Werbung. Einmal kaufen.', 'Drei Skins gratis, der Rest per Einmalkauf'),
+    ],
+    'es': [
+        ('Arrasa con el enjambre', 'Un jefe te espera cada cinco niveles'),
+        ('Muere. Consérvalo todo.', 'Armas, créditos y puntos se quedan'),
+        ('14 aspectos. Todo cambia.', 'Naves, enemigos, fondos y sonido'),
+        ('Mejora. Ojo a la energía.', 'Cambia gratis entre tus armas'),
+        ('Cada arma mata distinto', 'Agua, hielo, fuego, rayos, plasma'),
+        ('Espacio sin fin', '18 sectores artesanales, luego infinito'),
+        ('Sin anuncios. Pago único.', 'Tres aspectos gratis, el resto de pago único'),
+    ],
+    'fr': [
+        ('Pulvérise l’essaim', 'Un boss tous les cinq niveaux'),
+        ('Meurs. Garde tout.', 'Armes, crédits et score restent'),
+        ('14 apparences. Tout change.', 'Vaisseaux, ennemis, décors et son'),
+        ('Améliore. Gère l’énergie.', 'Change gratuitement entre tes armes'),
+        ('Chaque arme tue autrement', 'Eau, glace, feu, foudre, plasma'),
+        ('L’espace sans fin', '18 secteurs faits main, puis l’infini'),
+        ('Sans pub. Un seul achat.', 'Trois apparences gratuites, les autres à l’unité'),
+    ],
+    'id': [
+        ('Tembus kawanan musuh', 'Bos menanti setiap lima level'),
+        ('Mati. Bawa semuanya.', 'Senjata, kredit, dan skor tetap'),
+        ('14 skin. Semua berubah.', 'Kapal, musuh, latar, dan suara'),
+        ('Upgrade. Jaga dayamu.', 'Ganti senjata milikmu secara gratis'),
+        ('Tiap senjata beda efek', 'Air, es, api, petir, plasma'),
+        ('Angkasa tanpa akhir', '18 sektor buatan, lalu tak berujung'),
+        ('Tanpa iklan. Sekali beli.', 'Tiga skin gratis, sisanya sekali beli'),
+    ],
+    'it': [
+        ('Sfonda lo sciame', 'Un boss ogni cinque livelli'),
+        ('Muori. Tieni tutto.', 'Armi, crediti e punti restano'),
+        ('14 skin. Tutto cambia.', 'Navi, nemici, sfondi e suoni'),
+        ('Potenzia. Occhio all’energia.', 'Cambi gratis tra le tue armi'),
+        ('Ogni arma uccide diversamente', 'Acqua, ghiaccio, fuoco, fulmini, plasma'),
+        ('Spazio senza fine', '18 settori fatti a mano, poi all’infinito'),
+        ('Niente pubblicità. Paghi una volta.', 'Tre skin gratis, le altre con acquisto singolo'),
+    ],
     'ja': [
-        ('roguelike', 'play_default_1',
-         '死んでも、すべて持ち越し。', '武器もクレジットもスコアも。もっと深くへ。'),
-        ('skins', 'play_neon_grid_0',
-         '14種のスキンで、丸ごと変わる', '船・敵・背景・UI・サウンドまで一新'),
-        ('comcenter', 'comcenter_default',
-         '25段階の強化。出力をやりくりせよ', 'フロント、サイド、ジェネレーター、シールド'),
-        ('elemental', 'play_default_0',
-         '倒し方で、散り方が変わる', '水しぶき・氷・炎・稲妻・プラズマ'),
-        ('endless', 'play_pixel_0',
-         '18の手作りセクター、その先は無限', '5レベルごとにボスが待ち受ける'),
-        ('nofree2play', 'skins',
-         '広告なし。買い切りのみ。', '3種は無料、追加スキンは1つずつ買い切り'),
+        ('敵の大群を撃ち抜け', '5レベルごとにボスが待ち受ける'),
+        ('死んでも、すべて持ち越し。', '武器もクレジットもスコアも'),
+        ('14種のスキンで一新', '船・敵・背景・サウンドまで'),
+        ('強化せよ。出力に注意。', '持っている武器は無料で付け替え'),
+        ('武器ごとに散り方が違う', '水しぶき・氷・炎・稲妻・プラズマ'),
+        ('果てしない宇宙', '18の手作りセクター、その先は無限'),
+        ('広告なし。買い切りのみ。', '3種は無料、追加スキンは1つずつ買い切り'),
     ],
-    # Google Play default listing (en-US); same scenes as ja.
-    'en': [
-        ('roguelike', 'play_default_1',
-         'Die. Keep everything.', 'Weapons, credits, score. Push deeper.'),
-        ('skins', 'play_neon_grid_0',
-         '14 skins restyle everything', 'Ships, enemies, backgrounds, UI and sound'),
-        ('comcenter', 'comcenter_default',
-         '25 upgrade levels. Mind the power.', 'Front, side, generator, shield'),
-        ('elemental', 'play_default_0',
-         'Every weapon kills differently', 'Water, ice, fire, lightning, plasma'),
-        ('endless', 'play_pixel_0',
-         '18 hand-built sectors, then forever', 'A boss waits every fifth level'),
-        ('nofree2play', 'skins',
-         'No ads. Buy once.', 'Three skins free, the rest one-time purchases'),
+    'ko': [
+        ('적 떼를 뚫고 나가라', '다섯 레벨마다 보스가 기다린다'),
+        ('죽어도 모든 것은 그대로', '무기, 크레딧, 점수가 남는다'),
+        ('14가지 스킨, 완전히 새롭게', '함선, 적, 배경, 사운드까지'),
+        ('강화하라. 전력을 관리하라.', '보유한 무기는 무료로 교체'),
+        ('무기마다 다른 최후', '물, 얼음, 불, 번개, 플라스마'),
+        ('끝없는 우주', '직접 만든 18개 섹터, 그 너머는 무한'),
+        ('광고 없음. 한 번만 구매.', '스킨 3종 무료, 나머지는 개별 구매'),
+    ],
+    'pt-BR': [
+        ('Detone o enxame', 'Um chefe a cada cinco níveis'),
+        ('Morra. Fique com tudo.', 'Armas, créditos e pontos ficam'),
+        ('14 visuais. Tudo muda.', 'Naves, inimigos, cenários e som'),
+        ('Melhore. Cuide da energia.', 'Troque de graça entre suas armas'),
+        ('Cada arma mata diferente', 'Água, gelo, fogo, raios, plasma'),
+        ('Espaço sem fim', '18 setores feitos à mão, depois sem fim'),
+        ('Sem anúncios. Compra única.', 'Três visuais grátis, os outros em compra única'),
+    ],
+    'ru': [
+        ('Прорвись сквозь рой', 'Каждый пятый уровень — босс'),
+        ('Умри. Сохрани всё.', 'Оружие, кредиты и очки остаются'),
+        ('14 скинов. Всё по-новому.', 'Корабли, враги, фоны и звук'),
+        ('Улучшай. Следи за энергией.', 'Своё оружие меняется бесплатно'),
+        ('Каждое оружие убивает по-своему', 'Вода, лёд, огонь, молнии, плазма'),
+        ('Бесконечный космос', '18 секторов, дальше — бесконечность'),
+        ('Без рекламы. Покупка один раз.', 'Три скина бесплатно, остальные — разовая покупка'),
+    ],
+    'th': [
+        ('ฝ่าฝูงศัตรู', 'บอสรออยู่ทุกห้าเลเวล'),
+        ('ตายแล้ว ทุกอย่างยังอยู่', 'อาวุธ เครดิต คะแนน ยังอยู่ครบ'),
+        ('14 สกิน เปลี่ยนทุกอย่าง', 'ยาน ศัตรู ฉากหลัง และเสียง'),
+        ('อัปเกรด คุมพลังงานให้ดี', 'สลับอาวุธที่มีอยู่ได้ฟรี'),
+        ('อาวุธแต่ละแบบ ทำลายต่างกัน', 'น้ำ น้ำแข็ง ไฟ สายฟ้า พลาสมา'),
+        ('อวกาศไร้ที่สิ้นสุด', '18 เซกเตอร์ทำมือ จากนั้นไม่มีที่สิ้นสุด'),
+        ('ไม่มีโฆษณา ซื้อครั้งเดียว', 'ฟรี 3 สกิน ที่เหลือซื้อครั้งเดียว'),
+    ],
+    'tr': [
+        ('Sürüyü delip geç', 'Her beş seviyede bir boss bekler'),
+        ('Öl. Hepsi seninle kalır.', 'Silahlar, kredi ve puan kalır'),
+        ('14 görünüm. Her şey yeni.', 'Gemiler, düşmanlar, arka planlar ve ses'),
+        ('Geliştir. Enerjiye dikkat.', 'Sahip olduğun silahlar ücretsiz değişir'),
+        ('Her silah farklı öldürür', 'Su, buz, ateş, şimşek, plazma'),
+        ('Sonsuz uzay', '18 elle yapılmış sektör, sonra sonsuzluk'),
+        ('Reklam yok. Bir kez al.', 'Üç görünüm ücretsiz, gerisi tek seferlik'),
+    ],
+    'vi': [
+        ('Xuyên thủng bầy địch', 'Trùm chờ sẵn sau mỗi năm cấp'),
+        ('Chết. Giữ lại tất cả.', 'Vũ khí, tín dụng, điểm số còn nguyên'),
+        ('14 giao diện. Đổi mới hết.', 'Tàu, kẻ thù, hình nền và âm thanh'),
+        ('Nâng cấp. Chớ quá tải.', 'Đổi vũ khí đã có miễn phí'),
+        ('Mỗi vũ khí một kiểu', 'Nước, băng, lửa, sét, plasma'),
+        ('Vũ trụ vô tận', '18 khu vực làm thủ công, rồi vô tận'),
+        ('Không quảng cáo. Mua một lần.', 'Ba giao diện miễn phí, còn lại mua một lần'),
+    ],
+    'zh-Hant': [
+        ('殺出敵群重圍', '每五關都有頭目等著你'),
+        ('陣亡也一切保留', '武器、點數、分數全帶著'),
+        ('14 款外觀，全面翻新', '戰機、敵人、背景與音效'),
+        ('強化武裝，管好電力', '已擁有的武器可免費切換'),
+        ('每種武器，擊破各異', '水花、冰、火焰、閃電、電漿'),
+        ('無盡星空', '18 個手工星區，之後無限延伸'),
+        ('無廣告，一次買斷', '3 款外觀免費，其餘單次購買'),
     ],
 }
+SCENES = {lang: [(scene, raw, head, sub)
+                 for (scene, raw), (head, sub) in zip(SCENE_IDS, caps)]
+          for lang, caps in CAPTIONS.items()}
 
-# Search results line per language. The header carries no text — Apple's
-# guidance there is mood, not features, and the name and Get button sit right
-# under it — so only the search asset is localized.
-SEARCH_LINE = {
-    'ja': '死んでも、すべて持ち越し。',
-    'en': 'Die. Keep everything.',
-}
+# Search results line: each language's first headline. The header carries no
+# text — Apple's guidance there is mood, not features, and the name and Get
+# button sit right under it — so only the search asset is localized.
+SEARCH_LINE = {lang: caps[0][0] for lang, caps in CAPTIONS.items()}
 
 # Raw captures for the creative assets, left to right.
 # v2.9.1 walk: the biomech captures landed on the Com Center (the seeded ship
@@ -108,6 +237,32 @@ TARGETS = {
 }
 
 
+# iPhone 17 Pro Max: simctl sometimes bakes the Dynamic Island into a capture
+# as an exact-black pill over the game. Where its core is pure black it is
+# painted over with the strip just below it, mirrored — the starfield there
+# reads as the same sky.
+ISLAND = (452, 24, 864, 168)  # search box around the pill
+
+
+def hide_island(raw):
+    if raw.size != (1320, 2868):
+        return raw
+    core = raw.crop((500, 60, 816, 132))
+    if core.getextrema() != ((0, 0), (0, 0), (0, 0)):
+        return raw
+    x0, y0, x1, y1 = ISLAND
+    h = y1 - y0
+    # The pill and its anti-aliased rim: every near-black pixel in the box,
+    # grown a little so no dark outline survives.
+    box = raw.crop(ISLAND)
+    mask = box.convert('L').point(lambda v: 255 if v < 40 else 0)
+    mask = mask.filter(ImageFilter.MaxFilter(7)).filter(
+        ImageFilter.GaussianBlur(1.5))
+    patch = raw.crop((x0, y1, x1, y1 + h)).transpose(Image.FLIP_TOP_BOTTOM)
+    out = raw.copy()
+    out.paste(patch, (x0, y0), mask)
+    return out
+
 def gradient(w, h, top=BG_TOP, bottom=BG_BOTTOM):
     g = Image.new('RGB', (1, 256))
     for y in range(256):
@@ -117,19 +272,24 @@ def gradient(w, h, top=BG_TOP, bottom=BG_BOTTOM):
     return g.resize((w, h), Image.BICUBIC)
 
 
-def font(path, size):
-    return ImageFont.truetype(str(path), size)
+def font(spec, size):
+    path, index, weight = spec
+    f = ImageFont.truetype(str(path), size, index=index)
+    if weight is not None:
+        f.set_variation_by_axes([weight if a['name'] == b'Weight' else
+                                 a['default'] for a in f.get_variation_axes()])
+    return f
 
 
-def fit_text(text, path, size, max_w):
+def fit_text(text, spec, size, max_w):
     """Largest size <= size at which the line fits max_w. Japanese has no
     spaces to break on, so captions are written to fit one line each."""
     while size > 10:
-        f = font(path, size)
+        f = font(spec, size)
         if f.getlength(text) <= max_w:
             return f
         size -= 2
-    return font(path, size)
+    return font(spec, size)
 
 
 def rounded(im, radius):
@@ -164,7 +324,8 @@ def compose(raw, w, h, head, sub):
     head_f = fit_text(head, HEAD, round(w * 0.075), w - 2 * margin)
     sub_f = fit_text(sub, BODY, round(w * 0.036), w - 2 * margin)
     y_head = round(h * 0.085)
-    y_sub = y_head + round(head_f.size * 0.95)
+    # A headline shrunk to fit keeps the line under it at a readable gap.
+    y_sub = y_head + round(max(head_f.size * 0.95, w * 0.075 * 0.66))
     d.text((w // 2, y_head), head, font=head_f, fill=(255, 255, 255),
            anchor='ms')
     d.text((w // 2, y_sub), sub, font=sub_f, fill=CYAN, anchor='ms')
@@ -249,9 +410,10 @@ def main():
     ap.add_argument('-lang', default='ja')
     ap.add_argument('-raw', help='raw capture folder (default build/store_screenshots)')
     args = ap.parse_args()
-    global RAW
+    global RAW, HEAD, BODY
     if args.raw:
         RAW = pathlib.Path(args.raw).resolve()
+    HEAD, BODY = LANG_FONTS.get(args.lang, SF)
 
     out = ROOT / 'marketing' / f'screenshots-{args.lang}'
     for target, (w, h, src) in TARGETS.items():
@@ -264,7 +426,7 @@ def main():
             if not raw_path.exists():
                 print(f'skip {target}/{scene}: no {raw_path}')
                 continue
-            raw = Image.open(raw_path).convert('RGB')
+            raw = hide_island(Image.open(raw_path).convert('RGB'))
             path = folder / f'{n:02d}_{scene}.png'
             compose(raw, w, h, head, sub).save(path, optimize=True)
             print(path.relative_to(ROOT))
@@ -278,7 +440,7 @@ def main():
         if missing:
             print(f'skip creative: missing {missing}')
             return None
-        return [Image.open(p).convert('RGB') for p in paths]
+        return [hide_island(Image.open(p).convert('RGB')) for p in paths]
 
     if raws := load(HEADER_SHOTS):
         header(raws).save(creative / 'header-3840x1646.png', optimize=True)
