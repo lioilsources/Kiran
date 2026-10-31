@@ -23,6 +23,7 @@ import 'services/achievement_service.dart';
 import 'services/asset_library.dart';
 import 'services/audio_log.dart';
 import 'services/leaderboard_service.dart';
+import 'services/review_prompt_service.dart';
 import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
@@ -249,6 +250,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           if (_game.coopRole != CoopRole.client) {
+            final clearedLevel = Sector.levelForIndex(_game.currentSectorIndex);
             _game.advanceToNextSector();
             _game.openComCenter();
             _game.saveProgress(); // persist advanced sector + current loadout
@@ -257,6 +259,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             LeaderboardService.instance.submitScore(_game.vessel.score);
             LeaderboardService.instance
                 .submitDepth(AchievementService.instance.maxSectorLevel);
+            ReviewPromptService.instance.maybeRequest(
+              clearedLevel: clearedLevel,
+              nextLevel: Sector.levelForIndex(_game.currentSectorIndex),
+            );
           } else {
             // P2: show waiting overlay while host shops
             setState(() => _clientWaiting = true);
