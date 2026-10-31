@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.10.0
+version: 2.10.1
 
 environment:
   sdk: ^3.11.1
@@ -52,6 +52,7 @@ dependencies:
   window_manager: ^0.4.3
   games_services: ^4.1.1
   in_app_purchase: ^3.2.0
+  in_app_review: ^2.0.12
   # Vendored copy of 2.1.0 with a two-line seek fix for sub-second clips —
   # see packages/just_audio_media_kit/VENDORED.md.
   just_audio_media_kit:
