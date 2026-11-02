@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
+import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../services/asset_library.dart';
 
@@ -13,6 +14,15 @@ class Projectile extends PositionComponent with HasGameReference {
   double projScale;
   Device? parentDevice;
   bool active = true;
+
+  /// Render-only enlargement of player shots; [size] stays the hitbox.
+  double get drawScale {
+    final d = parentDevice;
+    if (d == null) return 1.0;
+    return d.slot == WeaponSlot.frontGun
+        ? config.frontShotDrawScale
+        : config.sideShotDrawScale;
+  }
 
   // Bounds for collision
   double get x2 => position.x + size.x;
