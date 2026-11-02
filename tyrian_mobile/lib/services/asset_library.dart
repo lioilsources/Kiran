@@ -193,8 +193,9 @@ class AssetLibrary {
   /// sector index via `Sector.zoneForIndex` — index stopped being a proxy for
   /// zone once one level could span several sectors.
   ///
-  /// layer_0/layer_1 ship per-zone variants; layer_2/layer_3 are shared and stay
-  /// resident across the swap. Each of the four slots resolves independently
+  /// layer_0/layer_1 ship per-zone variants; layer_2/layer_3 are usually shared
+  /// and stay resident across the swap, though a curated skin may give them
+  /// per-zone files too. Each of the four slots resolves independently
   /// through zone WebP → shared WebP → legacy PNG, so a skin without zone art
   /// still gets a complete four-layer set and this becomes a no-op for it after
   /// the first call.
