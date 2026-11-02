@@ -27,8 +27,13 @@ class SkinStoreService extends ChangeNotifier {
   String? _justPurchasedSkinId;
   StreamSubscription<List<PurchaseDetails>>? _purchaseSub;
 
+  /// Tester builds (the Firebase App Distribution APK) unlock every skin:
+  /// Play Billing only works for installs from Play, so a sideloaded tester
+  /// could never reach a paid skin. Store and GitHub builds leave it false.
+  static const testerUnlock = bool.fromEnvironment('TESTER_UNLOCK');
+
   /// Platforms where skins are actually gated behind IAP.
-  bool get supported => Platform.isIOS || Platform.isAndroid;
+  bool get supported => (Platform.isIOS || Platform.isAndroid) && !testerUnlock;
 
   /// Skin with a purchase flow currently in flight (spinner on its card).
   String? get pendingSkinId => _pendingSkinId;

@@ -83,15 +83,18 @@ func main() {
 	}
 }
 
-// build reads dirs[0] as the shipped run; later dirs only add rows it lacks.
+// build reads dirs[0] as the shipped run, tagged A<n>. A later dir adds the
+// rows dirs[0] lacks (also tagged A<n>, nothing shipped) and appends its
+// variants of the rows dirs[0] has as B<n>.
 func build(dirs []string, selPath, outBase string, cell int) (sheet, error) {
+	type source struct{ dir, tag string }
 	type asset struct {
 		skin.ManifestAsset
-		dir   string
+		srcs  []source
 		extra bool
 	}
-	var assets []asset
-	seen := map[string]bool{}
+	var assets []*asset
+	seen := map[string]*asset{}
 	for i, d := range dirs {
 		var m skin.Manifest
 		b, err := os.ReadFile(filepath.Join(d, "manifest.json"))
@@ -105,11 +108,15 @@ func build(dirs []string, selPath, outBase string, cell int) (sheet, error) {
 			return sheet{}, err
 		}
 		for _, a := range m.Assets {
-			if seen[a.Name] {
+			if prev := seen[a.Name]; prev != nil {
+				if !prev.extra {
+					prev.srcs = append(prev.srcs, source{d, "B"})
+				}
 				continue
 			}
-			seen[a.Name] = true
-			assets = append(assets, asset{a, d, i > 0})
+			na := &asset{a, []source{{d, "A"}}, i > 0}
+			seen[a.Name] = na
+			assets = append(assets, na)
 		}
 	}
 	shipped := map[string]int{}
@@ -129,19 +136,25 @@ func build(dirs []string, selPath, outBase string, cell int) (sheet, error) {
 	var srcs []src
 	cols := 0
 	for _, a := range assets {
-		skinDir := a.dir
 		if !kinds[a.Type] {
 			continue
 		}
-		var files []string
-		matches, _ := filepath.Glob(filepath.Join(skinDir, a.Dir, a.Name+"_v*.jpg"))
-		for _, f := range matches {
-			var n int
-			if _, err := fmt.Sscanf(strings.TrimPrefix(filepath.Base(f), a.Name+"_v"), "%d.jpg", &n); err == nil {
-				files = append(files, f)
+		type file struct{ path, tag string }
+		var files []file
+		for _, sc := range a.srcs {
+			var paths []string
+			matches, _ := filepath.Glob(filepath.Join(sc.dir, a.Dir, a.Name+"_v*.jpg"))
+			for _, f := range matches {
+				var n int
+				if _, err := fmt.Sscanf(strings.TrimPrefix(filepath.Base(f), a.Name+"_v"), "%d.jpg", &n); err == nil {
+					paths = append(paths, f)
+				}
+			}
+			sort.Slice(paths, func(i, j int) bool { return variation(paths[i]) < variation(paths[j]) })
+			for _, f := range paths {
+				files = append(files, file{f, fmt.Sprintf("%s%d", sc.tag, variation(f))})
 			}
 		}
-		sort.Slice(files, func(i, j int) bool { return variation(files[i]) < variation(files[j]) })
 		if len(files) == 0 {
 			continue
 		}
@@ -155,14 +168,14 @@ func build(dirs []string, selPath, outBase string, cell int) (sheet, error) {
 		}
 		var imgs []image.Image
 		for _, f := range files {
-			fh, err := os.Open(f)
+			fh, err := os.Open(f.path)
 			if err != nil {
 				return sheet{}, err
 			}
 			img, _, err := image.Decode(fh)
 			fh.Close()
 			if err != nil {
-				return sheet{}, fmt.Errorf("%s: %w", f, err)
+				return sheet{}, fmt.Errorf("%s: %w", f.path, err)
 			}
 			// Same name postprocess keys under: thresholds are tuned per game name.
 			keyName := a.Name
@@ -171,7 +184,7 @@ func build(dirs []string, selPath, outBase string, cell int) (sheet, error) {
 			}
 			keyed := postprocess.KeySprite(img, 60, 20, keyName)
 			imgs = append(imgs, postprocess.Resize(postprocess.Trim(keyed), cell-8))
-			r.Variants = append(r.Variants, fmt.Sprintf("A%d", variation(f)))
+			r.Variants = append(r.Variants, f.tag)
 		}
 		if len(imgs) > cols {
 			cols = len(imgs)

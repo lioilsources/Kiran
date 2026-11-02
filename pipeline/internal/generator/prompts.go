@@ -71,6 +71,14 @@ Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Menacing hostile design. A single craft drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
 Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 
+	"boss": `{{.ArtDirective}}
+The final boss: a colossal enemy mothership viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. Its front faces the BOTTOM edge of the image (descending toward the player).
+{{.EnemyDirective}}.
+It is NOT a fighter: no swept fighter wings, no single slim fuselage, no cockpit canopy, no engine plume. It reads as a flying fortress — one wide, dense, heavily built mass, nearly as wide as it is long, bristling with armor and structure.
+Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
+Menacing and imposing. Drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant.
+Roughly square overall proportions. Sharp readable details. No text, no UI. Single flat solid-color background, no gradient, no scene.`,
+
 	"boss_part": `{{.ArtDirective}}
 A single machine part seen from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt.
 The part is {{.PartDirective}}.
@@ -155,6 +163,12 @@ overhead view, bird's eye view, directly above, orthographic top-down, no perspe
 menacing mecha design, detailed, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
+
+	"boss": ponyQuality + `, colossal enemy mothership, flying fortress, capital ship, {{.EnemyDirective}},
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, front facing bottom edge,
+wide dense armored mass, nearly as wide as long, menacing, imposing, detailed, sharp clean lineart, large, centered, fills frame,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid background, no text, no UI, no fighter wings, no cockpit, no engine flame, no humans, no characters, no 3d render, no voxel`,
 
 	"boss_part": ponyQuality + `, mechanical component, machine part, {{.PartDirective}},
 part of a larger warship hull, overhead view, directly above, orthographic top-down, no perspective, no isometric, no 3/4 view,

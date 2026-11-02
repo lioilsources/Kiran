@@ -206,7 +206,7 @@ func findSpec(assetName string, s skin.SkinDef) (generator.AssetSpec, bool) {
 }
 
 func buildInitialPrompt(spec generator.AssetSpec, s skin.SkinDef, workflow string) (prompttune.Prompt, error) {
-	pos, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, workflow)
+	pos, err := generator.BuildPromptForWorkflow(spec.Prompt(), s, spec.ExtraVars, workflow)
 	if err != nil {
 		return prompttune.Prompt{}, err
 	}

@@ -1,0 +1,70 @@
+{
+  "_sources": {
+    "A": "output/assets/skins (boss_* rows: output/boss_b/skins, generated later)",
+    "B": "backgrounds: output/bg_b/skins; sprites: output/boss_b/skins"
+  },
+  "backgrounds": {
+    "l0": {
+      "z0": "A2",
+      "z2": "B2",
+      "z3": "A1",
+      "z4": "B2",
+      "z5": "B2",
+      "z6": "B1"
+    },
+    "l1": {
+      "z0": "A2",
+      "z1": "A1",
+      "z2": "B2",
+      "z3": "B2",
+      "z5": "B1",
+      "z6": "A1"
+    },
+    "l2": {
+      "z0": "A1",
+      "z1": "A2",
+      "z2": "A1",
+      "z3": "B1",
+      "z4": "B1",
+      "z5": "B1",
+      "z6": "B1"
+    },
+    "l3": {
+      "z0": "A1",
+      "z1": "A1",
+      "z2": "A1",
+      "z3": "A1",
+      "z4": "A1",
+      "z5": "A1",
+      "z6": "B2"
+    }
+  },
+  "sprites": {
+    "asteroid1": "A2",
+    "asteroid2": "A2",
+    "asteroid3": "A4",
+    "blaster": "A1",
+    "boss_cannon": "A1",
+    "boss_shield": "A4",
+    "boss_thruster": "A3",
+    "boss_turret": "A2",
+    "bubble": "A1",
+    "falcon1": "A1",
+    "falcon3": "A1",
+    "falcon5": "A4",
+    "falcon6": "A3",
+    "falconx": "A2",
+    "falconx2": "A2",
+    "falconxb": "A4",
+    "falconxt": "A4",
+    "icon_bomb": "A2",
+    "icon_credit": "A3",
+    "icon_gen": "A3",
+    "icon_life": "A4",
+    "icon_shield": "A2",
+    "laser": "A4",
+    "rododendron": "B2",
+    "ship_frames": "A1",
+    "starg": "A4"
+  }
+}
