@@ -35,3 +35,32 @@ func TestComCenterBgSceneTechnique(t *testing.T) {
 	}
 }
 
+// Parallax layers carry the medium on retro skins only; modern skins keep
+// the prompt they shipped with.
+func TestBackgroundTechnique(t *testing.T) {
+	cases := map[string]string{
+		"galaga":    "pixel grid",
+		"asteroids": "vector lines",
+		"star_fox":  "low-poly",
+		"default":   "",
+	}
+	for id, want := range cases {
+		s, ok := skin.GetSkin(id)
+		if !ok {
+			t.Fatalf("skin %q not found", id)
+		}
+		p, err := BuildPrompt("background", s, map[string]string{"LayerDesc": "x"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if want == "" {
+			if strings.Contains(p, "cel-shaded") || strings.Contains(p, "pixel grid") {
+				t.Errorf("%s: modern skin got a forced technique", id)
+			}
+			continue
+		}
+		if !strings.Contains(p, want) {
+			t.Errorf("%s: background prompt lacks %q", id, want)
+		}
+	}
+}

@@ -52,7 +52,8 @@ No text, no UI. Single flat solid-color background, no gradient, no scene.`,
 {{if .ZoneDesc}}This sector: {{.ZoneDesc}}. Render it within the setting above — do not abandon the setting.
 {{end}}Colours — every element in this image is drawn in these and only these: {{.PaletteDescription}}.
 Layer: {{.LayerDesc}}.
-Style: {{.StyleKeywords}}.
+Style: {{.StyleKeywords}}.{{if .BgTechnique}}
+{{.BgTechnique}}{{end}}
 Base palette: {{.BackgroundMood}}.{{if .DangerMood}} Palette shift: {{.DangerMood}}.{{end}}
 Must tile seamlessly top to bottom — the top edge must continue the bottom edge exactly.
 No ships, no vehicles, no characters, no UI, no text. Purely atmospheric.
@@ -235,6 +236,7 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"BackgroundMood":     s.BackgroundMood,
 		"SceneNoun":          sceneNoun(s),
 		"SceneTechnique":     sceneTechnique(s),
+		"BgTechnique":        bgTechnique(s),
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
 		"BossDirective":      s.BossDirective,
@@ -280,6 +282,18 @@ func sceneTechnique(s skin.SkinDef) string {
 	default:
 		return "Bold cel-shaded cartoon illustration, vibrant colors, cinematic framing."
 	}
+}
+
+// bgTechnique is sceneTechnique for the parallax layers, minus the cartoon
+// default: modern skins already get their look from StyleKeywords, and forcing
+// cel-shading onto them would restyle backgrounds that shipped fine. Retro
+// skins need the medium spelled out or the layers come back painterly.
+func bgTechnique(s skin.SkinDef) string {
+	t := sceneTechnique(s)
+	if strings.HasPrefix(t, "Bold cel-shaded") {
+		return ""
+	}
+	return t
 }
 
 // BuildPrompt renders a prompt template for the given asset type and skin using the default (Flux) style.
