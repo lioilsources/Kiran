@@ -15,8 +15,12 @@ class Projectile extends PositionComponent with HasGameReference {
   Device? parentDevice;
   bool active = true;
 
+  /// Set on a co-op client's mirrored player shots, which have no device.
+  double? drawScaleOverride;
+
   /// Render-only enlargement of player shots; [size] stays the hitbox.
   double get drawScale {
+    if (drawScaleOverride != null) return drawScaleOverride!;
     final d = parentDevice;
     if (d == null) return 1.0;
     return d.slot == WeaponSlot.frontGun
