@@ -52,6 +52,14 @@ const double spriteSupersample = 4.0;
 // Divided by spriteSupersample so supersampled atlases keep the same in-game size.
 const double spriteScale = 0.74 / spriteSupersample;
 
+// Player shots are drawn larger than their hitbox. At the VB6 reference sizes
+// (vulcan 10x24, star 24x24) they came out a few points tall on a phone, too
+// small to tell the weapons apart. Render-only: collision keeps the reference
+// size, so damage and difficulty are unchanged. Side guns stay a step smaller
+// than the front gun so the two read as different weapons.
+const double frontShotDrawScale = 2.0;
+const double sideShotDrawScale = 1.5;
+
 // Texture filtering for gameplay sprite batches. Set per-skin at load time
 // (AssetLibrary): smooth (medium) filtering only helps when sprites are
 // supersampled and the skin is not pixel-art; otherwise nearest-neighbour is
