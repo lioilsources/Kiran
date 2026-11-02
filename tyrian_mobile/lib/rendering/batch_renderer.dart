@@ -251,12 +251,14 @@ class ProjectileBatchRenderer extends Component
 
     final image = sprite.image;
     final batch = _batches.putIfAbsent(image, () => _AtlasBatch(image));
+    // Grown around the hitbox centre, so the shot still lines up with it.
+    final k = p.drawScale;
     batch.add(
       sprite.src,
-      p.position.x,
-      p.position.y,
-      p.size.x / sprite.srcSize.x,
-      p.size.y / sprite.srcSize.y,
+      p.position.x - p.size.x * (k - 1) / 2,
+      p.position.y - p.size.y * (k - 1) / 2,
+      p.size.x * k / sprite.srcSize.x,
+      p.size.y * k / sprite.srcSize.y,
     );
   }
 }
