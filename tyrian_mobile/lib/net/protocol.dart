@@ -110,7 +110,8 @@ Uint8List encodeClientInput(double dx, double dy, bool fire) {
 
 // v2: the 18-part sector table (v2.4.0) renumbered sector indices — a v1
 // client would mirror the wrong sector content, so the versions must not pair.
-const int protocolVersion = 2;
+// v3: player shots carry their sprite and gun slot (2 more bytes each).
+const int protocolVersion = 3;
 
 Uint8List encodeLobbyHandshake(String pilotName) {
   final nameBytes = Uint8List.fromList(pilotName.codeUnits);
@@ -281,16 +282,26 @@ class HostileSnap {
 
 // ProjSnap: x,y: float64, sizeX,sizeY: float32, speed: float32 = 8+8+4+4+4 = 28 bytes
 const int _projSnapSize = 28;
+// Player shots add img: uint8 (index into [projSnapImgs]), side: uint8 —
+// the client draws the right sprite at the right size instead of a bubble.
+const int _playerProjSnapSize = _projSnapSize + 2;
+
+/// Sprite names a player shot can carry over the wire, by index.
+const List<String> projSnapImgs = ['bubble', 'vulcan', 'blaster', 'laser', 'starg'];
 
 class ProjSnap {
   final double x, y;
   final double sizeX, sizeY;
   final double speed;
+  final int img; // index into projSnapImgs; player shots only
+  final bool side; // fired by a side gun; player shots only
 
   ProjSnap({
     required this.x, required this.y,
     required this.sizeX, required this.sizeY,
     required this.speed,
+    this.img = 0,
+    this.side = false,
   });
 }
 
@@ -389,7 +400,7 @@ Uint8List encodeGameSnapshot({
   final headerSize = 11 + 2 * _vesselSnapSize;
   final hostileSize = 2 + hostiles.length * _hostileSnapSize;
   final enemyProjSize = 2 + enemyProjs.length * _projSnapSize;
-  final playerProjSize = 2 + playerProjs.length * _projSnapSize;
+  final playerProjSize = 2 + playerProjs.length * _playerProjSnapSize;
   final collSize = 2 + collectables.length * _collSnapSize;
   final beamSize = 2 + beams.length * _beamSnapSize;
   // Structures: count(2) + per-struct(33 fixed + variable imgName)
@@ -454,6 +465,8 @@ Uint8List encodeGameSnapshot({
     bd.setFloat32(off, p.sizeX, Endian.big); off += 4;
     bd.setFloat32(off, p.sizeY, Endian.big); off += 4;
     bd.setFloat32(off, p.speed, Endian.big); off += 4;
+    payload[off] = p.img; off += 1;
+    payload[off] = p.side ? 1 : 0; off += 1;
   }
 
   // Collectables
@@ -547,7 +560,10 @@ GameSnapshot decodeGameSnapshot(Uint8List payload) {
     final sizeX = bd.getFloat32(off, Endian.big); off += 4;
     final sizeY = bd.getFloat32(off, Endian.big); off += 4;
     final speed = bd.getFloat32(off, Endian.big); off += 4;
-    playerProjs.add(ProjSnap(x: x, y: y, sizeX: sizeX.toDouble(), sizeY: sizeY.toDouble(), speed: speed.toDouble()));
+    final img = payload[off]; off += 1;
+    final side = payload[off] != 0; off += 1;
+    playerProjs.add(ProjSnap(x: x, y: y, sizeX: sizeX.toDouble(), sizeY: sizeY.toDouble(), speed: speed.toDouble(),
+        img: img < projSnapImgs.length ? img : 0, side: side));
   }
 
   // Collectables

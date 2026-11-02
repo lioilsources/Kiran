@@ -1494,10 +1494,13 @@ class TyrianGame extends FlameGame
       for (final d in v.devices) {
         for (final p in d.projectiles) {
           if (!p.active) continue;
+          final img = projSnapImgs.indexOf(p.imgName);
           pProjSnaps.add(ProjSnap(
             x: p.position.x, y: p.position.y,
             sizeX: p.size.x, sizeY: p.size.y,
             speed: p.speed,
+            img: img < 0 ? 0 : img,
+            side: d.slot != WeaponSlot.frontGun,
           ));
         }
       }
@@ -1667,11 +1670,12 @@ class TyrianGame extends FlameGame
     clientPlayerProjectiles.clear();
     for (final ps in snap.playerProjectiles) {
       final proj = Projectile(
-        imgName: 'bubble',
+        imgName: projSnapImgs[ps.img],
         position: Vector2(ps.x, ps.y),
         speed: ps.speed,
         damage: 0,
-      );
+      )..drawScaleOverride =
+          ps.side ? config.sideShotDrawScale : config.frontShotDrawScale;
       proj.size = Vector2(ps.sizeX, ps.sizeY);
       clientPlayerProjectiles.add(proj);
       world.add(proj);
