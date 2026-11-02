@@ -14,6 +14,16 @@ type AssetSpec struct {
 	AspectRatio string // "1:1" or "1:2"
 	Resolution  string // "1k" or "2k"
 	ExtraVars   map[string]string
+	PromptKind  string // template to render when it differs from AssetType
+}
+
+// Prompt names the prompt template for the spec: its AssetType unless the
+// spec needs its own wording while keeping that type's postprocess.
+func (a AssetSpec) Prompt() string {
+	if a.PromptKind != "" {
+		return a.PromptKind
+	}
+	return a.AssetType
 }
 
 var bulletSpecs = []struct{ name, directive string }{
@@ -45,7 +55,11 @@ var enemySpecs = []struct{ name, directive string }{
 	{"falconx3", "experimental mark IV, heavily armed, prominent cannons"},
 	{"falconxb", "experimental command vessel, ornate heavy detailing"},
 	{"falconxt", "experimental turret carrier, rotating weapon platform"},
-	{"rododendron", "boss dreadnought, layered armor plating, dominating silhouette, ornate command superstructure"},
+	// The boss core carries four separate modules (boss_part) at its flanks,
+	// bow and stern, so it needs a capital-ship hull with room for them. It
+	// renders through the "boss" prompt: under the enemy one, even this
+	// directive came back as one more fighter.
+	{"rododendron", "boss dreadnought: a broad, heavy capital-ship hull far more massive than any fighter, layered armor plating, an ornate command superstructure at its center, and flat empty armored hardpoints on the left flank, the right flank, the bow and the stern where separate weapon modules bolt on"},
 }
 
 // bossPartSpecs are the modules that bolt onto the dreadnought. They get their
@@ -211,14 +225,18 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 
 	// Enemies
 	for _, e := range enemySpecs {
-		specs = append(specs, AssetSpec{
+		spec := AssetSpec{
 			Name:        e.name,
 			AssetType:   "enemy",
 			OutputDir:   "sprites",
 			AspectRatio: "1:1",
 			Resolution:  "1k",
 			ExtraVars:   map[string]string{"EnemyDirective": e.directive},
-		})
+		}
+		if e.name == "rododendron" {
+			spec.PromptKind = "boss"
+		}
+		specs = append(specs, spec)
 	}
 
 	// Boss parts

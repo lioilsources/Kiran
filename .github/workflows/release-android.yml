@@ -81,6 +81,13 @@ jobs:
           draft: false
           prerelease: true
 
+      # Testers install from Firebase, where Play Billing never works, so the
+      # APK they get unlocks every skin. Built after the GitHub upload: it
+      # overwrites app-release.apk, and the public APK must stay gated.
+      - name: Build tester APK (all skins unlocked)
+        working-directory: tyrian_mobile
+        run: flutter build apk --release --dart-define=TESTER_UNLOCK=true
+
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:

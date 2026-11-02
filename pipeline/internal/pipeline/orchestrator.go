@@ -162,7 +162,7 @@ func (o *Orchestrator) dryRunSpecs(s skin.SkinDef, specs []generator.AssetSpec, 
 	fmt.Printf("Assets: %d specs, %d variations each\n\n", len(specs), o.n)
 
 	for i, spec := range specs {
-		prompt, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, o.promptStyle)
+		prompt, err := generator.BuildPromptForWorkflow(spec.Prompt(), s, spec.ExtraVars, o.promptStyle)
 		if err != nil {
 			fmt.Printf("[%d] %s/%s — ERROR: %v\n", i+1, spec.OutputDir, spec.Name, err)
 			continue
@@ -205,7 +205,7 @@ func (o *Orchestrator) generateAsset(ctx context.Context, s skin.SkinDef, spec g
 
 	// Fall back to template-rendered prompt.
 	if req.Prompt == "" {
-		prompt, err := generator.BuildPromptForWorkflow(spec.AssetType, s, spec.ExtraVars, o.promptStyle)
+		prompt, err := generator.BuildPromptForWorkflow(spec.Prompt(), s, spec.ExtraVars, o.promptStyle)
 		if err != nil {
 			return fmt.Errorf("build prompt: %w", err)
 		}
