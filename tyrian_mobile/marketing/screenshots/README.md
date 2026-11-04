@@ -78,8 +78,8 @@ with two running, `recordVideo` froze for up to 85 s.
 2.10.5 redrew the three free skins (Kiran, Arcade Formation, Neon Grid), so
 the iPhone sets swap four gameplay scenes for captures of those skins:
 `roguelike` and `endless` show Arcade Formation, `skins` Neon Grid,
-`elemental` Kiran. The other three scenes, the iPad sets and the Play sets
-are the v2.10.1 files unchanged.
+`elemental` Kiran; `play-phone` gets the same four. The other three scenes,
+the iPad sets and the Play tablet sets are the v2.10.1 files unchanged.
 
 Capture: the reel scene on a worktree of `release/2.9.x`, seeded on level 18
 (sector index 29, Unknown Space) with level-15 weapons. A capture-only edit
