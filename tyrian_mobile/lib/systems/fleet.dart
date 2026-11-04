@@ -344,7 +344,9 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   }
 
   void _spawnBonus() {
-    if (bonus == CollType.none && bonusMoney <= 0) return;
+    // VB6 Fleet.cls:124 drops nothing without a bonus type; money alone
+    // would fall as a blank grey "?" pickup that does nothing.
+    if (bonus == CollType.none) return;
 
     // VB6: spawn at last killed hostile's position
     final cx = lastKillX;
