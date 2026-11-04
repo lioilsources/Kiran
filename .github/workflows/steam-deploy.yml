@@ -138,7 +138,11 @@ jobs:
   deploy:
     name: Upload depots to Steam
     needs: [build-windows, build-linux]
-    runs-on: ubuntu-latest
+    # Pinned: on the ubuntu-26.04 image (ubuntu-latest since late Oct 2026)
+    # steamcmd inside game-ci's container fails its first self-update with
+    # "Steamcmd needs to be online to update", on every run. 24.04 is the
+    # image the last successful upload (v3.7.0) ran on.
+    runs-on: ubuntu-24.04
     # Skip cleanly until the Steamworks secrets are configured.
     if: ${{ vars.STEAM_DEPLOY_ENABLED == 'true' }}
     steps:
