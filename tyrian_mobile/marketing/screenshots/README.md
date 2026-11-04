@@ -73,6 +73,29 @@ iPhone 886×1920 (Dynamic Island strip cropped off), iPad 1200×1600, H.264
 ~2 Mbit/s so each file stays under 10 MB. Record one simulator at a time:
 with two running, `recordVideo` froze for up to 85 s.
 
+## Free-skin element shots and previews (v2.10.5)
+
+2.10.5 redrew the three free skins (Kiran, Arcade Formation, Neon Grid), so
+the iPhone sets swap four gameplay scenes for captures of those skins:
+`roguelike` and `endless` show Arcade Formation, `skins` Neon Grid,
+`elemental` Kiran. The other three scenes, the iPad sets and the Play sets
+are the v2.10.1 files unchanged.
+
+Capture: the reel scene on a worktree of `release/2.9.x`, seeded on level 18
+(sector index 29, Unknown Space) with level-15 weapons. A capture-only edit
+in `Vessel.update` cycled the whole loadout every 8 s — Bubble, Vulcan, Star
+Gun alone, Laser, Blaster alone — so every death effect (water, ice, fire,
+lightning, plasma) gets screen time. 90 s per skin. Stills are frames of
+that recording, picked by enemy HP-bar count, with the Dynamic Island strip
+painted over by hand: video frames are never exact black, so `hide_island`
+leaves the pill in. The recording ran in English only, so the HUD in these
+four scenes is English in every language.
+
+`previews-2.10.5/` holds the three iPhone app previews (886×1920, 25 s,
+one per free skin, five 5-second segments in element order, each skin's own
+`theme_5`). The App Store takes three iPhone previews per localization; the
+same three files are on all 19.
+
 ## Output (per language)
 
 | Folder | Size | Store slot |
