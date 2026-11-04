@@ -28,8 +28,10 @@ name: Steam Deploy
 
 on:
   push:
+    # Steam ships the 3.x line only. The 2.x tags (release/2.9.x) are the
+    # mobile store builds and must never reach a depot.
     tags:
-      - 'v*'
+      - 'v3.*'
   workflow_dispatch:
     inputs:
       releaseBranch:
