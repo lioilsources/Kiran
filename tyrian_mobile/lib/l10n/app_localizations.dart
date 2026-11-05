@@ -934,6 +934,474 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'no reply'**
   String get lanJoinNoAnswer;
+
+  /// No description provided for @objBossUnder.
+  ///
+  /// In en, this message translates to:
+  /// **'Destroy the boss core within {seconds}s of its arrival'**
+  String objBossUnder(int seconds);
+
+  /// No description provided for @sectionHangar.
+  ///
+  /// In en, this message translates to:
+  /// **'HANGAR'**
+  String get sectionHangar;
+
+  /// No description provided for @sectionVault.
+  ///
+  /// In en, this message translates to:
+  /// **'VAULT'**
+  String get sectionVault;
+
+  /// No description provided for @rackSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Side'**
+  String get rackSide;
+
+  /// No description provided for @rackHull.
+  ///
+  /// In en, this message translates to:
+  /// **'Hull'**
+  String get rackHull;
+
+  /// No description provided for @rarityCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'COMMON'**
+  String get rarityCommon;
+
+  /// No description provided for @rarityRare.
+  ///
+  /// In en, this message translates to:
+  /// **'RARE'**
+  String get rarityRare;
+
+  /// No description provided for @rarityMythic.
+  ///
+  /// In en, this message translates to:
+  /// **'MYTHIC'**
+  String get rarityMythic;
+
+  /// No description provided for @curse.
+  ///
+  /// In en, this message translates to:
+  /// **'CURSE'**
+  String get curse;
+
+  /// No description provided for @modFit.
+  ///
+  /// In en, this message translates to:
+  /// **'FIT'**
+  String get modFit;
+
+  /// No description provided for @modUnfit.
+  ///
+  /// In en, this message translates to:
+  /// **'UNFIT'**
+  String get modUnfit;
+
+  /// No description provided for @modForge.
+  ///
+  /// In en, this message translates to:
+  /// **'FORGE'**
+  String get modForge;
+
+  /// No description provided for @forgeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick 3 of one rarity to forge 1 of the next'**
+  String get forgeHint;
+
+  /// No description provided for @vaultEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No mods yet. Clear a node on full stars, beat a boss fast, or down an endless boss.'**
+  String get vaultEmpty;
+
+  /// No description provided for @modNeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Works with {families}'**
+  String modNeeds(String families);
+
+  /// No description provided for @modRackFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Rack full'**
+  String get modRackFull;
+
+  /// No description provided for @modAlreadyFitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Already fitted'**
+  String get modAlreadyFitted;
+
+  /// No description provided for @modWrongRack.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not fit this rack'**
+  String get modWrongRack;
+
+  /// No description provided for @modsSpilled.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} mods back in the vault'**
+  String modsSpilled(int n);
+
+  /// No description provided for @hullLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get hullLocked;
+
+  /// No description provided for @hullUnlockBoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Beat campaign boss {n}'**
+  String hullUnlockBoss(int n);
+
+  /// No description provided for @hullUnlockFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the campaign or reach sector 30'**
+  String get hullUnlockFinish;
+
+  /// No description provided for @statAgility.
+  ///
+  /// In en, this message translates to:
+  /// **'AGI'**
+  String get statAgility;
+
+  /// No description provided for @statHitbox.
+  ///
+  /// In en, this message translates to:
+  /// **'HIT'**
+  String get statHitbox;
+
+  /// No description provided for @perkNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock ship'**
+  String get perkNone;
+
+  /// No description provided for @perkAfterimage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold still: shots hit ×1.5'**
+  String get perkAfterimage;
+
+  /// No description provided for @perkBulwark.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage past the shield is halved'**
+  String get perkBulwark;
+
+  /// No description provided for @perkOverclock.
+  ///
+  /// In en, this message translates to:
+  /// **'Fires guns up to 130 % of capacity, slower'**
+  String get perkOverclock;
+
+  /// No description provided for @perkBattery.
+  ///
+  /// In en, this message translates to:
+  /// **'A free gun drone rides along'**
+  String get perkBattery;
+
+  /// No description provided for @rewardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'REWARD'**
+  String get rewardTitle;
+
+  /// No description provided for @newHull.
+  ///
+  /// In en, this message translates to:
+  /// **'New hull: {name}'**
+  String newHull(String name);
+
+  /// No description provided for @socketEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'empty'**
+  String get socketEmpty;
+
+  /// No description provided for @fxStreams.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} parallel streams'**
+  String fxStreams(int n);
+
+  /// No description provided for @fxFan.
+  ///
+  /// In en, this message translates to:
+  /// **'Fan of {n} shots'**
+  String fxFan(int n);
+
+  /// No description provided for @fxSalvo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n}-shot salvo'**
+  String fxSalvo(int n);
+
+  /// No description provided for @fxFireRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire rate ×{x}'**
+  String fxFireRate(String x);
+
+  /// No description provided for @fxDamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage ×{x}'**
+  String fxDamage(String x);
+
+  /// No description provided for @fxShotSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Shot speed ×{x}'**
+  String fxShotSpeed(String x);
+
+  /// No description provided for @fxShotSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Shot size ×{x}'**
+  String fxShotSize(String x);
+
+  /// No description provided for @fxPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Power use ×{x}'**
+  String fxPower(String x);
+
+  /// No description provided for @fxHoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Homing +{n}'**
+  String fxHoming(int n);
+
+  /// No description provided for @fxPierce.
+  ///
+  /// In en, this message translates to:
+  /// **'Passes through {n} targets'**
+  String fxPierce(int n);
+
+  /// No description provided for @fxPierceAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Passes through everything'**
+  String get fxPierceAll;
+
+  /// No description provided for @fxCrit.
+  ///
+  /// In en, this message translates to:
+  /// **'{pct} % chance of ×{x} damage'**
+  String fxCrit(int pct, String x);
+
+  /// No description provided for @fxBossCrit.
+  ///
+  /// In en, this message translates to:
+  /// **'×{x} crits on bosses'**
+  String fxBossCrit(String x);
+
+  /// No description provided for @fxFork.
+  ///
+  /// In en, this message translates to:
+  /// **'Kills spray {n} shots'**
+  String fxFork(int n);
+
+  /// No description provided for @fxChain.
+  ///
+  /// In en, this message translates to:
+  /// **'Spray shots spray again'**
+  String get fxChain;
+
+  /// No description provided for @fxSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Splits in two on a hit'**
+  String get fxSplit;
+
+  /// No description provided for @fxFrost.
+  ///
+  /// In en, this message translates to:
+  /// **'Hits slow enemies down'**
+  String get fxFrost;
+
+  /// No description provided for @fxCrossfire.
+  ///
+  /// In en, this message translates to:
+  /// **'Side guns lean inward'**
+  String get fxCrossfire;
+
+  /// No description provided for @fxRearguard.
+  ///
+  /// In en, this message translates to:
+  /// **'Side guns also fire backward'**
+  String get fxRearguard;
+
+  /// No description provided for @fxOrbit.
+  ///
+  /// In en, this message translates to:
+  /// **'Shots weave'**
+  String get fxOrbit;
+
+  /// No description provided for @fxBounce.
+  ///
+  /// In en, this message translates to:
+  /// **'Bounces off the walls {n}×'**
+  String fxBounce(int n);
+
+  /// No description provided for @fxBounceTop.
+  ///
+  /// In en, this message translates to:
+  /// **'…and off the top'**
+  String get fxBounceTop;
+
+  /// No description provided for @fxOverdrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Fires on a power debt'**
+  String get fxOverdrive;
+
+  /// No description provided for @fxReactor.
+  ///
+  /// In en, this message translates to:
+  /// **'Over-capacity guns still fire, slowly'**
+  String get fxReactor;
+
+  /// No description provided for @fxGenPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Generator recharge ×{x}'**
+  String fxGenPower(String x);
+
+  /// No description provided for @fxGenMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Generator capacity ×{x}'**
+  String fxGenMax(String x);
+
+  /// No description provided for @fxSurge.
+  ///
+  /// In en, this message translates to:
+  /// **'Full generator: shots ×2'**
+  String get fxSurge;
+
+  /// No description provided for @fxSiphon.
+  ///
+  /// In en, this message translates to:
+  /// **'Kills refill {pct} % power'**
+  String fxSiphon(int pct);
+
+  /// No description provided for @fxHp.
+  ///
+  /// In en, this message translates to:
+  /// **'Hull ×{x}'**
+  String fxHp(String x);
+
+  /// No description provided for @fxShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield ×{x}'**
+  String fxShield(String x);
+
+  /// No description provided for @fxRegen.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield regen ×{x}'**
+  String fxRegen(String x);
+
+  /// No description provided for @fxLeech.
+  ///
+  /// In en, this message translates to:
+  /// **'Kills heal {n} HP'**
+  String fxLeech(int n);
+
+  /// No description provided for @fxMagnet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulls pickups in'**
+  String get fxMagnet;
+
+  /// No description provided for @fxMagnetAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulls in every pickup'**
+  String get fxMagnetAll;
+
+  /// No description provided for @fxReflect.
+  ///
+  /// In en, this message translates to:
+  /// **'{pct} % of shots off the shield fly back'**
+  String fxReflect(int pct);
+
+  /// No description provided for @fxReflectGuided.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflected shots home in'**
+  String get fxReflectGuided;
+
+  /// No description provided for @fxGhost.
+  ///
+  /// In en, this message translates to:
+  /// **'Untouchable {sec} s after a hull hit'**
+  String fxGhost(String sec);
+
+  /// No description provided for @fxNova.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield breaks: the whole screen takes a blast'**
+  String get fxNova;
+
+  /// No description provided for @fxAgility.
+  ///
+  /// In en, this message translates to:
+  /// **'Agility ×{x}'**
+  String fxAgility(String x);
+
+  /// No description provided for @fxHitbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Hitbox ×{x}'**
+  String fxHitbox(String x);
+
+  /// No description provided for @fxCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits ×{x}'**
+  String fxCredits(String x);
+
+  /// No description provided for @fxScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Score ×{x}'**
+  String fxScore(String x);
+
+  /// No description provided for @fxSatellite.
+  ///
+  /// In en, this message translates to:
+  /// **'A gun drone rides along'**
+  String get fxSatellite;
+
+  /// No description provided for @fxTimewarp.
+  ///
+  /// In en, this message translates to:
+  /// **'A hull hit slows time'**
+  String get fxTimewarp;
+
+  /// No description provided for @fxGambler.
+  ///
+  /// In en, this message translates to:
+  /// **'Every shot is a random gun'**
+  String get fxGambler;
+
+  /// No description provided for @vaultAll.
+  ///
+  /// In en, this message translates to:
+  /// **'ALL'**
+  String get vaultAll;
 }
 
 class _AppLocalizationsDelegate

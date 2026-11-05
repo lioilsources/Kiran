@@ -58,6 +58,21 @@ class Collectable extends PositionComponent
 
   @override
   void update(double dt) {
+    // MAGNET: inside the radius the pickup leaves its path and comes to the
+    // ship. Host only; the client sees it through snapshots.
+    if (game.coopRole != CoopRole.client) {
+      final v = game.vessel;
+      final r = v.mods.magnetRadius;
+      if (r > 0 && v.visible) {
+        final c = position + size / 2;
+        final to = v.position - c;
+        if (to.length2 < r * r) {
+          trace = null;
+          position.add(to * (config.modMagnetPull * dt).clamp(0.0, 1.0));
+          return;
+        }
+      }
+    }
     // Follow path (falling toward player)
     if (trace != null && trace!.current != null) {
       position.setValues(trace!.current!.x, trace!.current!.y);

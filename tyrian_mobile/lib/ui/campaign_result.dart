@@ -11,6 +11,9 @@ import '../systems/campaign_tracker.dart';
 import 'format.dart';
 import 'ui_theme.dart';
 import '../l10n/l10n.dart';
+import '../systems/mods/hull_spec.dart';
+import '../systems/mods/mod_rewards.dart';
+import 'mod_text.dart';
 
 /// The objective list, shown twice: as a briefing on the map (no progress
 /// yet) and as the score sheet on the result card.
@@ -101,6 +104,9 @@ class CampaignResultCard extends StatefulWidget {
   /// Weapons this node's boss just opened in the shop, if any.
   final String? unlocked;
 
+  /// Mods and hulls the node paid out (Prompts/27 §4).
+  final ModReward reward;
+
   /// Back to the map — only offered once the node is actually cleared.
   final VoidCallback onContinue;
   final VoidCallback onRetry;
@@ -111,6 +117,7 @@ class CampaignResultCard extends StatefulWidget {
     required this.result,
     required this.creditsEarned,
     this.unlocked,
+    this.reward = ModReward.nothing,
     required this.onContinue,
     required this.onRetry,
   });
@@ -120,6 +127,87 @@ class CampaignResultCard extends StatefulWidget {
 }
 
 class _CampaignResultCardState extends State<CampaignResultCard> {
+  /// The mods as cards in their rarity colour, then any new hull.
+  Widget _rewardBlock(BuildContext context) {
+    final l = context.l10n;
+    final mods = [
+      for (final i in widget.reward.mods)
+        if (i.spec != null) i.spec!,
+    ];
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: _theme.accent.withAlpha(22),
+        borderRadius: BorderRadius.circular(_theme.cornerRadius),
+        border: Border.all(color: _theme.accent.withAlpha(150)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l.rewardTitle,
+            style: _theme.styled(TextStyle(
+              color: _theme.accent,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            )),
+          ),
+          for (final m in mods)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 30,
+                    margin: const EdgeInsets.only(right: 8),
+                    color: ModText.colorOf(m),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${m.name} · ${ModText.rarity(m.rarity, l)}',
+                          style: _theme.styled(TextStyle(
+                            color: ModText.colorOf(m),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          )),
+                        ),
+                        Text(
+                          ModText.effectLines(m.effects, l).join(' · '),
+                          style: _theme.styled(TextStyle(
+                            color: _theme.textSecondary,
+                            fontSize: 10,
+                          )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          for (final h in widget.reward.hulls)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                l.newHull(HullSpec.byId(h).name),
+                style: _theme.styled(TextStyle(
+                  color: _theme.upgrade,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                )),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   late UiTheme _theme;
   final _focusNode = FocusNode();
   final GamepadInput _gamepad = GamepadInput();
@@ -261,6 +349,10 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
                     ),
                   ],
                 ),
+                if (!widget.reward.isEmpty) ...[
+                  const SizedBox(height: 12),
+                  _rewardBlock(context),
+                ],
                 if (widget.unlocked != null) ...[
                   const SizedBox(height: 12),
                   Container(

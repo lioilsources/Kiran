@@ -503,4 +503,303 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => '응답 없음';
+
+  @override
+  String objBossUnder(int seconds) {
+    return '보스 코어를 등장 후 $seconds초 안에 파괴';
+  }
+
+  @override
+  String get sectionHangar => '격납고';
+
+  @override
+  String get sectionVault => '보관함';
+
+  @override
+  String get rackSide => '측면';
+
+  @override
+  String get rackHull => '선체';
+
+  @override
+  String get rarityCommon => '일반';
+
+  @override
+  String get rarityRare => '희귀';
+
+  @override
+  String get rarityMythic => '신화';
+
+  @override
+  String get curse => '저주';
+
+  @override
+  String get modFit => '장착';
+
+  @override
+  String get modUnfit => '해제';
+
+  @override
+  String get modForge => '단조';
+
+  @override
+  String get forgeHint => '같은 등급 3개를 골라 상위 1개를 단조';
+
+  @override
+  String get vaultEmpty =>
+      '아직 모드가 없습니다. 노드를 별 만점으로 클리어하거나, 보스를 빨리 잡거나, 무한 모드 보스를 격추하세요.';
+
+  @override
+  String modNeeds(String families) {
+    return '$families와 작동';
+  }
+
+  @override
+  String get modRackFull => '랙이 가득 참';
+
+  @override
+  String get modAlreadyFitted => '이미 장착됨';
+
+  @override
+  String get modWrongRack => '이 랙에 맞지 않음';
+
+  @override
+  String modsSpilled(int n) {
+    return '모드 $n개가 보관함으로 돌아감';
+  }
+
+  @override
+  String get hullLocked => '잠김';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return '캠페인 보스 $n 처치';
+  }
+
+  @override
+  String get hullUnlockFinish => '캠페인 완료 또는 섹터 30 도달';
+
+  @override
+  String get statAgility => '기동';
+
+  @override
+  String get statHitbox => '피격';
+
+  @override
+  String get perkNone => '기본 기체';
+
+  @override
+  String get perkAfterimage => '정지 시 사격 ×1.5';
+
+  @override
+  String get perkBulwark => '실드를 넘은 피해 절반';
+
+  @override
+  String get perkOverclock => '용량 130%까지 무기 발사, 더 느리게';
+
+  @override
+  String get perkBattery => '무료 드론이 함께 비행';
+
+  @override
+  String get rewardTitle => '보상';
+
+  @override
+  String newHull(String name) {
+    return '새 선체: $name';
+  }
+
+  @override
+  String get socketEmpty => '비어 있음';
+
+  @override
+  String fxStreams(int n) {
+    return '평행 사격 $n줄';
+  }
+
+  @override
+  String fxFan(int n) {
+    return '$n발 부채꼴';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return '$n연발';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return '연사 속도 ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return '피해 ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return '탄속 ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return '탄 크기 ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return '전력 소모 ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return '유도 +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return '$n개 목표 관통';
+  }
+
+  @override
+  String get fxPierceAll => '모두 관통';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct% 확률로 피해 ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return '보스 치명타 ×$x';
+  }
+
+  @override
+  String fxFork(int n) {
+    return '처치 시 $n발 확산';
+  }
+
+  @override
+  String get fxChain => '확산탄이 다시 확산';
+
+  @override
+  String get fxSplit => '명중 시 둘로 분열';
+
+  @override
+  String get fxFrost => '명중하면 적 감속';
+
+  @override
+  String get fxCrossfire => '측면 무기가 중앙 조준';
+
+  @override
+  String get fxRearguard => '측면 무기가 뒤로도 발사';
+
+  @override
+  String get fxOrbit => '탄이 구불구불 날아감';
+
+  @override
+  String fxBounce(int n) {
+    return '벽에서 $n번 튕김';
+  }
+
+  @override
+  String get fxBounceTop => '…위쪽에서도';
+
+  @override
+  String get fxOverdrive => '전력 빚으로도 발사';
+
+  @override
+  String get fxReactor => '용량 초과 무기도 천천히 발사';
+
+  @override
+  String fxGenPower(String x) {
+    return '발전기 충전 ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return '발전기 용량 ×$x';
+  }
+
+  @override
+  String get fxSurge => '발전기 가득: 사격 ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return '처치 시 전력 $pct% 회복';
+  }
+
+  @override
+  String fxHp(String x) {
+    return '선체 ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return '실드 ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return '실드 재생 ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return '처치 시 HP $n 회복';
+  }
+
+  @override
+  String get fxMagnet => '아이템을 끌어당김';
+
+  @override
+  String get fxMagnetAll => '모든 아이템을 끌어당김';
+
+  @override
+  String fxReflect(int pct) {
+    return '실드에 맞은 탄의 $pct%를 반사';
+  }
+
+  @override
+  String get fxReflectGuided => '반사탄 유도';
+
+  @override
+  String fxGhost(String sec) {
+    return '선체 피격 후 $sec초 무적';
+  }
+
+  @override
+  String get fxNova => '실드가 깨지면 화면 전체 폭발';
+
+  @override
+  String fxAgility(String x) {
+    return '기동성 ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return '피격 판정 ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return '크레딧 ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return '점수 ×$x';
+  }
+
+  @override
+  String get fxSatellite => '전투 드론이 함께 비행';
+
+  @override
+  String get fxTimewarp => '선체 피격 시 시간 감속';
+
+  @override
+  String get fxGambler => '매 발이 무작위 무기';
+
+  @override
+  String get vaultAll => '전체';
 }

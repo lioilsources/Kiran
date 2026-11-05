@@ -60,6 +60,39 @@ const double spriteScale = 0.74 / spriteSupersample;
 const double frontShotDrawScale = 2.0;
 const double sideShotDrawScale = 1.5;
 
+// --- Mods (Prompts/27) ------------------------------------------------------
+// The catalogue's own numbers live in systems/mods/mod_spec.dart; these are
+// the knobs of the behaviours the mods switch on.
+const double modForkSpread = 0.785;      // rad (45°) of the outer fork shot
+const double modForkDmg = 0.5;           // fork shot damage, of the parent's
+const double modSplitDmg = 0.4;          // split shard damage, of the parent's
+const double modSplitVx = 4.0;           // px/frame sideways for split shards
+const double modSplitScale = 0.5;        // split shard size, of the parent's
+const double modRearguardDmg = 0.6;      // backward side shot damage
+const double modCrossfireVx = 2.0;       // px/frame side guns lean inward
+const double modOrbitAmplitude = 20.0;   // px, half the ORBIT weave width
+const double modOrbitPeriod = 0.5;       // s per ORBIT weave
+const double modLanceFloor = 0.3;        // LANCE never drops below this share
+const double modOverdriveDebt = 0.25;    // OVERDRIVE may run genValue this far below 0, of genMax
+const double modReactorCooldown = 3.0;   // s between REACTOR shots of an over-capacity gun
+const double modOverclockCooldown = 1.5; // DYNAMO over-capacity cadence multiplier
+const double modSurgeDelay = 1.0;        // s at full generator before SURGE arms
+const double modSurgeDmg = 2.0;
+const double modFrostBossShare = 0.5;    // frost lasts this share on boss pieces
+const double modReflectDmg = 2.0;        // reflected shot damage, of the enemy shot's
+const double modReflectSpeed = 15.0;     // px/frame upward
+const double modReflectGuide = 10.0;     // MIRROR homing
+const double modLeechBossPart = 5.0;     // LEECH heal per boss piece, × leechHp
+const double modNovaCooldown = 20.0;     // s
+const double modNovaBossShare = 0.3;     // NOVA damage on boss pieces, of genMax
+const double modTimewarpScale = 0.35;    // enemy time while TIMEWARP runs
+const double modTimewarpDuration = 0.6;  // s
+const double modTimewarpCooldown = 8.0;  // s
+const double modMagnetPull = 6.0;        // 1/s ease towards the ship
+const double modSatelliteDmg = 0.5;      // drone shot damage, of the front gun's
+const double modSatelliteSize = 30.0;    // px
+const double modBulwarkHull = 0.5;       // BASTION: share of overflow that reaches the hull
+
 // Texture filtering for gameplay sprite batches. Set per-skin at load time
 // (AssetLibrary): smooth (medium) filtering only helps when sprites are
 // supersampled and the skin is not pixel-art; otherwise nearest-neighbour is

@@ -506,4 +506,305 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'yanıt yok';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Boss çekirdeğini geldikten sonraki $seconds sn içinde yok et';
+  }
+
+  @override
+  String get sectionHangar => 'HANGAR';
+
+  @override
+  String get sectionVault => 'KASA';
+
+  @override
+  String get rackSide => 'Yan';
+
+  @override
+  String get rackHull => 'Gövde';
+
+  @override
+  String get rarityCommon => 'SIRADAN';
+
+  @override
+  String get rarityRare => 'NADİR';
+
+  @override
+  String get rarityMythic => 'EFSANEVİ';
+
+  @override
+  String get curse => 'LANET';
+
+  @override
+  String get modFit => 'TAK';
+
+  @override
+  String get modUnfit => 'ÇIKAR';
+
+  @override
+  String get modForge => 'DEMİRHANE';
+
+  @override
+  String get forgeHint =>
+      'Bir sonrakinden 1 dövmek için aynı nadirlikten 3 seç';
+
+  @override
+  String get vaultEmpty =>
+      'Henüz mod yok. Bir düğümü tüm yıldızlarla bitir, bir bossu hızlı yen ya da sonsuz modda bir boss düşür.';
+
+  @override
+  String modNeeds(String families) {
+    return '$families ile çalışır';
+  }
+
+  @override
+  String get modRackFull => 'Raf dolu';
+
+  @override
+  String get modAlreadyFitted => 'Zaten takılı';
+
+  @override
+  String get modWrongRack => 'Bu rafa uymuyor';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n mod kasaya döndü';
+  }
+
+  @override
+  String get hullLocked => 'Kilitli';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Kampanya bossu $n\'i yen';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Kampanyayı bitir ya da 30. sektöre ulaş';
+
+  @override
+  String get statAgility => 'ÇEV';
+
+  @override
+  String get statHitbox => 'İSB';
+
+  @override
+  String get perkNone => 'Standart gemi';
+
+  @override
+  String get perkAfterimage => 'Dur: atışlar ×1,5';
+
+  @override
+  String get perkBulwark => 'Kalkanı aşan hasar yarıya iner';
+
+  @override
+  String get perkOverclock =>
+      '%130 kapasiteye kadar silahları ateşler, daha yavaş';
+
+  @override
+  String get perkBattery => 'Yanında bedava bir drone uçar';
+
+  @override
+  String get rewardTitle => 'ÖDÜL';
+
+  @override
+  String newHull(String name) {
+    return 'Yeni gövde: $name';
+  }
+
+  @override
+  String get socketEmpty => 'boş';
+
+  @override
+  String fxStreams(int n) {
+    return '$n paralel akış';
+  }
+
+  @override
+  String fxFan(int n) {
+    return '$n atışlık yelpaze';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return '$n atışlık salvo';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Atış hızı ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Hasar ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Mermi hızı ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Mermi boyutu ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Enerji tüketimi ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Güdüm +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return '$n hedefi deler';
+  }
+
+  @override
+  String get fxPierceAll => 'Her şeyi deler';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '%$pct ihtimalle ×$x hasar';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'Bosslara ×$x kritik';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Öldürmeler $n mermi saçar';
+  }
+
+  @override
+  String get fxChain => 'Saçılan mermiler yeniden saçılır';
+
+  @override
+  String get fxSplit => 'İsabette ikiye bölünür';
+
+  @override
+  String get fxFrost => 'İsabetler düşmanı yavaşlatır';
+
+  @override
+  String get fxCrossfire => 'Yan silahlar ortaya nişan alır';
+
+  @override
+  String get fxRearguard => 'Yan silahlar geriye de ateş eder';
+
+  @override
+  String get fxOrbit => 'Mermiler kıvrılır';
+
+  @override
+  String fxBounce(int n) {
+    return 'Duvarlardan $n× seker';
+  }
+
+  @override
+  String get fxBounceTop => '…ve üst kenardan';
+
+  @override
+  String get fxOverdrive => 'Enerji borcuyla da ateş eder';
+
+  @override
+  String get fxReactor => 'Kapasite üstü silahlar yavaşça ateş eder';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Jeneratör şarjı ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Jeneratör kapasitesi ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Dolu jeneratör: atışlar ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Öldürmeler %$pct enerji doldurur';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Gövde ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Kalkan ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Kalkan yenilenmesi ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Öldürmeler $n CP iyileştirir';
+  }
+
+  @override
+  String get fxMagnet => 'Bonusları çeker';
+
+  @override
+  String get fxMagnetAll => 'Tüm bonusları çeker';
+
+  @override
+  String fxReflect(int pct) {
+    return 'Kalkana gelen atışların %$pct\'i geri seker';
+  }
+
+  @override
+  String get fxReflectGuided => 'Yansıyan atışlar güdümlüdür';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Gövde darbesinden sonra $sec sn dokunulmaz';
+  }
+
+  @override
+  String get fxNova => 'Kalkan kırılınca tüm ekranda patlama';
+
+  @override
+  String fxAgility(String x) {
+    return 'Çeviklik ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'İsabet alanı ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Kredi ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Puan ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'Yanında savaş dronu uçar';
+
+  @override
+  String get fxTimewarp => 'Gövde darbesi zamanı yavaşlatır';
+
+  @override
+  String get fxGambler => 'Her atış rastgele bir silah';
+
+  @override
+  String get vaultAll => 'TÜMÜ';
 }

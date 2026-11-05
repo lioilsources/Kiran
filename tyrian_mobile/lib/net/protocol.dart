@@ -111,7 +111,7 @@ Uint8List encodeClientInput(double dx, double dy, bool fire) {
 // v2: the 18-part sector table (v2.4.0) renumbered sector indices — a v1
 // client would mirror the wrong sector content, so the versions must not pair.
 // v3: player shots carry their sprite and gun slot (2 more bytes each).
-const int protocolVersion = 3;
+const int protocolVersion = 4;
 
 Uint8List encodeLobbyHandshake(String pilotName) {
   final nameBytes = Uint8List.fromList(pilotName.codeUnits);
@@ -193,14 +193,16 @@ Uint8List encodeShopAction(int action, String weaponName, int slot) {
 //   beamCount: uint16, then beam data[]
 
 // VesselSnap: x,y: float64 each, hp,hpMax: int32 each, shield,shieldMax: float64,
-//   gen,genMax: float64, score,credit: int32, fire: uint8, dmgTaken: uint8, visible: uint8
-// = 8+8+4+4+8+8+8+8+4+4+1+1+1 = 67 bytes
+//   gen,genMax: float64, score,credit: int32, fire: uint8, dmgTaken: uint8, visible: uint8,
+//   hull: uint8 (index into kHulls, protocol 4)
+// = 8+8+4+4+8+8+8+8+4+4+1+1+1+1 = 68 bytes
 
-const int _vesselSnapSize = 67;
+const int _vesselSnapSize = 68;
 
 Uint8List _encodeVesselSnap(ByteData bd, int offset,
     double x, double y, int hp, int hpMax, double shield, double shieldMax,
-    double gen, double genMax, int score, int credit, bool fire, int dmgTaken, bool visible) {
+    double gen, double genMax, int score, int credit, bool fire, int dmgTaken, bool visible,
+    [int hull = 0]) {
   bd.setFloat64(offset, x, Endian.big);
   bd.setFloat64(offset + 8, y, Endian.big);
   bd.setInt32(offset + 16, hp, Endian.big);
@@ -216,6 +218,7 @@ Uint8List _encodeVesselSnap(ByteData bd, int offset,
   bytes[offset + 64] = fire ? 1 : 0;
   bytes[offset + 65] = dmgTaken.clamp(0, 255);
   bytes[offset + 66] = visible ? 1 : 0;
+  bytes[offset + 67] = hull.clamp(0, 255);
   return bytes;
 }
 
@@ -230,6 +233,9 @@ class VesselSnap {
   final int dmgTaken;
   final bool visible;
 
+  /// Index into kHulls of the hull this ship flies.
+  final int hull;
+
   VesselSnap({
     required this.x, required this.y,
     required this.hp, required this.hpMax,
@@ -238,6 +244,7 @@ class VesselSnap {
     required this.score, required this.credit,
     required this.fire, required this.dmgTaken,
     required this.visible,
+    this.hull = 0,
   });
 }
 
@@ -256,6 +263,7 @@ VesselSnap _decodeVesselSnap(ByteData bd, int offset) {
     fire: bd.buffer.asUint8List()[bd.offsetInBytes + offset + 64] != 0,
     dmgTaken: bd.buffer.asUint8List()[bd.offsetInBytes + offset + 65],
     visible: bd.buffer.asUint8List()[bd.offsetInBytes + offset + 66] != 0,
+    hull: bd.buffer.asUint8List()[bd.offsetInBytes + offset + 67],
   );
 }
 
@@ -423,14 +431,16 @@ Uint8List encodeGameSnapshot({
   _encodeVesselSnap(bd, off,
       v1Data[0], v1Data[1], v1Ints[0], v1Ints[1],
       v1Data[2], v1Data[3], v1Data[4], v1Data[5],
-      v1Ints[2], v1Ints[3], v1Ints[4] != 0, v1Ints[5], v1Ints[6] != 0);
+      v1Ints[2], v1Ints[3], v1Ints[4] != 0, v1Ints[5], v1Ints[6] != 0,
+      v1Ints.length > 7 ? v1Ints[7] : 0);
   off += _vesselSnapSize;
 
   // Vessel 2
   _encodeVesselSnap(bd, off,
       v2Data[0], v2Data[1], v2Ints[0], v2Ints[1],
       v2Data[2], v2Data[3], v2Data[4], v2Data[5],
-      v2Ints[2], v2Ints[3], v2Ints[4] != 0, v2Ints[5], v2Ints[6] != 0);
+      v2Ints[2], v2Ints[3], v2Ints[4] != 0, v2Ints[5], v2Ints[6] != 0,
+      v2Ints.length > 7 ? v2Ints[7] : 0);
   off += _vesselSnapSize;
 
   // Hostiles

@@ -511,4 +511,303 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'no reply';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Destroy the boss core within ${seconds}s of its arrival';
+  }
+
+  @override
+  String get sectionHangar => 'HANGAR';
+
+  @override
+  String get sectionVault => 'VAULT';
+
+  @override
+  String get rackSide => 'Side';
+
+  @override
+  String get rackHull => 'Hull';
+
+  @override
+  String get rarityCommon => 'COMMON';
+
+  @override
+  String get rarityRare => 'RARE';
+
+  @override
+  String get rarityMythic => 'MYTHIC';
+
+  @override
+  String get curse => 'CURSE';
+
+  @override
+  String get modFit => 'FIT';
+
+  @override
+  String get modUnfit => 'UNFIT';
+
+  @override
+  String get modForge => 'FORGE';
+
+  @override
+  String get forgeHint => 'Pick 3 of one rarity to forge 1 of the next';
+
+  @override
+  String get vaultEmpty =>
+      'No mods yet. Clear a node on full stars, beat a boss fast, or down an endless boss.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Works with $families';
+  }
+
+  @override
+  String get modRackFull => 'Rack full';
+
+  @override
+  String get modAlreadyFitted => 'Already fitted';
+
+  @override
+  String get modWrongRack => 'Does not fit this rack';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n mods back in the vault';
+  }
+
+  @override
+  String get hullLocked => 'Locked';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Beat campaign boss $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Finish the campaign or reach sector 30';
+
+  @override
+  String get statAgility => 'AGI';
+
+  @override
+  String get statHitbox => 'HIT';
+
+  @override
+  String get perkNone => 'Stock ship';
+
+  @override
+  String get perkAfterimage => 'Hold still: shots hit ×1.5';
+
+  @override
+  String get perkBulwark => 'Damage past the shield is halved';
+
+  @override
+  String get perkOverclock => 'Fires guns up to 130 % of capacity, slower';
+
+  @override
+  String get perkBattery => 'A free gun drone rides along';
+
+  @override
+  String get rewardTitle => 'REWARD';
+
+  @override
+  String newHull(String name) {
+    return 'New hull: $name';
+  }
+
+  @override
+  String get socketEmpty => 'empty';
+
+  @override
+  String fxStreams(int n) {
+    return '$n parallel streams';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Fan of $n shots';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return '$n-shot salvo';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Fire rate ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Damage ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Shot speed ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Shot size ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Power use ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Homing +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Passes through $n targets';
+  }
+
+  @override
+  String get fxPierceAll => 'Passes through everything';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % chance of ×$x damage';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return '×$x crits on bosses';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Kills spray $n shots';
+  }
+
+  @override
+  String get fxChain => 'Spray shots spray again';
+
+  @override
+  String get fxSplit => 'Splits in two on a hit';
+
+  @override
+  String get fxFrost => 'Hits slow enemies down';
+
+  @override
+  String get fxCrossfire => 'Side guns lean inward';
+
+  @override
+  String get fxRearguard => 'Side guns also fire backward';
+
+  @override
+  String get fxOrbit => 'Shots weave';
+
+  @override
+  String fxBounce(int n) {
+    return 'Bounces off the walls $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…and off the top';
+
+  @override
+  String get fxOverdrive => 'Fires on a power debt';
+
+  @override
+  String get fxReactor => 'Over-capacity guns still fire, slowly';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Generator recharge ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Generator capacity ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Full generator: shots ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Kills refill $pct % power';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Hull ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Shield ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Shield regen ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Kills heal $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'Pulls pickups in';
+
+  @override
+  String get fxMagnetAll => 'Pulls in every pickup';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % of shots off the shield fly back';
+  }
+
+  @override
+  String get fxReflectGuided => 'Reflected shots home in';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Untouchable $sec s after a hull hit';
+  }
+
+  @override
+  String get fxNova => 'Shield breaks: the whole screen takes a blast';
+
+  @override
+  String fxAgility(String x) {
+    return 'Agility ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Hitbox ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Credits ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Score ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'A gun drone rides along';
+
+  @override
+  String get fxTimewarp => 'A hull hit slows time';
+
+  @override
+  String get fxGambler => 'Every shot is a random gun';
+
+  @override
+  String get vaultAll => 'ALL';
 }

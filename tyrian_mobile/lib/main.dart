@@ -860,6 +860,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 creditsEarned: _game.vessel.credit -
                     (_game.campaignTracker?.creditsAtStart ?? 0),
                 unlocked: _game.lastNodeUnlock,
+                reward: _game.lastNodeReward,
                 onContinue: () => setState(() {
                   _showCampaignResult = false;
                   _showCampaignMap = true;

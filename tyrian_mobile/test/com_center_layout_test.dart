@@ -6,6 +6,10 @@ import 'package:tyrian_mobile/entities/vessel.dart';
 import 'package:tyrian_mobile/game/tyrian_game.dart';
 import 'package:tyrian_mobile/l10n/l10n.dart';
 import 'package:tyrian_mobile/systems/dev_type.dart';
+import 'package:tyrian_mobile/systems/mods/hull_spec.dart';
+import 'package:tyrian_mobile/systems/mods/mod_rack.dart';
+import 'package:tyrian_mobile/systems/mods/mod_spec.dart';
+import 'package:tyrian_mobile/systems/mods/mods_state.dart';
 import 'package:tyrian_mobile/ui/com_center.dart';
 
 /// The loadout rows put four chips and two buttons side by side. The floor is
@@ -13,7 +17,10 @@ import 'package:tyrian_mobile/ui/com_center.dart';
 /// the test through FlutterError.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    ModsState.instance.reset();
+  });
 
   Future<TyrianGame> pump(
     WidgetTester tester,
@@ -109,5 +116,47 @@ void main() {
       isNotNull,
     );
     await tester.pump(const Duration(seconds: 2));
+  });
+
+  // HANGAR + VAULT with the widest hull and every mod in the vault: the rack
+  // rows and the vault grid must fit the same 375pt floor.
+  for (final locale in const [Locale('en'), Locale('de'), Locale('ru')]) {
+    testWidgets('hangar and a full vault fit a 375pt phone ($locale)',
+        (tester) async {
+      final s = ModsState.instance;
+      s.unlockedHulls.addAll([for (final h in kHulls) h.id]);
+      for (final m in kMods) {
+        s.vault.add(ModInstance('u_${m.id}', m.id));
+      }
+      final game = await pump(tester, locale);
+      game.vessel.setHull(HullSpec.byId('colossus'));
+      final fit = s.vault.firstWhere((i) => i.modId == 'hydra');
+      s.vault.remove(fit);
+      game.vessel.fitMod(fit, RackKind.front);
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(find.text('TRIPLE'), findsWidgets);
+    });
+  }
+
+  testWidgets('a vault card fits its mod; tapping the socket takes it off',
+      (tester) async {
+    final s = ModsState.instance;
+    s.vault.add(const ModInstance('u1', 'triple'));
+    final game = await pump(tester, const Locale('en'));
+    await tester.scrollUntilVisible(find.text('TRIPLE'), 200,
+        scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('TRIPLE'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.textContaining('FIT → FRONT'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(game.vessel.racks[RackKind.front]!.fitted.single.modId, 'triple');
+    expect(s.vault, isEmpty);
+
+    await tester.ensureVisible(find.text('TRIPLE').first);
+    await tester.pump();
+    await tester.tap(find.text('TRIPLE').first);
+    await tester.pump();
+    expect(game.vessel.fittedMods, isEmpty);
+    expect(s.vault.single.modId, 'triple');
   });
 }

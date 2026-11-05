@@ -372,5 +372,310 @@
         "type": "String"
       }
     }
-  }
+  },
+  "objBossUnder": "Destroy the boss core within {seconds}s of its arrival",
+  "@objBossUnder": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "sectionHangar": "HANGAR",
+  "sectionVault": "VAULT",
+  "rackSide": "Side",
+  "rackHull": "Hull",
+  "rarityCommon": "COMMON",
+  "rarityRare": "RARE",
+  "rarityMythic": "MYTHIC",
+  "curse": "CURSE",
+  "modFit": "FIT",
+  "modUnfit": "UNFIT",
+  "modForge": "FORGE",
+  "forgeHint": "Pick 3 of one rarity to forge 1 of the next",
+  "vaultEmpty": "No mods yet. Clear a node on full stars, beat a boss fast, or down an endless boss.",
+  "modNeeds": "Works with {families}",
+  "@modNeeds": {
+    "placeholders": {
+      "families": {
+        "type": "String"
+      }
+    }
+  },
+  "modRackFull": "Rack full",
+  "modAlreadyFitted": "Already fitted",
+  "modWrongRack": "Does not fit this rack",
+  "modsSpilled": "{n} mods back in the vault",
+  "@modsSpilled": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "hullLocked": "Locked",
+  "hullUnlockBoss": "Beat campaign boss {n}",
+  "@hullUnlockBoss": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "hullUnlockFinish": "Finish the campaign or reach sector 30",
+  "statAgility": "AGI",
+  "statHitbox": "HIT",
+  "perkNone": "Stock ship",
+  "perkAfterimage": "Hold still: shots hit ×1.5",
+  "perkBulwark": "Damage past the shield is halved",
+  "perkOverclock": "Fires guns up to 130 % of capacity, slower",
+  "perkBattery": "A free gun drone rides along",
+  "rewardTitle": "REWARD",
+  "newHull": "New hull: {name}",
+  "@newHull": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "socketEmpty": "empty",
+  "fxStreams": "{n} parallel streams",
+  "@fxStreams": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxFan": "Fan of {n} shots",
+  "@fxFan": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxSalvo": "{n}-shot salvo",
+  "@fxSalvo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxFireRate": "Fire rate ×{x}",
+  "@fxFireRate": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxDamage": "Damage ×{x}",
+  "@fxDamage": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxShotSpeed": "Shot speed ×{x}",
+  "@fxShotSpeed": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxShotSize": "Shot size ×{x}",
+  "@fxShotSize": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxPower": "Power use ×{x}",
+  "@fxPower": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxHoming": "Homing +{n}",
+  "@fxHoming": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxPierce": "Passes through {n} targets",
+  "@fxPierce": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxPierceAll": "Passes through everything",
+  "fxCrit": "{pct} % chance of ×{x} damage",
+  "@fxCrit": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      },
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxBossCrit": "×{x} crits on bosses",
+  "@fxBossCrit": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxFork": "Kills spray {n} shots",
+  "@fxFork": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxChain": "Spray shots spray again",
+  "fxSplit": "Splits in two on a hit",
+  "fxFrost": "Hits slow enemies down",
+  "fxCrossfire": "Side guns lean inward",
+  "fxRearguard": "Side guns also fire backward",
+  "fxOrbit": "Shots weave",
+  "fxBounce": "Bounces off the walls {n}×",
+  "@fxBounce": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxBounceTop": "…and off the top",
+  "fxOverdrive": "Fires on a power debt",
+  "fxReactor": "Over-capacity guns still fire, slowly",
+  "fxGenPower": "Generator recharge ×{x}",
+  "@fxGenPower": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxGenMax": "Generator capacity ×{x}",
+  "@fxGenMax": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxSurge": "Full generator: shots ×2",
+  "fxSiphon": "Kills refill {pct} % power",
+  "@fxSiphon": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "fxHp": "Hull ×{x}",
+  "@fxHp": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxShield": "Shield ×{x}",
+  "@fxShield": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxRegen": "Shield regen ×{x}",
+  "@fxRegen": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxLeech": "Kills heal {n} HP",
+  "@fxLeech": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fxMagnet": "Pulls pickups in",
+  "fxMagnetAll": "Pulls in every pickup",
+  "fxReflect": "{pct} % of shots off the shield fly back",
+  "@fxReflect": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "fxReflectGuided": "Reflected shots home in",
+  "fxGhost": "Untouchable {sec} s after a hull hit",
+  "@fxGhost": {
+    "placeholders": {
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "fxNova": "Shield breaks: the whole screen takes a blast",
+  "fxAgility": "Agility ×{x}",
+  "@fxAgility": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxHitbox": "Hitbox ×{x}",
+  "@fxHitbox": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxCredits": "Credits ×{x}",
+  "@fxCredits": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxScore": "Score ×{x}",
+  "@fxScore": {
+    "placeholders": {
+      "x": {
+        "type": "String"
+      }
+    }
+  },
+  "fxSatellite": "A gun drone rides along",
+  "fxTimewarp": "A hull hit slows time",
+  "fxGambler": "Every shot is a random gun",
+  "vaultAll": "ALL"
 }

@@ -178,7 +178,7 @@ class Boss extends Hostile {
     // Hold fire until fully on screen
     if (y2 <= 0) return;
 
-    _fireCD += dt * config.originalFps;
+    _fireCD += dt * config.originalFps * game.enemyTimeScale;
     if (_fireCD >= _cadence) {
       _fireCD = 0;
       _fireVolley();
@@ -186,7 +186,7 @@ class Boss extends Hostile {
 
     // Phase 3: aimed 3-shot burst trailing every third volley
     if (_burstLeft > 0) {
-      _burstCD += dt * config.originalFps;
+      _burstCD += dt * config.originalFps * game.enemyTimeScale;
       if (_burstCD >= 8) {
         _burstCD = 0;
         _burstLeft--;
@@ -390,7 +390,7 @@ class BossPart extends Hostile {
     super.update(dt);
 
     if (_cadence == 0 || y2 <= 0) return;
-    _fireCD += dt * config.originalFps;
+    _fireCD += dt * config.originalFps * game.enemyTimeScale;
     if (_fireCD < _cadence) return;
     _fireCD = 0;
     _fire();

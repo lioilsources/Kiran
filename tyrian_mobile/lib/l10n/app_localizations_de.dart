@@ -515,4 +515,304 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'keine Antwort';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Zerstöre den Bosskern binnen $seconds s nach seiner Ankunft';
+  }
+
+  @override
+  String get sectionHangar => 'HANGAR';
+
+  @override
+  String get sectionVault => 'TRESOR';
+
+  @override
+  String get rackSide => 'Seite';
+
+  @override
+  String get rackHull => 'Rumpf';
+
+  @override
+  String get rarityCommon => 'GEWÖHNLICH';
+
+  @override
+  String get rarityRare => 'SELTEN';
+
+  @override
+  String get rarityMythic => 'MYTHISCH';
+
+  @override
+  String get curse => 'FLUCH';
+
+  @override
+  String get modFit => 'EINBAUEN';
+
+  @override
+  String get modUnfit => 'AUSBAUEN';
+
+  @override
+  String get modForge => 'SCHMIEDE';
+
+  @override
+  String get forgeHint =>
+      'Wähle 3 einer Seltenheit, um 1 der nächsten zu schmieden';
+
+  @override
+  String get vaultEmpty =>
+      'Noch keine Mods. Schließe einen Knoten mit allen Sternen ab, besiege einen Boss schnell oder einen Endlos-Boss.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Wirkt mit $families';
+  }
+
+  @override
+  String get modRackFull => 'Rack voll';
+
+  @override
+  String get modAlreadyFitted => 'Schon eingebaut';
+
+  @override
+  String get modWrongRack => 'Passt nicht in dieses Rack';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n Mods zurück im Tresor';
+  }
+
+  @override
+  String get hullLocked => 'Gesperrt';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Besiege Kampagnenboss $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Beende die Kampagne oder erreiche Sektor 30';
+
+  @override
+  String get statAgility => 'AGI';
+
+  @override
+  String get statHitbox => 'TRF';
+
+  @override
+  String get perkNone => 'Standardschiff';
+
+  @override
+  String get perkAfterimage => 'Stillhalten: Schüsse ×1,5';
+
+  @override
+  String get perkBulwark => 'Schaden hinter dem Schild halbiert';
+
+  @override
+  String get perkOverclock => 'Feuert Waffen bis 130 % Kapazität, langsamer';
+
+  @override
+  String get perkBattery => 'Eine Gratis-Drohne fliegt mit';
+
+  @override
+  String get rewardTitle => 'BELOHNUNG';
+
+  @override
+  String newHull(String name) {
+    return 'Neuer Rumpf: $name';
+  }
+
+  @override
+  String get socketEmpty => 'leer';
+
+  @override
+  String fxStreams(int n) {
+    return '$n parallele Ströme';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Fächer aus $n Schüssen';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Salve aus $n Schüssen';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Feuerrate ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Schaden ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Schussgeschwindigkeit ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Schussgröße ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Energiebedarf ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Zielsuche +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Durchschlägt $n Ziele';
+  }
+
+  @override
+  String get fxPierceAll => 'Durchschlägt alles';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % Chance auf ×$x Schaden';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return '×$x Krits gegen Bosse';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Abschüsse streuen $n Schüsse';
+  }
+
+  @override
+  String get fxChain => 'Streuschüsse streuen weiter';
+
+  @override
+  String get fxSplit => 'Teilt sich bei Treffer in zwei';
+
+  @override
+  String get fxFrost => 'Treffer bremsen Gegner';
+
+  @override
+  String get fxCrossfire => 'Seitenwaffen zielen zur Mitte';
+
+  @override
+  String get fxRearguard => 'Seitenwaffen feuern auch nach hinten';
+
+  @override
+  String get fxOrbit => 'Schüsse schlängeln sich';
+
+  @override
+  String fxBounce(int n) {
+    return 'Prallt $n× von den Wänden ab';
+  }
+
+  @override
+  String get fxBounceTop => '…und von oben';
+
+  @override
+  String get fxOverdrive => 'Feuert auch auf Energieschuld';
+
+  @override
+  String get fxReactor => 'Überlastete Waffen feuern trotzdem, langsam';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Generator-Ladung ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Generator-Kapazität ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Voller Generator: Schüsse ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Abschüsse füllen $pct % Energie auf';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Rumpf ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Schild ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Schildregeneration ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Abschüsse heilen $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'Zieht Extras an';
+
+  @override
+  String get fxMagnetAll => 'Zieht alle Extras an';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % der Schüsse prallen vom Schild zurück';
+  }
+
+  @override
+  String get fxReflectGuided => 'Reflektierte Schüsse suchen ihr Ziel';
+
+  @override
+  String fxGhost(String sec) {
+    return '$sec s unverwundbar nach Rumpftreffer';
+  }
+
+  @override
+  String get fxNova => 'Schild bricht: Explosion über den ganzen Schirm';
+
+  @override
+  String fxAgility(String x) {
+    return 'Wendigkeit ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Trefferzone ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Credits ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Punkte ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'Eine Kampfdrohne fliegt mit';
+
+  @override
+  String get fxTimewarp => 'Rumpftreffer verlangsamt die Zeit';
+
+  @override
+  String get fxGambler => 'Jeder Schuss ist eine Zufallswaffe';
+
+  @override
+  String get vaultAll => 'ALLE';
 }

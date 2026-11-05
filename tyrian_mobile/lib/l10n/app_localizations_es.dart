@@ -514,4 +514,304 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'sin respuesta';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Destruye el núcleo del jefe en $seconds s desde su llegada';
+  }
+
+  @override
+  String get sectionHangar => 'HANGAR';
+
+  @override
+  String get sectionVault => 'BÓVEDA';
+
+  @override
+  String get rackSide => 'Lateral';
+
+  @override
+  String get rackHull => 'Casco';
+
+  @override
+  String get rarityCommon => 'COMÚN';
+
+  @override
+  String get rarityRare => 'RARO';
+
+  @override
+  String get rarityMythic => 'MÍTICO';
+
+  @override
+  String get curse => 'MALDICIÓN';
+
+  @override
+  String get modFit => 'MONTAR';
+
+  @override
+  String get modUnfit => 'QUITAR';
+
+  @override
+  String get modForge => 'FORJA';
+
+  @override
+  String get forgeHint => 'Elige 3 de una rareza para forjar 1 de la siguiente';
+
+  @override
+  String get vaultEmpty =>
+      'Aún no hay mods. Completa un nodo con todas las estrellas, vence rápido a un jefe o derriba un jefe en modo infinito.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Funciona con $families';
+  }
+
+  @override
+  String get modRackFull => 'Rack lleno';
+
+  @override
+  String get modAlreadyFitted => 'Ya montado';
+
+  @override
+  String get modWrongRack => 'No va en este rack';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n mods de vuelta en la bóveda';
+  }
+
+  @override
+  String get hullLocked => 'Bloqueado';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Vence al jefe de campaña $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Termina la campaña o llega al sector 30';
+
+  @override
+  String get statAgility => 'AGI';
+
+  @override
+  String get statHitbox => 'IMP';
+
+  @override
+  String get perkNone => 'Nave estándar';
+
+  @override
+  String get perkAfterimage => 'Quieto: disparos ×1,5';
+
+  @override
+  String get perkBulwark => 'El daño tras el escudo se reduce a la mitad';
+
+  @override
+  String get perkOverclock =>
+      'Dispara armas hasta el 130 % de capacidad, más lento';
+
+  @override
+  String get perkBattery => 'Un dron gratis te acompaña';
+
+  @override
+  String get rewardTitle => 'RECOMPENSA';
+
+  @override
+  String newHull(String name) {
+    return 'Casco nuevo: $name';
+  }
+
+  @override
+  String get socketEmpty => 'vacío';
+
+  @override
+  String fxStreams(int n) {
+    return '$n chorros paralelos';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Abanico de $n disparos';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Ráfaga de $n disparos';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Cadencia ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Daño ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Velocidad de disparo ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Tamaño de disparo ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Consumo ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Guiado +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Atraviesa $n objetivos';
+  }
+
+  @override
+  String get fxPierceAll => 'Lo atraviesa todo';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % de probabilidad de daño ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'Críticos ×$x contra jefes';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Las bajas esparcen $n disparos';
+  }
+
+  @override
+  String get fxChain => 'Los disparos esparcidos se esparcen otra vez';
+
+  @override
+  String get fxSplit => 'Se divide en dos al impactar';
+
+  @override
+  String get fxFrost => 'Los impactos frenan al enemigo';
+
+  @override
+  String get fxCrossfire => 'Las armas laterales apuntan al centro';
+
+  @override
+  String get fxRearguard => 'Las armas laterales también disparan atrás';
+
+  @override
+  String get fxOrbit => 'Los disparos ondulan';
+
+  @override
+  String fxBounce(int n) {
+    return 'Rebota en las paredes $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…y en el borde superior';
+
+  @override
+  String get fxOverdrive => 'Dispara aunque falte energía';
+
+  @override
+  String get fxReactor => 'Las armas sobre la capacidad disparan, despacio';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Recarga del generador ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Capacidad del generador ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Generador lleno: disparos ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Las bajas recargan $pct % de energía';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Casco ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Escudo ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Regeneración de escudo ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Las bajas curan $n PV';
+  }
+
+  @override
+  String get fxMagnet => 'Atrae los objetos';
+
+  @override
+  String get fxMagnetAll => 'Atrae todos los objetos';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % de los disparos rebotan en el escudo';
+  }
+
+  @override
+  String get fxReflectGuided => 'Los disparos reflejados se guían';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Invulnerable $sec s tras un golpe al casco';
+  }
+
+  @override
+  String get fxNova => 'Escudo roto: explosión en toda la pantalla';
+
+  @override
+  String fxAgility(String x) {
+    return 'Agilidad ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Zona de impacto ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Créditos ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Puntos ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'Un dron de combate te acompaña';
+
+  @override
+  String get fxTimewarp => 'Un golpe al casco ralentiza el tiempo';
+
+  @override
+  String get fxGambler => 'Cada disparo es un arma al azar';
+
+  @override
+  String get vaultAll => 'TODO';
 }

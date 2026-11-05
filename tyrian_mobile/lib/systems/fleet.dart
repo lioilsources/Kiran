@@ -112,6 +112,9 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     // Client: entities managed by snapshot, skip spawning/firing
     if (game.coopRole == CoopRole.client) return;
 
+    // TIMEWARP slows the enemies' clock, spawning and firing included.
+    dt *= game.enemyTimeScale;
+
     // Spawn enemies at intervals
     _stepTimer += dt;
     while (_stepTimer >= triggerInterval && _spawned < count) {
@@ -291,6 +294,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     // mid-sweep. They live in `hostiles` like any other enemy, so collision,
     // bounds and depletion need no special case.
     if (h is Boss) {
+      game.campaignTracker?.onBossSpawn(game.elapsed);
       for (final part in h.createParts()) {
         part.parentFleet = this;
         hostiles.add(part);
@@ -327,7 +331,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
   void onHostileKilled(Hostile h, TyrianGame gameInstance, {Vessel? attacker}) {
     kills++;
     AchievementService.instance.onKill(h.hostType, isBoss: h is Boss);
-    gameInstance.campaignTracker?.onKill(h);
+    gameInstance.campaignTracker?.onKill(h, at: gameInstance.elapsed);
     lastKillX = h.position.x + h.size.x / 2;
     lastKillY = h.position.y + h.size.y / 2;
 
@@ -339,8 +343,14 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     final target = attacker ?? gameInstance.vessel;
     // hpMax is already challenge-scaled; the score multiplier compounds on
     // top by design — see Challenge.
-    target.addScore((h.hpMax * gameInstance.challenge.score).round());
-    target.credit += h.creditValue ?? creditOverride ?? h.hpMax;
+    target.addScore(
+        (h.hpMax * gameInstance.challenge.score * target.mods.scoreMul).round());
+    final credit = h.creditValue ?? creditOverride ?? h.hpMax;
+    target.credit += target.mods.creditMul == 1
+        ? credit
+        : (credit * target.mods.creditMul).round();
+    target.onKillFeedback(h);
+    if (h is Boss) gameInstance.onBossKilled(h);
   }
 
   void _spawnBonus() {

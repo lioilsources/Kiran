@@ -506,4 +506,305 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'tidak ada balasan';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Hancurkan inti bos dalam $seconds dtk sejak kedatangannya';
+  }
+
+  @override
+  String get sectionHangar => 'HANGAR';
+
+  @override
+  String get sectionVault => 'BRANKAS';
+
+  @override
+  String get rackSide => 'Samping';
+
+  @override
+  String get rackHull => 'Lambung';
+
+  @override
+  String get rarityCommon => 'BIASA';
+
+  @override
+  String get rarityRare => 'LANGKA';
+
+  @override
+  String get rarityMythic => 'MITIS';
+
+  @override
+  String get curse => 'KUTUKAN';
+
+  @override
+  String get modFit => 'PASANG';
+
+  @override
+  String get modUnfit => 'LEPAS';
+
+  @override
+  String get modForge => 'TEMPA';
+
+  @override
+  String get forgeHint =>
+      'Pilih 3 dari satu kelangkaan untuk menempa 1 tingkat berikutnya';
+
+  @override
+  String get vaultEmpty =>
+      'Belum ada mod. Selesaikan node dengan semua bintang, kalahkan bos dengan cepat, atau jatuhkan bos mode tanpa akhir.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Bekerja dengan $families';
+  }
+
+  @override
+  String get modRackFull => 'Rak penuh';
+
+  @override
+  String get modAlreadyFitted => 'Sudah terpasang';
+
+  @override
+  String get modWrongRack => 'Tidak cocok untuk rak ini';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n mod kembali ke brankas';
+  }
+
+  @override
+  String get hullLocked => 'Terkunci';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Kalahkan bos kampanye $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Selesaikan kampanye atau capai sektor 30';
+
+  @override
+  String get statAgility => 'LIN';
+
+  @override
+  String get statHitbox => 'KEN';
+
+  @override
+  String get perkNone => 'Kapal standar';
+
+  @override
+  String get perkAfterimage => 'Diam: tembakan ×1,5';
+
+  @override
+  String get perkBulwark => 'Kerusakan tembus perisai jadi separuh';
+
+  @override
+  String get perkOverclock =>
+      'Menembakkan senjata hingga 130 % kapasitas, lebih lambat';
+
+  @override
+  String get perkBattery => 'Drone gratis ikut terbang';
+
+  @override
+  String get rewardTitle => 'HADIAH';
+
+  @override
+  String newHull(String name) {
+    return 'Lambung baru: $name';
+  }
+
+  @override
+  String get socketEmpty => 'kosong';
+
+  @override
+  String fxStreams(int n) {
+    return '$n aliran paralel';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Kipas $n tembakan';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Salvo $n tembakan';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Laju tembak ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Kerusakan ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Kecepatan tembakan ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Ukuran tembakan ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Konsumsi daya ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Pelacak +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Menembus $n sasaran';
+  }
+
+  @override
+  String get fxPierceAll => 'Menembus semuanya';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return 'Peluang $pct % kerusakan ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'Kritis ×$x pada bos';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Kill menyebar $n tembakan';
+  }
+
+  @override
+  String get fxChain => 'Tembakan sebar menyebar lagi';
+
+  @override
+  String get fxSplit => 'Terbelah dua saat kena';
+
+  @override
+  String get fxFrost => 'Kena tembakan memperlambat musuh';
+
+  @override
+  String get fxCrossfire => 'Senjata samping membidik ke tengah';
+
+  @override
+  String get fxRearguard => 'Senjata samping juga menembak ke belakang';
+
+  @override
+  String get fxOrbit => 'Tembakan meliuk';
+
+  @override
+  String fxBounce(int n) {
+    return 'Memantul dari dinding $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…dan dari atas';
+
+  @override
+  String get fxOverdrive => 'Menembak meski utang daya';
+
+  @override
+  String get fxReactor => 'Senjata di atas kapasitas tetap menembak, pelan';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Isi ulang generator ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Kapasitas generator ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Generator penuh: tembakan ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Kill mengisi $pct % daya';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Lambung ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Perisai ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Regenerasi perisai ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Kill memulihkan $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'Menarik item';
+
+  @override
+  String get fxMagnetAll => 'Menarik semua item';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % tembakan memantul dari perisai';
+  }
+
+  @override
+  String get fxReflectGuided => 'Tembakan pantulan melacak';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Kebal $sec dtk setelah lambung terkena';
+  }
+
+  @override
+  String get fxNova => 'Perisai pecah: ledakan di seluruh layar';
+
+  @override
+  String fxAgility(String x) {
+    return 'Kelincahan ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Area kena ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Kredit ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Skor ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'Drone tempur ikut terbang';
+
+  @override
+  String get fxTimewarp => 'Lambung terkena memperlambat waktu';
+
+  @override
+  String get fxGambler => 'Setiap tembakan senjata acak';
+
+  @override
+  String get vaultAll => 'SEMUA';
 }

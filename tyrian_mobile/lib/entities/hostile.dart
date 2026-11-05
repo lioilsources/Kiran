@@ -197,6 +197,13 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     }
   }
 
+  /// Seconds of FROST left: the path runs at half speed meanwhile.
+  double frostTimer = 0;
+
+  void applyFrost(double seconds) {
+    if (seconds > frostTimer) frostTimer = seconds;
+  }
+
   @override
   void update(double dt) {
     if (isDead) return;
@@ -221,7 +228,12 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     if (trace != null && trace!.current != null) {
       final at = trace!.interpolated ?? trace!.current!;
       position.setValues(at.x, at.y);
-      if (!trace!.advanceBy(dt * config.originalFps)) {
+      var step = dt * config.originalFps * game.enemyTimeScale;
+      if (frostTimer > 0) {
+        frostTimer -= dt;
+        step *= 0.5;
+      }
+      if (!trace!.advanceBy(step)) {
         // Path ended
         _onPathEnd();
       }

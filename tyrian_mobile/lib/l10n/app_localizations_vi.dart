@@ -506,4 +506,303 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'không có phản hồi';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Phá lõi trùm trong $seconds giây kể từ khi nó xuất hiện';
+  }
+
+  @override
+  String get sectionHangar => 'XƯỞNG';
+
+  @override
+  String get sectionVault => 'KHO';
+
+  @override
+  String get rackSide => 'Bên';
+
+  @override
+  String get rackHull => 'Thân';
+
+  @override
+  String get rarityCommon => 'THƯỜNG';
+
+  @override
+  String get rarityRare => 'HIẾM';
+
+  @override
+  String get rarityMythic => 'THẦN THOẠI';
+
+  @override
+  String get curse => 'LỜI NGUYỀN';
+
+  @override
+  String get modFit => 'LẮP';
+
+  @override
+  String get modUnfit => 'THÁO';
+
+  @override
+  String get modForge => 'LÒ RÈN';
+
+  @override
+  String get forgeHint => 'Chọn 3 cùng độ hiếm để rèn 1 cấp cao hơn';
+
+  @override
+  String get vaultEmpty =>
+      'Chưa có mod. Hoàn thành một nút đủ sao, hạ trùm thật nhanh hoặc bắn hạ trùm ở chế độ vô tận.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Dùng với $families';
+  }
+
+  @override
+  String get modRackFull => 'Giá đã đầy';
+
+  @override
+  String get modAlreadyFitted => 'Đã lắp rồi';
+
+  @override
+  String get modWrongRack => 'Không hợp với giá này';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n mod về lại kho';
+  }
+
+  @override
+  String get hullLocked => 'Đã khóa';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Hạ trùm chiến dịch $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Hoàn thành chiến dịch hoặc tới khu vực 30';
+
+  @override
+  String get statAgility => 'LIN';
+
+  @override
+  String get statHitbox => 'VÙN';
+
+  @override
+  String get perkNone => 'Tàu tiêu chuẩn';
+
+  @override
+  String get perkAfterimage => 'Đứng yên: đạn ×1,5';
+
+  @override
+  String get perkBulwark => 'Sát thương xuyên khiên giảm một nửa';
+
+  @override
+  String get perkOverclock => 'Bắn vũ khí tới 130 % công suất, chậm hơn';
+
+  @override
+  String get perkBattery => 'Một drone miễn phí bay theo';
+
+  @override
+  String get rewardTitle => 'PHẦN THƯỞNG';
+
+  @override
+  String newHull(String name) {
+    return 'Thân tàu mới: $name';
+  }
+
+  @override
+  String get socketEmpty => 'trống';
+
+  @override
+  String fxStreams(int n) {
+    return '$n luồng song song';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Quạt $n viên';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Loạt $n viên';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Tốc độ bắn ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Sát thương ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Tốc độ đạn ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Kích thước đạn ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Tiêu hao năng lượng ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Dẫn đường +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Xuyên $n mục tiêu';
+  }
+
+  @override
+  String get fxPierceAll => 'Xuyên mọi thứ';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % cơ hội sát thương ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'Chí mạng ×$x với trùm';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Hạ địch tỏa ra $n viên';
+  }
+
+  @override
+  String get fxChain => 'Đạn tỏa lại tỏa tiếp';
+
+  @override
+  String get fxSplit => 'Tách đôi khi trúng';
+
+  @override
+  String get fxFrost => 'Trúng đạn làm địch chậm lại';
+
+  @override
+  String get fxCrossfire => 'Súng bên nhắm vào giữa';
+
+  @override
+  String get fxRearguard => 'Súng bên bắn cả phía sau';
+
+  @override
+  String get fxOrbit => 'Đạn uốn lượn';
+
+  @override
+  String fxBounce(int n) {
+    return 'Nảy khỏi tường $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…và cả mép trên';
+
+  @override
+  String get fxOverdrive => 'Bắn cả khi nợ năng lượng';
+
+  @override
+  String get fxReactor => 'Vũ khí quá công suất vẫn bắn, chậm';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Nạp máy phát ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Dung lượng máy phát ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Máy phát đầy: đạn ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Hạ địch nạp $pct % năng lượng';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Thân tàu ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Khiên ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Hồi khiên ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Hạ địch hồi $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'Hút vật phẩm';
+
+  @override
+  String get fxMagnetAll => 'Hút mọi vật phẩm';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % đạn bật lại từ khiên';
+  }
+
+  @override
+  String get fxReflectGuided => 'Đạn phản xạ tự dẫn';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Bất tử $sec giây sau khi thân trúng đòn';
+  }
+
+  @override
+  String get fxNova => 'Khiên vỡ: nổ khắp màn hình';
+
+  @override
+  String fxAgility(String x) {
+    return 'Nhanh nhẹn ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Vùng trúng ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Tín dụng ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Điểm ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'Một drone chiến đấu bay theo';
+
+  @override
+  String get fxTimewarp => 'Thân trúng đòn làm chậm thời gian';
+
+  @override
+  String get fxGambler => 'Mỗi viên là một vũ khí ngẫu nhiên';
+
+  @override
+  String get vaultAll => 'TẤT CẢ';
 }

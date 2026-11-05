@@ -503,4 +503,303 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => '応答なし';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'ボスのコアを出現から$seconds秒以内に破壊する';
+  }
+
+  @override
+  String get sectionHangar => '格納庫';
+
+  @override
+  String get sectionVault => '保管庫';
+
+  @override
+  String get rackSide => 'サイド';
+
+  @override
+  String get rackHull => '船体';
+
+  @override
+  String get rarityCommon => 'コモン';
+
+  @override
+  String get rarityRare => 'レア';
+
+  @override
+  String get rarityMythic => 'ミシック';
+
+  @override
+  String get curse => '呪い';
+
+  @override
+  String get modFit => '装着';
+
+  @override
+  String get modUnfit => '外す';
+
+  @override
+  String get modForge => '鍛造';
+
+  @override
+  String get forgeHint => '同じレア度を3つ選んで上位を1つ鍛造';
+
+  @override
+  String get vaultEmpty =>
+      'まだMODがありません。ノードを星すべてでクリアするか、ボスを素早く倒すか、エンドレスのボスを撃墜しよう。';
+
+  @override
+  String modNeeds(String families) {
+    return '$familiesで有効';
+  }
+
+  @override
+  String get modRackFull => 'ラックが満杯';
+
+  @override
+  String get modAlreadyFitted => '装着済み';
+
+  @override
+  String get modWrongRack => 'このラックには付かない';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n個のMODを保管庫に戻した';
+  }
+
+  @override
+  String get hullLocked => 'ロック中';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'キャンペーンのボス$nを倒す';
+  }
+
+  @override
+  String get hullUnlockFinish => 'キャンペーンをクリアするかセクター30に到達';
+
+  @override
+  String get statAgility => '機動';
+
+  @override
+  String get statHitbox => '被弾';
+
+  @override
+  String get perkNone => '標準機';
+
+  @override
+  String get perkAfterimage => '静止中: ショット×1.5';
+
+  @override
+  String get perkBulwark => 'シールドを越えたダメージ半減';
+
+  @override
+  String get perkOverclock => '容量130%までの武器も撃てる(遅め)';
+
+  @override
+  String get perkBattery => '無料のドローンが随伴';
+
+  @override
+  String get rewardTitle => '報酬';
+
+  @override
+  String newHull(String name) {
+    return '新しい船体: $name';
+  }
+
+  @override
+  String get socketEmpty => '空き';
+
+  @override
+  String fxStreams(int n) {
+    return '$n本の平行ショット';
+  }
+
+  @override
+  String fxFan(int n) {
+    return '$n発の扇状ショット';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return '$n連射';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return '連射速度×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'ダメージ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return '弾速×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return '弾サイズ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return '消費電力×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return '誘導+$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return '$n体を貫通';
+  }
+
+  @override
+  String get fxPierceAll => 'すべて貫通';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct%の確率でダメージ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'ボスへのクリティカル×$x';
+  }
+
+  @override
+  String fxFork(int n) {
+    return '撃破時に$n発を拡散';
+  }
+
+  @override
+  String get fxChain => '拡散弾がさらに拡散';
+
+  @override
+  String get fxSplit => '命中で2つに分裂';
+
+  @override
+  String get fxFrost => '命中で敵を減速';
+
+  @override
+  String get fxCrossfire => 'サイド武器が中央を狙う';
+
+  @override
+  String get fxRearguard => 'サイド武器が後方にも撃つ';
+
+  @override
+  String get fxOrbit => '弾がうねる';
+
+  @override
+  String fxBounce(int n) {
+    return '壁で$n回跳ね返る';
+  }
+
+  @override
+  String get fxBounceTop => '…上端でも';
+
+  @override
+  String get fxOverdrive => '電力の前借りでも撃つ';
+
+  @override
+  String get fxReactor => '容量オーバーの武器もゆっくり撃てる';
+
+  @override
+  String fxGenPower(String x) {
+    return 'ジェネレーター充電×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'ジェネレーター容量×$x';
+  }
+
+  @override
+  String get fxSurge => '満充電: ショット×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return '撃破で電力$pct%回復';
+  }
+
+  @override
+  String fxHp(String x) {
+    return '船体×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'シールド×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'シールド回復×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return '撃破でHP$n回復';
+  }
+
+  @override
+  String get fxMagnet => 'アイテムを引き寄せる';
+
+  @override
+  String get fxMagnetAll => 'すべてのアイテムを引き寄せる';
+
+  @override
+  String fxReflect(int pct) {
+    return 'シールドに当たった弾の$pct%を跳ね返す';
+  }
+
+  @override
+  String get fxReflectGuided => '反射弾が誘導する';
+
+  @override
+  String fxGhost(String sec) {
+    return '船体被弾後$sec秒無敵';
+  }
+
+  @override
+  String get fxNova => 'シールド破壊で画面全体に爆発';
+
+  @override
+  String fxAgility(String x) {
+    return '機動力×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return '当たり判定×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'クレジット×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'スコア×$x';
+  }
+
+  @override
+  String get fxSatellite => '戦闘ドローンが随伴';
+
+  @override
+  String get fxTimewarp => '船体被弾で時間が遅くなる';
+
+  @override
+  String get fxGambler => '毎発ランダムな武器';
+
+  @override
+  String get vaultAll => 'すべて';
 }
