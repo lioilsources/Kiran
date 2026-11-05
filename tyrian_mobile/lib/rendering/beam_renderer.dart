@@ -42,10 +42,19 @@ class BeamRenderer extends Component {
 
   void _renderVesselBeams(Canvas canvas, Vessel? v) {
     if (v == null || !v.visible) return;
-    for (final device in v.devices) {
+    for (final device in v.guns) {
       if (device.beamActive > 0 && device.beam > 0) {
         _drawBeam(canvas, device,
             fat: device.slot == WeaponSlot.frontGun);
+        // Extra rays of a widened laser, aimed at the next nearest targets.
+        final ox = device.dx, oy = device.dy;
+        for (final t in device.extraBeamTargets) {
+          device.dx = t.x;
+          device.dy = t.y;
+          _drawBeam(canvas, device);
+        }
+        device.dx = ox;
+        device.dy = oy;
       }
     }
   }

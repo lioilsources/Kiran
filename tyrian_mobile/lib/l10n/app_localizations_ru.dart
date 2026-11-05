@@ -521,4 +521,303 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'нет ответа';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Уничтожь ядро босса за $seconds с после его появления';
+  }
+
+  @override
+  String get sectionHangar => 'АНГАР';
+
+  @override
+  String get sectionVault => 'ХРАНИЛИЩЕ';
+
+  @override
+  String get rackSide => 'Борт';
+
+  @override
+  String get rackHull => 'Корпус';
+
+  @override
+  String get rarityCommon => 'ОБЫЧНЫЙ';
+
+  @override
+  String get rarityRare => 'РЕДКИЙ';
+
+  @override
+  String get rarityMythic => 'МИФИЧЕСКИЙ';
+
+  @override
+  String get curse => 'ПРОКЛЯТИЕ';
+
+  @override
+  String get modFit => 'УСТАНОВИТЬ';
+
+  @override
+  String get modUnfit => 'СНЯТЬ';
+
+  @override
+  String get modForge => 'КУЗНЯ';
+
+  @override
+  String get forgeHint => 'Выбери 3 одной редкости, чтобы выковать 1 следующей';
+
+  @override
+  String get vaultEmpty =>
+      'Модов пока нет. Пройди узел на все звёзды, быстро убей босса или сбей босса в бесконечном режиме.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Работает с $families';
+  }
+
+  @override
+  String get modRackFull => 'Стойка заполнена';
+
+  @override
+  String get modAlreadyFitted => 'Уже установлен';
+
+  @override
+  String get modWrongRack => 'Не подходит для этой стойки';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n модов вернулись в хранилище';
+  }
+
+  @override
+  String get hullLocked => 'Закрыто';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Победи босса кампании $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Пройди кампанию или дойди до сектора 30';
+
+  @override
+  String get statAgility => 'ЛОВ';
+
+  @override
+  String get statHitbox => 'ПОП';
+
+  @override
+  String get perkNone => 'Стандартный корабль';
+
+  @override
+  String get perkAfterimage => 'Замри: выстрелы ×1,5';
+
+  @override
+  String get perkBulwark => 'Урон за щитом вдвое меньше';
+
+  @override
+  String get perkOverclock => 'Стреляет оружием до 130 % мощности, медленнее';
+
+  @override
+  String get perkBattery => 'С тобой летит бесплатный дрон';
+
+  @override
+  String get rewardTitle => 'НАГРАДА';
+
+  @override
+  String newHull(String name) {
+    return 'Новый корпус: $name';
+  }
+
+  @override
+  String get socketEmpty => 'пусто';
+
+  @override
+  String fxStreams(int n) {
+    return '$n параллельных потока';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Веер из $n выстрелов';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Очередь из $n выстрелов';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Скорострельность ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Урон ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Скорость выстрела ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Размер выстрела ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Расход энергии ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Наведение +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Пробивает $n цели';
+  }
+
+  @override
+  String get fxPierceAll => 'Пробивает всё';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % шанс на урон ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'Криты ×$x по боссам';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Убийства разбрасывают $n выстрела';
+  }
+
+  @override
+  String get fxChain => 'Осколки разлетаются снова';
+
+  @override
+  String get fxSplit => 'При попадании делится надвое';
+
+  @override
+  String get fxFrost => 'Попадания замедляют врага';
+
+  @override
+  String get fxCrossfire => 'Бортовые пушки бьют к центру';
+
+  @override
+  String get fxRearguard => 'Бортовые пушки стреляют и назад';
+
+  @override
+  String get fxOrbit => 'Выстрелы виляют';
+
+  @override
+  String fxBounce(int n) {
+    return 'Отскакивает от стен $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…и от верхнего края';
+
+  @override
+  String get fxOverdrive => 'Стреляет даже в долг по энергии';
+
+  @override
+  String get fxReactor => 'Перегруженное оружие стреляет, но медленно';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Зарядка генератора ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Ёмкость генератора ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Полный генератор: выстрелы ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Убийства восполняют $pct % энергии';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Корпус ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Щит ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Восстановление щита ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Убийства лечат $n ОЗ';
+  }
+
+  @override
+  String get fxMagnet => 'Притягивает бонусы';
+
+  @override
+  String get fxMagnetAll => 'Притягивает все бонусы';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % выстрелов отражаются от щита';
+  }
+
+  @override
+  String get fxReflectGuided => 'Отражённые выстрелы самонаводятся';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Неуязвимость $sec с после удара по корпусу';
+  }
+
+  @override
+  String get fxNova => 'Щит пробит: взрыв на весь экран';
+
+  @override
+  String fxAgility(String x) {
+    return 'Ловкость ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Зона попадания ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Кредиты ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Очки ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'С тобой летит боевой дрон';
+
+  @override
+  String get fxTimewarp => 'Удар по корпусу замедляет время';
+
+  @override
+  String get fxGambler => 'Каждый выстрел — случайное оружие';
+
+  @override
+  String get vaultAll => 'ВСЕ';
 }

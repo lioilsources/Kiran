@@ -12,6 +12,10 @@ import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
 import '../services/asset_library.dart';
+import '../systems/mods/hull_spec.dart';
+import '../systems/mods/mod_spec.dart';
+import '../systems/mods/mods_state.dart';
+import 'hangar_panel.dart';
 import 'loadout_cursor.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
@@ -518,6 +522,19 @@ class _ComCenterScreenState extends State<ComCenterScreen>
 
   // ── Easter-egg cheats ──
 
+  void _cheatMod(ModRarity r) {
+    final m = ModsState.instance.dropRarity(r, fitted: vessel.fittedMods);
+    ModsState.instance.save();
+    _toast('+ ${m.spec?.name ?? ''}');
+    setState(() {});
+  }
+
+  void _cheatHulls() {
+    ModsState.instance.unlockedHulls.addAll([for (final h in kHulls) h.id]);
+    ModsState.instance.save();
+    setState(() {});
+  }
+
   void _cheatMaxCredits() {
     vessel.credit = 999999999;
     // Unlock all weapon tiers so everything is buyable/upgradable.
@@ -569,6 +586,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                                 _buildStats(),
                                 _sectionHeader(_l.sectionLoadout),
                                 _buildLoadout(),
+                                _sectionHeader(_l.sectionHangar),
+                                _buildHangar(),
                               ],
                             ),
                           ),
@@ -606,6 +625,8 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                           _buildStats(),
                           _sectionHeader(_l.sectionLoadout),
                           _buildLoadout(),
+                          _sectionHeader(_l.sectionHangar),
+                          _buildHangar(),
                           _sectionHeader(_l.skins),
                           Padding(
                             padding: const EdgeInsets.all(12),
@@ -888,7 +909,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   /// they never fire. Before the loadout rewrite nothing on screen said so.
   List<Device> get _starved => [
     for (final d in vessel.devices)
-      if (d.slot != WeaponSlot.generator && d.pwrNeed > vessel.genMax) d,
+      if (d.slot != WeaponSlot.generator && !vessel.canPower(d)) d,
   ];
 
   Widget _buildStatValues() {
@@ -1457,6 +1478,40 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     );
   }
 
+  void _toast(String msg) {
+    final m = ScaffoldMessenger.maybeOf(context);
+    if (m == null) {
+      game.showMessage(msg);
+      return;
+    }
+    m
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            msg,
+            style: _theme.styled(const TextStyle(fontSize: 11)),
+          ),
+          duration: const Duration(seconds: 2),
+          backgroundColor: _theme.surfaceMid,
+        ),
+      );
+  }
+
+  /// HANGAR + VAULT (Prompts/27 §6). The panel owns its own state; a change
+  /// there rebuilds the stats above and saves the run.
+  Widget _buildHangar() => HangarPanel(
+    vessel: vessel,
+    theme: _theme,
+    fs: _fs,
+    sectionHeader: _sectionHeader,
+    toast: _toast,
+    onChanged: () {
+      setState(() {});
+      game.saveProgress();
+    },
+  );
+
   Widget _buildShipPreview() {
     final sprite = AssetLibrary.instance.vesselFrames.isNotEmpty
         ? AssetLibrary.instance.vesselFrames.first
@@ -1491,51 +1546,72 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       color: Colors.deepPurple.withAlpha(70),
-      child: Row(
+      child: Column(
         children: [
-          Text(
-            _l.cheats,
-            style: const TextStyle(
-              color: Colors.purpleAccent,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _cheatMaxCredits,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.green.withAlpha(60),
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: Text(
-                _l.maxCredits,
+          Row(
+            children: [
+              Text(
+                _l.cheats,
                 style: const TextStyle(
-                  color: Colors.greenAccent,
+                  color: Colors.purpleAccent,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
                 ),
               ),
-            ),
-          ),
-          const Spacer(),
-          // Sector jump stepper
-          _cheatStepButton('◀', () => _cheatJumpSector(-1)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              _l.levelShort(game.levelForIndex(game.currentSectorIndex)),
-              style: const TextStyle(
-                color: Colors.cyanAccent,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: _cheatMaxCredits,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withAlpha(60),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Text(
+                    _l.maxCredits,
+                    style: const TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const Spacer(),
+              // Sector jump stepper
+              _cheatStepButton('◀', () => _cheatJumpSector(-1)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  _l.levelShort(game.levelForIndex(game.currentSectorIndex)),
+                  style: const TextStyle(
+                    color: Colors.cyanAccent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              _cheatStepButton('▶', () => _cheatJumpSector(1)),
+            ],
           ),
-          _cheatStepButton('▶', () => _cheatJumpSector(1)),
+          const SizedBox(height: 6),
+          // Mod cheats for tuning on a device: one drop of each rarity, and
+          // every hull unlocked.
+          Row(
+            children: [
+              _cheatStepButton('+C', () => _cheatMod(ModRarity.common)),
+              const SizedBox(width: 6),
+              _cheatStepButton('+R', () => _cheatMod(ModRarity.rare)),
+              const SizedBox(width: 6),
+              _cheatStepButton('+M', () => _cheatMod(ModRarity.mythic)),
+              const SizedBox(width: 6),
+              _cheatStepButton('+H', _cheatHulls),
+            ],
+          ),
         ],
       ),
     );

@@ -367,6 +367,21 @@ class AssetLibrary {
 
   Sprite? getSprite(String name) => _sprites[name];
 
+  /// Frames of [hull] in this skin: `vessel_<hull>_0..5`. The stock hull is
+  /// the skin's own `vessel_*`, and so is any hull the skin has no art for —
+  /// check [hasHullArt] to know which one came back.
+  List<Sprite> vesselFramesFor(String hull) {
+    if (hull == 'falcon') return _vesselFrames;
+    final frames = <Sprite>[
+      for (int i = 0; i < 6; i++)
+        if (_sprites['vessel_${hull}_$i'] != null) _sprites['vessel_${hull}_$i']!,
+    ];
+    return frames.isEmpty ? _vesselFrames : frames;
+  }
+
+  bool hasHullArt(String hull) =>
+      hull == 'falcon' || _sprites.containsKey('vessel_${hull}_0');
+
   Sprite? getIcon(String name) => _icons[name];
 
   /// Animated vessel frames (empty if skin uses single vessel.png).

@@ -502,6 +502,304 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => '无响应';
+
+  @override
+  String objBossUnder(int seconds) {
+    return '在首领核心出现后 $seconds 秒内摧毁它';
+  }
+
+  @override
+  String get sectionHangar => '机库';
+
+  @override
+  String get sectionVault => '仓库';
+
+  @override
+  String get rackSide => '侧翼';
+
+  @override
+  String get rackHull => '船体';
+
+  @override
+  String get rarityCommon => '普通';
+
+  @override
+  String get rarityRare => '稀有';
+
+  @override
+  String get rarityMythic => '神话';
+
+  @override
+  String get curse => '诅咒';
+
+  @override
+  String get modFit => '装配';
+
+  @override
+  String get modUnfit => '卸下';
+
+  @override
+  String get modForge => '锻造';
+
+  @override
+  String get forgeHint => '选 3 个同稀有度的模组锻造 1 个更高级的';
+
+  @override
+  String get vaultEmpty => '还没有模组。满星通关节点、快速击败首领，或在无尽模式击落首领。';
+
+  @override
+  String modNeeds(String families) {
+    return '适用于 $families';
+  }
+
+  @override
+  String get modRackFull => '槽位已满';
+
+  @override
+  String get modAlreadyFitted => '已装配';
+
+  @override
+  String get modWrongRack => '不适合此槽位';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n 个模组已回到仓库';
+  }
+
+  @override
+  String get hullLocked => '未解锁';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return '击败战役首领 $n';
+  }
+
+  @override
+  String get hullUnlockFinish => '完成战役或到达第 30 区';
+
+  @override
+  String get statAgility => '机动';
+
+  @override
+  String get statHitbox => '判定';
+
+  @override
+  String get perkNone => '标准机体';
+
+  @override
+  String get perkAfterimage => '静止：射击 ×1.5';
+
+  @override
+  String get perkBulwark => '穿过护盾的伤害减半';
+
+  @override
+  String get perkOverclock => '可发射至 130% 容量的武器，速度较慢';
+
+  @override
+  String get perkBattery => '一架免费无人机随行';
+
+  @override
+  String get rewardTitle => '奖励';
+
+  @override
+  String newHull(String name) {
+    return '新船体：$name';
+  }
+
+  @override
+  String get socketEmpty => '空';
+
+  @override
+  String fxStreams(int n) {
+    return '$n 道平行弹流';
+  }
+
+  @override
+  String fxFan(int n) {
+    return '$n 发扇形弹';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return '$n 连发';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return '射速 ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return '伤害 ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return '弹速 ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return '弹体大小 ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return '耗能 ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return '追踪 +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return '穿透 $n 个目标';
+  }
+
+  @override
+  String get fxPierceAll => '穿透一切';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct% 概率造成 ×$x 伤害';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return '对首领暴击 ×$x';
+  }
+
+  @override
+  String fxFork(int n) {
+    return '击杀时散射 $n 发';
+  }
+
+  @override
+  String get fxChain => '散射弹再次散射';
+
+  @override
+  String get fxSplit => '命中时一分为二';
+
+  @override
+  String get fxFrost => '命中使敌人减速';
+
+  @override
+  String get fxCrossfire => '侧翼武器瞄向中央';
+
+  @override
+  String get fxRearguard => '侧翼武器也向后射击';
+
+  @override
+  String get fxOrbit => '子弹蛇行';
+
+  @override
+  String fxBounce(int n) {
+    return '在墙壁反弹 $n 次';
+  }
+
+  @override
+  String get fxBounceTop => '…以及顶部';
+
+  @override
+  String get fxOverdrive => '能量透支也能射击';
+
+  @override
+  String get fxReactor => '超出容量的武器也能缓慢射击';
+
+  @override
+  String fxGenPower(String x) {
+    return '发电机充能 ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return '发电机容量 ×$x';
+  }
+
+  @override
+  String get fxSurge => '发电机满载：射击 ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return '击杀回复 $pct% 能量';
+  }
+
+  @override
+  String fxHp(String x) {
+    return '船体 ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return '护盾 ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return '护盾回复 ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return '击杀回复 $n 生命';
+  }
+
+  @override
+  String get fxMagnet => '吸引道具';
+
+  @override
+  String get fxMagnetAll => '吸引所有道具';
+
+  @override
+  String fxReflect(int pct) {
+    return '护盾反弹 $pct% 的子弹';
+  }
+
+  @override
+  String get fxReflectGuided => '反弹弹追踪目标';
+
+  @override
+  String fxGhost(String sec) {
+    return '船体受击后无敌 $sec 秒';
+  }
+
+  @override
+  String get fxNova => '护盾破碎：全屏爆炸';
+
+  @override
+  String fxAgility(String x) {
+    return '机动 ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return '判定范围 ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return '积分 ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return '分数 ×$x';
+  }
+
+  @override
+  String get fxSatellite => '一架战斗无人机随行';
+
+  @override
+  String get fxTimewarp => '船体受击时时间变慢';
+
+  @override
+  String get fxGambler => '每发都是随机武器';
+
+  @override
+  String get vaultAll => '全部';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1002,4 +1300,302 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get lanJoinNoAnswer => '沒有回應';
+
+  @override
+  String objBossUnder(int seconds) {
+    return '在首領核心出現後 $seconds 秒內摧毀它';
+  }
+
+  @override
+  String get sectionHangar => '機庫';
+
+  @override
+  String get sectionVault => '倉庫';
+
+  @override
+  String get rackSide => '側翼';
+
+  @override
+  String get rackHull => '船體';
+
+  @override
+  String get rarityCommon => '普通';
+
+  @override
+  String get rarityRare => '稀有';
+
+  @override
+  String get rarityMythic => '神話';
+
+  @override
+  String get curse => '詛咒';
+
+  @override
+  String get modFit => '裝配';
+
+  @override
+  String get modUnfit => '卸下';
+
+  @override
+  String get modForge => '鍛造';
+
+  @override
+  String get forgeHint => '選 3 個同稀有度的模組鍛造 1 個更高級的';
+
+  @override
+  String get vaultEmpty => '還沒有模組。滿星通關節點、快速擊敗首領，或在無盡模式擊落首領。';
+
+  @override
+  String modNeeds(String families) {
+    return '適用於 $families';
+  }
+
+  @override
+  String get modRackFull => '槽位已滿';
+
+  @override
+  String get modAlreadyFitted => '已裝配';
+
+  @override
+  String get modWrongRack => '不適合此槽位';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n 個模組已回到倉庫';
+  }
+
+  @override
+  String get hullLocked => '未解鎖';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return '擊敗戰役首領 $n';
+  }
+
+  @override
+  String get hullUnlockFinish => '完成戰役或到達第 30 區';
+
+  @override
+  String get statAgility => '機動';
+
+  @override
+  String get statHitbox => '判定';
+
+  @override
+  String get perkNone => '標準機體';
+
+  @override
+  String get perkAfterimage => '靜止：射擊 ×1.5';
+
+  @override
+  String get perkBulwark => '穿過護盾的傷害減半';
+
+  @override
+  String get perkOverclock => '可發射至 130% 容量的武器，速度較慢';
+
+  @override
+  String get perkBattery => '一架免費無人機隨行';
+
+  @override
+  String get rewardTitle => '獎勵';
+
+  @override
+  String newHull(String name) {
+    return '新船體：$name';
+  }
+
+  @override
+  String get socketEmpty => '空';
+
+  @override
+  String fxStreams(int n) {
+    return '$n 道平行彈流';
+  }
+
+  @override
+  String fxFan(int n) {
+    return '$n 發扇形彈';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return '$n 連發';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return '射速 ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return '傷害 ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return '彈速 ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return '彈體大小 ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return '耗能 ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return '追蹤 +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return '穿透 $n 個目標';
+  }
+
+  @override
+  String get fxPierceAll => '穿透一切';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct% 機率造成 ×$x 傷害';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return '對首領暴擊 ×$x';
+  }
+
+  @override
+  String fxFork(int n) {
+    return '擊殺時散射 $n 發';
+  }
+
+  @override
+  String get fxChain => '散射彈再次散射';
+
+  @override
+  String get fxSplit => '命中時一分為二';
+
+  @override
+  String get fxFrost => '命中使敵人減速';
+
+  @override
+  String get fxCrossfire => '側翼武器瞄向中央';
+
+  @override
+  String get fxRearguard => '側翼武器也向後射擊';
+
+  @override
+  String get fxOrbit => '子彈蛇行';
+
+  @override
+  String fxBounce(int n) {
+    return '在牆壁反彈 $n 次';
+  }
+
+  @override
+  String get fxBounceTop => '…以及頂部';
+
+  @override
+  String get fxOverdrive => '能量透支也能射擊';
+
+  @override
+  String get fxReactor => '超出容量的武器也能緩慢射擊';
+
+  @override
+  String fxGenPower(String x) {
+    return '發電機充能 ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return '發電機容量 ×$x';
+  }
+
+  @override
+  String get fxSurge => '發電機滿載：射擊 ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return '擊殺回復 $pct% 能量';
+  }
+
+  @override
+  String fxHp(String x) {
+    return '船體 ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return '護盾 ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return '護盾回復 ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return '擊殺回復 $n 生命';
+  }
+
+  @override
+  String get fxMagnet => '吸引道具';
+
+  @override
+  String get fxMagnetAll => '吸引所有道具';
+
+  @override
+  String fxReflect(int pct) {
+    return '護盾反彈 $pct% 的子彈';
+  }
+
+  @override
+  String get fxReflectGuided => '反彈彈追蹤目標';
+
+  @override
+  String fxGhost(String sec) {
+    return '船體受擊後無敵 $sec 秒';
+  }
+
+  @override
+  String get fxNova => '護盾破碎：全螢幕爆炸';
+
+  @override
+  String fxAgility(String x) {
+    return '機動 ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return '判定範圍 ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return '點數 ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return '分數 ×$x';
+  }
+
+  @override
+  String get fxSatellite => '一架戰鬥無人機隨行';
+
+  @override
+  String get fxTimewarp => '船體受擊時時間變慢';
+
+  @override
+  String get fxGambler => '每發都是隨機武器';
+
+  @override
+  String get vaultAll => '全部';
 }

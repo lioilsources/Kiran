@@ -507,4 +507,303 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'ไม่มีการตอบกลับ';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'ทำลายแกนบอสภายใน $seconds วินาทีหลังมันมาถึง';
+  }
+
+  @override
+  String get sectionHangar => 'โรงเก็บ';
+
+  @override
+  String get sectionVault => 'คลัง';
+
+  @override
+  String get rackSide => 'ข้าง';
+
+  @override
+  String get rackHull => 'ตัวเรือ';
+
+  @override
+  String get rarityCommon => 'ธรรมดา';
+
+  @override
+  String get rarityRare => 'หายาก';
+
+  @override
+  String get rarityMythic => 'ตำนาน';
+
+  @override
+  String get curse => 'คำสาป';
+
+  @override
+  String get modFit => 'ติดตั้ง';
+
+  @override
+  String get modUnfit => 'ถอด';
+
+  @override
+  String get modForge => 'โรงตีเหล็ก';
+
+  @override
+  String get forgeHint => 'เลือก 3 ชิ้นระดับเดียวกันเพื่อตี 1 ชิ้นระดับถัดไป';
+
+  @override
+  String get vaultEmpty =>
+      'ยังไม่มีมอด เคลียร์โหนดให้ได้ดาวครบ ปราบบอสให้เร็ว หรือยิงบอสในโหมดไม่รู้จบ';
+
+  @override
+  String modNeeds(String families) {
+    return 'ใช้กับ $families';
+  }
+
+  @override
+  String get modRackFull => 'แร็คเต็ม';
+
+  @override
+  String get modAlreadyFitted => 'ติดตั้งแล้ว';
+
+  @override
+  String get modWrongRack => 'ใส่แร็คนี้ไม่ได้';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n มอดกลับเข้าคลัง';
+  }
+
+  @override
+  String get hullLocked => 'ล็อกอยู่';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'ปราบบอสแคมเปญ $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'จบแคมเปญหรือถึงเซกเตอร์ 30';
+
+  @override
+  String get statAgility => 'คล่อง';
+
+  @override
+  String get statHitbox => 'เป้า';
+
+  @override
+  String get perkNone => 'เรือมาตรฐาน';
+
+  @override
+  String get perkAfterimage => 'อยู่นิ่ง: กระสุน ×1.5';
+
+  @override
+  String get perkBulwark => 'ความเสียหายที่ทะลุโล่ลดครึ่ง';
+
+  @override
+  String get perkOverclock => 'ยิงอาวุธได้ถึง 130 % ของความจุ แต่ช้าลง';
+
+  @override
+  String get perkBattery => 'มีโดรนฟรีบินตาม';
+
+  @override
+  String get rewardTitle => 'รางวัล';
+
+  @override
+  String newHull(String name) {
+    return 'ตัวเรือใหม่: $name';
+  }
+
+  @override
+  String get socketEmpty => 'ว่าง';
+
+  @override
+  String fxStreams(int n) {
+    return '$n สายขนาน';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'พัด $n นัด';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'ชุด $n นัด';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'อัตรายิง ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'ความเสียหาย ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'ความเร็วกระสุน ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'ขนาดกระสุน ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'ใช้พลังงาน ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'นำวิถี +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'ทะลุ $n เป้า';
+  }
+
+  @override
+  String get fxPierceAll => 'ทะลุทุกอย่าง';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return 'โอกาส $pct % ทำความเสียหาย ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'คริติคอล ×$x ใส่บอส';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'การฆ่ากระจาย $n นัด';
+  }
+
+  @override
+  String get fxChain => 'นัดที่กระจายกระจายต่อ';
+
+  @override
+  String get fxSplit => 'แยกเป็นสองเมื่อโดน';
+
+  @override
+  String get fxFrost => 'โดนแล้วศัตรูช้าลง';
+
+  @override
+  String get fxCrossfire => 'ปืนข้างเล็งเข้ากลาง';
+
+  @override
+  String get fxRearguard => 'ปืนข้างยิงไปด้านหลังด้วย';
+
+  @override
+  String get fxOrbit => 'กระสุนส่ายไปมา';
+
+  @override
+  String fxBounce(int n) {
+    return 'เด้งกำแพง $n ครั้ง';
+  }
+
+  @override
+  String get fxBounceTop => '…และขอบบน';
+
+  @override
+  String get fxOverdrive => 'ยิงได้แม้พลังงานติดลบ';
+
+  @override
+  String get fxReactor => 'อาวุธเกินความจุยังยิงได้ช้าๆ';
+
+  @override
+  String fxGenPower(String x) {
+    return 'ชาร์จเครื่องกำเนิด ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'ความจุเครื่องกำเนิด ×$x';
+  }
+
+  @override
+  String get fxSurge => 'เครื่องกำเนิดเต็ม: กระสุน ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'การฆ่าเติมพลังงาน $pct %';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'ตัวเรือ ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'โล่ ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'ฟื้นโล่ ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'การฆ่าฟื้น $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'ดูดไอเทม';
+
+  @override
+  String get fxMagnetAll => 'ดูดไอเทมทั้งหมด';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % ของกระสุนเด้งกลับจากโล่';
+  }
+
+  @override
+  String get fxReflectGuided => 'กระสุนสะท้อนนำวิถี';
+
+  @override
+  String fxGhost(String sec) {
+    return 'อมตะ $sec วินาทีหลังตัวเรือโดน';
+  }
+
+  @override
+  String get fxNova => 'โล่แตก: ระเบิดทั้งจอ';
+
+  @override
+  String fxAgility(String x) {
+    return 'ความคล่อง ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'พื้นที่โดน ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'เครดิต ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'คะแนน ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'มีโดรนรบบินตาม';
+
+  @override
+  String get fxTimewarp => 'ตัวเรือโดนแล้วเวลาช้าลง';
+
+  @override
+  String get fxGambler => 'ทุกนัดเป็นอาวุธสุ่ม';
+
+  @override
+  String get vaultAll => 'ทั้งหมด';
 }

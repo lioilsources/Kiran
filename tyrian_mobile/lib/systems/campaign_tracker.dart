@@ -84,6 +84,10 @@ class CampaignTracker {
   int fleetsWiped = 0;
   int asteroidRams = 0;
 
+  /// Game clock when the boss core spawned and when it died; null until then.
+  double? bossSpawnedAt;
+  double? bossKilledAt;
+
   /// Credits the pilot launched with, so the result card can show what the
   /// run itself brought in.
   int creditsAtStart = 0;
@@ -101,6 +105,8 @@ class CampaignTracker {
     pickups = 0;
     fleetsWiped = 0;
     asteroidRams = 0;
+    bossSpawnedAt = null;
+    bossKilledAt = null;
     creditsAtStart = credits;
     launchLoadout = const LaunchLoadout.empty();
   }
@@ -120,13 +126,23 @@ class CampaignTracker {
   /// killed by a path action never reach this, which is what makes a kill
   /// count an actual measure of shooting — and what makes stripping a boss a
   /// real objective, since pieces that die with the core never come through.
-  void onKill(Hostile h) {
+  void onKill(Hostile h, {double at = 0}) {
     kills++;
+    if (h is Boss) bossKilledAt = at;
     final f = h.deathFamily;
     if (f != null) killsByFamily[f] = (killsByFamily[f] ?? 0) + 1;
     final s = h.deathSlot;
     if (s != null) killsBySlot[s] = (killsBySlot[s] ?? 0) + 1;
     if (h is BossPart) bossPartsDowned.add(h.kind);
+  }
+
+  /// The boss core entered the field at game time [at].
+  void onBossSpawn(double at) => bossSpawnedAt ??= at;
+
+  /// Seconds from the core's spawn to its death; null if either is missing.
+  double? get bossKillTime {
+    final a = bossSpawnedAt, b = bossKilledAt;
+    return a == null || b == null ? null : b - a;
   }
 
   void onPickup() => pickups++;
@@ -231,6 +247,12 @@ class CampaignTracker {
             wanted.where(bossPartsDowned.contains).length;
         return ObjectiveStatus(spec, downed, wanted.length,
             wanted.isNotEmpty && downed == wanted.length);
+
+      case ObjectiveKind.bossUnderTime:
+        final t = bossKillTime;
+        final secs = t == null ? 0 : t.ceil();
+        return ObjectiveStatus(
+            spec, secs, spec.amount, t != null && t <= spec.amount);
     }
   }
 }

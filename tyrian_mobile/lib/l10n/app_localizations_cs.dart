@@ -517,4 +517,303 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get lanJoinNoAnswer => 'bez odpovědi';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Znič jádro bosse do $seconds s od jeho příletu';
+  }
+
+  @override
+  String get sectionHangar => 'HANGÁR';
+
+  @override
+  String get sectionVault => 'TREZOR';
+
+  @override
+  String get rackSide => 'Boky';
+
+  @override
+  String get rackHull => 'Trup';
+
+  @override
+  String get rarityCommon => 'BĚŽNÝ';
+
+  @override
+  String get rarityRare => 'VZÁCNÝ';
+
+  @override
+  String get rarityMythic => 'MÝTICKÝ';
+
+  @override
+  String get curse => 'PROKLETÍ';
+
+  @override
+  String get modFit => 'OSADIT';
+
+  @override
+  String get modUnfit => 'SUNDAT';
+
+  @override
+  String get modForge => 'KOVÁRNA';
+
+  @override
+  String get forgeHint => 'Vyber 3 stejné rarity a ukuj 1 vyšší';
+
+  @override
+  String get vaultEmpty =>
+      'Zatím žádné mody. Dokonči node na plné hvězdy, zabij bosse rychle nebo sestřel bosse v endless.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Funguje s $families';
+  }
+
+  @override
+  String get modRackFull => 'Rack je plný';
+
+  @override
+  String get modAlreadyFitted => 'Už osazeno';
+
+  @override
+  String get modWrongRack => 'Do tohoto racku nepatří';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n modů zpět v trezoru';
+  }
+
+  @override
+  String get hullLocked => 'Zamčeno';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Poraz bosse kampaně $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Dokonči kampaň nebo dosáhni sektoru 30';
+
+  @override
+  String get statAgility => 'OBR';
+
+  @override
+  String get statHitbox => 'ZÁS';
+
+  @override
+  String get perkNone => 'Základní loď';
+
+  @override
+  String get perkAfterimage => 'Stůj na místě: střely ×1,5';
+
+  @override
+  String get perkBulwark => 'Poškození za štítem poloviční';
+
+  @override
+  String get perkOverclock => 'Střílí i zbraně do 130 % kapacity, pomaleji';
+
+  @override
+  String get perkBattery => 'S lodí letí dron zdarma';
+
+  @override
+  String get rewardTitle => 'ODMĚNA';
+
+  @override
+  String newHull(String name) {
+    return 'Nový trup: $name';
+  }
+
+  @override
+  String get socketEmpty => 'prázdné';
+
+  @override
+  String fxStreams(int n) {
+    return '$n souběžné proudy';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Vějíř $n střel';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Dávka $n střel';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Kadence ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Poškození ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Rychlost střel ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Velikost střel ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Spotřeba ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Navádění +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Proletí $n cíli';
+  }
+
+  @override
+  String get fxPierceAll => 'Proletí vším';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % šance na ×$x poškození';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return '×$x kritické zásahy na bosse';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Zabití rozpráší $n střely';
+  }
+
+  @override
+  String get fxChain => 'Rozprášené střely se rozprašují dál';
+
+  @override
+  String get fxSplit => 'Při zásahu se rozdělí na dvě';
+
+  @override
+  String get fxFrost => 'Zásah zpomalí nepřítele';
+
+  @override
+  String get fxCrossfire => 'Boční zbraně míří ke středu';
+
+  @override
+  String get fxRearguard => 'Boční zbraně střílí i dozadu';
+
+  @override
+  String get fxOrbit => 'Střely se vlní';
+
+  @override
+  String fxBounce(int n) {
+    return 'Odráží se od stěn $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…i od horního okraje';
+
+  @override
+  String get fxOverdrive => 'Střílí i na energetický dluh';
+
+  @override
+  String get fxReactor => 'Zbraně nad kapacitu střílí, pomalu';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Dobíjení generátoru ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Kapacita generátoru ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Plný generátor: střely ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Zabití doplní $pct % energie';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Trup ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Štít ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Obnova štítu ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Zabití léčí $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'Přitahuje bonusy';
+
+  @override
+  String get fxMagnetAll => 'Přitáhne všechny bonusy';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % střel se od štítu odrazí zpět';
+  }
+
+  @override
+  String get fxReflectGuided => 'Odražené střely se navádí';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Nezranitelnost $sec s po zásahu trupu';
+  }
+
+  @override
+  String get fxNova => 'Prasklý štít: výbuch přes celou obrazovku';
+
+  @override
+  String fxAgility(String x) {
+    return 'Obratnost ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Zásahová plocha ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Kredity ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Skóre ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'S lodí letí bojový dron';
+
+  @override
+  String get fxTimewarp => 'Zásah trupu zpomalí čas';
+
+  @override
+  String get fxGambler => 'Každá střela je náhodná zbraň';
+
+  @override
+  String get vaultAll => 'VŠE';
 }

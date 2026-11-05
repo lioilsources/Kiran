@@ -28,6 +28,7 @@ enum ObjectiveKind {
   underTime,
   bossPartDestroyed,
   allBossParts,
+  bossUnderTime,
 }
 
 /// One task on a campaign node. [required] tasks gate the next node; the rest
@@ -91,6 +92,8 @@ class ObjectiveSpec {
         return l.objUnderTime(amount);
       case 'strip':
         return l.objStripBoss;
+      case 'bossfast':
+        return l.objBossUnder(amount);
     }
     return text;
   }
@@ -261,6 +264,19 @@ class ObjectiveSpec {
         family = null,
         slot = null,
         weaponName = null;
+
+  /// Kill the boss core within [seconds] of it arriving — timed from the
+  /// core's spawn, not the node's start, so the waves before it don't count.
+  /// Its first clear pays a rare-or-better mod (ModRewards).
+  const ObjectiveSpec.bossUnder(int seconds)
+      : id = 'bossfast',
+        kind = ObjectiveKind.bossUnderTime,
+        text = 'Destroy the boss core within ${seconds}s of its arrival',
+        required = false,
+        amount = seconds,
+        family = null,
+        slot = null,
+        weaponName = null;
 }
 
 class CampaignNode {
@@ -326,6 +342,7 @@ const List<CampaignNode> kCampaignNodes = [
     ObjectiveSpec.kills(22, required: true),
     ObjectiveSpec.strip(),
     ObjectiveSpec.untouched(),
+    ObjectiveSpec.bossUnder(25),
   ]),
   CampaignNode(5, 'Inner Zone III', 2, objectives: [
     ObjectiveSpec.clear,
@@ -358,6 +375,7 @@ const List<CampaignNode> kCampaignNodes = [
     ObjectiveSpec.kills(30, required: true),
     ObjectiveSpec.strip(),
     ObjectiveSpec.hull(50),
+    ObjectiveSpec.bossUnder(30),
   ]),
   CampaignNode(10, 'Planet Patrol II', 4, objectives: [
     ObjectiveSpec.clear,
@@ -390,6 +408,7 @@ const List<CampaignNode> kCampaignNodes = [
     ObjectiveSpec.kills(24, required: true),
     ObjectiveSpec.strip(),
     ObjectiveSpec.untouched(),
+    ObjectiveSpec.bossUnder(35),
   ]),
   CampaignNode(15, 'Industry Zone I', 6, objectives: [
     ObjectiveSpec.clear,
@@ -422,6 +441,7 @@ const List<CampaignNode> kCampaignNodes = [
     ObjectiveSpec.kills(16, required: true),
     ObjectiveSpec.strip(),
     ObjectiveSpec.untouched(),
+    ObjectiveSpec.bossUnder(40),
   ]),
 ];
 
@@ -561,9 +581,18 @@ abstract final class Campaign {
   static double poweredDps(Vessel v) {
     double total = 0;
     for (final d in v.devices) {
-      if (d.pwrNeed > v.genMax) continue;
-      total += d.dps;
+      if (d.slot == WeaponSlot.generator) {
+        if (d.pwrNeed > v.genMax) continue;
+        total += d.dps;
+        continue;
+      }
+      // With mods: what the plan sustains, so a modded ship meets a boss
+      // with HP to match and the time window stays a fair ask.
+      if (!v.canPower(d)) continue;
+      total += v.effectiveDps(d);
     }
+    final s = v.satellite;
+    if (s != null) total += v.effectiveDps(s);
     return total;
   }
 }

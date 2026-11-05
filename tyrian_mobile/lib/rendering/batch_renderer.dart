@@ -220,7 +220,7 @@ class ProjectileBatchRenderer extends Component
 
     // Player projectiles (from vessel devices)
     for (final v in game.allVessels) {
-      for (final d in v.devices) {
+      for (final d in v.guns) {
         for (final p in d.projectiles) {
           _addProjectile(p);
         }

@@ -50,6 +50,9 @@ import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
 import '../l10n/l10n.dart';
+import '../systems/mods/mod_rewards.dart';
+import '../systems/mods/mods_state.dart';
+import '../systems/mods/hull_spec.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -151,6 +154,42 @@ class TyrianGame extends FlameGame
   /// Null when the node opened nothing.
   String? lastNodeUnlock;
 
+  /// Mods and hulls the node that just finished paid out, for the result card.
+  ModReward lastNodeReward = ModReward.nothing;
+
+  /// Enemy clock: 1 normally, below 1 while a TIMEWARP runs. Read by fleets,
+  /// hostiles, the boss and enemy shots; the player's side ignores it.
+  double enemyTimeScale = 1.0;
+  double _timewarpLeft = 0;
+
+  void startTimewarp(double scale, double seconds) {
+    enemyTimeScale = scale;
+    _timewarpLeft = seconds;
+  }
+
+  /// A boss core went down. Endless pays a mod for every one; the campaign
+  /// pays at the end of the node, from its objectives.
+  void onBossKilled(Hostile boss) {
+    if (mode != GameMode.endless || coopRole == CoopRole.client) return;
+    final r = ModRewards.endlessBoss(
+        state: ModsState.instance,
+        challengeId: challenge.id,
+        fitted: vessel.fittedMods);
+    _announceReward(r);
+  }
+
+  void _announceReward(ModReward r) {
+    if (r.isEmpty) return;
+    ModsState.instance.save();
+    for (final m in r.mods) {
+      final spec = m.spec;
+      if (spec != null) showMessage('+ ${spec.name}');
+    }
+    for (final h in r.hulls) {
+      showMessage('+ ${h.toUpperCase()}');
+    }
+  }
+
   /// VB6 difficulty level of a sector index in the current mode. The campaign
   /// tables its own levels: Sector.levelForIndex would read node 19 as the
   /// second procedural level (8) and pay the max-level bounty for it.
@@ -214,7 +253,7 @@ class TyrianGame extends FlameGame
   int get projectileCount {
     int count = enemyProjectiles.length;
     for (final v in allVessels) {
-      for (final d in v.devices) {
+      for (final d in v.guns) {
         count += d.projectiles.length;
       }
     }
@@ -388,7 +427,7 @@ class TyrianGame extends FlameGame
       s.refreshSprite();
     }
     for (final v in allVessels) {
-      for (final d in v.devices) {
+      for (final d in v.guns) {
         for (final p in d.projectiles) {
           p.refreshSprite();
         }
@@ -485,6 +524,8 @@ class TyrianGame extends FlameGame
   }
 
   void _clearActiveObjects() {
+    enemyTimeScale = 1.0;
+    _timewarpLeft = 0;
     for (final f in [...activeFleets]) {
       // Remove hostiles first — they're world children, not fleet children
       for (final h in [...f.hostiles]) {
@@ -511,7 +552,7 @@ class TyrianGame extends FlameGame
     enemyProjectiles.clear();
     // Clear player projectiles (world children via devices)
     for (final v in allVessels) {
-      for (final d in v.devices) {
+      for (final d in v.guns) {
         for (final p in [...d.projectiles]) {
           p.removeFromParent();
         }
@@ -573,6 +614,10 @@ class TyrianGame extends FlameGame
       return;
     }
 
+    if (_timewarpLeft > 0) {
+      _timewarpLeft -= dt;
+      if (_timewarpLeft <= 0) enemyTimeScale = 1.0;
+    }
     super.update(dt);
     elapsed += dt;
     AchievementService.instance.addPlayTime(dt);
@@ -693,8 +738,21 @@ class TyrianGame extends FlameGame
       );
       lastNodeResult = result;
       lastNodeUnlock = null;
+      lastNodeReward = ModReward.nothing;
       if (result.requiredMet) {
         lastNodeUnlock = Campaign.applyBossUnlock(node, vessel);
+        final c = campaign;
+        final finishes = c != null &&
+            {...c.completed, currentSectorIndex}.length >= Campaign.nodeCount;
+        lastNodeReward = ModRewards.campaignNode(
+          state: ModsState.instance,
+          node: node,
+          result: result,
+          campaignFinished: finishes,
+          challengeId: challenge.id,
+          fitted: vessel.fittedMods,
+        );
+        if (!lastNodeReward.isEmpty) ModsState.instance.save();
         // The first successful clear pays the sector bonus; a replay for stars
         // earns only what it shoots down, or the bonus would be farmable. A
         // run that reached the end without its required tasks pays nothing —
@@ -718,6 +776,12 @@ class TyrianGame extends FlameGame
     );
     vessel.credit += currentSector!.sectorBonus;
     if (vessel2 != null) vessel2!.credit += currentSector!.sectorBonus;
+    if (coopRole != CoopRole.client) {
+      _announceReward(ModRewards.endlessDepth(
+          state: ModsState.instance,
+          cleared: currentSectorIndex + 1,
+          fitted: vessel.fittedMods));
+    }
 
     // Revive dead vessels for ComCenter
     if (isCoop) {
@@ -784,6 +848,8 @@ class TyrianGame extends FlameGame
     // Awaited once at startup; from here on Challenge.selected is a plain
     // static read on the hot path.
     await Challenge.init();
+    // Before any ship loads: a ship's racks take their mods out of the vault.
+    await ModsState.instance.load();
     final state = await SaveService.loadGameState();
     if (state == null) return false;
     vessel.loadFromSave(state);
@@ -852,7 +918,7 @@ class TyrianGame extends FlameGame
     if (saved == null) {
       // newGame() also rolls a fresh codename; the pilot is the same person.
       final name = vessel.pilotName;
-      vessel.newGame();
+      vessel.newGame(returnMods: false);
       vessel.pilotName = name;
       // The menu's current pick becomes this campaign's challenge for good.
       campaign = CampaignState(
@@ -1091,6 +1157,7 @@ class TyrianGame extends FlameGame
 
   /// Apply screen-space input to vessel (handles landscape inverse rotation).
   void _applyMovement(Vessel v, double screenDx, double screenDy, double speed, double dt) {
+    speed *= v.agility;
     if (platform.isLandscape) {
       // Inverse rotation: screen → game space
       // Screen RIGHT = game UP (−Y), Screen DOWN = game RIGHT (+X)
@@ -1182,8 +1249,8 @@ class TyrianGame extends FlameGame
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {
     const cf = 0.7; // collision fraction — shrink vessel hitbox for fairness
-    final vhx = v.size.x / 2 * cf;
-    final vhy = v.size.y / 2 * cf;
+    final vhx = v.size.x / 2 * cf * v.hitboxScale;
+    final vhy = v.size.y / 2 * cf * v.hitboxScale;
     return v.visible &&
         p.position.x < v.position.x + vhx &&
         p.position.x + p.size.x > v.position.x - vhx &&
@@ -1208,7 +1275,7 @@ class TyrianGame extends FlameGame
       bool hit = false;
       for (final v in allVessels) {
         if (_projectileHitsVessel(p, v)) {
-          v.takeDamage(p.damage.toInt());
+          if (!v.tryReflect(p)) v.takeDamage(p.damage.toInt());
           hit = true;
           break;
         }
@@ -1250,7 +1317,7 @@ class TyrianGame extends FlameGame
       // parts — which is what makes this the one place challenge scales damage.
       damage: dmg * challenge.damage,
       scale: scale,
-    );
+    )..isEnemy = true;
     enemyProjectiles.add(proj);
     world.add(proj);
   }
@@ -1355,14 +1422,17 @@ class TyrianGame extends FlameGame
 
   /// Deep-copy stats and weapons from source vessel to target
   void _cloneVesselStats(Vessel src, Vessel dst) {
-    dst.hpMax = src.hpMax;
-    dst.hp = src.hp;
-    dst.shieldMax = src.shieldMax;
-    dst.shield = src.shield;
-    dst.shieldRegen = src.shieldRegen;
-    dst.genMax = src.genMax;
-    dst.genPower = src.genPower;
-    dst.genValue = src.genValue;
+    // P2 flies the stock hull with empty racks, so it takes P1's stats with
+    // P1's mod multipliers divided back out.
+    final base = src.toSaveMap();
+    dst.hpMax = base['hpMax'] as int;
+    dst.hp = base['hp'] as int;
+    dst.shieldMax = base['shieldMax'] as double;
+    dst.shield = base['shield'] as double;
+    dst.shieldRegen = base['shieldRegen'] as double;
+    dst.genMax = base['genMax'] as double;
+    dst.genPower = base['genPower'] as double;
+    dst.genValue = dst.genMax;
     dst.credit = src.credit;
     dst.score = src.score;
     dst.nextWeaponLevel = src.nextWeaponLevel;
@@ -1459,6 +1529,7 @@ class TyrianGame extends FlameGame
     List<int> vesselInts(Vessel v) => [
           v.hp, v.hpMax, v.score, v.credit,
           v.fire ? 1 : 0, v.dmgTaken, v.visible ? 1 : 0,
+          kHulls.indexWhere((h) => h.id == v.hull.id),
         ];
 
     // Hostiles
@@ -1491,7 +1562,7 @@ class TyrianGame extends FlameGame
     // Player projectiles (from both vessels)
     final pProjSnaps = <ProjSnap>[];
     for (final v in allVessels) {
-      for (final d in v.devices) {
+      for (final d in v.guns) {
         for (final p in d.projectiles) {
           if (!p.active) continue;
           final img = projSnapImgs.indexOf(p.imgName);
@@ -1518,13 +1589,20 @@ class TyrianGame extends FlameGame
     // Beams
     final beamSnaps = <BeamSnap>[];
     for (final v in allVessels) {
-      for (final d in v.devices) {
+      for (final d in v.guns) {
         if (d.beamActive > 0 && d.beam > 0) {
           beamSnaps.add(BeamSnap(
             sx: d.sx, sy: d.sy,
             dx: d.dx, dy: d.dy,
             active: true,
           ));
+          for (final t in d.extraBeamTargets) {
+            beamSnaps.add(BeamSnap(
+              sx: d.sx, sy: d.sy,
+              dx: t.x, dy: t.y,
+              active: true,
+            ));
+          }
         }
       }
     }
@@ -1697,6 +1775,12 @@ class TyrianGame extends FlameGame
     v.fire = snap.fire;
     v.dmgTaken = snap.dmgTaken;
     v.visible = snap.visible;
+    final hull = kHulls[snap.hull.clamp(0, kHulls.length - 1)];
+    if (hull.id != v.hull.id) {
+      // The client only draws the host's hull; stats come from the snapshot.
+      v.hull = hull;
+      v.refreshSprite();
+    }
   }
 
   DevType? _findWeaponType(String name) {

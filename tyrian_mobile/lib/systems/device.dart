@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
@@ -9,6 +11,8 @@ import '../entities/projectile.dart';
 import '../entities/vessel.dart';
 import '../entities/hostile.dart';
 import '../l10n/l10n.dart';
+import 'mods/mod_spec.dart';
+import 'mods/shot_plan.dart';
 
 /// Ported from Device.cls — a weapon instance equipped on a vessel or hostile.
 class Device {
@@ -37,6 +41,20 @@ class Device {
 
   // Beam coordinates
   double sx = 0, sy = 0, dx = 0, dy = 0;
+
+  /// Beams the current pull draws (WIDE, TRIPLE on a laser) and what each
+  /// tick of them hits for. Ray 0 is [dx],[dy]; the others aim at
+  /// [extraBeamTargets], filled by the vessel's beam pass.
+  int beamRays = 1;
+  int beamDamage = 0;
+  ShotPlan? beamPlan;
+  final List<Vector2> extraBeamTargets = [];
+
+  // SALVO shots still to come from the last pull.
+  int _salvoLeft = 0;
+  double _salvoTimer = 0;
+  ShotPlan? _salvoPlan;
+  double _salvoDmg = 0;
 
   // Cooldown timer
   double cd = 0;
@@ -129,9 +147,18 @@ class Device {
     );
   }
 
-  /// Port of Device.Create — fire weapon, create projectile or activate beam
-  void fire(double vesselX, double vesselY, double vesselXm, double vesselWidth,
-      Component world, {double fireRateMult = 1.0}) {
+  /// Port of Device.Create — fire weapon, create projectile or activate beam.
+  ///
+  /// [plan] is what the vessel's mods make of this pull; null fires the plain
+  /// VB6 shot. [dmgBonus] stacks the pull-wide bonuses (SURGE, the DART's
+  /// afterimage). [liveShots] is the field's current player-shot count, for
+  /// the [ShotPlan.maxLiveShots] cap. Returns the shots spawned now.
+  int fire(double vesselX, double vesselY, double vesselXm, double vesselWidth,
+      Component world,
+      {double fireRateMult = 1.0,
+      ShotPlan? plan,
+      double dmgBonus = 1.0,
+      int liveShots = 0}) {
     // The generator is not a gun. It sits in the same devices list as the
     // weapons (Vessel.equipWeapon) and Vessel.update fires that list without
     // looking at slots, so without this it went off every ten seconds: a
@@ -139,28 +166,79 @@ class Device {
     // and an invisible 10-damage projectile — invisible because its imgName
     // pointed at a 'generator' sprite no skin has ever contained, leaving
     // Projectile._loadSprite on its 6x12 fallback hitbox.
-    if (slot == WeaponSlot.generator) return;
+    if (slot == WeaponSlot.generator) return 0;
 
-    if (cd > 0) return;
+    if (cd > 0) return 0;
 
-    // Check power
-    if (parentVessel != null && pwrNeed > parentVessel!.genValue) return;
-
-    // Consume power
-    if (parentVessel != null) {
-      parentVessel!.genValue -= pwrNeed;
+    final pl = plan ?? ShotPlan.of(this, ModEffects.none);
+    if (beam == 0 && liveShots + pl.shotsPerPull > ShotPlan.maxLiveShots) {
+      return 0;
     }
 
-    cd = cooldown / fireRateMult.clamp(0.1, 1.0);
+    // Power. A gun that needs more than the generator holds never fires,
+    // unless REACTOR or the DYNAMO hull lets it fire off a full generator,
+    // slowly; OVERDRIVE may run the generator a little into debt.
+    var cdMul = 1.0;
+    var cdFloor = 0.0;
+    final v = parentVessel;
+    if (v != null) {
+      final cost = pl.pwrNeed;
+      if (cost <= v.genValue) {
+        v.genValue -= cost;
+      } else if (cost > v.genMax && v.overreach(cost) != null) {
+        if (v.genValue < v.genMax * 0.999) return 0;
+        v.genValue = 0;
+        final o = v.overreach(cost)!;
+        cdMul = o.cooldownMul;
+        cdFloor = o.cooldownFloor;
+      } else if (pl.fx.overdrive &&
+          v.genValue - cost >= -config.modOverdriveDebt * v.genMax) {
+        v.genValue -= cost;
+      } else {
+        return 0;
+      }
+    }
+
+    cd = pl.cooldown * cdMul / fireRateMult.clamp(0.1, 1.0);
+    if (cd < cdFloor) cd = cdFloor;
+    final dmg = pl.damage * dmgBonus;
 
     if (beam > 0) {
       beamActive = seqs;
+      beamRays = pl.rays;
+      beamDamage = dmg.round();
+      beamPlan = pl;
       SoundService.instance.play(SfxEvent.fireBeam);
-      return;
+      return 0;
     }
 
     SoundService.instance.play(SfxEvent.fireBullet);
+    var spawned = _emit(pl, dmg, vesselX, vesselY, vesselXm, vesselWidth, world);
+    if (pl.salvo > 1) {
+      _salvoLeft = pl.salvo - 1;
+      _salvoTimer = ShotPlan.salvoGap;
+      _salvoPlan = pl;
+      _salvoDmg = dmg;
+    }
+    return spawned;
+  }
 
+  /// Fire the queued SALVO shots that are due, from where the ship is now.
+  void updatePending(double dt, double vesselX, double vesselY,
+      double vesselXm, double vesselWidth, Component world) {
+    if (_salvoLeft <= 0) return;
+    _salvoTimer -= dt;
+    if (_salvoTimer > 0) return;
+    _salvoLeft--;
+    _salvoTimer = ShotPlan.salvoGap;
+    _emit(_salvoPlan!, _salvoDmg, vesselX, vesselY, vesselXm, vesselWidth,
+        world);
+  }
+
+  /// One volley of [pl]: every stream × every fan shot, plus REARGUARD.
+  int _emit(ShotPlan pl, double dmg, double vesselX, double vesselY,
+      double vesselXm, double vesselWidth, Component world) {
+    _world = world;
     // Calculate spawn position based on slot
     double px, py;
     switch (slot) {
@@ -191,24 +269,90 @@ class Device {
       scale = minProjScale +
           (maxProjScale - minProjScale) / config.maxWeapLevel * level;
     }
+    scale *= pl.projScaleMul;
 
-    // Get or create projectile
+    final lean = !pl.fx.crossfire
+        ? 0.0
+        : switch (slot) {
+            WeaponSlot.leftGun => config.modCrossfireVx,
+            WeaponSlot.rightGun => -config.modCrossfireVx,
+            _ => 0.0,
+          };
+
+    var n = 0;
+    for (var i = 0; i < pl.streams; i++) {
+      for (var j = 0; j < pl.fan; j++) {
+        spawnShot(px + pl.streamOffset(i), py,
+            vx: pl.fanVxAt(j) + lean,
+            speed: -pl.speed,
+            damage: dmg,
+            scale: scale,
+            plan: pl,
+            world: world);
+        n++;
+      }
+    }
+    if (pl.fx.rearguard &&
+        (slot == WeaponSlot.leftGun || slot == WeaponSlot.rightGun)) {
+      spawnShot(px, py + 10,
+          speed: pl.speed,
+          damage: dmg * config.modRearguardDmg,
+          scale: scale,
+          plan: pl,
+          world: world);
+      n++;
+    }
+    return n;
+  }
+
+  static final Random _rng = Random();
+
+  /// Where this gun's shots live; remembered for shots spawned off a hit.
+  Component? _world;
+
+  /// GAMBLER's draw: any projectile family, its damage between half and
+  /// double. The beam is left out — a laser sprite fired as a bullet reads
+  /// as a bug, not a gamble.
+  static const _gamblerImgs = ['bubble', 'vulcan', 'blaster', 'starg'];
+
+  /// One player shot from this device's pool. Used by the gun itself and by
+  /// the hit path for FORK, SPLIT and reflected shots, which is why it takes
+  /// its numbers as arguments rather than reading the device.
+  Projectile spawnShot(double x, double y,
+      {double vx = 0,
+      required double speed,
+      required double damage,
+      required double scale,
+      ShotPlan? plan,
+      int depth = 0,
+      String? img,
+      Component? world}) {
+    var sprite = img ?? imgName;
+    var dmg = damage;
+    if (plan != null && plan.fx.gambler && img == null) {
+      sprite = _gamblerImgs[_rng.nextInt(_gamblerImgs.length)];
+      dmg *= 0.5 + _rng.nextDouble() * 1.5;
+    }
     Projectile proj;
     if (_pool.isNotEmpty) {
       proj = _pool.removeLast();
-      proj.activate(px, py, -speed.toDouble(), damage.toDouble(), scale);
+      proj.imgName = sprite;
+      proj.activate(x, y, speed, dmg, scale);
     } else {
       proj = Projectile(
-        imgName: imgName,
-        position: Vector2(px, py),
-        speed: -speed.toDouble(),
-        damage: damage.toDouble(),
+        imgName: sprite,
+        position: Vector2(x, y),
+        speed: speed,
+        damage: dmg,
         scale: scale,
         parentDevice: this,
       );
-      world.add(proj);
+      (world ?? _world ?? parentVessel?.parent)?.add(proj);
     }
+    proj.vx = vx;
+    proj.applyPlan(plan, depth: depth);
     projectiles.add(proj);
+    return proj;
   }
 
   /// Update cooldown timer
@@ -276,7 +420,7 @@ class Device {
       // both recharge rate (RechargeGenerator) and GeneratorLoad reflect the
       // upgrade. Without this, the shop upgrade only raised genMax and the load
       // of currently-assigned weapons never dropped.
-      parentVessel!.genPower = pwrGen;
+      parentVessel!.genPower = pwrGen * parentVessel!.genPowerMul;
       parentVessel!.genMax *= config.upgGenMaxMultiplier;
     }
   }
@@ -290,6 +434,7 @@ class Device {
 
   /// Cleanup all projectiles
   void clearProjectiles() {
+    _salvoLeft = 0;
     for (final p in projectiles) {
       p.removeFromParent();
     }
