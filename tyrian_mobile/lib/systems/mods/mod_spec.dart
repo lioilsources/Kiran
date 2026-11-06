@@ -20,9 +20,11 @@ class ModEffects {
   /// Shots in the fan (1 = straight, 3 = TRIPLE, 5 = HYDRA). The widest wins.
   final int fan;
 
-  /// Outer fan shot's sideways speed in px/frame for the front gun; side guns
-  /// get two thirds of it. The widest wins.
-  final double fanVx;
+  /// Angle of the outermost fan shot from straight ahead, degrees, for the
+  /// front gun; side guns fan two thirds as wide. The widest wins. An angle
+  /// rather than a sideways speed, so the fan opens the same for a slow
+  /// bubble and a fast vulcan.
+  final double fanAngle;
 
   /// Shots per trigger pull, a few frames apart. Multiplies.
   final int salvo;
@@ -91,7 +93,7 @@ class ModEffects {
   const ModEffects({
     this.streams = 1,
     this.fan = 1,
-    this.fanVx = 0,
+    this.fanAngle = 0,
     this.salvo = 1,
     this.cooldownDiv = 1,
     this.dmgMul = 1,
@@ -152,7 +154,7 @@ class ModEffects {
   static ModEffects combine(Iterable<ModEffects> all) {
     var streams = 1, fan = 1, salvo = 1, guideAdd = 0, pierce = 0;
     var forkCount = 0, forkDepth = 0, bounces = 0, leechHp = 0;
-    double fanVx = 0, cooldownDiv = 1, dmgMul = 1, speedMul = 1;
+    double fanAngle = 0, cooldownDiv = 1, dmgMul = 1, speedMul = 1;
     double projScaleMul = 1, drawScaleAdd = 0, pwrMul = 1, pierceFalloff = 0;
     double critChance = 0, critMul = 1, bossCritMul = 0, frostSec = 0;
     double genPowerMul = 1, genMaxMul = 1, siphon = 0, hpMul = 1;
@@ -166,7 +168,7 @@ class ModEffects {
     for (final e in all) {
       streams *= e.streams;
       if (e.fan > fan) fan = e.fan;
-      if (e.fanVx > fanVx) fanVx = e.fanVx;
+      if (e.fanAngle > fanAngle) fanAngle = e.fanAngle;
       salvo *= e.salvo;
       cooldownDiv *= e.cooldownDiv;
       dmgMul *= e.dmgMul;
@@ -219,7 +221,7 @@ class ModEffects {
     return ModEffects(
       streams: streams.clamp(1, maxStreams),
       fan: fan.clamp(1, maxFan),
-      fanVx: fanVx,
+      fanAngle: fanAngle,
       salvo: salvo.clamp(1, maxSalvo),
       cooldownDiv: cooldownDiv,
       dmgMul: dmgMul,
@@ -334,14 +336,14 @@ const List<ModSpec> kMods = [
     'TRIPLE',
     ModRarity.rare,
     _guns,
-    ModEffects(fan: 3, fanVx: 3, pwrMul: 2.0),
+    ModEffects(fan: 3, fanAngle: 15, pwrMul: 2.0),
   ),
   ModSpec(
     'hydra',
     'HYDRA',
     ModRarity.mythic,
     _guns,
-    ModEffects(fan: 5, fanVx: 6, pwrMul: 2.6),
+    ModEffects(fan: 5, fanAngle: 30, pwrMul: 2.6),
   ),
   ModSpec(
     'salvo',
@@ -409,14 +411,20 @@ const List<ModSpec> kMods = [
     'HEAVY',
     ModRarity.common,
     _guns,
-    ModEffects(dmgMul: 1.25, speedMul: 0.85, drawScaleAdd: 0.2, pwrMul: 1.3),
+    ModEffects(dmgMul: 1.25, speedMul: 0.85, drawScaleAdd: 0.5, pwrMul: 1.3),
   ),
   ModSpec(
     'heavy_plus',
     'HEAVY+',
     ModRarity.rare,
     _guns,
-    ModEffects(dmgMul: 1.5, speedMul: 0.8, projScaleMul: 1.25, pwrMul: 1.6),
+    ModEffects(
+      dmgMul: 1.5,
+      speedMul: 0.8,
+      projScaleMul: 1.25,
+      drawScaleAdd: 0.6,
+      pwrMul: 1.6,
+    ),
   ),
   ModSpec(
     'crit',
@@ -510,7 +518,7 @@ const List<ModSpec> kMods = [
     'BIGSHOT',
     ModRarity.common,
     _guns,
-    ModEffects(projScaleMul: 1.2, drawScaleAdd: 0.2, pwrMul: 1.1),
+    ModEffects(projScaleMul: 1.2, drawScaleAdd: 0.4, pwrMul: 1.1),
   ),
   ModSpec(
     'furnace',

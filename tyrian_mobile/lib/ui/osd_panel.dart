@@ -10,6 +10,7 @@ import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import 'skin_painter.dart';
 import '../l10n/l10n.dart';
+import 'mod_text.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
@@ -59,6 +60,39 @@ class OsdPanel extends StatelessWidget {
           segments: 5,
         ),
       ),
+    );
+  }
+
+  /// What the ship flies with: one small chip per fitted mod in its rarity
+  /// colour, in rack order. Nothing when the racks are empty.
+  Widget _buildModStrip(Vessel v) {
+    final mods = [
+      for (final i in v.fittedMods)
+        if (i.spec != null) i.spec!,
+    ];
+    if (mods.isEmpty) return const SizedBox.shrink();
+    return Wrap(
+      spacing: 3,
+      runSpacing: 2,
+      children: [
+        for (final m in mods)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+            decoration: BoxDecoration(
+              color: ModText.colorOf(m).withAlpha(40),
+              border: Border.all(color: ModText.colorOf(m).withAlpha(170)),
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: Text(
+              m.name,
+              style: TextStyle(
+                color: ModText.colorOf(m),
+                fontSize: _sc(8),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -144,7 +178,9 @@ class OsdPanel extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                       ),
-                    ),
+                    )
+                  else
+                    Flexible(child: _buildModStrip(game.vessel)),
                   const Spacer(),
                   Row(
                     mainAxisSize: MainAxisSize.min,

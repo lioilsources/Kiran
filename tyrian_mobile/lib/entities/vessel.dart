@@ -482,6 +482,9 @@ class Vessel extends PositionComponent
     return cost <= genMax || overreach(cost) != null;
   }
 
+  /// SURGE is charged: the generator has sat full long enough.
+  bool get surgeArmed => mods.surge && _fullGenTime >= config.modSurgeDelay;
+
   /// Keyboard/pad speed multiplier; touch stays 1:1.
   double get agility => hull.agility * mods.agilityMul;
 
@@ -662,7 +665,7 @@ class Vessel extends PositionComponent
         _stillTime >= HullSpec.afterimageDelay) {
       bonus *= HullSpec.afterimageDmg;
     }
-    final surging = mods.surge && _fullGenTime >= config.modSurgeDelay;
+    final surging = surgeArmed;
     if (surging) bonus *= config.modSurgeDmg;
     var fired = false;
     var live = 0;
@@ -804,6 +807,7 @@ class Vessel extends PositionComponent
     final cx = p.position.x + p.size.x / 2;
     final cy = p.position.y + p.size.y / 2;
     if (killed && fx.forkCount > 0 && p.forkDepth < fx.forkDepth) {
+      game.addExplosion(cx, cy, 1); // the spray goes off with a pop
       final n = fx.forkCount;
       for (var i = 0; i < n; i++) {
         final a = n == 1
@@ -822,6 +826,7 @@ class Vessel extends PositionComponent
         shot.canSplit = false;
       }
     } else if (!killed && p.canSplit) {
+      game.addExplosion(cx, cy, 1);
       for (final dir in const [-1.0, 1.0]) {
         final shard = d.spawnShot(cx, cy,
             vx: dir * config.modSplitVx,
@@ -1276,12 +1281,30 @@ class Vessel extends PositionComponent
       canvas.translate(-cx, -cy);
     }
 
+    // GHOST: see-through while it cannot be hit.
+    final ghost = _ghostTimer > 0;
+    final shipPaint = ghost
+        ? (Paint()
+          ..colorFilter = paint?.colorFilter
+          ..color = const Color(0x66FFFFFF))
+        : paint;
+
     if (dissolveEffect.amount > 0.001) {
       dissolveEffect.renderWith(canvas, size.x, size.y, (c) {
-        _renderSprite(c, paint);
+        _renderSprite(c, shipPaint);
       });
     } else {
-      _renderSprite(canvas, paint);
+      _renderSprite(canvas, shipPaint);
+    }
+
+    // SURGE armed: the ship flashes white, the next pull hits double.
+    if (surgeArmed && _sprite != null) {
+      final a = (90 + 70 * sin(_satT * 12)).round().clamp(0, 255);
+      _sprite!.render(canvas,
+          size: size,
+          overridePaint: Paint()
+            ..colorFilter = ColorFilter.mode(
+                Color.fromARGB(a, 255, 255, 255), BlendMode.srcATop));
     }
 
     if (transformed) canvas.restore();

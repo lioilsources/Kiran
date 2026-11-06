@@ -1,3 +1,7 @@
+import 'dart:math' show atan2, pi, sqrt;
+
+import 'package:flame/components.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tyrian_mobile/entities/vessel.dart';
@@ -91,10 +95,10 @@ void main() {
       expect([dbl.streamOffset(0), dbl.streamOffset(1)], [-5.0, 5.0]);
       final tri = ShotPlan.of(d, fx(['triple']));
       expect(tri.fan, 3);
-      expect(
-        [tri.fanVxAt(0), tri.fanVxAt(1), tri.fanVxAt(2)],
-        [-3.0, 0.0, 3.0],
-      );
+      final deg = [for (var j = 0; j < 3; j++) tri.fanAngleAt(j) * 180 / pi];
+      expect(deg[0], closeTo(-15, 1e-9));
+      expect(deg[1], 0);
+      expect(deg[2], closeTo(15, 1e-9));
     });
 
     test('side guns fan two thirds as wide', () {
@@ -102,7 +106,7 @@ void main() {
         gun(DevType.smallBubble, WeaponSlot.leftGun),
         fx(['triple']),
       );
-      expect(p.fanVxAt(2), closeTo(2.0, 1e-9));
+      expect(p.fanAngleAt(2) * 180 / pi, closeTo(10, 1e-9));
     });
 
     test('TRIPLE + SALVO×2 is the 3×3 of the plan', () {
@@ -122,7 +126,7 @@ void main() {
     test('HYDRA beats TRIPLE: the widest fan wins', () {
       final p = ShotPlan.of(gun(DevType.bubbleGun), fx(['triple', 'hydra']));
       expect(p.fan, 5);
-      expect(p.fanVxAt(4), 6.0);
+      expect(p.fanAngleAt(4) * 180 / pi, closeTo(30, 1e-9));
     });
 
     test('caps hold however much is stacked', () {
@@ -143,6 +147,37 @@ void main() {
       final d = gun(DevType.laser);
       expect(ShotPlan.of(d, fx(['wide'])).rays, 2);
       expect(ShotPlan.of(d, fx(['double', 'hydra'])).rays, ShotPlan.maxRays);
+    });
+  });
+
+  group('firing', () {
+    test('a TRIPLE pull is three shots at -15, 0 and +15 degrees', () {
+      final v = Vessel()..newGame();
+      v.fitMod(inst('triple'), RackKind.front);
+      final d = v.getDevice(WeaponSlot.frontGun)!;
+      expect(d.fire(0, 0, 100, 50, Component(), plan: v.planFor(d)), 3);
+      final deg = [
+        for (final p in d.projectiles) atan2(p.vx, -p.speed) * 180 / pi,
+      ];
+      expect(deg[0], closeTo(-15, 1e-6));
+      expect(deg[1], closeTo(0, 1e-6));
+      expect(deg[2], closeTo(15, 1e-6));
+      // Every shot keeps the gun's speed.
+      for (final p in d.projectiles) {
+        expect(sqrt(p.vx * p.vx + p.speed * p.speed), closeTo(d.speed, 1e-6));
+      }
+    });
+
+    test('SALVO queues the rest of the pull a few frames apart', () {
+      final v = Vessel()..newGame();
+      v.fitMod(inst('salvo'), RackKind.front);
+      final d = v.getDevice(WeaponSlot.frontGun)!;
+      final world = Component();
+      expect(d.fire(0, 0, 100, 50, world, plan: v.planFor(d)), 1);
+      d.updatePending(ShotPlan.salvoGap / 2, 0, 0, 100, 50, world);
+      expect(d.projectiles.length, 1);
+      d.updatePending(ShotPlan.salvoGap, 0, 0, 100, 50, world);
+      expect(d.projectiles.length, 2);
     });
   });
 

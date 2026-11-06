@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../dev_type.dart';
 import '../device.dart';
 import 'mod_spec.dart';
@@ -10,9 +12,9 @@ class ShotPlan {
   final int streams;
   final int fan;
 
-  /// Sideways speed of the outermost fan shot, px/frame, already scaled for
-  /// the slot (side guns fan two thirds as wide).
-  final double fanVx;
+  /// Angle of the outermost fan shot, radians, already scaled for the slot
+  /// (side guns fan two thirds as wide).
+  final double fanAngle;
   final int salvo;
   final int damage;
   final double speed;
@@ -26,7 +28,7 @@ class ShotPlan {
     required this.fx,
     required this.streams,
     required this.fan,
-    required this.fanVx,
+    required this.fanAngle,
     required this.salvo,
     required this.damage,
     required this.speed,
@@ -41,8 +43,10 @@ class ShotPlan {
   /// rhythm as the enemy burst pattern).
   static const salvoGap = 0.15;
 
-  /// Spacing of parallel streams, px.
-  static const streamGap = 10.0;
+  /// Narrowest spacing of parallel streams, px. The gun spaces them by the
+  /// drawn width of its shot (Device._emit), so two bubbles never sit on top
+  /// of each other and read as one.
+  static const minStreamGap = 10.0;
 
   /// Most beams one laser draws.
   static const maxRays = 5;
@@ -57,7 +61,7 @@ class ShotPlan {
       fx: fx,
       streams: fx.streams,
       fan: fx.fan,
-      fanVx: fx.fanVx * (side ? 2 / 3 : 1),
+      fanAngle: fx.fanAngle * math.pi / 180 * (side ? 2 / 3 : 1),
       salvo: fx.salvo,
       damage: (d.damage * fx.dmgMul).round(),
       speed: d.speed * fx.speedMul,
@@ -75,15 +79,17 @@ class ShotPlan {
   /// Beams one pull of a laser draws.
   int get rays => (streams * fan).clamp(1, maxRays);
 
-  /// Sideways speed of fan shot [j] of [fan].
-  double fanVxAt(int j) {
+  /// Angle from straight ahead of fan shot [j] of [fan], radians; negative
+  /// leans left.
+  double fanAngleAt(int j) {
     if (fan <= 1) return 0;
     final half = (fan - 1) / 2;
-    return fanVx * (j - half) / half;
+    return fanAngle * (j - half) / half;
   }
 
-  /// Horizontal offset of stream [i] of [streams].
-  double streamOffset(int i) => (i - (streams - 1) / 2) * streamGap;
+  /// Horizontal offset of stream [i] of [streams], [gap] apart.
+  double streamOffset(int i, [double gap = minStreamGap]) =>
+      (i - (streams - 1) / 2) * gap;
 
   /// Damage per second this plan sustains, before power limits. Beams count
   /// every ray and every animation step, like [Device.dps].
