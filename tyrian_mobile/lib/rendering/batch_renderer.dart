@@ -1,4 +1,4 @@
-import 'dart:math' show pi;
+import 'dart:math' show atan2, pi;
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -99,6 +99,9 @@ class HostileBatchRenderer extends Component
   static const _hitColor = Color(0xFFFF8888);
   static const _normalColor = Color(0xFFFFFFFF);
 
+  /// FROST: a slowed enemy reads ice-blue until it thaws.
+  static const _frostColor = Color(0xFF7FCFFF);
+
   @override
   void render(Canvas canvas) {
     // Banking world shift — render-only, entity/collision positions untouched
@@ -157,7 +160,9 @@ class HostileBatchRenderer extends Component
       // (h.size / h.position) is unaffected.
       h.size.x / sprite.srcSize.x * h.visualScale,
       pi,
-      h.hit > 0 ? _hitColor : _normalColor,
+      h.hit > 0
+          ? _hitColor
+          : (h.frostTimer > 0 ? _frostColor : _normalColor),
     );
   }
 
@@ -253,6 +258,37 @@ class ProjectileBatchRenderer extends Component
     final batch = _batches.putIfAbsent(image, () => _AtlasBatch(image));
     // Grown around the hitbox centre, so the shot still lines up with it.
     final k = p.drawScale;
+    final player = p.parentDevice != null;
+    // A player shot that does not fly straight up — a fan shot, a fork, a
+    // REARGUARD or PINBALL shot on its way down — is turned to face where it
+    // is going, so a fan reads as a fan and not as a smear.
+    if (player && (p.vx != 0 || p.speed > 0)) {
+      final cx = p.position.x + p.size.x / 2;
+      final cy = p.position.y + p.size.y / 2;
+      final scale = p.size.x * k / sprite.srcSize.x;
+      final rot = atan2(p.vx, -p.speed);
+      // PIERCE/LANCE: two fading copies behind the shot.
+      if (p.plan != null && p.plan!.fx.pierce != 0) {
+        for (final (back, alpha) in _trail) {
+          batch.addRotated(sprite.src, cx - p.vx * back, cy - p.speed * back,
+              scale, rot, Color.fromARGB(alpha, 255, 255, 255));
+        }
+      }
+      batch.addRotated(sprite.src, cx, cy, scale, rot);
+      return;
+    }
+    if (player && p.plan != null && p.plan!.fx.pierce != 0) {
+      for (final (back, alpha) in _trail) {
+        batch.add(
+          sprite.src,
+          p.position.x - p.size.x * (k - 1) / 2,
+          p.position.y - p.size.y * (k - 1) / 2 - p.speed * back,
+          p.size.x * k / sprite.srcSize.x,
+          p.size.y * k / sprite.srcSize.y,
+          Color.fromARGB(alpha, 255, 255, 255),
+        );
+      }
+    }
     batch.add(
       sprite.src,
       p.position.x - p.size.x * (k - 1) / 2,
@@ -261,6 +297,9 @@ class ProjectileBatchRenderer extends Component
       p.size.y * k / sprite.srcSize.y,
     );
   }
+
+  /// PIERCE trail: (frames of flight behind the shot, alpha).
+  static const _trail = [(2.5, 0x70), (5.0, 0x34)];
 }
 
 // ---------------------------------------------------------------------------

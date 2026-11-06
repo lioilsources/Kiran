@@ -11,6 +11,7 @@ import '../entities/projectile.dart';
 import '../entities/vessel.dart';
 import '../entities/hostile.dart';
 import '../l10n/l10n.dart';
+import '../services/asset_library.dart';
 import 'mods/mod_spec.dart';
 import 'mods/shot_plan.dart';
 
@@ -279,12 +280,24 @@ class Device {
             _ => 0.0,
           };
 
+    // Streams sit a shot's drawn width apart; fan shots keep their speed and
+    // tilt by angle.
+    var gap = ShotPlan.minStreamGap;
+    final sprite = AssetLibrary.instance.getSprite(imgName);
+    if (pl.streams > 1 && sprite != null) {
+      final draw = (slot == WeaponSlot.frontGun
+              ? config.frontShotDrawScale
+              : config.sideShotDrawScale) +
+          pl.drawScaleAdd;
+      gap = max(gap, sprite.srcSize.x * scale * config.spriteScale * draw * 1.05);
+    }
     var n = 0;
     for (var i = 0; i < pl.streams; i++) {
       for (var j = 0; j < pl.fan; j++) {
-        spawnShot(px + pl.streamOffset(i), py,
-            vx: pl.fanVxAt(j) + lean,
-            speed: -pl.speed,
+        final a = pl.fanAngleAt(j);
+        spawnShot(px + pl.streamOffset(i, gap), py,
+            vx: pl.speed * sin(a) + lean,
+            speed: -pl.speed * cos(a),
             damage: dmg,
             scale: scale,
             plan: pl,
