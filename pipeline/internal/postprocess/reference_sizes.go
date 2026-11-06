@@ -25,6 +25,25 @@ var referenceSizes = map[string][2]int{
 	// Player
 	"vessel": {114, 84},
 
+	// Hulls (falcon is vessel). Sized by archetype, plan Prompts/27 §7.
+	"vessel_dart":     {96, 84},
+	"vessel_bastion":  {124, 84},
+	"vessel_dynamo":   {114, 84},
+	"vessel_colossus": {140, 96},
+
+	// Weapon pods and the SATELLITE drone
+	"pod_front_bubble":  {40, 48},
+	"pod_front_vulcan":  {40, 48},
+	"pod_front_blaster": {40, 48},
+	"pod_front_laser":   {40, 48},
+	"pod_front_starg":   {40, 48},
+	"pod_side_bubble":   {28, 40},
+	"pod_side_vulcan":   {28, 40},
+	"pod_side_blaster":  {28, 40},
+	"pod_side_laser":    {28, 40},
+	"pod_side_starg":    {28, 40},
+	"drone":             {30, 30},
+
 	// Enemies
 	"falcon1":  {68, 68},
 	"falcon2":  {68, 68},

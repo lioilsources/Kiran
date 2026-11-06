@@ -26,6 +26,35 @@ func (a AssetSpec) Prompt() string {
 	return a.AssetType
 }
 
+// hullSpecs are the four player hulls besides falcon (falcon is ship_frames).
+// Each directive sets the archetype and proportions; the skin supplies style
+// and palette, so the four read as one fleet with the falcon. Pipeline name
+// hull_<id> postprocesses to vessel_<id>_0..N like ship_frames does to vessel_N.
+var hullSpecs = []struct{ id, directive string }{
+	{"dart", "Hull archetype: INTERCEPTOR — slim, long, needle-like fuselage, swept-back narrow wings, two oversized engines at the rear, almost no armor plating, built for speed. Overall proportions taller than wide (about 5:4)."},
+	{"bastion", "Hull archetype: BULWARK — squat, wide, heavily armored hull with layered plating, short stubby wings, a thick frontal shield prow, four small engines. Overall proportions wider than tall (about 3:2). Looks like it can take a hit."},
+	{"dynamo", "Hull archetype: REACTOR SHIP — mid-size hull dominated by a large glowing power core in the centre, visible energy conduits running from the core to the wingtips and nose, radiator fins along the sides, one big engine. Roughly square."},
+	{"colossus", "Hull archetype: DREADNOUGHT — massive, broad, multi-tiered hull, two heavy outer pylons with hardpoints, central superstructure, six engines across the rear, flat empty mounting pads on the nose and both wings where weapon pods will be attached. Widest of all, about 3:2, filling the frame."},
+}
+
+// podSpecs are the weapon pods drawn on a hull for each equipped gun family
+// (front on the nose, side on the left wing, mirrored on the right), plus the
+// SATELLITE drone. Each pod shares its family's colour with bulletSpecs so a
+// pod and its shot belong together.
+var podSpecs = []struct{ name, directive string }{
+	{"pod_front_bubble", "Bubble emitter: a glass dome over a glowing blue orb chamber, short wide nozzle, soft blue energy color"},
+	{"pod_front_vulcan", "Rotary vulcan cannon: a cluster of six barrels in a drum, ammo belt housing, hot orange muzzle tips"},
+	{"pod_front_blaster", "Heavy blaster: one thick coil-wound cannon with a wide bright purple charge ring near the muzzle"},
+	{"pod_front_laser", "Laser projector: a long crystal lens assembly with focusing rings, cyan emitter core at the tip"},
+	{"pod_front_starg", "Star launcher: a spinning magazine of yellow star-shaped shells visible through a slot, splayed rails"},
+	{"pod_side_bubble", "Small wing-mounted bubble emitter: single glass bead on a stub bracket, blue glow"},
+	{"pod_side_vulcan", "Twin-barrel light autocannon on a wing pylon, orange tracer glow at the muzzles"},
+	{"pod_side_blaster", "Compact blaster coil on a side mount, purple charge ring"},
+	{"pod_side_laser", "Thin side laser lens on a bracket, cyan emitter tip"},
+	{"pod_side_starg", "Mini star launcher pod with one visible yellow star shell"},
+	{"drone", "Tiny autonomous gun drone: round body, one small barrel, a glowing eye-sensor, no wings"},
+}
+
 var bulletSpecs = []struct{ name, directive string }{
 	{"laser", "Laser beam projectile, thin vertical line with intense glow core"},
 	{"bubble", "Energy bubble projectile, round glowing orb with translucent shell"},
@@ -206,6 +235,27 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 		AspectRatio: "1:1",
 		Resolution:  "1k",
 	})
+
+	for _, h := range hullSpecs {
+		specs = append(specs, AssetSpec{
+			Name:        "hull_" + h.id,
+			AssetType:   "hull",
+			OutputDir:   "sprites",
+			AspectRatio: "1:1",
+			Resolution:  "1k",
+			ExtraVars:   map[string]string{"HullDirective": h.directive},
+		})
+	}
+	for _, pd := range podSpecs {
+		specs = append(specs, AssetSpec{
+			Name:        pd.name,
+			AssetType:   "pod",
+			OutputDir:   "sprites",
+			AspectRatio: "1:1",
+			Resolution:  "1k",
+			ExtraVars:   map[string]string{"PodDirective": pd.directive},
+		})
+	}
 
 	// No explosion sheet: entities/explosion.dart draws them procedurally, so
 	// the four 720x720 frames postprocess used to slice out of it were a

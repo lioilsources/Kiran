@@ -128,3 +128,31 @@ func TestBuildPromptUnknownType(t *testing.T) {
 		t.Error("expected error for unknown asset type")
 	}
 }
+
+func TestBuildPromptHullAndPod(t *testing.T) {
+	s, _ := skin.GetSkin("default")
+	for _, a := range AssetsForSkin(s) {
+		if a.AssetType != "hull" && a.AssetType != "pod" {
+			continue
+		}
+		for _, wf := range []string{"flux", "pony"} {
+			prompt, err := BuildPromptForWorkflow(a.Prompt(), s, a.ExtraVars, wf)
+			if err != nil {
+				t.Fatalf("%s/%s: %v", a.Name, wf, err)
+			}
+			want := a.ExtraVars["HullDirective"] + a.ExtraVars["PodDirective"]
+			if !strings.Contains(prompt, want) {
+				t.Errorf("%s/%s: prompt lacks its directive", a.Name, wf)
+			}
+			if strings.Contains(prompt, "<no value>") {
+				t.Errorf("%s/%s: unfilled template field", a.Name, wf)
+			}
+		}
+		if a.AssetType == "hull" {
+			p, _ := BuildPrompt("hull", s, a.ExtraVars)
+			if strings.Contains(p, "Roughly square overall proportions") {
+				t.Errorf("%s: hull prompt keeps the ship's square rule", a.Name)
+			}
+		}
+	}
+}

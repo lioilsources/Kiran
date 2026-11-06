@@ -37,6 +37,12 @@ Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
 Roughly square overall proportions. Clean silhouette, sharp readable details, no background elements, no text, no UI.
 The background must be a single flat solid color, no gradient, no scene, clearly distinct from the sprite.`,
 
+	"pod": `{{.ArtDirective}}
+A single detachable WEAPON POD for a spacecraft, viewed from DIRECTLY OVERHEAD — strict top-down orthographic view, zero perspective. It is an attachment, NOT a ship: no cockpit, no wings, no engines. The muzzle points straight to the TOP edge of the image. {{.PodDirective}}.
+Compact, chunky, readable at small size: one dominant shape, strong silhouette, 2–3 bold details, a mounting base/bracket at the bottom. Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}, with the weapon's own energy color as the single accent.
+Centered, filling about 70% of the frame height. No background elements, no text, no UI.
+The background must be a single flat solid color, no gradient, clearly distinct from the sprite.`,
+
 	"explosion": `Explosion animation sprite sheet, 8 frames horizontal row on a flat, uniform solid-color background.
 Style: {{.StyleKeywords}}. {{.ExplosionStyle}}
 Starts small bright flash, expands outward, fades to particles/smoke.
@@ -135,6 +141,12 @@ detailed mecha design, sharp clean lineart, large, centered, fills frame,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid color background, no text, no UI, no humans, no characters, no 3d render, no voxel`,
 
+	"pod": ponyQuality + `, weapon pod, detachable gun module, {{.PodDirective}},
+overhead view, directly above, orthographic top-down, no perspective, muzzle pointing straight up, mounting bracket at bottom,
+compact chunky silhouette, sharp clean lineart, centered,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid color background, no text, no UI, no spaceship, no cockpit, no wings, no engine flame, no humans, no 3d render, no voxel`,
+
 	"explosion": ponyQuality + `, anime style explosion effect, sprite sheet, 8 frames in one horizontal row, flat solid background,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 classic 2d anime explosion, smoke puffs, expanding energy shockwave, cel-shaded fire fx,
@@ -201,7 +213,19 @@ symmetric design, no text, no letters, game HUD element`,
 
 var compiledPonyTemplates = make(map[string]*template.Template)
 
+// hullTemplate derives a hull prompt from the ship one: the archetype directive
+// goes right after the viewpoint paragraph, and the ship's "roughly square"
+// line is dropped because each archetype states its own proportions.
+func hullTemplate(ship string) string {
+	first, rest, _ := strings.Cut(ship, "\n")
+	second, rest, _ := strings.Cut(rest, "\n")
+	rest = strings.Replace(rest, "Roughly square overall proportions. ", "", 1)
+	return first + "\n" + second + "\n{{.HullDirective}} It belongs to the same fleet as this setting's standard player fighter: same materials, markings and colours.\n" + rest
+}
+
 func init() {
+	promptTemplates["hull"] = hullTemplate(promptTemplates["ship"])
+	ponyPromptTemplates["hull"] = strings.Replace(ponyPromptTemplates["ship"], "vehicle,", "vehicle, {{.HullDirective}},", 1)
 	for name, tmplStr := range promptTemplates {
 		t, err := template.New(name).Parse(tmplStr)
 		if err != nil {
