@@ -120,8 +120,17 @@ func Run(cfg Config) error {
 
 			case asset.Name == "ship_frames":
 				// Special: sprite sheet with N frames side-by-side → vessel_0..N-1.png
-				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount); err != nil {
+				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount, "vessel"); err != nil {
 					imgErr = fmt.Errorf("process ship_frames: %w", err)
+					continue
+				}
+
+			case asset.Type == "hull":
+				// Same glow-synthesized frames as the falcon, per hull:
+				// hull_dart → vessel_dart_0..N-1.png.
+				vessel, _ := GameName(asset.Name)
+				if err := processShipFrames(cfg, asset, spritesDir, manifest.Skin.FrameCount, vessel); err != nil {
+					imgErr = fmt.Errorf("process %s: %w", asset.Name, err)
 					continue
 				}
 
@@ -244,7 +253,7 @@ func normalizeSprite(rgba *image.NRGBA, gameName string, targetSize int) *image.
 	return Resize(rgba, targetSize)
 }
 
-func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, frameCount int) error {
+func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, frameCount int, vessel string) error {
 	srcPath := variationPath(cfg.SkinDir, asset.Dir, asset.Name, cfg.variationFor(asset.Name))
 	img, err := loadJPEG(srcPath)
 	if err != nil {
@@ -277,12 +286,12 @@ func processShipFrames(cfg Config, asset skin.ManifestAsset, outDir string, fram
 
 	// Normalize all frames together so the animation keeps a steady size and
 	// footprint, then write each to its own exact reference-sized canvas.
-	refW, refH, ok := ReferenceSize("vessel")
+	refW, refH, ok := ReferenceSize(vessel)
 	if !ok {
 		refW, refH = img.Bounds().Dx(), img.Bounds().Dy()
 	}
 	for f, out := range FitFramesToCanvas(frames, refW, refH) {
-		outPath := filepath.Join(outDir, fmt.Sprintf("vessel_%d.png", f))
+		outPath := filepath.Join(outDir, fmt.Sprintf("%s_%d.png", vessel, f))
 		if err := savePNG(outPath, out); err != nil {
 			return err
 		}

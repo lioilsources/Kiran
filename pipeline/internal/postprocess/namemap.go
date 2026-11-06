@@ -10,6 +10,11 @@ func GameName(pipelineName string) (string, bool) {
 		return "vessel", true
 	}
 
+	// Hulls → vessel_<id> (frames vessel_<id>_0..N are written by the caller)
+	if id, ok := strings.CutPrefix(pipelineName, "hull_"); ok {
+		return "vessel_" + id, true
+	}
+
 	// Explosion is handled specially (v1-v4 → explosion1-explosion4)
 	// The caller handles this; we just confirm it's valid.
 	if pipelineName == "explosion" {
