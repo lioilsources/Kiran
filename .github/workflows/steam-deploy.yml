@@ -163,7 +163,11 @@ jobs:
       - name: Restore executable bit on the Linux binary
         run: chmod +x steam-build/linux/kirian
 
-      - uses: game-ci/steam-deploy@v3
+      # Pinned: v3.2.2 (2026-11-04, what @v3 now resolves to) rewrote the action
+      # to download the game-ci CLI through the GitHub API, which answers the
+      # unauthenticated runner with 403 ("Failed to resolve the latest game-ci
+      # CLI release"). v3.2.1 is the Docker action the 24.04 fix was proven on.
+      - uses: game-ci/steam-deploy@v3.2.1
         with:
           username: ${{ secrets.STEAM_BUILD_USERNAME }}
           configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
