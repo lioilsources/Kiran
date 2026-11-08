@@ -38,8 +38,9 @@ Roughly square overall proportions. Clean silhouette, sharp readable details, no
 The background must be a single flat solid color, no gradient, no scene, clearly distinct from the sprite.`,
 
 	"pod": `{{.ArtDirective}}
-A single detachable WEAPON POD for a spacecraft, viewed from DIRECTLY OVERHEAD — strict top-down orthographic view, zero perspective. It is an attachment, NOT a ship: no cockpit, no wings, no engines. The muzzle points straight to the TOP edge of the image. {{.PodDirective}}.
-Compact, chunky, readable at small size: one dominant shape, strong silhouette, 2–3 bold details, a mounting base/bracket at the bottom. Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}, with the weapon's own energy color as the single accent.
+A single detachable WEAPON POD for a spacecraft, drawn as a flat PLAN VIEW from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. The camera looks straight down onto the top of the pod; you never see its side or underside. Every barrel is a straight vertical line pointing to the TOP edge of the image. No foreshortening, no 3D angle, no diagonal viewpoint, no pedestal, no stand, no turret base.
+It is an attachment, NOT a ship: no cockpit, no wings, no engines. {{.PodDirective}}.
+Compact, chunky, readable at small size: an elongated vertical capsule shape, symmetric left-to-right, strong silhouette, 2–3 bold details. Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}, with the weapon's own energy color as the single accent.
 Centered, filling about 70% of the frame height. No background elements, no text, no UI.
 The background must be a single flat solid color, no gradient, clearly distinct from the sprite.`,
 

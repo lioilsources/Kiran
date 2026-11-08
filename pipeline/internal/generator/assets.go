@@ -42,17 +42,17 @@ var hullSpecs = []struct{ id, directive string }{
 // SATELLITE drone. Each pod shares its family's colour with bulletSpecs so a
 // pod and its shot belong together.
 var podSpecs = []struct{ name, directive string }{
-	{"pod_front_bubble", "Bubble emitter: a glass dome over a glowing blue orb chamber, short wide nozzle, soft blue energy color"},
-	{"pod_front_vulcan", "Rotary vulcan cannon: a cluster of six barrels in a drum, ammo belt housing, hot orange muzzle tips"},
-	{"pod_front_blaster", "Heavy blaster: one thick coil-wound cannon with a wide bright purple charge ring near the muzzle"},
-	{"pod_front_laser", "Laser projector: a long crystal lens assembly with focusing rings, cyan emitter core at the tip"},
-	{"pod_front_starg", "Star launcher: a spinning magazine of yellow star-shaped shells visible through a slot, splayed rails"},
-	{"pod_side_bubble", "Small wing-mounted bubble emitter: single glass bead on a stub bracket, blue glow"},
-	{"pod_side_vulcan", "Twin-barrel light autocannon on a wing pylon, orange tracer glow at the muzzles"},
-	{"pod_side_blaster", "Compact blaster coil on a side mount, purple charge ring"},
-	{"pod_side_laser", "Thin side laser lens on a bracket, cyan emitter tip"},
-	{"pod_side_starg", "Mini star launcher pod with one visible yellow star shell"},
-	{"drone", "Tiny autonomous gun drone: round body, one small barrel, a glowing eye-sensor, no wings"},
+	{"pod_front_bubble", "Bubble emitter seen from above: a round glass dome over a glowing blue orb, one short wide nozzle at the top, soft blue energy color"},
+	{"pod_front_vulcan", "Rotary vulcan seen from above: a tight bundle of parallel barrels running straight up from a rectangular housing, hot orange muzzle tips at the top"},
+	{"pod_front_blaster", "Heavy blaster seen from above: one thick straight barrel wrapped in coils, a wide bright purple charge ring near the top muzzle"},
+	{"pod_front_laser", "Laser projector seen from above: a long narrow straight housing with focusing rings, cyan crystal emitter at the top tip"},
+	{"pod_front_starg", "Star launcher seen from above: a round magazine with yellow star-shaped shells visible through a slot, two parallel rails pointing straight up"},
+	{"pod_side_bubble", "Small narrow bubble emitter seen from above: a single glass bead at the top of a slim capsule, blue glow"},
+	{"pod_side_vulcan", "Small narrow twin autocannon seen from above: two thin parallel barrels pointing straight up from a slim capsule, orange tracer glow at the muzzles"},
+	{"pod_side_blaster", "Small narrow blaster seen from above: one short coiled barrel pointing straight up from a slim capsule, purple charge ring"},
+	{"pod_side_laser", "Small narrow laser seen from above: a thin straight lens tube pointing straight up, cyan emitter tip"},
+	{"pod_side_starg", "Small narrow star launcher seen from above: a slim capsule with one yellow star shell visible at the top"},
+	{"drone", "Tiny autonomous gun drone seen from above: round body, one small barrel pointing straight up, a glowing eye-sensor, no wings"},
 }
 
 var bulletSpecs = []struct{ name, directive string }{
