@@ -8,6 +8,7 @@ import '../services/sound_service.dart';
 import '../systems/device.dart';
 import '../systems/path_system.dart';
 import 'hostile.dart';
+import 'idle_anim.dart';
 import 'vessel.dart';
 import '../l10n/l10n.dart';
 
@@ -74,6 +75,10 @@ class Boss extends Hostile {
   /// rather than per rendered frame — otherwise the boss fires 1.5x more often
   /// at 60Hz and 3x at 120Hz while the player's cadence stays in seconds.
   double _fireCD = 0;
+
+  /// Idle loop for skins whose boss is a creature (blink and twitch frames).
+  final IdleAnimator _idle = IdleAnimator();
+  int _lastHit = 0;
   int _volleys = 0;
   int _burstLeft = 0;
   double _burstCD = 0;
@@ -155,6 +160,23 @@ class Boss extends Hostile {
           ? 'rododendron'
           : 'bouncer';
 
+  /// Creature bosses ship `rododendron_blink` / `_twitch_l` / `_twitch_r` beside
+  /// the resting frame; a skin without them keeps its single static sprite.
+  void _animate(double dt) {
+    final lib = AssetLibrary.instance;
+    final open = lib.getSprite('rododendron');
+    if (open == null || lib.getSprite('rododendron_blink') == null) return;
+    final struck = hit > 0 && _lastHit == 0;
+    _lastHit = hit;
+    final name = switch (_idle.step(dt, struck: struck)) {
+      IdleFrame.open => 'rododendron',
+      IdleFrame.blink => 'rododendron_blink',
+      IdleFrame.twitchL => 'rododendron_twitch_l',
+      IdleFrame.twitchR => 'rododendron_twitch_r',
+    };
+    setFrame(lib.getSprite(name) ?? open);
+  }
+
   double get _weapScale => (spec.weapDamage / 75.0).clamp(0.3, 0.99);
 
   int get _cadence {
@@ -170,6 +192,7 @@ class Boss extends Hostile {
   void update(double dt) {
     super.update(dt);
     if (isDead) return;
+    _animate(dt);
     // Client: entities driven by host snapshots
     if (game.coopRole == CoopRole.client) return;
 

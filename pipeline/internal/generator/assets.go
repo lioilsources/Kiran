@@ -55,6 +55,20 @@ var podSpecs = []struct{ name, directive string }{
 	{"drone", "Tiny autonomous gun drone: round body, one small barrel, a glowing eye-sensor, no wings"},
 }
 
+// creatureSpecs are the boss candidates: biomechanical fantasy beasts instead
+// of capital ships, drawn in each skin's own style. Every body is bilaterally
+// symmetric with large eyes (the blink and twitch frames are edited from the
+// picked art). The core carries separate boss_part modules, so each beast
+// keeps broad flanks, a back and a tail where those can bolt on.
+var creatureSpecs = []struct{ id, directive string }{
+	{"dragon", "A great winged dragon: horned armored head at the top, two huge membrane wings spread wide to the left and right, a scaled back with a ridge of spines, and a long barbed tail at the bottom"},
+	{"hydra", "A hydra: five long serpent necks fanning out upward from one broad armored torso, each neck ending in a fanged head with its own glowing eyes, the torso wide at the bottom with a short tail"},
+	{"wyvern", "A wyvern: a lean horned head at the top, bat-like wings with bony fingers spread wide, two clawed legs tucked under the body, a long whip tail with a barbed tip at the bottom"},
+	{"chimera", "A winged chimera: a lion head with a mane of plates at the top flanked by a ram head and a snake head, feathered wings spread wide, a scorpion tail curling at the bottom"},
+	{"kraken", "A flying kraken: a huge domed head with one giant central eye at the top, eight thick tentacles splayed out around it and below, suckers and spines along each tentacle"},
+	{"beholder", "A floating eye tyrant: a huge round fleshy body with one enormous central eye and a wide fanged mouth, ten stalked smaller eyes radiating outward in a ring, short leathery wings"},
+}
+
 var bulletSpecs = []struct{ name, directive string }{
 	{"laser", "Laser beam projectile, thin vertical line with intense glow core"},
 	{"bubble", "Energy bubble projectile, round glowing orb with translucent shell"},
@@ -254,6 +268,17 @@ func AssetsForSkin(s skin.SkinDef) []AssetSpec {
 			AspectRatio: "1:1",
 			Resolution:  "1k",
 			ExtraVars:   map[string]string{"PodDirective": pd.directive},
+		})
+	}
+
+	for _, c := range creatureSpecs {
+		specs = append(specs, AssetSpec{
+			Name:        "creature_" + c.id,
+			AssetType:   "creature",
+			OutputDir:   "sprites",
+			AspectRatio: "1:1",
+			Resolution:  "1k",
+			ExtraVars:   map[string]string{"CreatureDirective": c.directive},
 		})
 	}
 

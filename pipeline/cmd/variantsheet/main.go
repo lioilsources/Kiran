@@ -28,7 +28,7 @@ import (
 var kinds = map[string]bool{
 	"ship": true, "bullet": true, "enemy": true,
 	"boss_part": true, "structure": true, "hud_icon": true,
-	"hull": true, "pod": true,
+	"hull": true, "pod": true, "creature": true,
 }
 
 type row struct {

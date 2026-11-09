@@ -43,6 +43,14 @@ Compact, chunky, readable at small size: one dominant shape, strong silhouette, 
 Centered, filling about 70% of the frame height. No background elements, no text, no UI.
 The background must be a single flat solid color, no gradient, clearly distinct from the sprite.`,
 
+	"creature": `{{.ArtDirective}}
+A colossal BIOMECHANICAL FANTASY CREATURE — living flesh and bone fused with machinery: armor plates grown over muscle, cables for sinew, glowing vents and veins — drawn in the setting's own art style, viewed from DIRECTLY OVERHEAD — strict 90-degree top-down orthographic view, zero perspective, zero tilt, zero isometric angle. Its head points to the TOP edge of the image.
+{{.CreatureDirective}}
+It is a living monster, NOT a vehicle: no spaceship hull, no cockpit, no engine plume, no riders. Bilaterally symmetric, one dominant silhouette, every eye large, round and clearly visible with a glowing iris and a visible eyelid, so the eyes can blink.
+Style: {{.StyleKeywords}}. Color palette: {{.PaletteDescription}}.
+Menacing and imposing. Drawn large and highly detailed, centered and filling the frame edge-to-edge with only a few pixels of margin — never small or distant. Sharp readable details. No text, no UI.
+The background is one flat solid pure magenta (#FF00FF) color: no gradient, no vignette, no glow or shadow in the background, no scene.`,
+
 	"explosion": `Explosion animation sprite sheet, 8 frames horizontal row on a flat, uniform solid-color background.
 Style: {{.StyleKeywords}}. {{.ExplosionStyle}}
 Starts small bright flash, expands outward, fades to particles/smoke.
@@ -146,6 +154,13 @@ overhead view, directly above, orthographic top-down, no perspective, muzzle poi
 compact chunky silhouette, sharp clean lineart, centered,
 {{.StyleKeywords}}, {{.PaletteDescription}},
 flat solid color background, no text, no UI, no spaceship, no cockpit, no wings, no engine flame, no humans, no 3d render, no voxel`,
+
+	"creature": ponyQuality + `, giant biomechanical fantasy monster, living creature, {{.CreatureDirective}},
+flesh fused with machinery, armor plates, glowing eyes with eyelids,
+overhead view, bird's eye view, directly above, orthographic top-down, no perspective, no isometric, no diagonal angle, symmetric, head pointing straight up toward top edge,
+menacing, imposing, detailed, sharp clean lineart, large, centered, fills frame,
+{{.StyleKeywords}}, {{.PaletteDescription}},
+flat solid color background, no text, no UI, no spaceship, no cockpit, no engine flame, no humans, no 3d render, no voxel`,
 
 	"explosion": ponyQuality + `, anime style explosion effect, sprite sheet, 8 frames in one horizontal row, flat solid background,
 {{.StyleKeywords}}, {{.PaletteDescription}},

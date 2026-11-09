@@ -77,7 +77,7 @@ const Set<String> kUsedSprites = {
   'vessel_0', 'vessel_1', 'vessel_2', 'vessel_3', 'vessel_4', 'vessel_5',
   'falcon1', 'falcon2', 'falcon3', 'falcon4', 'falcon5', 'falcon6',
   'falconx', 'falconx2', 'falconx3', 'falconxb', 'falconxt',
-  'rododendron',
+  'rododendron', 'rododendron_blink', 'rododendron_twitch_l', 'rododendron_twitch_r',
   // Composite-boss parts. Absent from most skins for now — BossPart falls
   // back to falconx3 until a skin's own art lands, so this stays lenient
   // (unlike the rododendron check below, which hard-fails).
@@ -85,6 +85,12 @@ const Set<String> kUsedSprites = {
   'asteroid', 'asteroid1', 'asteroid2', 'asteroid3',
   'bubble', 'vulcan', 'blaster', 'laser', 'starg',
 };
+
+/// Blink and twitch frames of a creature boss. They only ever stand in for
+/// the resting `rododendron` frame, and the death shatter is cut from that one.
+bool _isBossIdleFrame(String lower) =>
+    lower == 'rododendron_blink' ||
+    lower.startsWith('rododendron_twitch');
 
 /// Returns true if the sprite name is fragmentable (enemies + structures).
 ///
@@ -95,7 +101,7 @@ bool _isFragmentable(String name) {
   final lower = name.toLowerCase();
   return lower.startsWith('falcon') ||
       lower.startsWith('falconx') ||
-      lower.startsWith('rododendron') ||
+      (lower.startsWith('rododendron') && !_isBossIdleFrame(lower)) ||
       lower.startsWith('boss_') ||
       lower.startsWith('asteroid');
 }

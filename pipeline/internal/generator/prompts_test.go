@@ -156,3 +156,29 @@ func TestBuildPromptHullAndPod(t *testing.T) {
 		}
 	}
 }
+
+func TestBuildPromptCreature(t *testing.T) {
+	s, _ := skin.GetSkin("default")
+	n := 0
+	for _, a := range AssetsForSkin(s) {
+		if a.AssetType != "creature" {
+			continue
+		}
+		n++
+		for _, wf := range []string{"flux", "pony"} {
+			prompt, err := BuildPromptForWorkflow(a.Prompt(), s, a.ExtraVars, wf)
+			if err != nil {
+				t.Fatalf("%s/%s: %v", a.Name, wf, err)
+			}
+			if !strings.Contains(prompt, a.ExtraVars["CreatureDirective"]) {
+				t.Errorf("%s/%s: prompt lacks its directive", a.Name, wf)
+			}
+			if strings.Contains(prompt, "<no value>") {
+				t.Errorf("%s/%s: unfilled template field", a.Name, wf)
+			}
+		}
+	}
+	if n != len(creatureSpecs) {
+		t.Errorf("got %d creature assets, want %d", n, len(creatureSpecs))
+	}
+}
