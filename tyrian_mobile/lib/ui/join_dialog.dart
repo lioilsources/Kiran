@@ -164,7 +164,7 @@ class _JoinDialogState extends State<JoinDialog> {
               ),
             if (!_manual)
               Align(
-                alignment: Alignment.centerLeft,
+                alignment: AlignmentDirectional.centerStart,
                 child: TextButton(
                   onPressed: () => setState(() => _manual = true),
                   child: Text(context.l10n.enterIpManually,
