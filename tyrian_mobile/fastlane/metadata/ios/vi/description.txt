@@ -1,0 +1,23 @@
+Lái một chiến hạm đơn độc xuyên qua hành lang kẻ thù bất tận, mỗi lần một khu sáu mươi giây.
+
+Kirian là game bắn súng arcade dọc xây trên vòng lặp roguelike. Mất tàu không kết thúc chuyến bay: bạn giữ mọi vũ khí, tín dụng và điểm rồi quay về Khu 1 để tiến xa hơn. Tiến trình là vĩnh viễn. Chỉ thân tàu được đặt lại.
+
+HỦY DIỆT NGUYÊN TỐ
+Kẻ thù chết tùy theo vũ khí: nổ nước, băng vỡ vụn, ngọn lửa, tia chớp hay siêu tân tinh plasma màu tím. Mỗi lần hạ gục đều dễ nhận ra ngay.
+
+XÂY DỰNG CHIẾN HẠM CỦA BẠN
+Giữa các khu, tại Com Center bạn nâng cấp súng trước, súng bên, máy phát, thân tàu và khiên qua hai mươi lăm cấp. Năng lượng có hạn nên mỗi cấu hình là một sự đánh đổi. Điểm không bao giờ đặt lại và mở khóa vĩnh viễn các bậc vũ khí cao hơn.
+
+CÁC ĐỢT TAY LÀM, RỒI VÔ TẬN
+Mười tám khu làm thủ công trong sáu vùng, sau đó là bộ sinh vô tận với trùm ở mỗi cấp thứ năm.
+
+HAI NGƯỜI CHƠI, MỘT PHÒNG
+Co-op qua Wi-Fi cục bộ với tự động tìm kiếm. Không tài khoản, không máy chủ, không internet.
+
+MƯỜI BỐN DIỆN MẠO
+Mỗi skin làm mới phong cách tàu, kẻ thù, nền, giao diện và âm thanh. Ba skin miễn phí, mười một skin còn lại mua một lần. Không quảng cáo, không đăng ký.
+
+LÀM RA ĐỂ CHƠI CHO ĐÃ
+Shader GPU cho bloom, scanline và quang sai màu, mảnh vỡ theo vật lý. Chơi bằng cảm ứng, bàn phím hoặc tay cầm.
+
+Hai bảng xếp hạng Game Center và thành tích. Giao diện có 45 ngôn ngữ.

@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retro,svemirski brod,koop,vertikalni,pixel

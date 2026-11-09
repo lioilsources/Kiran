@@ -1,0 +1,1 @@
+Shmup arcade roguelike. Muere, conserva todo y avanza más. Coop local para dos.
