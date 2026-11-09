@@ -146,6 +146,10 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   void refreshSprite() => _refreshSprite();
 
+  /// Swap the drawn frame of an animated hostile. Size and hitbox stay as
+  /// [_refreshSprite] set them, so every frame must share one source size.
+  void setFrame(Sprite frame) => _sprite = frame;
+
   static String _spriteNameForType(HostType type) {
     switch (type) {
       case HostType.falcon1: return 'falcon1';
