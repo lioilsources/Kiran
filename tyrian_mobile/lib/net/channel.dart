@@ -16,7 +16,7 @@ abstract class CoopChannel {
 
   Future<void> close();
 
-  /// For logs: `tcp 192.168.1.7`, `nearby Ace`.
+  /// For logs: `tcp 192.168.x.x`, `nearby Ace`.
   String get label;
 }
 

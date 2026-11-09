@@ -19,6 +19,7 @@ import argparse
 import concurrent.futures as futures
 import datetime as dt
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -32,7 +33,7 @@ PIPELINE = ROOT / 'pipeline'
 SKINS = ROOT / 'tyrian_mobile/assets/skins'
 OUT = PIPELINE / 'output/drafts/boss_parts'
 
-NIM = 'http://192.168.88.66:8091/nim/flux-schnell'
+NIM = os.environ.get('BOSS_NIM_URL', 'http://localhost:8091/nim/flux-schnell')
 SIZE = 1024
 STEPS = 4
 
