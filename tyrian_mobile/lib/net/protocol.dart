@@ -359,6 +359,139 @@ class StructSnap {
   });
 }
 
+/// What a ship's sigils look like this frame (Prompts/28 §13), for the
+/// co-op client to draw. Only the look travels: the host runs the sigils.
+///
+/// Rides as an optional tail after the structures, one block per vessel, so
+/// an older client stops reading before it and plays on without the
+/// effects — the protocol version did not have to move.
+class SigilSnap {
+  final bool enabled, untouchable, focus, megaCharging;
+  final double poseScale, poseRoll;
+  final int gear, flow, charge;
+  final double megaProgress;
+
+  /// Remaining share 0..1 of FRENZY, STASIS, HALO, STORM, ECHO, WHIRL.
+  final List<double> effects;
+
+  /// Up to two companions: role 1..3 (wingman, hunter, warden), position,
+  /// and whether it is catching shots.
+  final List<(int role, double x, double y, bool absorbs)> companions;
+  final (double, double)? echo;
+  final List<(double, double)> caltrops;
+
+  /// The MEGA BLAST beam while it is drawn: origin, angle, width.
+  final (double x, double y, double angle, double width)? beam;
+
+  const SigilSnap({
+    this.enabled = false,
+    this.untouchable = false,
+    this.focus = false,
+    this.megaCharging = false,
+    this.poseScale = 1,
+    this.poseRoll = 0,
+    this.gear = 1,
+    this.flow = 0,
+    this.charge = 0,
+    this.megaProgress = 0,
+    this.effects = const [0, 0, 0, 0, 0, 0],
+    this.companions = const [],
+    this.echo,
+    this.caltrops = const [],
+    this.beam,
+  });
+
+  static const size = 72;
+  static const none = SigilSnap();
+
+  void encode(ByteData bd, int off) {
+    final b = bd.buffer.asUint8List(bd.offsetInBytes, bd.lengthInBytes);
+    b[off] = (enabled ? 1 : 0) |
+        (untouchable ? 2 : 0) |
+        (focus ? 4 : 0) |
+        (megaCharging ? 8 : 0) |
+        (beam != null ? 16 : 0) |
+        (echo != null ? 32 : 0);
+    b[off + 1] = (poseScale * 100).round().clamp(0, 255);
+    bd.setInt16(off + 2, (poseRoll * 1000).round().clamp(-32768, 32767), Endian.big);
+    b[off + 4] = gear.clamp(0, 255);
+    b[off + 5] = flow.clamp(0, 255);
+    b[off + 6] = charge.clamp(0, 255);
+    b[off + 7] = (megaProgress * 255).round().clamp(0, 255);
+    for (var i = 0; i < 6; i++) {
+      b[off + 8 + i] = ((i < effects.length ? effects[i] : 0) * 255).round().clamp(0, 255);
+    }
+    for (var i = 0; i < 2; i++) {
+      final o = off + 14 + i * 10;
+      if (i < companions.length) {
+        final c = companions[i];
+        b[o] = c.$1.clamp(0, 255);
+        bd.setFloat32(o + 1, c.$2, Endian.big);
+        bd.setFloat32(o + 5, c.$3, Endian.big);
+        b[o + 9] = c.$4 ? 1 : 0;
+      } else {
+        b[o] = 0;
+      }
+    }
+    bd.setFloat32(off + 34, echo?.$1 ?? 0, Endian.big);
+    bd.setFloat32(off + 38, echo?.$2 ?? 0, Endian.big);
+    b[off + 42] = caltrops.length.clamp(0, 2);
+    for (var i = 0; i < 2; i++) {
+      final m = i < caltrops.length ? caltrops[i] : (0.0, 0.0);
+      bd.setFloat32(off + 43 + i * 8, m.$1, Endian.big);
+      bd.setFloat32(off + 47 + i * 8, m.$2, Endian.big);
+    }
+    final bm = beam ?? (0.0, 0.0, 0.0, 0.0);
+    bd.setFloat32(off + 59, bm.$1, Endian.big);
+    bd.setFloat32(off + 63, bm.$2, Endian.big);
+    bd.setInt16(off + 67, (bm.$3 * 10000).round().clamp(-32768, 32767), Endian.big);
+    b[off + 69] = bm.$4.round().clamp(0, 255);
+  }
+
+  static SigilSnap decode(ByteData bd, int off) {
+    final b = bd.buffer.asUint8List(bd.offsetInBytes, bd.lengthInBytes);
+    final f = b[off];
+    final comps = <(int, double, double, bool)>[];
+    for (var i = 0; i < 2; i++) {
+      final o = off + 14 + i * 10;
+      if (b[o] == 0) continue;
+      comps.add((b[o], bd.getFloat32(o + 1, Endian.big),
+          bd.getFloat32(o + 5, Endian.big), b[o + 9] != 0));
+    }
+    final n = b[off + 42].clamp(0, 2);
+    return SigilSnap(
+      enabled: f & 1 != 0,
+      untouchable: f & 2 != 0,
+      focus: f & 4 != 0,
+      megaCharging: f & 8 != 0,
+      poseScale: b[off + 1] / 100,
+      poseRoll: bd.getInt16(off + 2, Endian.big) / 1000,
+      gear: b[off + 4],
+      flow: b[off + 5],
+      charge: b[off + 6],
+      megaProgress: b[off + 7] / 255,
+      effects: [for (var i = 0; i < 6; i++) b[off + 8 + i] / 255],
+      companions: comps,
+      echo: f & 32 != 0
+          ? (bd.getFloat32(off + 34, Endian.big), bd.getFloat32(off + 38, Endian.big))
+          : null,
+      caltrops: [
+        for (var i = 0; i < n; i++)
+          (bd.getFloat32(off + 43 + i * 8, Endian.big),
+              bd.getFloat32(off + 47 + i * 8, Endian.big)),
+      ],
+      beam: f & 16 != 0
+          ? (
+              bd.getFloat32(off + 59, Endian.big),
+              bd.getFloat32(off + 63, Endian.big),
+              bd.getInt16(off + 67, Endian.big) / 10000,
+              b[off + 69].toDouble(),
+            )
+          : null,
+    );
+  }
+}
+
 /// Full game state snapshot (decoded)
 class GameSnapshot {
   final int gameState;
@@ -373,6 +506,9 @@ class GameSnapshot {
   final List<BeamSnap> beams;
   final List<StructSnap> structures;
 
+  /// The two ships' sigil looks; [SigilSnap.none] from an older host.
+  final SigilSnap sigils1, sigils2;
+
   GameSnapshot({
     required this.gameState,
     required this.sectorIndex,
@@ -385,6 +521,8 @@ class GameSnapshot {
     required this.collectables,
     required this.beams,
     required this.structures,
+    this.sigils1 = SigilSnap.none,
+    this.sigils2 = SigilSnap.none,
   });
 }
 
@@ -404,6 +542,7 @@ Uint8List encodeGameSnapshot({
   required List<CollSnap> collectables,
   required List<BeamSnap> beams,
   List<StructSnap> structures = const [],
+  List<SigilSnap> sigils = const [],
 }) {
   final headerSize = 11 + 2 * _vesselSnapSize;
   final hostileSize = 2 + hostiles.length * _hostileSnapSize;
@@ -417,7 +556,9 @@ Uint8List encodeGameSnapshot({
     structSize += 33 + s.imgName.codeUnits.length;
   }
 
-  final totalSize = headerSize + hostileSize + enemyProjSize + playerProjSize + collSize + beamSize + structSize;
+  final sigilSize = sigils.isEmpty ? 0 : 1 + sigils.length * SigilSnap.size;
+  final totalSize = headerSize + hostileSize + enemyProjSize + playerProjSize +
+      collSize + beamSize + structSize + sigilSize;
   final payload = Uint8List(totalSize);
   final bd = ByteData.sublistView(payload);
   int off = 0;
@@ -511,6 +652,15 @@ Uint8List encodeGameSnapshot({
     final nameBytes = s.imgName.codeUnits;
     payload[off] = nameBytes.length; off += 1;
     payload.setRange(off, off + nameBytes.length, nameBytes); off += nameBytes.length;
+  }
+
+  // Sigils (optional tail — an older client stops before it)
+  if (sigils.isNotEmpty) {
+    payload[off] = sigils.length; off += 1;
+    for (final s in sigils) {
+      s.encode(bd, off);
+      off += SigilSnap.size;
+    }
   }
 
   return frameMessage(MsgType.gameStateSnapshot, payload);
@@ -621,6 +771,20 @@ GameSnapshot decodeGameSnapshot(Uint8List payload) {
     }
   }
 
+  // Sigils (optional — absent from older hosts)
+  var sig1 = SigilSnap.none, sig2 = SigilSnap.none;
+  if (off < payload.length) {
+    final n = payload[off]; off += 1;
+    if (n >= 1 && off + SigilSnap.size <= payload.length) {
+      sig1 = SigilSnap.decode(bd, off);
+      off += SigilSnap.size;
+    }
+    if (n >= 2 && off + SigilSnap.size <= payload.length) {
+      sig2 = SigilSnap.decode(bd, off);
+      off += SigilSnap.size;
+    }
+  }
+
   return GameSnapshot(
     gameState: gameState,
     sectorIndex: sectorIndex,
@@ -633,6 +797,8 @@ GameSnapshot decodeGameSnapshot(Uint8List payload) {
     collectables: collectables,
     beams: beamsOut,
     structures: structsOut,
+    sigils1: sig1,
+    sigils2: sig2,
   );
 }
 

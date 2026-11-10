@@ -1376,7 +1376,7 @@ class Vessel extends PositionComponent
 
     if (transformed) canvas.restore();
     if (satellite != null) _renderSatellite(canvas);
-    if (caster.enabled) _renderSigilFx(canvas);
+    if (caster.showsFx) _renderSigilFx(canvas);
   }
 
   /// LOOP and CORKSCREW lift the ship toward the camera; its shadow stays

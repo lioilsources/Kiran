@@ -34,6 +34,7 @@ import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
 import '../rendering/bg_zones.dart';
 import '../entities/vessel.dart';
+import '../entities/sigil_fx.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
 import '../entities/death_effect.dart';
@@ -234,7 +235,8 @@ class TyrianGame extends FlameGame
   bool grimoireOpen = false;
 
   void openGrimoire() {
-    if (state != GameState.playing || grimoireOpen) return;
+    // Co-op would pause the other player too; the grimoire is a solo stop.
+    if (state != GameState.playing || grimoireOpen || isCoop) return;
     grimoireOpen = true;
     togglePause();
     onGrimoireRequested?.call();
@@ -398,7 +400,9 @@ class TyrianGame extends FlameGame
     _streamHintT = full && c.gear == 1 ? _streamHintT + realDt : 0;
     if (_streamHintT > 1.5) hints.offer(SigilHint.stream);
     if (hints.active == SigilHint.stream && c.gear > 1) hints.dismiss();
-    return hints.tick(realDt);
+    final slow = hints.tick(realDt);
+    // In co-op the world is shared: the hint shows, time does not slow.
+    return isCoop ? 1 : slow;
   }
 
   /// Into the arena with the endless ship. Nothing it does is saved.
@@ -711,13 +715,13 @@ class TyrianGame extends FlameGame
   bool get sigilsAvailable =>
       platform.isDesktop && PadSettings.scheme == PadScheme.sigil;
 
-  /// Right-stick combat is on (Prompts/28): desktop, the sigil scheme, solo.
-  /// Co-op keeps the classic pad until the protocol carries sigil state.
+  /// Right-stick combat is on (Prompts/28): desktop, the sigil scheme, and
+  /// this machine runs the game — solo or co-op host. The host's sigils
+  /// travel to the client as looks only (SigilSnap); a client draws none.
   bool get sigilsEnabled =>
       platform.isDesktop &&
       PadSettings.scheme == PadScheme.sigil &&
-      coopRole == CoopRole.none &&
-      vessel2 == null;
+      coopRole != CoopRole.client;
 
   @override
   void onGameResize(Vector2 size) {
@@ -1578,15 +1582,13 @@ class TyrianGame extends FlameGame
     final gp = gamepadInput.primary;
     final sigils = sigilsEnabled;
     vessel.caster.enabled = sigils;
-    if (sigils) {
-      _processSigilPad(gp, dt);
-      return;
-    }
     final gpDx = GamepadInput.deadzone(gp.leftStickX);
     final gpDy = GamepadInput.deadzone(gp.leftStickY);
     final gpActive = gpDx != 0 || gpDy != 0 || gp.fire;
 
-    if (gpActive) {
+    if (sigils) {
+      _processSigilPad(gp, dt);
+    } else if (gpActive) {
       _applyMovement(vessel, gpDx, gpDy, _kbSpeed, dt);
       vessel.fire = gp.fire;
       vessel.fireRateMult = gp.fireRate;
@@ -2010,10 +2012,10 @@ class TyrianGame extends FlameGame
       ));
     }
 
-    // Player projectiles (from both vessels)
+    // Player projectiles (from both vessels, companions and echo included)
     final pProjSnaps = <ProjSnap>[];
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      for (final d in v.allGuns) {
         for (final p in d.projectiles) {
           if (!p.active) continue;
           final img = projSnapImgs.indexOf(p.imgName);
@@ -2088,6 +2090,7 @@ class TyrianGame extends FlameGame
       collectables: collSnaps,
       beams: beamSnaps,
       structures: structSnaps,
+      sigils: [vessel.caster.snap, vessel2?.caster.snap ?? SigilSnap.none],
     );
   }
 
@@ -2096,8 +2099,10 @@ class TyrianGame extends FlameGame
   void applySnapshot(GameSnapshot snap) {
     // Update vessel stats from snapshot
     _applyVesselSnap(vessel, snap.vessel1);
+    _mirrorSigils(vessel, snap.sigils1);
     if (vessel2 != null) {
       _applyVesselSnap(vessel2!, snap.vessel2);
+      _mirrorSigils(vessel2!, snap.sigils2);
     }
 
     // Update game state (don't let snapshot downgrade playing→comCenter on client —
@@ -2211,6 +2216,18 @@ class TyrianGame extends FlameGame
     }
 
     onOsdUpdate?.call();
+  }
+
+  final Map<Vessel, SigilMirrorView> _mirrorViews = {};
+
+  /// Client: draw what the host says this ship's sigils look like.
+  void _mirrorSigils(Vessel v, SigilSnap s) {
+    v.caster.applyMirror(s);
+    if (s.enabled && !_mirrorViews.containsKey(v)) {
+      final view = SigilMirrorView(v.caster);
+      _mirrorViews[v] = view;
+      world.add(view);
+    }
   }
 
   void _applyVesselSnap(Vessel v, VesselSnap snap) {

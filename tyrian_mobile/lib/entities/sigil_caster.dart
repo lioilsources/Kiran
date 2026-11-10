@@ -4,6 +4,8 @@ import 'package:flame/components.dart';
 
 import '../game/game_config.dart' as config;
 import '../input/pad_scheme.dart';
+import '../net/protocol.dart' show SigilSnap;
+import '../systems/sigils/sigil_catalog.dart';
 import '../services/sound_service.dart';
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
@@ -97,9 +99,74 @@ class SigilCaster {
   final EchoTrail echoTrail = EchoTrail();
   EchoGhost? echo;
 
+  // ── Co-op: what the client draws (Prompts/28 §13) ──
+
+  /// On a co-op client, the host's view of this ship's sigils. The client
+  /// runs no sigils; it only draws what the host says.
+  SigilSnap? mirror;
+
+  /// The last MEGA BLAST while its light is up, for the client to draw.
+  (double, double, double, double)? _beam;
+  double _beamLeft = 0;
+
+  /// Draw the sigil effects: the ship runs them, or mirrors a host that does.
+  bool get showsFx => enabled || (mirror?.enabled ?? false);
+
+  static const _effectOrder = [
+    SigilKind.frenzy,
+    SigilKind.stasis,
+    SigilKind.halo,
+    SigilKind.storm,
+    SigilKind.echo,
+    SigilKind.whirl,
+  ];
+
+  /// This ship's sigils as the co-op client should see them.
+  SigilSnap get snap {
+    if (!enabled) return SigilSnap.none;
+    return SigilSnap(
+      enabled: true,
+      untouchable: untouchable,
+      focus: focus,
+      megaCharging: megaCharging,
+      poseScale: poseScale,
+      poseRoll: poseRoll,
+      gear: gear,
+      flow: meter.flow,
+      charge: meter.charge.round(),
+      megaProgress: megaProgress,
+      effects: [
+        for (final k in _effectOrder)
+          (effects[k] ?? 0) / SigilCatalog.of(k).duration,
+      ],
+      companions: [
+        for (final c in companions.take(2))
+          (c.role.index + 1, c.position.x, c.position.y, c.absorbs),
+      ],
+      echo: echo == null ? null : (echo!.position.x, echo!.position.y),
+      caltrops: [for (final m in caltrops.take(2)) (m.position.x, m.position.y)],
+      beam: _beamLeft > 0 ? _beam : null,
+    );
+  }
+
+  /// Client: take the host's view. Effects, focus and gear are copied into
+  /// the fields the ship's own drawing reads.
+  void applyMirror(SigilSnap s) {
+    mirror = s;
+    focus = s.focus;
+    gear = s.gear;
+    megaCharging = s.megaCharging;
+    effects.clear();
+    for (var i = 0; i < _effectOrder.length && i < s.effects.length; i++) {
+      if (s.effects[i] > 0) {
+        effects[_effectOrder[i]] = s.effects[i] * SigilCatalog.of(_effectOrder[i]).duration;
+      }
+    }
+  }
+
   // ── Queries the ship and the game ask ──
 
-  bool get untouchable => enabled && _inPhase;
+  bool get untouchable => mirror?.untouchable ?? (enabled && _inPhase);
 
   /// What the left stick may do this frame.
   SigilControl get control =>
@@ -116,11 +183,13 @@ class SigilCaster {
   bool get genLocked => _genLock > 0;
 
   /// Drawn size of the ship: LOOP climbs toward the camera.
-  double get poseScale => run?.pose.scale ?? 1;
-  double get poseRoll => run?.pose.roll ?? 0;
+  double get poseScale => mirror?.poseScale ?? run?.pose.scale ?? 1;
+  double get poseRoll => mirror?.poseRoll ?? run?.pose.roll ?? 0;
 
   /// MEGA BLAST charge so far, 0..1 of what the ship could pour in.
   double get megaProgress {
+    final m = mirror;
+    if (m != null) return m.megaProgress;
     final cap = vessel.shieldMax + vessel.genMax;
     return cap <= 0 ? 0 : ((megaShield + megaGen) / cap).clamp(0.0, 1.0);
   }
@@ -354,6 +423,7 @@ class SigilCaster {
     }
     meter.tick(dt, busy: run != null);
     if (_killWindow > 0) _killWindow -= dt;
+    if (_beamLeft > 0) _beamLeft -= dt;
     if (_genLock > 0) {
       _genLock -= dt;
       vessel.genValue = 0;
@@ -582,6 +652,8 @@ class SigilCaster {
     final beam = MegaBeam(
         x: n.x, y: n.y, dirX: _megaAimX, dirY: _megaAimY, width: width);
     vessel.game.world.add(beam);
+    _beam = (n.x, n.y, math.atan2(_megaAimX, -_megaAimY), width);
+    _beamLeft = config.megaFlash;
     _hitAlong(n.x, n.y, _megaAimX, _megaAimY, width, dmg.round());
     _genLock = config.megaGenLock;
     megaShield = megaGen = 0;

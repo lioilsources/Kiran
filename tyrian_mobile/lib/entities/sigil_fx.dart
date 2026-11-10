@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../services/asset_library.dart';
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import 'sigil_caster.dart';
@@ -186,5 +187,83 @@ class EchoGhost extends PositionComponent with HasGameReference<TyrianGame> {
         overridePaint: Paint()
           ..colorFilter = const ColorFilter.mode(
               Color(0x669A7CFF), BlendMode.modulate));
+  }
+}
+
+/// Co-op client: draws the host's companions, echo, mines and MEGA BLAST
+/// light from the snapshot (Prompts/28 §13). Nothing here simulates.
+class SigilMirrorView extends Component with HasGameReference<TyrianGame> {
+  SigilMirrorView(this.caster);
+
+  final SigilCaster caster;
+
+  static const _tints = [
+    Color(0xFF7CFFB2), // wingman
+    Color(0xFFFFB84D), // hunter
+    Color(0xFF8AB8FF), // warden
+  ];
+
+  @override
+  void render(Canvas canvas) {
+    final m = caster.mirror;
+    if (m == null || !m.enabled) return;
+    final art = AssetLibrary.instance.getSprite('drone') ??
+        AssetLibrary.instance.getSprite('boss_turret');
+    const r = config.companionSize / 2;
+    for (final (role, x, y, absorbs) in m.companions) {
+      final tint = _tints[(role - 1).clamp(0, 2)];
+      if (art != null) {
+        art.render(canvas,
+            position: Vector2(x - r, y - r),
+            size: Vector2.all(r * 2),
+            overridePaint: Paint()
+              ..colorFilter = ColorFilter.mode(tint, BlendMode.modulate));
+      } else {
+        canvas.drawCircle(Offset(x, y), r * 0.7, Paint()..color = tint);
+      }
+      if (absorbs) {
+        canvas.drawCircle(
+            Offset(x, y),
+            r * 1.4,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2
+              ..color = tint.withValues(alpha: 0.5));
+      }
+    }
+    final e = m.echo;
+    final sprite = caster.vessel.currentSprite;
+    if (e != null && sprite != null) {
+      final s = caster.vessel.size;
+      sprite.render(canvas,
+          position: Vector2(e.$1 - s.x / 2, e.$2 - s.y / 2),
+          size: s,
+          overridePaint: Paint()
+            ..colorFilter = const ColorFilter.mode(Color(0x669A7CFF), BlendMode.modulate));
+    }
+    for (final (x, y) in m.caltrops) {
+      canvas.drawCircle(Offset(x, y), 9, Paint()..color = const Color(0xFFFF5A5A));
+    }
+    final b = m.beam;
+    if (b != null) {
+      final dx = math.sin(b.$3), dy = -math.cos(b.$3);
+      final start = Offset(b.$1, b.$2);
+      final end = Offset(b.$1 + dx * 2400, b.$2 + dy * 2400);
+      canvas.drawLine(
+          start,
+          end,
+          Paint()
+            ..strokeWidth = b.$4
+            ..strokeCap = StrokeCap.round
+            ..color = const Color(0xFF66E0FF).withValues(alpha: 0.35)
+            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18));
+      canvas.drawLine(
+          start,
+          end,
+          Paint()
+            ..strokeWidth = b.$4 * 0.45
+            ..strokeCap = StrokeCap.round
+            ..color = Colors.white.withValues(alpha: 0.9));
+    }
   }
 }
