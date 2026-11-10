@@ -97,7 +97,18 @@ class Cutter:
         # The landscape capture is the portrait field turned a quarter
         # counter-clockwise; a quarter clockwise turns it back upright.
         im = im.transpose(Image.Transpose.ROTATE_270)
-        return im.resize((W, GAME_H), Image.Resampling.LANCZOS)
+        # Fill the width, keep the aspect, crop what overhangs top and bottom
+        # evenly: the window is not always the size that was asked for.
+        h = round(im.height * W / im.width)
+        im = im.resize((W, h), Image.Resampling.LANCZOS)
+        if h > GAME_H:
+            top = (h - GAME_H) // 2
+            im = im.crop((0, top, W, top + GAME_H))
+        elif h < GAME_H:
+            pad = Image.new('RGB', (W, GAME_H), (4, 6, 12))
+            pad.paste(im, (0, (GAME_H - h) // 2))
+            im = pad
+        return im
 
     def panel(self, draw, stick, sub):
         cy = GAME_H + 150
@@ -180,17 +191,18 @@ class Cutter:
         canvas = Image.new('RGB', (W, H), (6, 8, 18))
         draw = ImageDraw.Draw(canvas, 'RGBA')
         # The sigil's shape, big, upright: forward is up in a vertical video.
-        sigil = self.lesson['sigil']
         cx, cy, r = W // 2, 760, 260
         col = LAYER['hull']
         for d in range(9):
             x, y = dot_xy(d, r)
             draw.ellipse([cx + x - 12, cy + y - 12, cx + x + 12, cy + y + 12], fill=(140, 140, 150))
-        shape = load('tutorial', 'lessons', f'{self.id}.json').get('shape') or RING
-        pts = [(cx, cy)] + [(cx + dot_xy(d, r)[0], cy + dot_xy(d, r)[1]) for d in shape]
-        if sigil == 'loop':
-            pts = [(cx + dot_xy(d, r)[0], cy + dot_xy(d, r)[1]) for d in RING + [RING[0]]]
-        draw.line(pts, fill=col, width=16, joint='curve')
+        shape = self.lesson.get('shape') or RING
+        if len(shape) % 8 == 0 and set(shape) == set(RING):
+            # A circle sigil is a circle, not an octagon through its dots.
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col, width=16)
+        else:
+            pts = [(cx, cy)] + [(cx + dot_xy(d, r)[0], cy + dot_xy(d, r)[1]) for d in shape]
+            draw.line(pts, fill=col, width=16, joint='curve')
         tw = draw.textlength(title, font=self.f_title)
         draw.text(((W - tw) / 2, 1150), title, font=self.f_title, fill=col)
         if line:

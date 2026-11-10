@@ -54,6 +54,10 @@ def call(url, payload=None):
 # The service's language codes; Traditional Chinese is voiced in Mandarin.
 LANG = {'zh_Hant': 'zh'}
 
+# Engines picked per language where the service's own choice fails: Kokoro
+# reads Japanese one character at a time (pilot, 2026-11-11).
+ENGINE = {'ja': 'chatterbox'}
+
 # Characters a second a normal voice reads, per script (§7.4). A take more
 # than SUSPECT times longer or shorter than that was not read, it was
 # mangled — Kokoro reading Japanese one character at a time ran 20 s for a
@@ -70,13 +74,16 @@ def plausible(text, lang, secs):
 
 
 def voice(base, text, lang, out):
-    job = call(f'{base}/v1/audio/tts', {
+    payload = {
         'text': text,
         'language': LANG.get(lang, lang),
         'commercial_only': True,
         'format': 'wav',
         'seed': 7,
-    })
+    }
+    if lang in ENGINE:
+        payload['engine'] = ENGINE[lang]
+    job = call(f'{base}/v1/audio/tts', payload)
     jid = job['job_id']
     for _ in range(600):
         st = call(f'{base}/v1/audio/jobs/{jid}')
