@@ -44,7 +44,10 @@ Dokument je psaný pro implementační session (Opus).
 | Hlas přes službu audio na SPARKu, kontrola délky (§7.4) | hotovo | `bin/tutorial_narrate.py` |
 | Skládání svislého videa 1080×1920 (hra nahoře, vstupní panel a titulky dole, pružné zastavení) | hotovo | `bin/tutorial_assemble.py`, testy `tutorial/tests/` |
 | Pilot LOOP cs/en/ja | rozpracováno — čeká na verdikt uživatele | `run/tutorial/loop/out/` |
-| Zkoušky, kata, gauntlet, denní výzva, nápovědy ve hře (§5b), manifest | nezačato | — |
+| Kata (20 ve 4 pásmech, hodnocení D–S, nejlepší se ukládá) | hotovo | `lib/systems/training/kata.dart` |
+| Gauntlet = nekonečná řada bossů (+1 část a +15 % odolnosti za bosse, konec při K.O., hodnocení bez stropu) | hotovo | `lib/systems/training/gauntlet.dart` |
+| Nápovědy ve hře (§5b), každá jednou za život savu | hotovo | `lib/systems/sigils/sigil_hints.dart` |
+| Zkoušky stupňů (§5.3), denní výzva, manifest pro zveřejnění | nezačato — zkoušky čekají na rozhodnutí o odemykání (plán 28, otázka 4); denní výzva nemá na Steamu žebříček | — |
 
 **Zjištění k hlasu (pilot):** služba audio (AiStack `services/audio`) má komerčně
 použitelné enginy Kokoro (en, es, fr, it, ja, pt, zh), Piper (cs) a Chatterbox

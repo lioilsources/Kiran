@@ -49,8 +49,13 @@ vstupech zásahu, graze, OVERSTREAM, MEGA BLAST, FOCUS, BREAK, výměna zbraní,
 companioni, CALTROP, ECHO, sigil pad v HUD (vždy vidět), grimoár (Back),
 klávesnice (numpad), schémata `classic`/`sigil` a levák v pauze, aréna (plán 29).
 
-Nehotovo: co-op (`protocolVersion 5`; do té doby se v co-opu sigily vypínají),
-odemykání po stupních (teď je odemčeno vše), varianty a tlačítko X, vibrace,
+Co-op (změna proti §13): sigily hraje hostitel (P1), klient vidí jejich vzhled
+přes `SigilSnap` — nepovinný konec snapshotu, takže `protocolVersion` zůstává 4 a
+starší klient hraje dál, jen bez efektů. Klient sám sigily nekreslí. Grimoár se v
+co-opu neotevírá (pauzoval by i druhého hráče).
+
+Nehotovo: sigily pro klienta v co-opu, odemykání po stupních (teď je odemčeno vše),
+varianty a tlačítko X, vibrace,
 konfigurace Steam Input, ověření na skutečném padu a Steam Decku (ladění zón
 páčky dělá uživatel). Zvuky sigilů zatím půjčují existující SFX.
 
