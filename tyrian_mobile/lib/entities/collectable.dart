@@ -1,4 +1,3 @@
-import 'dart:math' show pi;
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -164,7 +163,7 @@ class Collectable extends PositionComponent
     // upright; rotate about the sprite centre so the pickup stays in place.
     if (platform.isLandscape) {
       canvas.translate(size.x / 2, size.y / 2);
-      canvas.rotate(-pi / 2);
+      canvas.rotate(platform.landscapeCameraAngle);
       canvas.translate(-size.x / 2, -size.y / 2);
     }
 

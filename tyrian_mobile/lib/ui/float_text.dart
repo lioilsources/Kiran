@@ -1,4 +1,3 @@
-import 'dart:math' show pi;
 
 import 'package:cute_kid_fonts/cute_kid_fonts_flame.dart';
 import 'package:flame/components.dart';
@@ -55,23 +54,21 @@ class FloatText extends PositionComponent {
       return;
     }
     if (!stationary) {
-      // Screen-up drift. In landscape the camera is rotated +90 CCW (game up
-      // renders as screen right), so screen-up corresponds to game -X.
-      if (platform.isLandscape) {
-        position.x -= driftSpeed * dt;
-      } else {
-        position.y -= driftSpeed * dt;
-      }
+      // Screen-up drift, carried back into game space through the
+      // landscape camera (screen up is game +X there).
+      final (gx, gy) = platform.screenToGame(0, -1);
+      position.x += gx * driftSpeed * dt;
+      position.y += gy * driftSpeed * dt;
     }
   }
 
   @override
   void render(Canvas canvas) {
-    // Counter the landscape camera rotation (+90 CCW) so glyphs read upright.
+    // Counter the landscape camera rotation so glyphs read upright.
     // The canvas origin is this component's position, which the paint below
     // treats as the text centre, so rotating about the origin is exact.
     if (platform.isLandscape) {
-      canvas.rotate(-pi / 2);
+      canvas.rotate(platform.landscapeCameraAngle);
     }
     final alpha = ((1.0 - _elapsed / duration) * 255).round().clamp(0, 255);
     final raster = _raster;
