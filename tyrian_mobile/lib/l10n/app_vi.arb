@@ -281,5 +281,8 @@
   "lessonLive": "TỐC ĐỘ THẬT",
   "lessonStreak": "NĂM LẦN LIÊN TIẾP",
   "lessonLearned": "ĐÃ THUỘC",
-  "lessonTempo": "NHỊP {pct} %"
+  "lessonTempo": "NHỊP {pct} %",
+  "hintHop": "Gạt nhanh cần phải",
+  "hintLoop": "Vẽ một vòng tròn: bay qua làn đạn",
+  "hintStream": "Bóp LT: hai hoặc ba luồng đạn"
 }

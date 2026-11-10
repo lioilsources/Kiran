@@ -1025,4 +1025,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'NHỊP $pct %';
   }
+
+  @override
+  String get hintHop => 'Gạt nhanh cần phải';
+
+  @override
+  String get hintLoop => 'Vẽ một vòng tròn: bay qua làn đạn';
+
+  @override
+  String get hintStream => 'Bóp LT: hai hoặc ba luồng đạn';
 }

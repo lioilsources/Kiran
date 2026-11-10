@@ -1015,4 +1015,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'テンポ $pct %';
   }
+
+  @override
+  String get hintHop => '右スティックをはじく';
+
+  @override
+  String get hintLoop => '円を描くと弾の上を飛び越える';
+
+  @override
+  String get hintStream => 'LTを握る: 弾が2本か3本に';
 }

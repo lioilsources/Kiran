@@ -1816,6 +1816,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TEMPO {pct} %'**
   String lessonTempo(int pct);
+
+  /// No description provided for @hintHop.
+  ///
+  /// In en, this message translates to:
+  /// **'Flick the right stick'**
+  String get hintHop;
+
+  /// No description provided for @hintLoop.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw a circle: you fly over the shots'**
+  String get hintLoop;
+
+  /// No description provided for @hintStream.
+  ///
+  /// In en, this message translates to:
+  /// **'Squeeze LT: two or three streams'**
+  String get hintStream;
 }
 
 class _AppLocalizationsDelegate

@@ -9,7 +9,9 @@ import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
 import '../l10n/l10n.dart';
 import '../systems/sigils/sigil_accuracy.dart';
+import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_grid.dart';
+import '../systems/sigils/sigil_hints.dart';
 import '../systems/sigils/sigil_recognizer.dart';
 import '../systems/sigils/sigil_spec.dart';
 
@@ -79,8 +81,11 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
           Paint()..color = on ? hue : Colors.white.withValues(alpha: 0.35));
     }
 
+    final hint = SigilHints.instance.active;
     if (drawing) {
       _stroke(canvas, c, rec.trail, hue, 3);
+    } else if (hint != null) {
+      _hint(canvas, c, hint);
     } else if (last != null) {
       _result(canvas, c, last, caster);
     }
@@ -157,6 +162,38 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
     _label(canvas, sub, Offset(c.dx, top + 19), 11, Colors.white70);
   }
 
+  double _pulse = 0;
+
+  @override
+  void update(double dt) => _pulse += dt;
+
+  /// A one-time nudge: the sigil's line pulsing in the pad and what to do.
+  void _hint(Canvas canvas, Offset c, SigilHint h) {
+    final l = L10n.current;
+    final glow = 0.45 + 0.4 * math.sin(_pulse * 6);
+    const gold = Color(0xFFFFE070);
+    final spec = switch (h) {
+      SigilHint.hop => SigilCatalog.of(SigilKind.hop),
+      SigilHint.loop => SigilCatalog.of(SigilKind.loop),
+      SigilHint.stream => null,
+    };
+    if (spec != null) {
+      final dots = SigilRecognizer.idealFor(spec, flickDot: 1, drawn: spec.shape ?? const [1]);
+      _stroke(canvas, c, SigilAccuracy.idealLine(dots), gold.withValues(alpha: glow), 6);
+    }
+    final text = switch (h) {
+      SigilHint.hop => l.hintHop,
+      SigilHint.loop => l.hintLoop,
+      SigilHint.stream => l.hintStream,
+    };
+    final top = c.dy - radius - 52;
+    if (spec != null) _label(canvas, spec.name, Offset(c.dx, top), 15, gold, bold: true);
+    // Right-aligned to the pad so a long sentence runs into the field, not
+    // off the screen.
+    _label(canvas, text, Offset(c.dx + radius + 10, top + 19), 11, Colors.white,
+        rightAligned: true);
+  }
+
   String _why(SigilMiss? m, AppLocalizations l) => switch (m) {
         SigilMiss.tooSlow => l.sigilMissTooSlow,
         SigilMiss.skippedDot => l.sigilMissSkippedDot,
@@ -209,7 +246,7 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
   }
 
   void _label(Canvas canvas, String s, Offset at, double size, Color col,
-      {bool bold = false}) {
+      {bool bold = false, bool rightAligned = false}) {
     final key = '$s|$size|${col.toARGB32()}|$bold';
     final tp = _text.putIfAbsent(key, () {
       if (_text.length > 64) _text.clear();
@@ -224,6 +261,7 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
         textDirection: TextDirection.ltr,
       )..layout();
     });
-    tp.paint(canvas, at - Offset(tp.width / 2, tp.height / 2));
+    tp.paint(canvas,
+        at - Offset(rightAligned ? tp.width : tp.width / 2, tp.height / 2));
   }
 }

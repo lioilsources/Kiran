@@ -281,5 +281,8 @@
   "lessonLive": "PLEINE VITESSE",
   "lessonStreak": "CINQ D'AFFILÉE",
   "lessonLearned": "APPRIS",
-  "lessonTempo": "TEMPO {pct} %"
+  "lessonTempo": "TEMPO {pct} %",
+  "hintHop": "Donne un coup de stick droit",
+  "hintLoop": "Trace un cercle : tu passes au-dessus des tirs",
+  "hintStream": "Presse LT : deux ou trois flux"
 }

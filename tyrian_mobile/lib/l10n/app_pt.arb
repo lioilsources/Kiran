@@ -281,5 +281,8 @@
   "lessonLive": "VELOCIDADE TOTAL",
   "lessonStreak": "CINCO SEGUIDAS",
   "lessonLearned": "APRENDIDO",
-  "lessonTempo": "TEMPO {pct} %"
+  "lessonTempo": "TEMPO {pct} %",
+  "hintHop": "Dê um toque no analógico direito",
+  "hintLoop": "Desenhe um círculo: você passa por cima dos tiros",
+  "hintStream": "Aperte LT: duas ou três rajadas"
 }

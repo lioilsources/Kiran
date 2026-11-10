@@ -281,5 +281,8 @@
   "lessonLive": "全速",
   "lessonStreak": "連續五次",
   "lessonLearned": "已掌握",
-  "lessonTempo": "節奏 {pct} %"
+  "lessonTempo": "節奏 {pct} %",
+  "hintHop": "輕彈右搖桿",
+  "hintLoop": "畫一個圓：從彈幕上方飛過",
+  "hintStream": "按住 LT：兩道或三道彈流"
 }

@@ -281,5 +281,8 @@
   "lessonLive": "실전",
   "lessonStreak": "5회 연속",
   "lessonLearned": "습득",
-  "lessonTempo": "템포 {pct} %"
+  "lessonTempo": "템포 {pct} %",
+  "hintHop": "오른쪽 스틱을 튕기세요",
+  "hintLoop": "원을 그리면 탄환 위로 넘어갑니다",
+  "hintStream": "LT를 당기세요: 탄이 두세 줄로"
 }

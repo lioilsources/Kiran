@@ -281,5 +281,8 @@
   "lessonLive": "В ПОЛНУЮ СИЛУ",
   "lessonStreak": "ПЯТЬ ПОДРЯД",
   "lessonLearned": "ОСВОЕНО",
-  "lessonTempo": "ТЕМП {pct} %"
+  "lessonTempo": "ТЕМП {pct} %",
+  "hintHop": "Резко толкни правый стик",
+  "hintLoop": "Нарисуй круг — пролетишь над выстрелами",
+  "hintStream": "Нажми LT: две или три струи"
 }

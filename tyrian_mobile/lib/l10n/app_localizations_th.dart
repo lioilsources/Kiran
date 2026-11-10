@@ -1021,4 +1021,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'จังหวะ $pct %';
   }
+
+  @override
+  String get hintHop => 'ปัดสติกขวา';
+
+  @override
+  String get hintLoop => 'วาดวงกลม: บินข้ามกระสุน';
+
+  @override
+  String get hintStream => 'กด LT: ยิงสองหรือสามสาย';
 }

@@ -1033,4 +1033,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'TEMPO $pct %';
   }
+
+  @override
+  String get hintHop => 'Flick the right stick';
+
+  @override
+  String get hintLoop => 'Draw a circle: you fly over the shots';
+
+  @override
+  String get hintStream => 'Squeeze LT: two or three streams';
 }

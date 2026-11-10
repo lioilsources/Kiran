@@ -1037,4 +1037,13 @@ class AppLocalizationsId extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'TEMPO $pct %';
   }
+
+  @override
+  String get hintHop => 'Sentil stik kanan';
+
+  @override
+  String get hintLoop => 'Gambar lingkaran: kamu melayang di atas tembakan';
+
+  @override
+  String get hintStream => 'Tekan LT: dua atau tiga aliran';
 }

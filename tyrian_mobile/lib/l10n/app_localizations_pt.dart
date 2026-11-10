@@ -1043,4 +1043,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'TEMPO $pct %';
   }
+
+  @override
+  String get hintHop => 'Dê um toque no analógico direito';
+
+  @override
+  String get hintLoop => 'Desenhe um círculo: você passa por cima dos tiros';
+
+  @override
+  String get hintStream => 'Aperte LT: duas ou três rajadas';
 }

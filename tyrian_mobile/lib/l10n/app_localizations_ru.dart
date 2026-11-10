@@ -1049,4 +1049,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'ТЕМП $pct %';
   }
+
+  @override
+  String get hintHop => 'Резко толкни правый стик';
+
+  @override
+  String get hintLoop => 'Нарисуй круг — пролетишь над выстрелами';
+
+  @override
+  String get hintStream => 'Нажми LT: две или три струи';
 }

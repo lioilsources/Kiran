@@ -281,5 +281,8 @@
   "lessonLive": "A TODA VELOCIDAD",
   "lessonStreak": "CINCO SEGUIDAS",
   "lessonLearned": "APRENDIDO",
-  "lessonTempo": "TEMPO {pct} %"
+  "lessonTempo": "TEMPO {pct} %",
+  "hintHop": "Mueve rápido el stick derecho",
+  "hintLoop": "Dibuja un círculo: pasas sobre los disparos",
+  "hintStream": "Aprieta LT: dos o tres ráfagas"
 }

@@ -281,5 +281,8 @@
   "lessonLive": "VOLLES TEMPO",
   "lessonStreak": "FÜNFMAL HINTEREINANDER",
   "lessonLearned": "GELERNT",
-  "lessonTempo": "TEMPO {pct} %"
+  "lessonTempo": "TEMPO {pct} %",
+  "hintHop": "Rechten Stick antippen",
+  "hintLoop": "Zeichne einen Kreis: du fliegst über die Schüsse",
+  "hintStream": "LT drücken: zwei oder drei Strahlen"
 }

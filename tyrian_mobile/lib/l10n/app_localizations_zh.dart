@@ -1013,6 +1013,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String lessonTempo(int pct) {
     return '节奏 $pct %';
   }
+
+  @override
+  String get hintHop => '轻弹右摇杆';
+
+  @override
+  String get hintLoop => '画一个圆：从弹幕上方飞过';
+
+  @override
+  String get hintStream => '按住 LT：两道或三道弹流';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2024,4 +2033,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String lessonTempo(int pct) {
     return '節奏 $pct %';
   }
+
+  @override
+  String get hintHop => '輕彈右搖桿';
+
+  @override
+  String get hintLoop => '畫一個圓：從彈幕上方飛過';
+
+  @override
+  String get hintStream => '按住 LT：兩道或三道彈流';
 }

@@ -281,5 +281,8 @@
   "lessonLive": "TAM HIZ",
   "lessonStreak": "ÜST ÜSTE BEŞ",
   "lessonLearned": "ÖĞRENİLDİ",
-  "lessonTempo": "TEMPO {pct} %"
+  "lessonTempo": "TEMPO {pct} %",
+  "hintHop": "Sağ çubuğu hızla it",
+  "hintLoop": "Bir daire çiz: atışların üstünden uçarsın",
+  "hintStream": "LT'ye bas: iki ya da üç akış"
 }

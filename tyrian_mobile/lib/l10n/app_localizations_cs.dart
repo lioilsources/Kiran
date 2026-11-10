@@ -1038,4 +1038,13 @@ class AppLocalizationsCs extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'TEMPO $pct %';
   }
+
+  @override
+  String get hintHop => 'Švihni pravou páčkou';
+
+  @override
+  String get hintLoop => 'Nakresli kruh: přeletíš nad střelami';
+
+  @override
+  String get hintStream => 'Stiskni LT: dva nebo tři proudy';
 }

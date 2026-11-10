@@ -1030,4 +1030,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String lessonTempo(int pct) {
     return 'TEMPO $pct %';
   }
+
+  @override
+  String get hintHop => 'Sağ çubuğu hızla it';
+
+  @override
+  String get hintLoop => 'Bir daire çiz: atışların üstünden uçarsın';
+
+  @override
+  String get hintStream => 'LT\'ye bas: iki ya da üç akış';
 }

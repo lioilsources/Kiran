@@ -1016,4 +1016,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String lessonTempo(int pct) {
     return '템포 $pct %';
   }
+
+  @override
+  String get hintHop => '오른쪽 스틱을 튕기세요';
+
+  @override
+  String get hintLoop => '원을 그리면 탄환 위로 넘어갑니다';
+
+  @override
+  String get hintStream => 'LT를 당기세요: 탄이 두세 줄로';
 }

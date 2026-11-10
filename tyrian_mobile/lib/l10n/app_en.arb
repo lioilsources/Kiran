@@ -770,5 +770,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "hintHop": "Flick the right stick",
+  "hintLoop": "Draw a circle: you fly over the shots",
+  "hintStream": "Squeeze LT: two or three streams"
 }

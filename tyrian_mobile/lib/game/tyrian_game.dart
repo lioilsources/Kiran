@@ -21,6 +21,7 @@ import '../input/keyboard_sigils.dart';
 import '../rendering/sigil_hud.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_recognizer.dart';
+import '../systems/sigils/sigil_hints.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena.dart';
 import '../systems/training/arena_ghost.dart';
@@ -320,6 +321,37 @@ class TyrianGame extends FlameGame
   void _onFieldReading(SigilReading r) {
     final s = r.spec;
     if (s != null) SigilMastery.instance.of(s.kind).record(r, field: true);
+    final h = SigilHints.instance.active;
+    if ((h == SigilHint.hop && s?.kind == SigilKind.hop) ||
+        (h == SigilHint.loop && s?.kind == SigilKind.loop)) {
+      SigilHints.instance.dismiss();
+    }
+  }
+
+  double _streamHintT = 0;
+
+  /// Real play only: offer each one-time hint when its moment comes
+  /// (Prompts/29 §5b). Returns the world speed factor (the first one slows
+  /// time so the player can read it).
+  double _sigilHints(double realDt) {
+    final hints = SigilHints.instance;
+    if (mode == GameMode.training || !sigilsEnabled || state != GameState.playing) {
+      return 1;
+    }
+    final c = vessel.caster;
+    if (c.meter.charge >= config.chargeMax) hints.offer(SigilHint.hop);
+    var ahead = 0;
+    for (final p in enemyProjectiles) {
+      final dx = p.position.x - vessel.position.x;
+      final dy = vessel.position.y - p.position.y;
+      if (dx.abs() < 120 && dy > 0 && dy < 260) ahead++;
+    }
+    if (ahead >= 8) hints.offer(SigilHint.loop);
+    final full = vessel.fire && vessel.genValue >= vessel.genMax * 0.999;
+    _streamHintT = full && c.gear == 1 ? _streamHintT + realDt : 0;
+    if (_streamHintT > 1.5) hints.offer(SigilHint.stream);
+    if (hints.active == SigilHint.stream && c.gear > 1) hints.dismiss();
+    return hints.tick(realDt);
   }
 
   /// Into the arena with the endless ship. Nothing it does is saved.
@@ -814,6 +846,11 @@ class TyrianGame extends FlameGame
     // The pad is polled on the wall clock; the arena's world runs at its own.
     _pollPad(dt);
     var inputDt = dt;
+    final hintSlow = _sigilHints(dt);
+    if (hintSlow != 1) {
+      dt *= hintSlow;
+      inputDt = dt;
+    }
     if (mode == GameMode.training) {
       final s = arenaSpeed;
       dt *= s;
@@ -1090,6 +1127,7 @@ class TyrianGame extends FlameGame
     await Challenge.init();
     await PadSettings.init();
     await SigilMastery.instance.load();
+    await SigilHints.instance.load();
     // Before any ship loads: a ship's racks take their mods out of the vault.
     await ModsState.instance.load();
     final state = await SaveService.loadGameState();
