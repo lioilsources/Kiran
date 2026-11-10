@@ -839,4 +839,187 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get sigilBusy => 'vorheriges läuft noch';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BOSS-TEILE';
+
+  @override
+  String get arenaBareCore => 'nackter Kern';
+
+  @override
+  String get arenaCompanions => 'BEGLEITER';
+
+  @override
+  String get arenaCharge => 'LADUNG';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'WELTTEMPO';
+
+  @override
+  String get arenaDrill => 'DRILL';
+
+  @override
+  String get arenaFreePlay => 'FREIES SPIEL';
+
+  @override
+  String get arenaFight => 'KÄMPFEN';
+
+  @override
+  String get arenaNewBoss => 'NEUER BOSS';
+
+  @override
+  String get arenaLeave => 'ARENA VERLASSEN';
+
+  @override
+  String get arenaHint =>
+      'Der Boss kehrt zurück, sobald er fällt. Hier wird nichts gespeichert.';
+
+  @override
+  String get arenaColCast => 'GEWIRKT';
+
+  @override
+  String get arenaColMiss => 'DANEBEN';
+
+  @override
+  String get arenaColAvg => 'SCHNITT';
+
+  @override
+  String get arenaColBest => 'BESTE';
+
+  @override
+  String get arenaColTime => 'SCHNELLSTE';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bosse $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILLE';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSISCH';
+
+  @override
+  String get padSouthpawOn => 'LINKSHÄNDER: AN';
+
+  @override
+  String get padSouthpawOff => 'LINKSHÄNDER: AUS';
+
+  @override
+  String get sigilDescHop => 'Ein schneller Satz in Stickrichtung';
+
+  @override
+  String get sigilDescSidestep => 'Ein langer Seitschritt quer übers Feld';
+
+  @override
+  String get sigilDescStrike =>
+      'Vorstoß mit drei schweren Schüssen, dann zurück';
+
+  @override
+  String get sigilDescRetreat =>
+      'Rückzug, während Deckungsfeuer nach vorn geht';
+
+  @override
+  String get sigilDescDash =>
+      'Diagonaler Sprint durchs Feuer, mittendrin unverwundbar';
+
+  @override
+  String get sigilDescRoll => 'Eine Fassrolle zur Seite, unverwundbar';
+
+  @override
+  String get sigilDescShadow =>
+      'Klemm dich unter den nächsten Gegner und feuere weiter';
+
+  @override
+  String get sigilDescEcho =>
+      'Ein Schatten wiederholt deine letzten zwei Sekunden mit halbem Schaden';
+
+  @override
+  String get sigilDescLoop =>
+      'Looping über Kopf: Schüsse fliegen unter dir durch';
+
+  @override
+  String get sigilDescSlalom => 'S-Kurve quer übers Feld mit Fächerfeuer';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Korkenzieher nach vorn, Feuer rundum, unverwundbar';
+
+  @override
+  String get sigilDescSnapshot => 'Ein schwerer Schuss in Stickrichtung';
+
+  @override
+  String get sigilDescBroadside => 'Eine Salve aus beiden Flanken';
+
+  @override
+  String get sigilDescVolley => 'Fünf geladene Strahlen nach vorn';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Leg eine Mine, die Schüsse schluckt und explodiert';
+
+  @override
+  String get sigilDescFrenzy => 'Waffen feuern ein paar Sekunden schneller';
+
+  @override
+  String get sigilDescStasis =>
+      'Gegner und ihre Schüsse werden halb so schnell';
+
+  @override
+  String get sigilDescHalo =>
+      'Schild lädt viermal schneller und nichts kommt durch';
+
+  @override
+  String get sigilDescRadial => 'Ein Ring aus sechzehn Schüssen';
+
+  @override
+  String get sigilDescStorm => 'Alle Waffen feuern auf Anschlag, gratis';
+
+  @override
+  String get sigilDescPing => 'Begleiter bündeln das Feuer in Stickrichtung';
+
+  @override
+  String get sigilDescWingman =>
+      'Ruf einen Flügelmann an die gezeichnete Flanke';
+
+  @override
+  String get sigilDescHunter =>
+      'Ruf einen Jäger, der vorausfliegt und Ziele wählt';
+
+  @override
+  String get sigilDescWarden =>
+      'Ruf einen Wächter, der die Schüsse für dich abfängt';
+
+  @override
+  String get sigilDescFormation => 'Begleiter wechseln zwischen breit und Keil';
+
+  @override
+  String get sigilDescWhirl =>
+      'Begleiter kreisen um dich und schlucken Schüsse';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Begleiter stürzen sich hinein und explodieren, Ladung kommt zurück';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Zeichne mit dem rechten Stick. Halte LB für ARMS, RB für WING, beide für MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'Kosten $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'unverwundbar';
 }

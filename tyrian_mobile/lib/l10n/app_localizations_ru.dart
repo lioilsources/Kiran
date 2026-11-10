@@ -844,4 +844,186 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sigilBusy => 'предыдущий ещё идёт';
+
+  @override
+  String get arena => 'АРЕНА';
+
+  @override
+  String get arenaBossParts => 'ЧАСТИ БОССА';
+
+  @override
+  String get arenaBareCore => 'голое ядро';
+
+  @override
+  String get arenaCompanions => 'КОМПАНЬОНЫ';
+
+  @override
+  String get arenaCharge => 'ЗАРЯД';
+
+  @override
+  String get arenaChargeNormal => 'ОБЫЧНЫЙ';
+
+  @override
+  String get arenaSpeed => 'СКОРОСТЬ МИРА';
+
+  @override
+  String get arenaDrill => 'ОТРАБОТКА';
+
+  @override
+  String get arenaFreePlay => 'СВОБОДНО';
+
+  @override
+  String get arenaFight => 'В БОЙ';
+
+  @override
+  String get arenaNewBoss => 'НОВЫЙ БОСС';
+
+  @override
+  String get arenaLeave => 'ПОКИНУТЬ АРЕНУ';
+
+  @override
+  String get arenaHint =>
+      'Босс возвращается, как только падёт. Здесь ничего не сохраняется.';
+
+  @override
+  String get arenaColCast => 'ЕСТЬ';
+
+  @override
+  String get arenaColMiss => 'МИМО';
+
+  @override
+  String get arenaColAvg => 'СРЕДН.';
+
+  @override
+  String get arenaColBest => 'ЛУЧШ.';
+
+  @override
+  String get arenaColTime => 'БЫСТРЕЕ';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Боссов $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'ГЕЙМПАД: СИГИЛЫ';
+
+  @override
+  String get padSchemeClassic => 'ГЕЙМПАД: КЛАССИКА';
+
+  @override
+  String get padSouthpawOn => 'ЛЕВША: ВКЛ';
+
+  @override
+  String get padSouthpawOff => 'ЛЕВША: ВЫКЛ';
+
+  @override
+  String get sigilDescHop => 'Быстрый скачок туда, куда дёрнешь стик';
+
+  @override
+  String get sigilDescSidestep => 'Длинный шаг в сторону через всё поле';
+
+  @override
+  String get sigilDescStrike =>
+      'Выпад вперёд с тремя тяжёлыми выстрелами и назад';
+
+  @override
+  String get sigilDescRetreat => 'Отход, пока прикрывающий огонь идёт вперёд';
+
+  @override
+  String get sigilDescDash =>
+      'Рывок по диагонали сквозь огонь, на полпути неуязвим';
+
+  @override
+  String get sigilDescRoll => 'Бочка в сторону, неуязвим';
+
+  @override
+  String get sigilDescShadow =>
+      'Зацепись под ближайшим врагом и стреляй дальше';
+
+  @override
+  String get sigilDescEcho =>
+      'Тень повторяет твои последние две секунды с половинным уроном';
+
+  @override
+  String get sigilDescLoop => 'Петля через верх: выстрелы проходят под тобой';
+
+  @override
+  String get sigilDescSlalom => 'Змейка через поле с веерным огнём';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Штопор вперёд с огнём во все стороны, неуязвим';
+
+  @override
+  String get sigilDescSnapshot =>
+      'Один тяжёлый выстрел туда, куда дёрнешь стик';
+
+  @override
+  String get sigilDescBroadside => 'Залп с обоих бортов';
+
+  @override
+  String get sigilDescVolley => 'Пять заряженных лучей вперёд';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Брось мину, что глотает выстрелы и взрывается';
+
+  @override
+  String get sigilDescFrenzy => 'Оружие несколько секунд стреляет быстрее';
+
+  @override
+  String get sigilDescStasis => 'Враги и их выстрелы замедляются вдвое';
+
+  @override
+  String get sigilDescHalo =>
+      'Щит заряжается вчетверо быстрее и ничего не пропускает';
+
+  @override
+  String get sigilDescRadial => 'Кольцо из шестнадцати выстрелов';
+
+  @override
+  String get sigilDescStorm => 'Все пушки бьют на полную, бесплатно';
+
+  @override
+  String get sigilDescPing => 'Компаньоны бьют туда, куда дёрнешь стик';
+
+  @override
+  String get sigilDescWingman =>
+      'Вызови ведомого на фланг, к которому ты чертил';
+
+  @override
+  String get sigilDescHunter =>
+      'Вызови охотника, что летит впереди и выбирает цели';
+
+  @override
+  String get sigilDescWarden =>
+      'Вызови стража, что ловит выстрелы, летящие в тебя';
+
+  @override
+  String get sigilDescFormation =>
+      'Компаньоны переключаются между широким строем и клином';
+
+  @override
+  String get sigilDescWhirl =>
+      'Компаньоны кружат вокруг тебя и глотают выстрелы';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Компаньоны пикируют и взрываются, возвращая заряд';
+
+  @override
+  String get grimoire => 'ГРИМУАР';
+
+  @override
+  String get grimoireHint =>
+      'Рисуй правым стиком. Держи LB для ARMS, RB для WING, обе для MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'цена $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'неуязвим';
 }

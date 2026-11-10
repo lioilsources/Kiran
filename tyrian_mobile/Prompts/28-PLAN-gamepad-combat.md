@@ -2,7 +2,7 @@
 
 **Jen linie 3.x (`main`).** Do `release/2.9.x` se z tohohle plánu neportuje nic.
 
-Cíl jednou větou: levá páčka letí, pravá páčka **kreslí sigily** na neviditelné mřížce 3×3
+Cíl jednou větou: levá páčka letí, pravá páčka **kreslí sigily** na kruhu (střed + 8 bodů)
 (zámek z Androidu převedený na analog), triggery jsou dva analogové pedály palby, shouldery
 přepínají, **čím** se sigil provede — a celé to platí jeden generátor.
 
@@ -22,7 +22,8 @@ prstem po 3×3 bodech; tady se totéž kreslí páčkou. Návazný plán výuky 
 |---|---|---|
 | Pad se čte přes MethodChannel `com.tyrian/gamepad`, jen desktop | `lib/input/gamepad_input.dart` | `GamepadState` už má `lx/ly/rx/ry`, `a/b/x/y`, `lb/rb`, `lt/rt` 0–1, dpad, start, back. **Pravá páčka, LT, LB, A/X/Y, dpad a back jsou ve hře nevyužité.** |
 | Střelba = `buttonB \|\| rightShoulder \|\| rightTrigger > 0.05`, `fireRate` = analog RT | tamtéž | RT kadence už existuje. B a RB se uvolní (viz §3, schéma `classic` je zachová). |
-| Nativní pluginy: macOS GameController (`back` natvrdo `false`), Windows XInput, Linux `/dev/input/js` | `macos/Runner/GamepadPlugin.swift`, `windows/runner/gamepad_plugin.cpp`, `linux/runner/gamepad_plugin.cc` | L3/R3 ani vibrace se neposílají. Plán je **nepotřebuje**; `back` na macOS se opraví v kroku 1. |
+| Nativní pluginy: macOS GameController (`back` přes volitelné `buttonOptions`), Windows XInput, Linux `/dev/input/js`; osa Y všude kladná dolů | `macos/Runner/GamepadPlugin.swift`, `windows/runner/gamepad_plugin.cpp`, `linux/runner/gamepad_plugin.cc` | L3/R3 ani vibrace se neposílají. Plán je **nepotřebuje**. |
+| Desktop běží na šířku a od 2026-11-10 se letí **zprava doleva** (`landscapeCameraAngle`, `screenToGame`/`gameToScreen`) | `lib/game/platform_config.dart` | Sigily se kreslí **vůči lodi**: „vpřed“ je páčka doleva, stejně jako pohyb. Glyfy a pad se kreslí natočené stejně. |
 | Vstup se zpracovává v `_processDesktopInput(dt)`, pad má přednost před klávesnicí, pohyb jde přes `_applyMovement` (násobí `v.agility`, řeší landscape rotaci) | `lib/game/tyrian_game.dart` ~1177 | Jediné místo, kam se sigily napojí. Rozpoznávač musí počítat s **časem (dt)**, ne s počtem vzorků. |
 | Klávesnice: WASD/šipky, Space = palba, Esc = pauza | `lib/input/keyboard_input.dart` | Numpad a okolní klávesy jsou volné → fallback v §12. |
 | Generátor: `genMax 100`, dobíjí `genPower(4) × dt × originalFps(40)` ≈ **160 j/s**, tedy z nuly za ~0,6 s | `lib/entities/vessel.dart` | Generátor je **omezovač průtoku, ne zásobník**. Sigily proto nemůžou stát „kus generátoru“ — potřebují vlastní zásobník (§6). |
@@ -30,7 +31,7 @@ prstem po 3×3 bodech; tady se totéž kreslí páčkou. Návazný plán výuky 
 | Zbraň platí `pwrNeed` z `genValue`, kadence = `cooldown / fireRateMult` | `lib/systems/device.dart:157` | OVERSTREAM se napojí sem a do `ShotPlan`, nikam jinam. |
 | `ShotPlan.of(device, fx)` skládá `streams` (max 4), `fan`, `salvo`, `pwrNeed`, `cooldown`; strop `maxLiveShots 360` | `lib/systems/mods/shot_plan.dart` | Střely ze sigilů i companionů jdou přes `ShotPlan` → mody platí automaticky. |
 | Zásah hráče má tři vstupy: střely (`_updateEnemyProjectiles` → `tryReflect` → `takeDamage`), náraz (`hostile.dart:358`), asteroid (`structure.dart:141` → `hitByAsteroid`) | — | Nezranitelnost se řeší v `Vessel` (vzor `_ghostTimer`), u střel **před** `tryReflect`. |
-| Zpomalení času existuje: `game.startTimewarp(scale, seconds)` → `enemyTimeScale` | `tyrian_game.dart` | Sigil TIMEWARP i tréninkové slow-mo (plán 29) stojí na hotovém primitivu. |
+| Zpomalení času existuje: `game.startTimewarp(scale, seconds)` → `enemyTimeScale` | `tyrian_game.dart` | Sigil STASIS stojí na hotovém primitivu; slow-mo arény je samostatné (`arena.speed`, škáluje celý svět). |
 | Dron existuje jako čtvrté zařízení `satellite` (`_syncSatellite`, `satellitePos`), kopíruje přední zbraň × `modSatelliteDmg` | `vessel.dart` ~494 | Companioni jsou zobecnění téhož; art dronů pro skiny je z hull pilotu. |
 | Skóre se přičítá na jednom místě `Vessel.addScore` | `vessel.dart` ~1188 | FLOW násobič patří sem, ne ke čtyřem místům `Challenge`. |
 | Žebříček je jen Game Center (iOS **a macOS** sdílí `kiran_topscore`) a Play Games; Windows a Linux, tedy Steam, žádný nemají; Steamworks SDK ve hře není | `lib/services/leaderboard_service.dart` | Hráč se sigily na Macu by soutěžil v jedné tabulce s dotykem na iPhonu → §6.2 a otázka č. 7. |
@@ -136,17 +137,21 @@ Levácké zrcadlení (`southpaw`: prohodí páčky i strany) je druhá tabulka v
 
 ---
 
-## 4. Rozpoznávač: zámek 3×3 na páčce
+## 4. Rozpoznávač: kruhový sigil na páčce
 
-### 4.1 Mřížka
+### 4.1 Kruh (rozhodnuto 2026-11-10: kruhový, ne čtvercový)
 
 ```
- 0 1 2      ↖ ↑ ↗
- 3 4 5  =   ← ● →      bod 4 = páčka ve středu
- 6 7 8      ↙ ↓ ↘      ostatní = osm výsečí po 45° na okraji
+        1               bod 4 = páčka ve středu
+     0     2            ostatní = osm bodů na kružnici, výseče po 45°,
+   3    4    5          stejně jako kruhový doraz páčky
+     6     8            (diagonály leží na kružnici, ne v rozích čtverce)
+        7
 ```
 
-Číslování je shodné s OrbitronTactics, aby šly sdílet glyfy i hlava hráče.
+Body se pořád číslují 0–8 jako zámek 3×3 v OrbitronTactics (interně, kvůli
+zrcadlení a sdíleným tvarům), ale **kreslí se na kruhu** — pad v HUD, glyfy,
+ideální čáry i oblouky. Bod 1 je „vpřed“ ve směru letu lodi.
 
 ### 4.2 Zóny (všechny hodnoty do `game_config.dart`)
 
@@ -241,10 +246,14 @@ kopíruje tebe; technika je hotová v perku `afterimage` trupu Dart). Otevřená
 | SNAPSHOT | švih, 8 směrů | — | 10 | Jedna rána přední zbraně daným směrem |
 | BROADSIDE | `[3,4,5]` | — | 25 | Salva do obou boků |
 | VOLLEY | `[7,4,1]` | — | 40 | Nabitý vějíř pěti paprsků vpřed |
-| REARGUARD | `[1,4,7]` | 4 s | 20 | Mina za lodí |
-| OVERDRIVE | `[1,2,5]` | 3 s | 35 | Cooldown zbraní ×0,6; řízení zůstává |
-| TIMEWARP | `[3,0,1,2,5]` | 2,5 s | 50 | Nepřátelé a jejich střely na 50 % rychlosti (`startTimewarp`) |
-| AEGIS | `[3,6,7,8,5]` | 3 s | 40 | Štít se dobíjí ×4 a nepropustí zásah do trupu |
+| CALTROP | `[1,4,7]` | 4 s | 20 | Mina na místě lodi: vybuchne u nepřítele nebo po 4 s, mezitím polyká střely |
+| FRENZY | `[1,2,5]` | 3 s | 35 | Cooldown zbraní ×0,6; řízení zůstává |
+| STASIS | `[3,0,1,2,5]` | 2,5 s | 50 | Nepřátelé a jejich střely na 50 % rychlosti (`startTimewarp`) |
+| HALO | `[3,6,7,8,5]` | 3 s | 40 | Štít se dobíjí ×4; co štít neudrží, do trupu nepropadne |
+
+Jména se mění, protože OVERDRIVE, TIMEWARP, AEGIS, REARGUARD a ORBIT už jsou mody
+(VAULT). Test `sigil_catalog_test` hlídá, že se jméno sigilu nikdy nekryje s modem
+ani trupem.
 | RADIAL | kruh | — | 55 | Prstenec 16 střel přední zbraně |
 | STORM | dvojkruh | 4 s | 70 | Všechny zbraně pálí naplno bez placení generátoru |
 
@@ -257,10 +266,10 @@ každého; nový stejný jen obnoví čas. BREAK (B) je umí předčasně ukonč
 |---|---|---|---|
 | PING | švih, 8 směrů | 5 | Companioni soustředí palbu daným směrem na 2 s |
 | WINGMAN | `[3,4,5]` | 40 | Přivolá doprovod na ten bok (zrcadlově na druhý) |
-| LANCER | `[7,4,1]` | 40 | Přivolá stíhače, který letí před tebou a loví |
-| WARDEN | `[1,4,7]` | 40 | Přivolá strážce za loď; tělem chytá střely |
+| HUNTER | `[7,4,1]` | 40 | Přivolá stíhače, který letí před tebou a loví |
+| WARDEN | `[1,4,7]` | 40 | Přivolá strážce těsně před loď; tělem chytá střely (6 zásahů), nestřílí |
 | FORMATION | `[1,2,5]` | 10 | Přepne rozestup: do šířky ↔ do klínu |
-| ORBIT | kruh | 35 | Companioni 3 s krouží kolem lodi a žerou střely |
+| WHIRL | kruh | 35 | Companioni 3 s krouží kolem lodi a žerou střely |
 | SACRIFICE | `[3,6,7,8,5]` | 0 | Companioni vyletí a vybuchnou; vrátí 15 NÁBOJE za kus |
 
 Pravidla companionů: nejvýš **2 ze sigilů** současně (dron z modu SATELLITE nebo trupu
@@ -421,8 +430,8 @@ Uvnitř plátna jen Flame komponenty (žádné widgety). Vše má být čitelné
 
 | Prvek | Kde | Chování |
 |---|---|---|
-| **Sigil pad** | roh u pravého palce (portrait vpravo dole) | 9 teček, kurzor = poloha páčky, sebrané body svítí a spojuje je čára. Barva = vrstva (HULL tyrkys, ARMS jantar, WING zelená). |
-| Jméno sigilu | nad padem | Vyskočí při rozpoznání; *fizzle* a *dry* mají vlastní krátký stav |
+| **Sigil pad** | vpravo dole (za lodí, mimo pás OSD) | **Vidět pořád** (rozhodnutí 2026-11-10). Kruh se středem a 8 body, kurzor = poloha páčky, živá stopa tahu, sebrané body svítí. Barva = vrstva (HULL tyrkys, ARMS jantar, WING zelená). |
+| Výsledek tahu | na padu a nad ním | Po každém gestu, dokud nezačne další: skutečná stopa přes ideální čáru, jméno, **přesnost v %** a čas kreslení v ms. Netrefa: červená stopa, nejbližší sigil s otazníkem a důvod (vynechaný bod, pozpátku, špatné rameno…). *Dry* = „málo náboje“. |
 | NÁBOJ | prstenec kolem padu | Zářezy po cenách nejbližších sigilů |
 | OVERSTREAM | u měřáku generátoru | 1–3 čárky; bliká, když generátor nestíhá |
 | Časované efekty | oblouky kolem lodi | Jeden oblouk na efekt, ubývá s časem |
@@ -472,7 +481,7 @@ jiné ovladače překládá na Xbox pad, takže není co implementovat. Navíc:
   příznaky `mirrored`/`untouchable`/`focus`, `gear`, `charge`, `flow` a až 3 companiony
   (`type, x, y`). `protocolVersion = 5`; starší verze se odmítne stejně jako dnes.
 - Druhý pad (`gamepadInput.secondary`) dostane stejné schéma. Každý hráč má vlastní NÁBOJ a FLOW.
-- TIMEWARP v co-opu zpomalí nepřátele oběma — je to stav hry, ne lodi.
+- STASIS v co-opu zpomalí nepřátele oběma — je to stav hry, ne lodi.
 
 ---
 
@@ -517,7 +526,7 @@ po celou dobu.
 | 2 | NÁBOJ, graze, fáze na třech vstupech zásahu, HULL tier 1–4: HOP, SIDESTEP, STRIKE, RETREAT, DASH, ROLL, LOOP | LOOPem jde proletět salvou bez zásahu a phase graze vrací NÁBOJ |
 | 3 | OVERSTREAM na LT, FOCUS na A, výměna zbraně na Y | Bubble gun drží trojitý proud, vulcan zadrhává; ubrání RT viditelně plní NÁBOJ |
 | 4 | Vrstva ARMS + časované efekty + MEGA BLAST | Všech 9 ARMS sigilů; MEGA BLAST škáluje štítem a ruší střely |
-| 5 | Vrstva WING + `Companion` | Dva companioni, formace, ORBIT, SACRIFICE; dron z modu běží vedle |
+| 5 | Vrstva WING + `Companion` | Dva companioni, formace, WHIRL, SACRIFICE; dron z modu běží vedle |
 | 6 | SHADOW, ECHO, SLALOM, CORKSCREW, FLOW, BREAK, buffer | FLOW S jde udržet 10 s; `phaseGap` nejde obejít |
 | 7 | Odemykání, úrovně L2/L3, grimoár (Back + ComCenter), varianty a X | Nový save začíná s tier 1–2; grimoár jde celý ovládat padem |
 | 8 | Co-op: `VesselSnap` + `protocolVersion 5`, druhý pad | Dva hráči vidí navzájem své sigily a companiony; pojistka z §13 pryč |

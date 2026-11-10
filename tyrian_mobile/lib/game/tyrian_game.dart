@@ -15,8 +15,12 @@ import 'platform_config.dart' as platform;
 import '../input/keyboard_input.dart';
 import '../input/gamepad_input.dart';
 import '../input/pad_scheme.dart';
+import '../input/keyboard_sigils.dart';
 import '../rendering/sigil_hud.dart';
+import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_spec.dart';
+import '../systems/training/arena.dart';
+import '../systems/training/arena_ghost.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
@@ -61,9 +65,11 @@ enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
 
 /// Endless is the roguelike run; campaign is the node map with its own vessel
-/// and save. Everything keyed on a sector index — level, art zone, which
-/// content loads, where progress is written — dispatches on this.
-enum GameMode { endless, campaign }
+/// and save; training is the sigil arena (Prompts/29), which borrows the
+/// endless ship and writes nothing back. Everything keyed on a sector index —
+/// level, art zone, which content loads, where progress is written —
+/// dispatches on this.
+enum GameMode { endless, campaign, training }
 
 class TyrianGame extends FlameGame
     with DragCallbacks, TapCallbacks, KeyboardEvents {
@@ -200,7 +206,115 @@ class TyrianGame extends FlameGame
       ? Campaign.levelForNode(index)
       : Sector.levelForIndex(index);
 
-  int zoneForIndex(int index) => BgZones.forLevel(levelForIndex(index));
+  int zoneForIndex(int index) => mode == GameMode.training
+      ? BgZones.forLevel(arena.level)
+      : BgZones.forLevel(levelForIndex(index));
+
+  // ── Training arena (Prompts/29 §3) ──
+
+  final ArenaSettings arena = ArenaSettings();
+  final ArenaStats arenaStats = ArenaStats();
+
+  /// The endless ship as it was before the arena, put back on the way out.
+  Map<String, dynamic>? _arenaReturn;
+
+  /// Fired when the arena wants its panel (pause, or after leaving).
+  VoidCallback? onArenaChanged;
+
+  /// The View button asked for the grimoire; main.dart shows it.
+  VoidCallback? onGrimoireRequested;
+  bool grimoireOpen = false;
+
+  void openGrimoire() {
+    if (state != GameState.playing || grimoireOpen) return;
+    grimoireOpen = true;
+    togglePause();
+    onGrimoireRequested?.call();
+  }
+
+  void closeGrimoire() {
+    if (!grimoireOpen) return;
+    grimoireOpen = false;
+    suppressStartEdge();
+    if (state == GameState.paused) togglePause();
+  }
+
+  /// A pad that plays itself in the arena (demo and video capture).
+  static const bool sigilDemo = bool.fromEnvironment('SIGIL_DEMO');
+  ArenaGhost? ghost;
+
+  /// Into the arena with the endless ship. Nothing it does is saved.
+  void enterArena() {
+    if (mode == GameMode.campaign) return;
+    _arenaReturn = vessel.toSaveMap();
+    mode = GameMode.training;
+    arenaStats.reset();
+    vessel.caster.onReading = arenaStats.onReading;
+    state = GameState.playing;
+    vessel.visible = true;
+    vessel.resetVessel();
+    vessel.resetPosition();
+    vessel.caster.meter.reset();
+    if (sigilDemo) {
+      final d = arena.drill;
+      ghost = d == null
+          ? ArenaGhost.catalogue()
+          : ArenaGhost([SigilCatalog.of(d)]);
+    }
+    _startArenaRound();
+    _startSectorMusic();
+  }
+
+  /// Apply changed dials: a fresh boss, the ship patched up.
+  void restartArenaRound() {
+    if (mode != GameMode.training) return;
+    vessel.resetVessel();
+    vessel.resetPosition();
+    _startArenaRound();
+  }
+
+  void _startArenaRound() {
+    loadSector(0);
+    vessel.caster.meter.infinite = arena.infiniteCharge;
+    vessel.caster.grantCompanions(arena.companions);
+  }
+
+  /// The boss beaten: the next one, straight away.
+  void _arenaBossDown() {
+    arenaStats.bossDown();
+    showMessage('${arenaStats.bosses}×');
+    vessel.shield = vessel.shieldMax;
+    _startArenaRound();
+  }
+
+  /// The ship would have died. The arena patches it up and counts it.
+  bool arenaKnockout(Vessel v) {
+    if (mode != GameMode.training) return false;
+    arenaStats.knockouts++;
+    v.hp = v.hpMax;
+    v.shield = v.shieldMax;
+    v.dmgTaken = 4;
+    showMessage('K.O. ${arenaStats.knockouts}');
+    return true;
+  }
+
+  /// Back to the endless ship, exactly as it went in.
+  void leaveArena() {
+    if (mode != GameMode.training) return;
+    _leaveMission();
+    vessel.caster.onReading = null;
+    vessel.caster.meter.infinite = false;
+    ghost = null;
+    final back = _arenaReturn;
+    if (back != null) vessel.loadFromSave(back);
+    _arenaReturn = null;
+    mode = GameMode.endless;
+    MusicService.instance.setPaused(false);
+    MusicService.instance.stop();
+    state = GameState.comCenter;
+  }
+
+  Sector _arenaSector() => arena.sector(Campaign.poweredDps(vessel));
 
   /// Sector.complete is a one-way latch and the ComCenter only opens two
   /// seconds later, so without this the whole end-of-sector block ran on every
@@ -310,6 +424,7 @@ class TyrianGame extends FlameGame
     vessel = Vessel();
     await vessel.init();
     world.add(vessel);
+    vessel.caster.onGrimoire = openGrimoire;
 
     // Debug: screen/viewport info
     print('[LAYOUT] FlameGame.size: ${size.x} x ${size.y}');
@@ -397,6 +512,10 @@ class TyrianGame extends FlameGame
     camera.viewport.add(OffscreenEnemyMarkers());
     camera.viewport.add(SigilHud());
   }
+
+  /// Sigils exist on this machine with this pad scheme — the arena is offered.
+  bool get sigilsAvailable =>
+      platform.isDesktop && PadSettings.scheme == PadScheme.sigil;
 
   /// Right-stick combat is on (Prompts/28): desktop, the sigil scheme, solo.
   /// Co-op keeps the classic pad until the protocol carries sigil state.
@@ -506,9 +625,11 @@ class TyrianGame extends FlameGame
     _clearActiveObjects();
     currentSector?.removeFromParent();
 
-    currentSector = mode == GameMode.campaign
-        ? Campaign.buildNode(index, this)
-        : Sector.create(index, this);
+    currentSector = switch (mode) {
+      GameMode.campaign => Campaign.buildNode(index, this),
+      GameMode.training => _arenaSector(),
+      GameMode.endless => Sector.create(index, this),
+    };
     if (currentSector != null) {
       world.add(currentSector!);
     }
@@ -599,6 +720,12 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
+    // The pad is polled on the wall clock; the arena's world runs at its own.
+    _pollPad(dt);
+    if (mode == GameMode.training) {
+      dt *= arena.speed;
+      if (state == GameState.playing) arenaStats.tick(dt);
+    }
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
       final snap = coopClient?.latestSnapshot;
@@ -634,7 +761,7 @@ class TyrianGame extends FlameGame
     }
     super.update(dt);
     elapsed += dt;
-    AchievementService.instance.addPlayTime(dt);
+    if (mode != GameMode.training) AchievementService.instance.addPlayTime(dt);
     shardPool.update(dt);
     _updateWorldShift(dt);
 
@@ -739,6 +866,7 @@ class TyrianGame extends FlameGame
   }
 
   void _onSectorComplete() {
+    if (mode == GameMode.training) return _arenaBossDown();
     SoundService.instance.play(SfxEvent.sectorComplete);
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
 
@@ -838,6 +966,7 @@ class TyrianGame extends FlameGame
   /// vessel over the endless run's save.
   Future<void> saveProgress() async {
     if (coopRole == CoopRole.client) return; // client mirrors host, never owns state
+    if (mode == GameMode.training) return; // the arena borrows; it never writes
     if (mode == GameMode.campaign) return _saveCampaignProgress();
     final m = vessel.toSaveMap();
     await SaveService.saveGameState(
@@ -1180,16 +1309,20 @@ class TyrianGame extends FlameGame
     );
   }
 
-  /// Process keyboard + gamepad input — called at the start of update().
-  void _processDesktopInput(double dt) {
+  /// Poll the gamepad (~60Hz to avoid MethodChannel overhead).
+  void _pollPad(double realDt) {
     if (!platform.isDesktop) return;
-
-    // Poll gamepad (~60Hz to avoid MethodChannel overhead)
-    _gamepadPollTimer += dt;
+    _gamepadPollTimer += realDt;
     if (_gamepadPollTimer >= 1 / 60) {
       _gamepadPollTimer = 0;
       gamepadInput.poll(); // fire-and-forget async
     }
+  }
+
+  /// Process keyboard + gamepad input — called at the start of update().
+  void _processDesktopInput(double dt) {
+    if (!platform.isDesktop) return;
+
 
     // ── Keyboard pause (Escape) ──
     final pauseKb = keyboardInput.pause;
@@ -1250,16 +1383,24 @@ class TyrianGame extends FlameGame
     }
   }
 
+  final KeyboardSigils _keySigils = KeyboardSigils();
+
   /// The pad in the sigil scheme (Prompts/28 §3): the left stick or the
   /// keyboard flies, as far as a running sigil leaves the stick free; the
   /// right stick draws; RT fires with its analog cadence.
   void _processSigilPad(GamepadState gp, double dt) {
-    final f = gamepadInput.isConnected
-        ? PadFrame.read(gp, southpaw: PadSettings.southpaw)
-        : PadFrame.idle;
+    final g = mode == GameMode.training ? ghost : null;
+    final f = g != null
+        ? g.frame(dt)
+        : (gamepadInput.isConnected
+            ? PadFrame.read(gp, southpaw: PadSettings.southpaw)
+            : PadFrame.idle);
     final caster = vessel.caster;
-    final (sx, sy) = platform.screenToGame(f.drawX, f.drawY);
-    caster.input(f, sx, sy, dt);
+    final typed = _keySigils.update(keyboardInput, dt);
+    final both = f.merge(_keySigils.frame(keyboardInput));
+    final (sx, sy) = platform.screenToGame(both.drawX, both.drawY);
+    caster.input(both, sx, sy, dt);
+    if (typed != null) caster.inputDots(typed.$1, typed.$2, typed.$3);
 
     final padMoves = f.moveX != 0 || f.moveY != 0;
     final mx = padMoves ? f.moveX : keyboardInput.dx;

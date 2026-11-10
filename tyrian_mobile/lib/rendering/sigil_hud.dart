@@ -136,7 +136,8 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
     _stroke(canvas, c, r.trail, col.withValues(alpha: 0.9), 2.5);
 
     final l = L10n.current;
-    final pct = '${(r.accuracy * 100).round()} %';
+    // Typed on the keyboard: nothing was drawn, so nothing to judge.
+    final pct = r.keyed ? '⌨' : '${(r.accuracy * 100).round()} %';
     final ms = '${(r.drawTime * 1000).round()} ms';
     String title, sub;
     if (r.cast) {

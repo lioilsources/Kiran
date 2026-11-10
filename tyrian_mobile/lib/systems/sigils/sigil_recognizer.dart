@@ -65,6 +65,9 @@ class SigilReading {
   /// 0..1, how closely [trail] followed [ideal] (see [SigilAccuracy]).
   final double accuracy;
 
+  /// Typed on the keyboard: there is no stroke to judge.
+  final bool keyed;
+
   const SigilReading({
     required this.spec,
     required this.drawn,
@@ -76,6 +79,7 @@ class SigilReading {
     this.trail = const [],
     this.ideal = const [],
     this.accuracy = 0,
+    this.keyed = false,
   });
 
   bool get cast => spec != null;
@@ -388,6 +392,38 @@ class SigilRecognizer {
     if (shape == null || !spec.mirrorable) return false;
     return _editDistance(drawn, SigilGrid.mirrorShape(shape)) <
         _editDistance(drawn, shape);
+  }
+
+  /// A drawing that came as dots, not as a stick — the keyboard's. The same
+  /// matching as a stroke, with no trail and so no precision.
+  SigilReading resolveDots(List<int> dots, SigilLayer layer, {double time = 0}) {
+    _rimTime.clear();
+    final hit = _resolve(dots, layer);
+    if (hit != null) {
+      return SigilReading(
+        spec: hit.$1,
+        mirrored: hit.$2,
+        flickDot: hit.$3,
+        drawn: List.of(dots),
+        layer: layer,
+        drawTime: time,
+        ideal: idealFor(hit.$1, mirrored: hit.$2, flickDot: hit.$3, drawn: dots),
+        keyed: true,
+      );
+    }
+    final why = diagnose(dots, layer);
+    final near = why.nearest;
+    return SigilReading(
+      spec: null,
+      drawn: List.of(dots),
+      layer: layer,
+      drawTime: time,
+      miss: why,
+      ideal: near == null || near.isFlick
+          ? const []
+          : idealFor(near, mirrored: _mirroredCloser(near, dots), drawn: dots),
+      keyed: true,
+    );
   }
 
   // ── Matching ──

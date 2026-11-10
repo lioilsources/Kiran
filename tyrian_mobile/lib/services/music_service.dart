@@ -80,6 +80,8 @@ class MusicService {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     _muted = prefs.getBool('music_muted') ?? false;
+    // MUTE: capture runs stay silent without touching the saved setting.
+    if (const bool.fromEnvironment('MUTE')) _muted = true;
 
     // Every player in the app is built with handleInterruptions:false, so
     // this is the only interruption handler. Before it existed each of the

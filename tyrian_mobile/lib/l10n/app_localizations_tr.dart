@@ -831,4 +831,180 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sigilBusy => 'önceki hâlâ sürüyor';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BOSS PARÇALARI';
+
+  @override
+  String get arenaBareCore => 'çıplak çekirdek';
+
+  @override
+  String get arenaCompanions => 'YOLDAŞLAR';
+
+  @override
+  String get arenaCharge => 'ŞARJ';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'DÜNYA HIZI';
+
+  @override
+  String get arenaDrill => 'ALIŞTIRMA';
+
+  @override
+  String get arenaFreePlay => 'SERBEST';
+
+  @override
+  String get arenaFight => 'SAVAŞ';
+
+  @override
+  String get arenaNewBoss => 'YENİ BOSS';
+
+  @override
+  String get arenaLeave => 'ARENADAN ÇIK';
+
+  @override
+  String get arenaHint =>
+      'Boss düştüğü an geri gelir. Burada hiçbir şey kaydedilmez.';
+
+  @override
+  String get arenaColCast => 'BAŞARILI';
+
+  @override
+  String get arenaColMiss => 'ISKA';
+
+  @override
+  String get arenaColAvg => 'ORT.';
+
+  @override
+  String get arenaColBest => 'EN İYİ';
+
+  @override
+  String get arenaColTime => 'EN HIZLI';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Boss $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'KUMANDA: SİGİLLER';
+
+  @override
+  String get padSchemeClassic => 'KUMANDA: KLASİK';
+
+  @override
+  String get padSouthpawOn => 'SOLAK: AÇIK';
+
+  @override
+  String get padSouthpawOff => 'SOLAK: KAPALI';
+
+  @override
+  String get sigilDescHop => 'Analogu ittiğin yöne hızlı bir sıçrama';
+
+  @override
+  String get sigilDescSidestep => 'Alan boyunca uzun bir yan adım';
+
+  @override
+  String get sigilDescStrike => 'Üç ağır atışla ileri atıl, sonra geri dön';
+
+  @override
+  String get sigilDescRetreat => 'Örtme ateşi ileri giderken geri çekil';
+
+  @override
+  String get sigilDescDash =>
+      'Ateşin içinden çapraz atılış, yarı yolda dokunulmaz';
+
+  @override
+  String get sigilDescRoll => 'Yana fıçı dönüşü, dokunulmaz';
+
+  @override
+  String get sigilDescShadow =>
+      'En yakın düşmanın altına kilitlen ve ateşe devam et';
+
+  @override
+  String get sigilDescEcho =>
+      'Bir gölge son iki saniyeni yarı hasarla tekrarlar';
+
+  @override
+  String get sigilDescLoop => 'Üstten takla: atışlar altından geçer';
+
+  @override
+  String get sigilDescSlalom => 'Yelpaze ateşle alan boyunca S kıvrımı';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Her yöne ateş ederek ileri burgu, dokunulmaz';
+
+  @override
+  String get sigilDescSnapshot => 'Analogu ittiğin yöne tek ağır atış';
+
+  @override
+  String get sigilDescBroadside => 'İki kanattan birden salvo';
+
+  @override
+  String get sigilDescVolley => 'İleriye beş yüklü ışın';
+
+  @override
+  String get sigilDescCaltrop => 'Atışları yutup patlayan bir mayın bırak';
+
+  @override
+  String get sigilDescFrenzy => 'Silahlar birkaç saniye daha hızlı ateş eder';
+
+  @override
+  String get sigilDescStasis => 'Düşmanlar ve atışları yarı hıza düşer';
+
+  @override
+  String get sigilDescHalo =>
+      'Kalkan dört kat hızlı dolar ve hiçbir şey geçemez';
+
+  @override
+  String get sigilDescRadial => 'On altı atışlık bir halka';
+
+  @override
+  String get sigilDescStorm => 'Tüm silahlar bedavaya tam güç ateş eder';
+
+  @override
+  String get sigilDescPing =>
+      'Yoldaşlar ateşi analogu ittiğin yöne yoğunlaştırır';
+
+  @override
+  String get sigilDescWingman => 'Çizdiğin kanada bir kol uçağı çağır';
+
+  @override
+  String get sigilDescHunter => 'Önden uçup hedef seçen bir avcı çağır';
+
+  @override
+  String get sigilDescWarden =>
+      'Sana gelen atışları üstlenen bir muhafız çağır';
+
+  @override
+  String get sigilDescFormation =>
+      'Yoldaşlar geniş ve kama düzeni arasında geçiş yapar';
+
+  @override
+  String get sigilDescWhirl => 'Yoldaşlar etrafında döner ve atışları yutar';
+
+  @override
+  String get sigilDescSacrifice => 'Yoldaşlar dalıp patlar, şarjı geri öder';
+
+  @override
+  String get grimoire => 'BÜYÜ KİTABI';
+
+  @override
+  String get grimoireHint =>
+      'Sağ analogla çiz. ARMS için LB, WING için RB, MEGA BLAST için ikisini birden basılı tut.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'maliyet $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'dokunulmaz';
 }

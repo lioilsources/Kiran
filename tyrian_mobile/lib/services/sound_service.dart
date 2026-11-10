@@ -118,6 +118,8 @@ class SoundService {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     _muted = prefs.getBool('sfx_muted') ?? false;
+    // MUTE: capture runs stay silent without touching the saved setting.
+    if (const bool.fromEnvironment('MUTE')) _muted = true;
   }
 
   /// Load SFX paths for the given skin, falling back to default.

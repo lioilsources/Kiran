@@ -1450,6 +1450,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'previous one still running'**
   String get sigilBusy;
+
+  /// No description provided for @arena.
+  ///
+  /// In en, this message translates to:
+  /// **'ARENA'**
+  String get arena;
+
+  /// No description provided for @arenaBossParts.
+  ///
+  /// In en, this message translates to:
+  /// **'BOSS PARTS'**
+  String get arenaBossParts;
+
+  /// No description provided for @arenaBareCore.
+  ///
+  /// In en, this message translates to:
+  /// **'bare core'**
+  String get arenaBareCore;
+
+  /// No description provided for @arenaCompanions.
+  ///
+  /// In en, this message translates to:
+  /// **'COMPANIONS'**
+  String get arenaCompanions;
+
+  /// No description provided for @arenaCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'CHARGE'**
+  String get arenaCharge;
+
+  /// No description provided for @arenaChargeNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'NORMAL'**
+  String get arenaChargeNormal;
+
+  /// No description provided for @arenaSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'WORLD SPEED'**
+  String get arenaSpeed;
+
+  /// No description provided for @arenaDrill.
+  ///
+  /// In en, this message translates to:
+  /// **'DRILL'**
+  String get arenaDrill;
+
+  /// No description provided for @arenaFreePlay.
+  ///
+  /// In en, this message translates to:
+  /// **'FREE PLAY'**
+  String get arenaFreePlay;
+
+  /// No description provided for @arenaFight.
+  ///
+  /// In en, this message translates to:
+  /// **'FIGHT'**
+  String get arenaFight;
+
+  /// No description provided for @arenaNewBoss.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW BOSS'**
+  String get arenaNewBoss;
+
+  /// No description provided for @arenaLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'LEAVE ARENA'**
+  String get arenaLeave;
+
+  /// No description provided for @arenaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The boss comes back the moment it dies. Nothing here is saved.'**
+  String get arenaHint;
+
+  /// No description provided for @arenaColCast.
+  ///
+  /// In en, this message translates to:
+  /// **'CAST'**
+  String get arenaColCast;
+
+  /// No description provided for @arenaColMiss.
+  ///
+  /// In en, this message translates to:
+  /// **'MISS'**
+  String get arenaColMiss;
+
+  /// No description provided for @arenaColAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'AVG'**
+  String get arenaColAvg;
+
+  /// No description provided for @arenaColBest.
+  ///
+  /// In en, this message translates to:
+  /// **'BEST'**
+  String get arenaColBest;
+
+  /// No description provided for @arenaColTime.
+  ///
+  /// In en, this message translates to:
+  /// **'FASTEST'**
+  String get arenaColTime;
+
+  /// No description provided for @arenaSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Bosses {bosses} · K.O. {knockouts}'**
+  String arenaSummary(int bosses, int knockouts);
+
+  /// No description provided for @padSchemeSigil.
+  ///
+  /// In en, this message translates to:
+  /// **'PAD: SIGILS'**
+  String get padSchemeSigil;
+
+  /// No description provided for @padSchemeClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'PAD: CLASSIC'**
+  String get padSchemeClassic;
+
+  /// No description provided for @padSouthpawOn.
+  ///
+  /// In en, this message translates to:
+  /// **'LEFT-HANDED: ON'**
+  String get padSouthpawOn;
+
+  /// No description provided for @padSouthpawOff.
+  ///
+  /// In en, this message translates to:
+  /// **'LEFT-HANDED: OFF'**
+  String get padSouthpawOff;
+
+  /// No description provided for @sigilDescHop.
+  ///
+  /// In en, this message translates to:
+  /// **'A quick hop the way you flick'**
+  String get sigilDescHop;
+
+  /// No description provided for @sigilDescSidestep.
+  ///
+  /// In en, this message translates to:
+  /// **'A long sidestep across the field'**
+  String get sigilDescSidestep;
+
+  /// No description provided for @sigilDescStrike.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunge forward with three heavy shots, then back'**
+  String get sigilDescStrike;
+
+  /// No description provided for @sigilDescRetreat.
+  ///
+  /// In en, this message translates to:
+  /// **'Fall back while covering fire goes forward'**
+  String get sigilDescRetreat;
+
+  /// No description provided for @sigilDescDash.
+  ///
+  /// In en, this message translates to:
+  /// **'A diagonal dash through fire, untouchable midway'**
+  String get sigilDescDash;
+
+  /// No description provided for @sigilDescRoll.
+  ///
+  /// In en, this message translates to:
+  /// **'A barrel roll to the side, untouchable'**
+  String get sigilDescRoll;
+
+  /// No description provided for @sigilDescShadow.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock under the nearest enemy and keep firing'**
+  String get sigilDescShadow;
+
+  /// No description provided for @sigilDescEcho.
+  ///
+  /// In en, this message translates to:
+  /// **'A shadow replays your last two seconds at half damage'**
+  String get sigilDescEcho;
+
+  /// No description provided for @sigilDescLoop.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop over the top: shots pass beneath you'**
+  String get sigilDescLoop;
+
+  /// No description provided for @sigilDescSlalom.
+  ///
+  /// In en, this message translates to:
+  /// **'An S-curve across the field with fanned fire'**
+  String get sigilDescSlalom;
+
+  /// No description provided for @sigilDescCorkscrew.
+  ///
+  /// In en, this message translates to:
+  /// **'Corkscrew forward firing all around, untouchable'**
+  String get sigilDescCorkscrew;
+
+  /// No description provided for @sigilDescSnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'One heavy shot the way you flick'**
+  String get sigilDescSnapshot;
+
+  /// No description provided for @sigilDescBroadside.
+  ///
+  /// In en, this message translates to:
+  /// **'A salvo out of both flanks'**
+  String get sigilDescBroadside;
+
+  /// No description provided for @sigilDescVolley.
+  ///
+  /// In en, this message translates to:
+  /// **'Five charged rays forward'**
+  String get sigilDescVolley;
+
+  /// No description provided for @sigilDescCaltrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop a mine that swallows shots and blows up'**
+  String get sigilDescCaltrop;
+
+  /// No description provided for @sigilDescFrenzy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guns fire faster for a few seconds'**
+  String get sigilDescFrenzy;
+
+  /// No description provided for @sigilDescStasis.
+  ///
+  /// In en, this message translates to:
+  /// **'Enemies and their shots slow to half speed'**
+  String get sigilDescStasis;
+
+  /// No description provided for @sigilDescHalo.
+  ///
+  /// In en, this message translates to:
+  /// **'Shield recharges four times faster and nothing gets through'**
+  String get sigilDescHalo;
+
+  /// No description provided for @sigilDescRadial.
+  ///
+  /// In en, this message translates to:
+  /// **'A ring of sixteen shots'**
+  String get sigilDescRadial;
+
+  /// No description provided for @sigilDescStorm.
+  ///
+  /// In en, this message translates to:
+  /// **'Every gun fires flat out, for free'**
+  String get sigilDescStorm;
+
+  /// No description provided for @sigilDescPing.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions focus fire where you flick'**
+  String get sigilDescPing;
+
+  /// No description provided for @sigilDescWingman.
+  ///
+  /// In en, this message translates to:
+  /// **'Call a wingman to the flank you drew toward'**
+  String get sigilDescWingman;
+
+  /// No description provided for @sigilDescHunter.
+  ///
+  /// In en, this message translates to:
+  /// **'Call a hunter that flies ahead and picks targets'**
+  String get sigilDescHunter;
+
+  /// No description provided for @sigilDescWarden.
+  ///
+  /// In en, this message translates to:
+  /// **'Call a warden that takes the shots meant for you'**
+  String get sigilDescWarden;
+
+  /// No description provided for @sigilDescFormation.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions switch between wide and wedge'**
+  String get sigilDescFormation;
+
+  /// No description provided for @sigilDescWhirl.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions circle you and eat shots'**
+  String get sigilDescWhirl;
+
+  /// No description provided for @sigilDescSacrifice.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions dive and explode, paying charge back'**
+  String get sigilDescSacrifice;
+
+  /// No description provided for @grimoire.
+  ///
+  /// In en, this message translates to:
+  /// **'GRIMOIRE'**
+  String get grimoire;
+
+  /// No description provided for @grimoireHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw with the right stick. Hold LB for ARMS, RB for WING, both for MEGA BLAST.'**
+  String get grimoireHint;
+
+  /// No description provided for @sigilCost.
+  ///
+  /// In en, this message translates to:
+  /// **'cost {cost}'**
+  String sigilCost(int cost);
+
+  /// No description provided for @sigilUntouchable.
+  ///
+  /// In en, this message translates to:
+  /// **'untouchable'**
+  String get sigilUntouchable;
 }
 
 class _AppLocalizationsDelegate

@@ -1086,6 +1086,7 @@ class Vessel extends PositionComponent
     game.shaderPipeline.triggerAberration();
 
     if (hp <= 0) {
+      if (game.arenaKnockout(this)) return;
       hp = 0;
       if (game.isCoop) {
         visible = false;
@@ -1129,6 +1130,7 @@ class Vessel extends PositionComponent
     game.shaderPipeline.triggerAberration();
 
     if (hp <= 0) {
+      if (game.arenaKnockout(this)) return;
       hp = 0;
       if (game.isCoop) {
         visible = false;

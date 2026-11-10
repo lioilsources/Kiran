@@ -72,6 +72,18 @@ Podmínka, na které to celé stojí: **aréna je deterministická** — pevný 
 
 ## 3. Aréna
 
+**Rozhodnutí uživatele (2026-11-10):**
+
+- **Každé nové combo je hned v aréně.** Aréna čte drily přímo z `SigilCatalog`;
+  `test/arena_test.dart` selže, kdyby některý sigil v aréně chyběl. Žádný ruční
+  seznam, žádné „doplním později“.
+- **Battle aréna je vždy proti bossovi** s nastavitelným stupněm částí 0–4
+  (holé jádro → věž → štítový modul → tryska → kanón, `bossPartsForOrdinal`).
+  Boss se po zničení hned vrací. Hráč si navíc volí, s kolika companiony startuje (0–2).
+- **Sigil pad ukazuje vždy, co bylo nakresleno a jak přesně** (plán 28 §11).
+
+Dál:
+
 - Vstup z hlavního menu a ze stránky grimoáru v ComCenteru. Jen když `sigilsEnabled`
   (desktop + schéma `sigil`); na mobilu se položka vůbec neukáže.
 - **Bezpečná:** zásahy se počítají a ukazují, ale neubírají. NÁBOJ jde přepnout na nekonečný.

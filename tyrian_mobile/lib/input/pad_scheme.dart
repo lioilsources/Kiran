@@ -91,6 +91,26 @@ class PadFrame {
 
   static const idle = PadFrame();
 
+  /// This frame and another source of intent (the keyboard) together: held
+  /// buttons from either, the larger pedal, the sticks from this one.
+  PadFrame merge(PadFrame o) => PadFrame(
+        moveX: moveX,
+        moveY: moveY,
+        drawX: drawX,
+        drawY: drawY,
+        fire: fire || o.fire,
+        fireRate: fire ? fireRate : o.fireRate,
+        stream: stream > o.stream ? stream : o.stream,
+        arms: arms || o.arms,
+        wing: wing || o.wing,
+        focus: focus || o.focus,
+        breakSigil: breakSigil || o.breakSigil,
+        swap: swap || o.swap,
+        grimoireSet: grimoireSet || o.grimoireSet,
+        grimoire: grimoire || o.grimoire,
+        pause: pause || o.pause,
+      );
+
   /// Anything that should count as the pad being in use this frame.
   bool get active =>
       moveX != 0 ||

@@ -830,4 +830,172 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get sigilBusy => 'ท่าก่อนหน้ายังทำงานอยู่';
+
+  @override
+  String get arena => 'สนามฝึก';
+
+  @override
+  String get arenaBossParts => 'ชิ้นส่วนบอส';
+
+  @override
+  String get arenaBareCore => 'แกนเปล่า';
+
+  @override
+  String get arenaCompanions => 'เพื่อนร่วมบิน';
+
+  @override
+  String get arenaCharge => 'พลังงาน';
+
+  @override
+  String get arenaChargeNormal => 'ปกติ';
+
+  @override
+  String get arenaSpeed => 'ความเร็วโลก';
+
+  @override
+  String get arenaDrill => 'ฝึกท่า';
+
+  @override
+  String get arenaFreePlay => 'เล่นอิสระ';
+
+  @override
+  String get arenaFight => 'สู้';
+
+  @override
+  String get arenaNewBoss => 'บอสใหม่';
+
+  @override
+  String get arenaLeave => 'ออกจากสนามฝึก';
+
+  @override
+  String get arenaHint => 'บอสจะกลับมาทันทีที่ล้ม ที่นี่ไม่มีการบันทึกใด ๆ';
+
+  @override
+  String get arenaColCast => 'สำเร็จ';
+
+  @override
+  String get arenaColMiss => 'พลาด';
+
+  @override
+  String get arenaColAvg => 'เฉลี่ย';
+
+  @override
+  String get arenaColBest => 'ดีสุด';
+
+  @override
+  String get arenaColTime => 'เร็วสุด';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'บอส $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'จอย: ซิกิล';
+
+  @override
+  String get padSchemeClassic => 'จอย: คลาสสิก';
+
+  @override
+  String get padSouthpawOn => 'ถนัดซ้าย: เปิด';
+
+  @override
+  String get padSouthpawOff => 'ถนัดซ้าย: ปิด';
+
+  @override
+  String get sigilDescHop => 'กระโดดเร็วไปทางที่สะบัดสติ๊ก';
+
+  @override
+  String get sigilDescSidestep => 'ก้าวข้างไกลข้ามสนาม';
+
+  @override
+  String get sigilDescStrike => 'พุ่งไปหน้าพร้อมกระสุนหนักสามนัด แล้วถอยกลับ';
+
+  @override
+  String get sigilDescRetreat => 'ถอยหลังขณะยิงคุ้มกันไปข้างหน้า';
+
+  @override
+  String get sigilDescDash => 'พุ่งเฉียงฝ่าห่ากระสุน อมตะช่วงกลาง';
+
+  @override
+  String get sigilDescRoll => 'บาร์เรลโรลไปด้านข้าง อมตะ';
+
+  @override
+  String get sigilDescShadow => 'เกาะใต้ศัตรูที่ใกล้ที่สุดแล้วยิงต่อ';
+
+  @override
+  String get sigilDescEcho =>
+      'เงาเล่นซ้ำสองวินาทีล่าสุดของคุณด้วยความเสียหายครึ่งเดียว';
+
+  @override
+  String get sigilDescLoop => 'ตีลังกาข้ามด้านบน: กระสุนผ่านใต้ตัวคุณ';
+
+  @override
+  String get sigilDescSlalom => 'โค้งรูปตัว S ข้ามสนามพร้อมยิงเป็นพัด';
+
+  @override
+  String get sigilDescCorkscrew => 'หมุนเกลียวไปข้างหน้า ยิงรอบทิศ อมตะ';
+
+  @override
+  String get sigilDescSnapshot => 'กระสุนหนักหนึ่งนัดไปทางที่สะบัดสติ๊ก';
+
+  @override
+  String get sigilDescBroadside => 'ยิงชุดจากทั้งสองข้าง';
+
+  @override
+  String get sigilDescVolley => 'ลำแสงชาร์จห้าลำไปข้างหน้า';
+
+  @override
+  String get sigilDescCaltrop => 'วางทุ่นระเบิดที่ดูดกระสุนแล้วระเบิด';
+
+  @override
+  String get sigilDescFrenzy => 'ปืนยิงเร็วขึ้นสองสามวินาที';
+
+  @override
+  String get sigilDescStasis => 'ศัตรูและกระสุนของมันช้าลงครึ่งหนึ่ง';
+
+  @override
+  String get sigilDescHalo => 'ฟื้นโล่เร็วขึ้นสี่เท่าและไม่มีอะไรทะลุผ่าน';
+
+  @override
+  String get sigilDescRadial => 'วงแหวนกระสุนสิบหกนัด';
+
+  @override
+  String get sigilDescStorm => 'ทุกปืนยิงเต็มกำลังฟรี';
+
+  @override
+  String get sigilDescPing => 'เพื่อนร่วมบินระดมยิงไปทางที่สะบัดสติ๊ก';
+
+  @override
+  String get sigilDescWingman => 'เรียกวิงแมนไปยังด้านที่คุณวาด';
+
+  @override
+  String get sigilDescHunter => 'เรียกนักล่าที่บินนำหน้าและเลือกเป้า';
+
+  @override
+  String get sigilDescWarden => 'เรียกผู้พิทักษ์ที่รับกระสุนแทนคุณ';
+
+  @override
+  String get sigilDescFormation => 'เพื่อนร่วมบินสลับระหว่างแถวกว้างและรูปลิ่ม';
+
+  @override
+  String get sigilDescWhirl => 'เพื่อนร่วมบินบินวนรอบตัวคุณและบังกระสุน';
+
+  @override
+  String get sigilDescSacrifice => 'เพื่อนร่วมบินพุ่งชนแล้วระเบิด คืนพลังงาน';
+
+  @override
+  String get grimoire => 'ตำราเวท';
+
+  @override
+  String get grimoireHint =>
+      'วาดด้วยสติ๊กขวา กด LB ค้างไว้สำหรับ ARMS, RB สำหรับ WING, กดทั้งคู่สำหรับ MEGA BLAST';
+
+  @override
+  String sigilCost(int cost) {
+    return 'ราคา $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'อมตะ';
 }

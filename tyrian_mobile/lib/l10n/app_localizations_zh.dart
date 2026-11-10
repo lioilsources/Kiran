@@ -824,6 +824,172 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sigilBusy => '上一个仍在进行';
+
+  @override
+  String get arena => '竞技场';
+
+  @override
+  String get arenaBossParts => '首领部件';
+
+  @override
+  String get arenaBareCore => '仅核心';
+
+  @override
+  String get arenaCompanions => '僚机';
+
+  @override
+  String get arenaCharge => '能量';
+
+  @override
+  String get arenaChargeNormal => '正常';
+
+  @override
+  String get arenaSpeed => '世界速度';
+
+  @override
+  String get arenaDrill => '练习';
+
+  @override
+  String get arenaFreePlay => '自由';
+
+  @override
+  String get arenaFight => '开战';
+
+  @override
+  String get arenaNewBoss => '新首领';
+
+  @override
+  String get arenaLeave => '离开竞技场';
+
+  @override
+  String get arenaHint => '首领一倒下就会重生。这里不会保存任何进度。';
+
+  @override
+  String get arenaColCast => '成功';
+
+  @override
+  String get arenaColMiss => '失败';
+
+  @override
+  String get arenaColAvg => '平均';
+
+  @override
+  String get arenaColBest => '最佳';
+
+  @override
+  String get arenaColTime => '最快';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return '首领 $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => '手柄：符印';
+
+  @override
+  String get padSchemeClassic => '手柄：经典';
+
+  @override
+  String get padSouthpawOn => '左手模式：开';
+
+  @override
+  String get padSouthpawOff => '左手模式：关';
+
+  @override
+  String get sigilDescHop => '朝摇杆拨动方向快速小跳';
+
+  @override
+  String get sigilDescSidestep => '横穿战场的长距离侧移';
+
+  @override
+  String get sigilDescStrike => '带三发重弹向前突进，再退回';
+
+  @override
+  String get sigilDescRetreat => '后撤，同时向前打出掩护火力';
+
+  @override
+  String get sigilDescDash => '斜向冲刺穿过弹幕，途中无敌';
+
+  @override
+  String get sigilDescRoll => '向侧面桶滚，无敌';
+
+  @override
+  String get sigilDescShadow => '锁定在最近敌人下方持续射击';
+
+  @override
+  String get sigilDescEcho => '影子以半伤重放你最近两秒的动作';
+
+  @override
+  String get sigilDescLoop => '从上方翻筋斗：子弹从你下方穿过';
+
+  @override
+  String get sigilDescSlalom => '以扇形火力 S 形横穿战场';
+
+  @override
+  String get sigilDescCorkscrew => '螺旋前进并向四周开火，无敌';
+
+  @override
+  String get sigilDescSnapshot => '朝摇杆拨动方向发射一发重弹';
+
+  @override
+  String get sigilDescBroadside => '从两侧齐射一轮';
+
+  @override
+  String get sigilDescVolley => '向前发射五道充能光束';
+
+  @override
+  String get sigilDescCaltrop => '布下一枚会吞噬子弹并爆炸的地雷';
+
+  @override
+  String get sigilDescFrenzy => '武器在几秒内射速加快';
+
+  @override
+  String get sigilDescStasis => '敌人和敌弹降为半速';
+
+  @override
+  String get sigilDescHalo => '护盾回复速度提升四倍，任何攻击都无法穿透';
+
+  @override
+  String get sigilDescRadial => '十六发子弹组成的圆环';
+
+  @override
+  String get sigilDescStorm => '所有武器免费全力开火';
+
+  @override
+  String get sigilDescPing => '僚机朝拨动方向集中火力';
+
+  @override
+  String get sigilDescWingman => '召唤一架护航机到你画向的一侧';
+
+  @override
+  String get sigilDescHunter => '召唤一架飞在前方并挑选目标的猎手';
+
+  @override
+  String get sigilDescWarden => '召唤一架替你挡下子弹的守卫';
+
+  @override
+  String get sigilDescFormation => '僚机在宽阵与楔形阵之间切换';
+
+  @override
+  String get sigilDescWhirl => '僚机环绕你并吞噬子弹';
+
+  @override
+  String get sigilDescSacrifice => '僚机俯冲自爆，返还能量';
+
+  @override
+  String get grimoire => '魔典';
+
+  @override
+  String get grimoireHint => '用右摇杆绘制。按住 LB 为 ARMS，RB 为 WING，同时按住为 MEGA BLAST。';
+
+  @override
+  String sigilCost(int cost) {
+    return '消耗 $cost';
+  }
+
+  @override
+  String get sigilUntouchable => '无敌';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1646,4 +1812,170 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get sigilBusy => '上一個仍在進行';
+
+  @override
+  String get arena => '競技場';
+
+  @override
+  String get arenaBossParts => '首領部件';
+
+  @override
+  String get arenaBareCore => '僅核心';
+
+  @override
+  String get arenaCompanions => '僚機';
+
+  @override
+  String get arenaCharge => '能量';
+
+  @override
+  String get arenaChargeNormal => '正常';
+
+  @override
+  String get arenaSpeed => '世界速度';
+
+  @override
+  String get arenaDrill => '練習';
+
+  @override
+  String get arenaFreePlay => '自由';
+
+  @override
+  String get arenaFight => '開戰';
+
+  @override
+  String get arenaNewBoss => '新首領';
+
+  @override
+  String get arenaLeave => '離開競技場';
+
+  @override
+  String get arenaHint => '首領一倒下就會重生。這裡不會儲存任何進度。';
+
+  @override
+  String get arenaColCast => '成功';
+
+  @override
+  String get arenaColMiss => '失敗';
+
+  @override
+  String get arenaColAvg => '平均';
+
+  @override
+  String get arenaColBest => '最佳';
+
+  @override
+  String get arenaColTime => '最快';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return '首領 $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => '手把：符印';
+
+  @override
+  String get padSchemeClassic => '手把：經典';
+
+  @override
+  String get padSouthpawOn => '左手模式：開';
+
+  @override
+  String get padSouthpawOff => '左手模式：關';
+
+  @override
+  String get sigilDescHop => '朝搖桿撥動方向快速小跳';
+
+  @override
+  String get sigilDescSidestep => '橫越戰場的長距離側移';
+
+  @override
+  String get sigilDescStrike => '帶三發重彈向前突進，再退回';
+
+  @override
+  String get sigilDescRetreat => '後撤，同時向前打出掩護火力';
+
+  @override
+  String get sigilDescDash => '斜向衝刺穿過彈幕，途中無敵';
+
+  @override
+  String get sigilDescRoll => '向側面桶滾，無敵';
+
+  @override
+  String get sigilDescShadow => '鎖定在最近敵人下方持續射擊';
+
+  @override
+  String get sigilDescEcho => '影子以半傷重放你最近兩秒的動作';
+
+  @override
+  String get sigilDescLoop => '從上方翻筋斗：子彈從你下方穿過';
+
+  @override
+  String get sigilDescSlalom => '以扇形火力 S 形橫越戰場';
+
+  @override
+  String get sigilDescCorkscrew => '螺旋前進並向四周開火，無敵';
+
+  @override
+  String get sigilDescSnapshot => '朝搖桿撥動方向發射一發重彈';
+
+  @override
+  String get sigilDescBroadside => '從兩側齊射一輪';
+
+  @override
+  String get sigilDescVolley => '向前發射五道充能光束';
+
+  @override
+  String get sigilDescCaltrop => '布下一枚會吞噬子彈並爆炸的地雷';
+
+  @override
+  String get sigilDescFrenzy => '武器在數秒內射速加快';
+
+  @override
+  String get sigilDescStasis => '敵人和敵彈降為半速';
+
+  @override
+  String get sigilDescHalo => '護盾回復速度提升四倍，任何攻擊都無法穿透';
+
+  @override
+  String get sigilDescRadial => '十六發子彈組成的圓環';
+
+  @override
+  String get sigilDescStorm => '所有武器免費全力開火';
+
+  @override
+  String get sigilDescPing => '僚機朝撥動方向集中火力';
+
+  @override
+  String get sigilDescWingman => '召喚一架護航機到你畫向的一側';
+
+  @override
+  String get sigilDescHunter => '召喚一架飛在前方並挑選目標的獵手';
+
+  @override
+  String get sigilDescWarden => '召喚一架替你擋下子彈的守衛';
+
+  @override
+  String get sigilDescFormation => '僚機在寬陣與楔形陣之間切換';
+
+  @override
+  String get sigilDescWhirl => '僚機環繞你並吞噬子彈';
+
+  @override
+  String get sigilDescSacrifice => '僚機俯衝自爆，返還能量';
+
+  @override
+  String get grimoire => '魔典';
+
+  @override
+  String get grimoireHint => '用右搖桿繪製。按住 LB 為 ARMS，RB 為 WING，同時按住為 MEGA BLAST。';
+
+  @override
+  String sigilCost(int cost) {
+    return '消耗 $cost';
+  }
+
+  @override
+  String get sigilUntouchable => '無敵';
 }

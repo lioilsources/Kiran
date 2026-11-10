@@ -207,6 +207,12 @@ class SigilCaster {
     _updateSwap(f.swap, dt);
   }
 
+  /// Dots typed on the keyboard (Prompts/28 §12), matched like a stroke.
+  void inputDots(List<int> dots, SigilLayer layer, double time) {
+    if (!enabled || megaCharging) return;
+    _onReading(recognizer.resolveDots(dots, layer, time: time));
+  }
+
   void _updateGear(double t) {
     const h = config.overstreamHysteresis;
     final up3 = config.overstreamGear3 + (gear >= 3 ? -h : h);
@@ -689,6 +695,13 @@ class SigilCaster {
     final c = Companion(caster: this, role: role, side: side);
     companions.add(c);
     vessel.game.world.add(c);
+  }
+
+  /// The arena's head start: [n] wingmen, one per flank.
+  void grantCompanions(int n) {
+    for (var i = 0; i < n; i++) {
+      _summon(CompanionRole.wingman, side: i.isEven ? 1 : -1);
+    }
   }
 
   void _spawnEcho() {

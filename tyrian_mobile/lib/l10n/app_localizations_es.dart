@@ -838,4 +838,187 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sigilBusy => 'el anterior sigue activo';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'PIEZAS DEL JEFE';
+
+  @override
+  String get arenaBareCore => 'núcleo desnudo';
+
+  @override
+  String get arenaCompanions => 'ACOMPAÑANTES';
+
+  @override
+  String get arenaCharge => 'CARGA';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VELOCIDAD';
+
+  @override
+  String get arenaDrill => 'PRÁCTICA';
+
+  @override
+  String get arenaFreePlay => 'JUEGO LIBRE';
+
+  @override
+  String get arenaFight => 'A LUCHAR';
+
+  @override
+  String get arenaNewBoss => 'NUEVO JEFE';
+
+  @override
+  String get arenaLeave => 'SALIR DE LA ARENA';
+
+  @override
+  String get arenaHint =>
+      'El jefe vuelve en cuanto cae. Aquí no se guarda nada.';
+
+  @override
+  String get arenaColCast => 'LANZADOS';
+
+  @override
+  String get arenaColMiss => 'FALLOS';
+
+  @override
+  String get arenaColAvg => 'MEDIA';
+
+  @override
+  String get arenaColBest => 'MEJOR';
+
+  @override
+  String get arenaColTime => 'MÁS RÁPIDO';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Jefes $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'MANDO: SIGILOS';
+
+  @override
+  String get padSchemeClassic => 'MANDO: CLÁSICO';
+
+  @override
+  String get padSouthpawOn => 'ZURDO: SÍ';
+
+  @override
+  String get padSouthpawOff => 'ZURDO: NO';
+
+  @override
+  String get sigilDescHop => 'Un salto rápido hacia donde apuntes';
+
+  @override
+  String get sigilDescSidestep => 'Un largo paso lateral por el campo';
+
+  @override
+  String get sigilDescStrike =>
+      'Embestida al frente con tres disparos pesados, y atrás';
+
+  @override
+  String get sigilDescRetreat =>
+      'Retrocede mientras el fuego de cobertura va al frente';
+
+  @override
+  String get sigilDescDash =>
+      'Carrera diagonal entre el fuego, invulnerable a medio camino';
+
+  @override
+  String get sigilDescRoll => 'Un tonel hacia un lado, invulnerable';
+
+  @override
+  String get sigilDescShadow =>
+      'Pégate bajo el enemigo más cercano y sigue disparando';
+
+  @override
+  String get sigilDescEcho =>
+      'Una sombra repite tus dos últimos segundos con la mitad de daño';
+
+  @override
+  String get sigilDescLoop =>
+      'Un rizo por arriba: los disparos pasan por debajo';
+
+  @override
+  String get sigilDescSlalom =>
+      'Una curva en S por el campo con fuego en abanico';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Sacacorchos al frente disparando a todos lados, invulnerable';
+
+  @override
+  String get sigilDescSnapshot => 'Un disparo pesado hacia donde apuntes';
+
+  @override
+  String get sigilDescBroadside => 'Una ráfaga por ambos flancos';
+
+  @override
+  String get sigilDescVolley => 'Cinco rayos cargados al frente';
+
+  @override
+  String get sigilDescCaltrop => 'Suelta una mina que traga disparos y explota';
+
+  @override
+  String get sigilDescFrenzy => 'Las armas disparan más rápido unos segundos';
+
+  @override
+  String get sigilDescStasis =>
+      'Los enemigos y sus disparos van a media velocidad';
+
+  @override
+  String get sigilDescHalo =>
+      'El escudo se recarga cuatro veces más rápido y nada lo atraviesa';
+
+  @override
+  String get sigilDescRadial => 'Un anillo de dieciséis disparos';
+
+  @override
+  String get sigilDescStorm => 'Todas las armas disparan a tope, gratis';
+
+  @override
+  String get sigilDescPing =>
+      'Los acompañantes concentran el fuego donde apuntes';
+
+  @override
+  String get sigilDescWingman => 'Llama a un escolta al flanco que trazaste';
+
+  @override
+  String get sigilDescHunter =>
+      'Llama a un cazador que vuela delante y elige blancos';
+
+  @override
+  String get sigilDescWarden =>
+      'Llama a un guardián que recibe los disparos dirigidos a ti';
+
+  @override
+  String get sigilDescFormation =>
+      'Los acompañantes alternan formación abierta y en cuña';
+
+  @override
+  String get sigilDescWhirl => 'Los acompañantes te rodean y absorben disparos';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Los acompañantes se lanzan y explotan, devolviendo carga';
+
+  @override
+  String get grimoire => 'GRIMORIO';
+
+  @override
+  String get grimoireHint =>
+      'Dibuja con el stick derecho. Mantén LB para ARMS, RB para WING, ambos para MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'coste $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'invulnerable';
 }
