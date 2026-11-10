@@ -1020,4 +1020,27 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'invulnerável';
+
+  @override
+  String get lessonWatch => 'OBSERVE';
+
+  @override
+  String get lessonTrace => 'DECALQUE';
+
+  @override
+  String get lessonSlow => 'DEVAGAR';
+
+  @override
+  String get lessonLive => 'VELOCIDADE TOTAL';
+
+  @override
+  String get lessonStreak => 'CINCO SEGUIDAS';
+
+  @override
+  String get lessonLearned => 'APRENDIDO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
 }

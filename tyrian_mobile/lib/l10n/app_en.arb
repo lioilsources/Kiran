@@ -756,5 +756,19 @@
         "type": "int"
       }
     }
+  },
+  "lessonWatch": "WATCH",
+  "lessonTrace": "TRACE IT",
+  "lessonSlow": "SLOW",
+  "lessonLive": "FULL SPEED",
+  "lessonStreak": "FIVE IN A ROW",
+  "lessonLearned": "LEARNED",
+  "lessonTempo": "TEMPO {pct} %",
+  "@lessonTempo": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
   }
 }

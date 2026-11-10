@@ -990,6 +990,29 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sigilUntouchable => '无敌';
+
+  @override
+  String get lessonWatch => '观看';
+
+  @override
+  String get lessonTrace => '描摹';
+
+  @override
+  String get lessonSlow => '慢速';
+
+  @override
+  String get lessonLive => '全速';
+
+  @override
+  String get lessonStreak => '连续五次';
+
+  @override
+  String get lessonLearned => '已掌握';
+
+  @override
+  String lessonTempo(int pct) {
+    return '节奏 $pct %';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1978,4 +2001,27 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get sigilUntouchable => '無敵';
+
+  @override
+  String get lessonWatch => '觀看';
+
+  @override
+  String get lessonTrace => '描摹';
+
+  @override
+  String get lessonSlow => '慢速';
+
+  @override
+  String get lessonLive => '全速';
+
+  @override
+  String get lessonStreak => '連續五次';
+
+  @override
+  String get lessonLearned => '已掌握';
+
+  @override
+  String lessonTempo(int pct) {
+    return '節奏 $pct %';
+  }
 }

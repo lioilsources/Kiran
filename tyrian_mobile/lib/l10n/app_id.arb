@@ -274,5 +274,12 @@
   "grimoire": "GRIMOIRE",
   "grimoireHint": "Gambar dengan stik kanan. Tahan LB untuk ARMS, RB untuk WING, keduanya untuk MEGA BLAST.",
   "sigilCost": "biaya {cost}",
-  "sigilUntouchable": "kebal"
+  "sigilUntouchable": "kebal",
+  "lessonWatch": "LIHAT",
+  "lessonTrace": "JIPLAK",
+  "lessonSlow": "PELAN",
+  "lessonLive": "KECEPATAN PENUH",
+  "lessonStreak": "LIMA BERTURUT-TURUT",
+  "lessonLearned": "DIKUASAI",
+  "lessonTempo": "TEMPO {pct} %"
 }

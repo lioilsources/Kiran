@@ -274,5 +274,12 @@
   "grimoire": "GRIMÓRIO",
   "grimoireHint": "Desenhe com o analógico direito. Segure LB para ARMS, RB para WING, ambos para MEGA BLAST.",
   "sigilCost": "custo {cost}",
-  "sigilUntouchable": "invulnerável"
+  "sigilUntouchable": "invulnerável",
+  "lessonWatch": "OBSERVE",
+  "lessonTrace": "DECALQUE",
+  "lessonSlow": "DEVAGAR",
+  "lessonLive": "VELOCIDADE TOTAL",
+  "lessonStreak": "CINCO SEGUIDAS",
+  "lessonLearned": "APRENDIDO",
+  "lessonTempo": "TEMPO {pct} %"
 }

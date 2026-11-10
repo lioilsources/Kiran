@@ -274,5 +274,12 @@
   "grimoire": "GRIMORIO",
   "grimoireHint": "Disegna con lo stick destro. Tieni LB per ARMS, RB per WING, entrambi per MEGA BLAST.",
   "sigilCost": "costo {cost}",
-  "sigilUntouchable": "invulnerabile"
+  "sigilUntouchable": "invulnerabile",
+  "lessonWatch": "GUARDA",
+  "lessonTrace": "RICALCA",
+  "lessonSlow": "PIANO",
+  "lessonLive": "VELOCITÀ PIENA",
+  "lessonStreak": "CINQUE DI FILA",
+  "lessonLearned": "IMPARATO",
+  "lessonTempo": "TEMPO {pct} %"
 }

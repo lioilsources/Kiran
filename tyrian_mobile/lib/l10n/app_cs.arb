@@ -274,5 +274,12 @@
   "grimoire": "GRIMOÁR",
   "grimoireHint": "Kresli pravou páčkou. Drž LB pro ARMS, RB pro WING, obě pro MEGA BLAST.",
   "sigilCost": "cena {cost}",
-  "sigilUntouchable": "nezranitelný"
+  "sigilUntouchable": "nezranitelný",
+  "lessonWatch": "DÍVEJ SE",
+  "lessonTrace": "OBKRESLI",
+  "lessonSlow": "POMALU",
+  "lessonLive": "NAOSTRO",
+  "lessonStreak": "PĚTKRÁT PO SOBĚ",
+  "lessonLearned": "NAUČENO",
+  "lessonTempo": "TEMPO {pct} %"
 }

@@ -37,6 +37,9 @@ class ArenaGhost {
   /// The sigil being drawn now, for a caption.
   SigilSpec? current;
 
+  /// One demonstration has been drawn to the end.
+  void Function()? onDrawn;
+
   /// This frame of the ghost's pad, screen space like a real one.
   PadFrame frame(double dt) {
     if (_wait > 0) {
@@ -47,6 +50,7 @@ class ArenaGhost {
     _t += dt;
     if (_trace.isEmpty || _t > _trace.last.$1) {
       _wait = rest;
+      if (current != null) onDrawn?.call();
       current = null;
       return const PadFrame(fire: true);
     }

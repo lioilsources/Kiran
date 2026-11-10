@@ -1027,4 +1027,27 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'invulnerabile';
+
+  @override
+  String get lessonWatch => 'GUARDA';
+
+  @override
+  String get lessonTrace => 'RICALCA';
+
+  @override
+  String get lessonSlow => 'PIANO';
+
+  @override
+  String get lessonLive => 'VELOCITÀ PIENA';
+
+  @override
+  String get lessonStreak => 'CINQUE DI FILA';
+
+  @override
+  String get lessonLearned => 'IMPARATO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
 }

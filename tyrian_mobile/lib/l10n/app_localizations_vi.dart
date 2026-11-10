@@ -1002,4 +1002,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'bất tử';
+
+  @override
+  String get lessonWatch => 'XEM';
+
+  @override
+  String get lessonTrace => 'VẼ THEO';
+
+  @override
+  String get lessonSlow => 'CHẬM';
+
+  @override
+  String get lessonLive => 'TỐC ĐỘ THẬT';
+
+  @override
+  String get lessonStreak => 'NĂM LẦN LIÊN TIẾP';
+
+  @override
+  String get lessonLearned => 'ĐÃ THUỘC';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'NHỊP $pct %';
+  }
 }

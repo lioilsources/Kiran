@@ -1774,6 +1774,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'untouchable'**
   String get sigilUntouchable;
+
+  /// No description provided for @lessonWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'WATCH'**
+  String get lessonWatch;
+
+  /// No description provided for @lessonTrace.
+  ///
+  /// In en, this message translates to:
+  /// **'TRACE IT'**
+  String get lessonTrace;
+
+  /// No description provided for @lessonSlow.
+  ///
+  /// In en, this message translates to:
+  /// **'SLOW'**
+  String get lessonSlow;
+
+  /// No description provided for @lessonLive.
+  ///
+  /// In en, this message translates to:
+  /// **'FULL SPEED'**
+  String get lessonLive;
+
+  /// No description provided for @lessonStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'FIVE IN A ROW'**
+  String get lessonStreak;
+
+  /// No description provided for @lessonLearned.
+  ///
+  /// In en, this message translates to:
+  /// **'LEARNED'**
+  String get lessonLearned;
+
+  /// No description provided for @lessonTempo.
+  ///
+  /// In en, this message translates to:
+  /// **'TEMPO {pct} %'**
+  String lessonTempo(int pct);
 }
 
 class _AppLocalizationsDelegate

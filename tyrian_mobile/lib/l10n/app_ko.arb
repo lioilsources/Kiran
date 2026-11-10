@@ -274,5 +274,12 @@
   "grimoire": "마법서",
   "grimoireHint": "오른쪽 스틱으로 그리세요. LB를 누르고 있으면 ARMS, RB는 WING, 둘 다 누르면 MEGA BLAST입니다.",
   "sigilCost": "비용 {cost}",
-  "sigilUntouchable": "무적"
+  "sigilUntouchable": "무적",
+  "lessonWatch": "보기",
+  "lessonTrace": "따라 그리기",
+  "lessonSlow": "천천히",
+  "lessonLive": "실전",
+  "lessonStreak": "5회 연속",
+  "lessonLearned": "습득",
+  "lessonTempo": "템포 {pct} %"
 }

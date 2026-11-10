@@ -274,5 +274,12 @@
   "grimoire": "BÜYÜ KİTABI",
   "grimoireHint": "Sağ analogla çiz. ARMS için LB, WING için RB, MEGA BLAST için ikisini birden basılı tut.",
   "sigilCost": "maliyet {cost}",
-  "sigilUntouchable": "dokunulmaz"
+  "sigilUntouchable": "dokunulmaz",
+  "lessonWatch": "İZLE",
+  "lessonTrace": "ÜZERİNDEN ÇİZ",
+  "lessonSlow": "YAVAŞ",
+  "lessonLive": "TAM HIZ",
+  "lessonStreak": "ÜST ÜSTE BEŞ",
+  "lessonLearned": "ÖĞRENİLDİ",
+  "lessonTempo": "TEMPO {pct} %"
 }

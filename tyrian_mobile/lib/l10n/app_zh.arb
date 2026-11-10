@@ -274,5 +274,12 @@
   "grimoire": "魔典",
   "grimoireHint": "用右摇杆绘制。按住 LB 为 ARMS，RB 为 WING，同时按住为 MEGA BLAST。",
   "sigilCost": "消耗 {cost}",
-  "sigilUntouchable": "无敌"
+  "sigilUntouchable": "无敌",
+  "lessonWatch": "观看",
+  "lessonTrace": "描摹",
+  "lessonSlow": "慢速",
+  "lessonLive": "全速",
+  "lessonStreak": "连续五次",
+  "lessonLearned": "已掌握",
+  "lessonTempo": "节奏 {pct} %"
 }

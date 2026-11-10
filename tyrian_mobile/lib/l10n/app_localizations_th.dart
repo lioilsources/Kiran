@@ -998,4 +998,27 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'อมตะ';
+
+  @override
+  String get lessonWatch => 'ดู';
+
+  @override
+  String get lessonTrace => 'ลากตาม';
+
+  @override
+  String get lessonSlow => 'ช้า ๆ';
+
+  @override
+  String get lessonLive => 'ความเร็วจริง';
+
+  @override
+  String get lessonStreak => 'ห้าครั้งติด';
+
+  @override
+  String get lessonLearned => 'เรียนรู้แล้ว';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'จังหวะ $pct %';
+  }
 }

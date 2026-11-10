@@ -274,5 +274,12 @@
   "grimoire": "SÁCH PHÉP",
   "grimoireHint": "Vẽ bằng cần phải. Giữ LB cho ARMS, RB cho WING, cả hai cho MEGA BLAST.",
   "sigilCost": "giá {cost}",
-  "sigilUntouchable": "bất tử"
+  "sigilUntouchable": "bất tử",
+  "lessonWatch": "XEM",
+  "lessonTrace": "VẼ THEO",
+  "lessonSlow": "CHẬM",
+  "lessonLive": "TỐC ĐỘ THẬT",
+  "lessonStreak": "NĂM LẦN LIÊN TIẾP",
+  "lessonLearned": "ĐÃ THUỘC",
+  "lessonTempo": "NHỊP {pct} %"
 }

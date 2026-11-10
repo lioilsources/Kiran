@@ -1010,4 +1010,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'untouchable';
+
+  @override
+  String get lessonWatch => 'WATCH';
+
+  @override
+  String get lessonTrace => 'TRACE IT';
+
+  @override
+  String get lessonSlow => 'SLOW';
+
+  @override
+  String get lessonLive => 'FULL SPEED';
+
+  @override
+  String get lessonStreak => 'FIVE IN A ROW';
+
+  @override
+  String get lessonLearned => 'LEARNED';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
 }

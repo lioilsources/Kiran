@@ -1014,4 +1014,27 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'kebal';
+
+  @override
+  String get lessonWatch => 'LIHAT';
+
+  @override
+  String get lessonTrace => 'JIPLAK';
+
+  @override
+  String get lessonSlow => 'PELAN';
+
+  @override
+  String get lessonLive => 'KECEPATAN PENUH';
+
+  @override
+  String get lessonStreak => 'LIMA BERTURUT-TURUT';
+
+  @override
+  String get lessonLearned => 'DIKUASAI';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
 }

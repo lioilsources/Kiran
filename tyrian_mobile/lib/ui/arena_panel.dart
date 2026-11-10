@@ -12,6 +12,7 @@ import '../rendering/sigil_hud.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena.dart';
+import '../systems/training/lesson.dart';
 import 'sigil_glyph.dart';
 
 /// The training arena's dials and scoreboard (Prompts/29 §3). Opens before
@@ -378,6 +379,22 @@ class ArenaStrip extends StatelessWidget {
   final TyrianGame game;
   const ArenaStrip({super.key, required this.game});
 
+  /// Where the lesson is: the step and its count, or the drill's tempo.
+  static String _step(Lesson lesson, AppLocalizations l) {
+    final label = switch (lesson.phase) {
+      LessonPhase.watch => l.lessonWatch,
+      LessonPhase.trace => l.lessonTrace,
+      LessonPhase.slow => l.lessonSlow,
+      LessonPhase.live => l.lessonLive,
+      LessonPhase.streak => l.lessonStreak,
+      LessonPhase.done => l.lessonLearned,
+    };
+    if (lesson.learned) {
+      return '$label · ${l.lessonTempo((lesson.tempo * 100).round())}';
+    }
+    return '$label ${lesson.count}/${lesson.needed}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -409,6 +426,15 @@ class ArenaStrip extends StatelessWidget {
                       color: SigilHud.layerColors[drill.layer],
                       fontSize: 13,
                       fontWeight: FontWeight.bold)),
+              if (game.lesson != null) ...[
+                const SizedBox(width: 12),
+                Text(_step(game.lesson!, l),
+                    style: const TextStyle(
+                        color: Color(0xFFFFE070),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5)),
+              ],
             ],
           ]),
         ),

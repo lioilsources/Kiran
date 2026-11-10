@@ -1015,4 +1015,27 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'nezranitelný';
+
+  @override
+  String get lessonWatch => 'DÍVEJ SE';
+
+  @override
+  String get lessonTrace => 'OBKRESLI';
+
+  @override
+  String get lessonSlow => 'POMALU';
+
+  @override
+  String get lessonLive => 'NAOSTRO';
+
+  @override
+  String get lessonStreak => 'PĚTKRÁT PO SOBĚ';
+
+  @override
+  String get lessonLearned => 'NAUČENO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
 }

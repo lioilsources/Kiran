@@ -274,5 +274,12 @@
   "grimoire": "ตำราเวท",
   "grimoireHint": "วาดด้วยสติ๊กขวา กด LB ค้างไว้สำหรับ ARMS, RB สำหรับ WING, กดทั้งคู่สำหรับ MEGA BLAST",
   "sigilCost": "ราคา {cost}",
-  "sigilUntouchable": "อมตะ"
+  "sigilUntouchable": "อมตะ",
+  "lessonWatch": "ดู",
+  "lessonTrace": "ลากตาม",
+  "lessonSlow": "ช้า ๆ",
+  "lessonLive": "ความเร็วจริง",
+  "lessonStreak": "ห้าครั้งติด",
+  "lessonLearned": "เรียนรู้แล้ว",
+  "lessonTempo": "จังหวะ {pct} %"
 }

@@ -992,4 +992,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sigilUntouchable => '無敵';
+
+  @override
+  String get lessonWatch => '見て覚える';
+
+  @override
+  String get lessonTrace => 'なぞる';
+
+  @override
+  String get lessonSlow => 'ゆっくり';
+
+  @override
+  String get lessonLive => '本番';
+
+  @override
+  String get lessonStreak => '5回連続';
+
+  @override
+  String get lessonLearned => '習得';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'テンポ $pct %';
+  }
 }

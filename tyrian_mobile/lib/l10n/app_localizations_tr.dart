@@ -1007,4 +1007,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'dokunulmaz';
+
+  @override
+  String get lessonWatch => 'İZLE';
+
+  @override
+  String get lessonTrace => 'ÜZERİNDEN ÇİZ';
+
+  @override
+  String get lessonSlow => 'YAVAŞ';
+
+  @override
+  String get lessonLive => 'TAM HIZ';
+
+  @override
+  String get lessonStreak => 'ÜST ÜSTE BEŞ';
+
+  @override
+  String get lessonLearned => 'ÖĞRENİLDİ';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
 }

@@ -274,5 +274,12 @@
   "grimoire": "グリモア",
   "grimoireHint": "右スティックで描く。LB長押しでARMS、RBでWING、両方でMEGA BLAST。",
   "sigilCost": "コスト {cost}",
-  "sigilUntouchable": "無敵"
+  "sigilUntouchable": "無敵",
+  "lessonWatch": "見て覚える",
+  "lessonTrace": "なぞる",
+  "lessonSlow": "ゆっくり",
+  "lessonLive": "本番",
+  "lessonStreak": "5回連続",
+  "lessonLearned": "習得",
+  "lessonTempo": "テンポ {pct} %"
 }

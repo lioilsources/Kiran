@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'challenge.dart';
+import 'frame_capture.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
 import '../input/keyboard_input.dart';
@@ -18,9 +19,11 @@ import '../input/pad_scheme.dart';
 import '../input/keyboard_sigils.dart';
 import '../rendering/sigil_hud.dart';
 import '../systems/sigils/sigil_catalog.dart';
+import '../systems/sigils/sigil_recognizer.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena.dart';
 import '../systems/training/arena_ghost.dart';
+import '../systems/training/lesson.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
@@ -243,24 +246,90 @@ class TyrianGame extends FlameGame
   static const bool sigilDemo = bool.fromEnvironment('SIGIL_DEMO');
   ArenaGhost? ghost;
 
+  /// The drilled sigil's lesson (Prompts/29 §4), or null in free play.
+  Lesson? lesson;
+
+  /// World speed the arena runs at now: the lesson's step, or the dial.
+  double get arenaSpeed => lesson?.worldSpeed ?? arena.speed;
+
+  /// Set up the drill's lesson and the ghost that goes with it.
+  void _setupDrill() {
+    final d = arena.drill;
+    if (d == null) {
+      lesson = null;
+      ghost = sigilDemo ? ArenaGhost.catalogue() : null;
+    } else {
+      final m = SigilMastery.instance.of(d);
+      if (lesson?.spec.kind != d) {
+        lesson = Lesson(SigilCatalog.of(d), learned: m.learned);
+      }
+      _syncGhost();
+    }
+    vessel.caster.countOnly = lesson?.countOnly ?? false;
+  }
+
+  /// The ghost plays while the lesson says watch (and always in demo mode).
+  void _syncGhost() {
+    final l = lesson;
+    if (l == null) return;
+    if (l.ghostPlays || sigilDemo) {
+      if (ghost?.sigils.singleOrNull?.kind != l.spec.kind) {
+        ghost = ArenaGhost([l.spec])..onDrawn = _onGhostDrawn;
+      }
+    } else {
+      ghost = null;
+    }
+  }
+
+  void _onGhostDrawn() {
+    lesson?.onDemo();
+    _syncGhost();
+    vessel.caster.countOnly = lesson?.countOnly ?? false;
+  }
+
+  /// Every gesture in the arena: the scoreboard, the lesson, the records.
+  void _onArenaReading(SigilReading r) {
+    if (ghost != null && !sigilDemo) return; // the ghost's own drawing
+    arenaStats.onReading(r);
+    final l = lesson;
+    if (l != null) {
+      final was = l.phase;
+      l.onReading(r);
+      if (l.phase != was) {
+        _syncGhost();
+        vessel.caster.countOnly = l.countOnly;
+        if (l.learned) {
+          SigilMastery.instance.of(l.spec.kind).learned = true;
+          SigilMastery.instance.save();
+        }
+      }
+      final m = SigilMastery.instance.of(l.spec.kind);
+      if (l.bestTempo > m.bestTempo) m.bestTempo = l.bestTempo;
+    }
+    if (r.spec != null) SigilMastery.instance.of(r.spec!.kind).record(r, field: false);
+  }
+
+  /// Every gesture in real play: what the mastery ranks count.
+  void _onFieldReading(SigilReading r) {
+    final s = r.spec;
+    if (s != null) SigilMastery.instance.of(s.kind).record(r, field: true);
+  }
+
   /// Into the arena with the endless ship. Nothing it does is saved.
   void enterArena() {
     if (mode == GameMode.campaign) return;
     _arenaReturn = vessel.toSaveMap();
     mode = GameMode.training;
     arenaStats.reset();
-    vessel.caster.onReading = arenaStats.onReading;
+    vessel.caster.onReading = _onArenaReading;
     state = GameState.playing;
     vessel.visible = true;
     vessel.resetVessel();
     vessel.resetPosition();
     vessel.caster.meter.reset();
-    if (sigilDemo) {
-      final d = arena.drill;
-      ghost = d == null
-          ? ArenaGhost.catalogue()
-          : ArenaGhost([SigilCatalog.of(d)]);
-    }
+    lesson = null;
+    // The demo shows every sigil, so it must be able to pay for every one.
+    if (sigilDemo) arena.infiniteCharge = true;
     _startArenaRound();
     _startSectorMusic();
   }
@@ -277,6 +346,7 @@ class TyrianGame extends FlameGame
     loadSector(0);
     vessel.caster.meter.infinite = arena.infiniteCharge;
     vessel.caster.grantCompanions(arena.companions);
+    _setupDrill();
   }
 
   /// The boss beaten: the next one, straight away.
@@ -302,9 +372,12 @@ class TyrianGame extends FlameGame
   void leaveArena() {
     if (mode != GameMode.training) return;
     _leaveMission();
-    vessel.caster.onReading = null;
+    vessel.caster.onReading = _onFieldReading;
     vessel.caster.meter.infinite = false;
+    vessel.caster.countOnly = false;
     ghost = null;
+    lesson = null;
+    SigilMastery.instance.save();
     final back = _arenaReturn;
     if (back != null) vessel.loadFromSave(back);
     _arenaReturn = null;
@@ -425,6 +498,7 @@ class TyrianGame extends FlameGame
     await vessel.init();
     world.add(vessel);
     vessel.caster.onGrimoire = openGrimoire;
+    vessel.caster.onReading = _onFieldReading;
 
     // Debug: screen/viewport info
     print('[LAYOUT] FlameGame.size: ${size.x} x ${size.y}');
@@ -717,13 +791,21 @@ class TyrianGame extends FlameGame
     }
   }
 
+  late final FrameCapture? _capture =
+      FrameCapture.enabled ? FrameCapture(this) : null;
+
   @override
   void update(double dt) {
     frameCount++;
+    _capture?.tick(dt);
     // The pad is polled on the wall clock; the arena's world runs at its own.
     _pollPad(dt);
+    var inputDt = dt;
     if (mode == GameMode.training) {
-      dt *= arena.speed;
+      final s = arenaSpeed;
+      dt *= s;
+      // A standing world still reads the stick, at the wall clock.
+      inputDt = s > 0 ? dt : inputDt;
       if (state == GameState.playing) arenaStats.tick(dt);
     }
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
@@ -742,7 +824,7 @@ class TyrianGame extends FlameGame
     }
 
     // Desktop keyboard + gamepad input (handles pause toggle even when paused)
-    _processDesktopInput(dt);
+    _processDesktopInput(inputDt);
 
     // Only the `playing` state runs the full simulation. paused, comCenter AND
     // gameOver keep just the visual backdrop alive — previously gameOver was
@@ -992,6 +1074,7 @@ class TyrianGame extends FlameGame
     // static read on the hot path.
     await Challenge.init();
     await PadSettings.init();
+    await SigilMastery.instance.load();
     // Before any ship loads: a ship's racks take their mods out of the vault.
     await ModsState.instance.load();
     final state = await SaveService.loadGameState();

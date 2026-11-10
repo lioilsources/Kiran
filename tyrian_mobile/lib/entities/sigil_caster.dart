@@ -52,6 +52,9 @@ class SigilCaster {
   /// Set when [lastReading] arrived while a sigil was running and was dropped.
   bool lastBusy = false;
 
+  /// The arena's tracing step: gestures are read and reported, never flown.
+  bool countOnly = false;
+
   /// Arena hook: every gesture as it is read, and every cast as it fires.
   void Function(SigilReading r)? onReading;
   void Function(SigilSpec s)? onCast;
@@ -227,6 +230,10 @@ class SigilCaster {
     onReading?.call(r);
     if (!r.cast) {
       SoundService.instance.play(SfxEvent.hitShield);
+      return;
+    }
+    if (countOnly) {
+      SoundService.instance.play(SfxEvent.pickup);
       return;
     }
     final spec = r.spec!;

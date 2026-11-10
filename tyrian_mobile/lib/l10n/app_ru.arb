@@ -274,5 +274,12 @@
   "grimoire": "ГРИМУАР",
   "grimoireHint": "Рисуй правым стиком. Держи LB для ARMS, RB для WING, обе для MEGA BLAST.",
   "sigilCost": "цена {cost}",
-  "sigilUntouchable": "неуязвим"
+  "sigilUntouchable": "неуязвим",
+  "lessonWatch": "СМОТРИ",
+  "lessonTrace": "ОБВЕДИ",
+  "lessonSlow": "МЕДЛЕННО",
+  "lessonLive": "В ПОЛНУЮ СИЛУ",
+  "lessonStreak": "ПЯТЬ ПОДРЯД",
+  "lessonLearned": "ОСВОЕНО",
+  "lessonTempo": "ТЕМП {pct} %"
 }

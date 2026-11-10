@@ -993,4 +993,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get sigilUntouchable => '무적';
+
+  @override
+  String get lessonWatch => '보기';
+
+  @override
+  String get lessonTrace => '따라 그리기';
+
+  @override
+  String get lessonSlow => '천천히';
+
+  @override
+  String get lessonLive => '실전';
+
+  @override
+  String get lessonStreak => '5회 연속';
+
+  @override
+  String get lessonLearned => '습득';
+
+  @override
+  String lessonTempo(int pct) {
+    return '템포 $pct %';
+  }
 }

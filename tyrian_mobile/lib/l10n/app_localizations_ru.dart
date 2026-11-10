@@ -1026,4 +1026,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sigilUntouchable => 'неуязвим';
+
+  @override
+  String get lessonWatch => 'СМОТРИ';
+
+  @override
+  String get lessonTrace => 'ОБВЕДИ';
+
+  @override
+  String get lessonSlow => 'МЕДЛЕННО';
+
+  @override
+  String get lessonLive => 'В ПОЛНУЮ СИЛУ';
+
+  @override
+  String get lessonStreak => 'ПЯТЬ ПОДРЯД';
+
+  @override
+  String get lessonLearned => 'ОСВОЕНО';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'ТЕМП $pct %';
+  }
 }
