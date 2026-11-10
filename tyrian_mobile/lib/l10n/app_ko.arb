@@ -212,5 +212,13 @@
   "fxSatellite": "전투 드론이 함께 비행",
   "fxTimewarp": "선체 피격 시 시간 감속",
   "fxGambler": "매 발이 무작위 무기",
-  "vaultAll": "전체"
+  "vaultAll": "전체",
+  "sigilMissUnknown": "알 수 없는 모양",
+  "sigilMissTooSlow": "너무 느림",
+  "sigilMissSkippedDot": "점을 건너뜀",
+  "sigilMissLeftRimEarly": "너무 일찍 놓음",
+  "sigilMissWrongDirection": "거꾸로 그림",
+  "sigilMissWrongLayer": "숄더 버튼이 다름",
+  "sigilDry": "충전 부족",
+  "sigilBusy": "이전 기술 진행 중"
 }

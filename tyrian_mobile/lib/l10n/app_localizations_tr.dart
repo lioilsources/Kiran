@@ -807,4 +807,28 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get vaultAll => 'TÜMÜ';
+
+  @override
+  String get sigilMissUnknown => 'bilinmeyen şekil';
+
+  @override
+  String get sigilMissTooSlow => 'çok yavaş';
+
+  @override
+  String get sigilMissSkippedDot => 'bir nokta atlandı';
+
+  @override
+  String get sigilMissLeftRimEarly => 'çok erken bırakıldı';
+
+  @override
+  String get sigilMissWrongDirection => 'ters çizildi';
+
+  @override
+  String get sigilMissWrongLayer => 'yanlış omuz tuşu';
+
+  @override
+  String get sigilDry => 'yetersiz şarj';
+
+  @override
+  String get sigilBusy => 'önceki hâlâ sürüyor';
 }

@@ -802,4 +802,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get vaultAll => '전체';
+
+  @override
+  String get sigilMissUnknown => '알 수 없는 모양';
+
+  @override
+  String get sigilMissTooSlow => '너무 느림';
+
+  @override
+  String get sigilMissSkippedDot => '점을 건너뜀';
+
+  @override
+  String get sigilMissLeftRimEarly => '너무 일찍 놓음';
+
+  @override
+  String get sigilMissWrongDirection => '거꾸로 그림';
+
+  @override
+  String get sigilMissWrongLayer => '숄더 버튼이 다름';
+
+  @override
+  String get sigilDry => '충전 부족';
+
+  @override
+  String get sigilBusy => '이전 기술 진행 중';
 }

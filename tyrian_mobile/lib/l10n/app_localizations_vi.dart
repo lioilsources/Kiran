@@ -805,4 +805,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get vaultAll => 'TẤT CẢ';
+
+  @override
+  String get sigilMissUnknown => 'hình không xác định';
+
+  @override
+  String get sigilMissTooSlow => 'quá chậm';
+
+  @override
+  String get sigilMissSkippedDot => 'bỏ sót một điểm';
+
+  @override
+  String get sigilMissLeftRimEarly => 'thả ra quá sớm';
+
+  @override
+  String get sigilMissWrongDirection => 'vẽ ngược chiều';
+
+  @override
+  String get sigilMissWrongLayer => 'sai nút vai';
+
+  @override
+  String get sigilDry => 'không đủ năng lượng';
+
+  @override
+  String get sigilBusy => 'chiêu trước vẫn đang chạy';
 }

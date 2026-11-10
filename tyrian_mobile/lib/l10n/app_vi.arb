@@ -212,5 +212,13 @@
   "fxSatellite": "Một drone chiến đấu bay theo",
   "fxTimewarp": "Thân trúng đòn làm chậm thời gian",
   "fxGambler": "Mỗi viên là một vũ khí ngẫu nhiên",
-  "vaultAll": "TẤT CẢ"
+  "vaultAll": "TẤT CẢ",
+  "sigilMissUnknown": "hình không xác định",
+  "sigilMissTooSlow": "quá chậm",
+  "sigilMissSkippedDot": "bỏ sót một điểm",
+  "sigilMissLeftRimEarly": "thả ra quá sớm",
+  "sigilMissWrongDirection": "vẽ ngược chiều",
+  "sigilMissWrongLayer": "sai nút vai",
+  "sigilDry": "không đủ năng lượng",
+  "sigilBusy": "chiêu trước vẫn đang chạy"
 }

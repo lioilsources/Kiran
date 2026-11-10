@@ -14,6 +14,9 @@ import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
 import '../input/keyboard_input.dart';
 import '../input/gamepad_input.dart';
+import '../input/pad_scheme.dart';
+import '../rendering/sigil_hud.dart';
+import '../systems/sigils/sigil_spec.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
@@ -253,7 +256,7 @@ class TyrianGame extends FlameGame
   int get projectileCount {
     int count = enemyProjectiles.length;
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      for (final d in v.allGuns) {
         count += d.projectiles.length;
       }
     }
@@ -392,7 +395,16 @@ class TyrianGame extends FlameGame
     // start always lands here a second time (see the 0x0 guard), which is how
     // the edge markers silently disappeared.
     camera.viewport.add(OffscreenEnemyMarkers());
+    camera.viewport.add(SigilHud());
   }
+
+  /// Right-stick combat is on (Prompts/28): desktop, the sigil scheme, solo.
+  /// Co-op keeps the classic pad until the protocol carries sigil state.
+  bool get sigilsEnabled =>
+      platform.isDesktop &&
+      PadSettings.scheme == PadScheme.sigil &&
+      coopRole == CoopRole.none &&
+      vessel2 == null;
 
   @override
   void onGameResize(Vector2 size) {
@@ -428,7 +440,7 @@ class TyrianGame extends FlameGame
       s.refreshSprite();
     }
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      for (final d in v.allGuns) {
         for (final p in d.projectiles) {
           p.refreshSprite();
         }
@@ -553,7 +565,8 @@ class TyrianGame extends FlameGame
     enemyProjectiles.clear();
     // Clear player projectiles (world children via devices)
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      v.caster.reset();
+      for (final d in v.allGuns) {
         for (final p in [...d.projectiles]) {
           p.removeFromParent();
         }
@@ -849,6 +862,7 @@ class TyrianGame extends FlameGame
     // Awaited once at startup; from here on Challenge.selected is a plain
     // static read on the hot path.
     await Challenge.init();
+    await PadSettings.init();
     // Before any ship loads: a ship's racks take their mods out of the vault.
     await ModsState.instance.load();
     final state = await SaveService.loadGameState();
@@ -1200,6 +1214,12 @@ class TyrianGame extends FlameGame
 
     // ── Gamepad P1 (takes priority over keyboard) ──
     final gp = gamepadInput.primary;
+    final sigils = sigilsEnabled;
+    vessel.caster.enabled = sigils;
+    if (sigils) {
+      _processSigilPad(gp, dt);
+      return;
+    }
     final gpDx = GamepadInput.deadzone(gp.leftStickX);
     final gpDy = GamepadInput.deadzone(gp.leftStickY);
     final gpActive = gpDx != 0 || gpDy != 0 || gp.fire;
@@ -1228,6 +1248,35 @@ class TyrianGame extends FlameGame
       vessel2!.fire = gp2.fire;
       vessel2!.fireRateMult = gp2.fireRate;
     }
+  }
+
+  /// The pad in the sigil scheme (Prompts/28 §3): the left stick or the
+  /// keyboard flies, as far as a running sigil leaves the stick free; the
+  /// right stick draws; RT fires with its analog cadence.
+  void _processSigilPad(GamepadState gp, double dt) {
+    final f = gamepadInput.isConnected
+        ? PadFrame.read(gp, southpaw: PadSettings.southpaw)
+        : PadFrame.idle;
+    final caster = vessel.caster;
+    final (sx, sy) = platform.screenToGame(f.drawX, f.drawY);
+    caster.input(f, sx, sy, dt);
+
+    final padMoves = f.moveX != 0 || f.moveY != 0;
+    final mx = padMoves ? f.moveX : keyboardInput.dx;
+    final my = padMoves ? f.moveY : keyboardInput.dy;
+    final speed = _kbSpeed * (caster.focus ? config.focusSpeed : 1.0);
+    switch (caster.control) {
+      case SigilControl.none:
+        break;
+      case SigilControl.verticalOnly:
+        final (_, gy) = platform.screenToGame(mx, my);
+        vessel.adjustPosition(vessel.position.x,
+            vessel.position.y + gy * speed * vessel.agility * dt);
+      case SigilControl.full:
+        if (mx != 0 || my != 0) _applyMovement(vessel, mx, my, speed, dt);
+    }
+    vessel.fire = f.fire || keyboardInput.fire;
+    vessel.fireRateMult = f.fire ? f.fireRate : 1.0;
   }
 
   void showMessage(String msg) {
@@ -1264,13 +1313,27 @@ class TyrianGame extends FlameGame
         enemyProjectiles.removeAt(i);
         continue;
       }
+      // Companions that shield the ship take the shot first.
+      bool hit = _companionAbsorbs(p);
       // AABB collision with all vessels
-      bool hit = false;
       for (final v in allVessels) {
+        if (hit) break;
         if (_projectileHitsVessel(p, v)) {
+          // A sigil's phase: the shot flies on under the ship, and pays.
+          if (v.caster.untouchable) {
+            if (!p.grazed) {
+              p.grazed = true;
+              v.caster.onGraze(phase: true);
+            }
+            continue;
+          }
           if (!v.tryReflect(p)) v.takeDamage(p.damage.toInt());
           hit = true;
           break;
+        }
+        if (!p.grazed && v.caster.enabled && v.visible && _grazes(p, v)) {
+          p.grazed = true;
+          v.caster.onGraze(phase: false);
         }
       }
       if (hit) {
@@ -1278,6 +1341,31 @@ class TyrianGame extends FlameGame
         enemyProjectiles.removeAt(i);
       }
     }
+  }
+
+  /// A miss close enough to count as a graze (Prompts/28 §6.1).
+  bool _grazes(Projectile p, Vessel v) {
+    final dx = p.position.x + p.size.x / 2 - v.position.x;
+    final dy = p.position.y + p.size.y / 2 - v.position.y;
+    final r = v.grazeRadius;
+    return dx * dx + dy * dy <= r * r;
+  }
+
+  bool _companionAbsorbs(Projectile p) {
+    for (final v in allVessels) {
+      for (final c in v.caster.companions) {
+        if (!c.absorbs || c.gone) continue;
+        final hx = c.size.x * 0.6, hy = c.size.y * 0.6;
+        if (p.position.x < c.position.x + hx &&
+            p.position.x + p.size.x > c.position.x - hx &&
+            p.position.y < c.position.y + hy &&
+            p.position.y + p.size.y > c.position.y - hy) {
+          c.takeHit();
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   void _checkCollectablePickup() {

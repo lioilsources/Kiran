@@ -810,4 +810,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vaultAll => 'ALL';
+
+  @override
+  String get sigilMissUnknown => 'unknown shape';
+
+  @override
+  String get sigilMissTooSlow => 'too slow';
+
+  @override
+  String get sigilMissSkippedDot => 'skipped a dot';
+
+  @override
+  String get sigilMissLeftRimEarly => 'let go too early';
+
+  @override
+  String get sigilMissWrongDirection => 'drawn backwards';
+
+  @override
+  String get sigilMissWrongLayer => 'wrong shoulder button';
+
+  @override
+  String get sigilDry => 'not enough charge';
+
+  @override
+  String get sigilBusy => 'previous one still running';
 }

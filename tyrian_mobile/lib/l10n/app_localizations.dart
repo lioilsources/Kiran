@@ -1402,6 +1402,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ALL'**
   String get vaultAll;
+
+  /// No description provided for @sigilMissUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown shape'**
+  String get sigilMissUnknown;
+
+  /// No description provided for @sigilMissTooSlow.
+  ///
+  /// In en, this message translates to:
+  /// **'too slow'**
+  String get sigilMissTooSlow;
+
+  /// No description provided for @sigilMissSkippedDot.
+  ///
+  /// In en, this message translates to:
+  /// **'skipped a dot'**
+  String get sigilMissSkippedDot;
+
+  /// No description provided for @sigilMissLeftRimEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'let go too early'**
+  String get sigilMissLeftRimEarly;
+
+  /// No description provided for @sigilMissWrongDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'drawn backwards'**
+  String get sigilMissWrongDirection;
+
+  /// No description provided for @sigilMissWrongLayer.
+  ///
+  /// In en, this message translates to:
+  /// **'wrong shoulder button'**
+  String get sigilMissWrongLayer;
+
+  /// No description provided for @sigilDry.
+  ///
+  /// In en, this message translates to:
+  /// **'not enough charge'**
+  String get sigilDry;
+
+  /// No description provided for @sigilBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'previous one still running'**
+  String get sigilBusy;
 }
 
 class _AppLocalizationsDelegate

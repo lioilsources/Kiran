@@ -212,5 +212,13 @@
   "fxSatellite": "一架战斗无人机随行",
   "fxTimewarp": "船体受击时时间变慢",
   "fxGambler": "每发都是随机武器",
-  "vaultAll": "全部"
+  "vaultAll": "全部",
+  "sigilMissUnknown": "未知图形",
+  "sigilMissTooSlow": "太慢了",
+  "sigilMissSkippedDot": "漏了一个点",
+  "sigilMissLeftRimEarly": "松开太早",
+  "sigilMissWrongDirection": "画反了",
+  "sigilMissWrongLayer": "肩键按错",
+  "sigilDry": "能量不足",
+  "sigilBusy": "上一个仍在进行"
 }

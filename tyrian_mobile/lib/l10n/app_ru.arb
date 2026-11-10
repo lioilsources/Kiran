@@ -212,5 +212,13 @@
   "fxSatellite": "С тобой летит боевой дрон",
   "fxTimewarp": "Удар по корпусу замедляет время",
   "fxGambler": "Каждый выстрел — случайное оружие",
-  "vaultAll": "ВСЕ"
+  "vaultAll": "ВСЕ",
+  "sigilMissUnknown": "неизвестная фигура",
+  "sigilMissTooSlow": "слишком медленно",
+  "sigilMissSkippedDot": "пропущена точка",
+  "sigilMissLeftRimEarly": "отпущено слишком рано",
+  "sigilMissWrongDirection": "нарисовано задом наперёд",
+  "sigilMissWrongLayer": "не та плечевая кнопка",
+  "sigilDry": "мало заряда",
+  "sigilBusy": "предыдущий ещё идёт"
 }

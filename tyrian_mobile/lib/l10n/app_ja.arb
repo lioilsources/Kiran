@@ -212,5 +212,13 @@
   "fxSatellite": "戦闘ドローンが随伴",
   "fxTimewarp": "船体被弾で時間が遅くなる",
   "fxGambler": "毎発ランダムな武器",
-  "vaultAll": "すべて"
+  "vaultAll": "すべて",
+  "sigilMissUnknown": "不明な形",
+  "sigilMissTooSlow": "遅すぎる",
+  "sigilMissSkippedDot": "点を飛ばした",
+  "sigilMissLeftRimEarly": "離すのが早すぎた",
+  "sigilMissWrongDirection": "逆向きに描いた",
+  "sigilMissWrongLayer": "ショルダーボタンが違う",
+  "sigilDry": "チャージ不足",
+  "sigilBusy": "前の技が実行中"
 }

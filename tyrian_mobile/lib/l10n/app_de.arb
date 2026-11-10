@@ -212,5 +212,13 @@
   "fxSatellite": "Eine Kampfdrohne fliegt mit",
   "fxTimewarp": "Rumpftreffer verlangsamt die Zeit",
   "fxGambler": "Jeder Schuss ist eine Zufallswaffe",
-  "vaultAll": "ALLE"
+  "vaultAll": "ALLE",
+  "sigilMissUnknown": "unbekannte Form",
+  "sigilMissTooSlow": "zu langsam",
+  "sigilMissSkippedDot": "Punkt ausgelassen",
+  "sigilMissLeftRimEarly": "zu früh losgelassen",
+  "sigilMissWrongDirection": "rückwärts gezeichnet",
+  "sigilMissWrongLayer": "falsche Schultertaste",
+  "sigilDry": "zu wenig Ladung",
+  "sigilBusy": "vorheriges läuft noch"
 }

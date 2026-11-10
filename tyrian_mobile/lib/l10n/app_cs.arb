@@ -212,5 +212,13 @@
   "fxSatellite": "S lodí letí bojový dron",
   "fxTimewarp": "Zásah trupu zpomalí čas",
   "fxGambler": "Každá střela je náhodná zbraň",
-  "vaultAll": "VŠE"
+  "vaultAll": "VŠE",
+  "sigilMissUnknown": "neznámý tvar",
+  "sigilMissTooSlow": "moc pomalu",
+  "sigilMissSkippedDot": "vynechaný bod",
+  "sigilMissLeftRimEarly": "pustil jsi moc brzy",
+  "sigilMissWrongDirection": "nakresleno pozpátku",
+  "sigilMissWrongLayer": "špatné ramenní tlačítko",
+  "sigilDry": "málo náboje",
+  "sigilBusy": "předchozí ještě běží"
 }

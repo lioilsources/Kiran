@@ -802,4 +802,28 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get vaultAll => 'すべて';
+
+  @override
+  String get sigilMissUnknown => '不明な形';
+
+  @override
+  String get sigilMissTooSlow => '遅すぎる';
+
+  @override
+  String get sigilMissSkippedDot => '点を飛ばした';
+
+  @override
+  String get sigilMissLeftRimEarly => '離すのが早すぎた';
+
+  @override
+  String get sigilMissWrongDirection => '逆向きに描いた';
+
+  @override
+  String get sigilMissWrongLayer => 'ショルダーボタンが違う';
+
+  @override
+  String get sigilDry => 'チャージ不足';
+
+  @override
+  String get sigilBusy => '前の技が実行中';
 }

@@ -820,4 +820,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get vaultAll => 'ВСЕ';
+
+  @override
+  String get sigilMissUnknown => 'неизвестная фигура';
+
+  @override
+  String get sigilMissTooSlow => 'слишком медленно';
+
+  @override
+  String get sigilMissSkippedDot => 'пропущена точка';
+
+  @override
+  String get sigilMissLeftRimEarly => 'отпущено слишком рано';
+
+  @override
+  String get sigilMissWrongDirection => 'нарисовано задом наперёд';
+
+  @override
+  String get sigilMissWrongLayer => 'не та плечевая кнопка';
+
+  @override
+  String get sigilDry => 'мало заряда';
+
+  @override
+  String get sigilBusy => 'предыдущий ещё идёт';
 }

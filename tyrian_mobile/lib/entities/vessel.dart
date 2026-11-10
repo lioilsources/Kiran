@@ -19,6 +19,9 @@ import '../systems/mods/shot_plan.dart';
 import 'boss.dart';
 import 'hostile.dart';
 import 'projectile.dart';
+import 'sigil_caster.dart';
+import '../systems/sigils/sigil_catalog.dart';
+import '../systems/sigils/sigil_spec.dart';
 import '../ui/float_text.dart';
 import '../l10n/l10n.dart';
 
@@ -130,6 +133,29 @@ class Vessel extends PositionComponent
 
   Vessel({this.playerIndex = 0}) : super(anchor: Anchor.center);
 
+  /// The right stick's combat (Prompts/28). Idle unless the game enables it.
+  late final SigilCaster caster = SigilCaster(this);
+
+  /// Where the front gun's muzzle is, world space.
+  Vector2 get nozzle => Vector2(position.x, position.y + _gunNozzleOffsetY);
+
+  /// The frame being drawn, for ECHO's ghost.
+  Sprite? get currentSprite => _sprite;
+
+  /// Distance from the centre within which an enemy shot that misses counts
+  /// as a graze.
+  double get grazeRadius {
+    final h = max(size.x, size.y) / 2 * 0.7 * hitboxScale;
+    return h * (caster.focus ? config.grazeRadiusFocusMul : config.grazeRadiusMul);
+  }
+
+  /// Every gun with shots on the field: [guns] plus the companions' and the
+  /// echo's.
+  Iterable<Device> get allGuns sync* {
+    yield* guns;
+    yield* caster.extraGuns;
+  }
+
   Future<void> init() async {
     _loadFrames();
     await dissolveEffect.load();
@@ -205,6 +231,7 @@ class Vessel extends PositionComponent
     for (final d in devices) {
       d.clearProjectiles();
     }
+    caster.reset();
   }
 
   /// Full reset for new game — VB6 ResetVessel: all stats back to defaults
@@ -249,6 +276,7 @@ class Vessel extends PositionComponent
     _applied = const _StatMul();
     refreshMods();
     resetVessel();
+    caster.reset(meterToo: true);
   }
 
   /// Serialize progress for save persistence (consumed by SaveService).
@@ -523,8 +551,9 @@ class Vessel extends PositionComponent
         position.y + size.y * 0.15,
       );
 
-  /// After a kill landed by this ship: LEECH, SIPHON.
+  /// After a kill landed by this ship: LEECH, SIPHON, a sigil's kill pay.
   void onKillFeedback(Hostile h) {
+    caster.onKill();
     if (mods.leechHp > 0) {
       final heal = h is BossPart || h is Boss
           ? (mods.leechHp * config.modLeechBossPart).round()
@@ -640,17 +669,29 @@ class Vessel extends PositionComponent
 
     final scaledDt = dt * config.originalFps;
 
-    // Regenerate power
-    if (genValue < genMax) {
-      genValue += genPower * scaledDt;
-      if (genValue > genMax) genValue = genMax;
+    // Regenerate power. What the generator has no room for is surplus, and
+    // surplus is what CHARGE is made of (Prompts/28 §6).
+    if (!caster.genLocked) {
+      final add = genPower * scaledDt;
+      var surplus = add;
+      if (genValue < genMax) {
+        genValue += add;
+        surplus = 0;
+        if (genValue > genMax) {
+          surplus = genValue - genMax;
+          genValue = genMax;
+        }
+      }
+      caster.onGenSurplus(surplus);
     }
 
     // Regenerate shield
     if (shield < shieldMax && genValue > 0) {
-      shield += shieldRegen * scaledDt;
+      shield += shieldRegen * scaledDt * (caster.halo ? config.haloRegenMul : 1);
       if (shield > shieldMax) shield = shieldMax;
     }
+
+    caster.update(dt);
 
     _tickModTimers(dt);
 
@@ -688,8 +729,8 @@ class Vessel extends PositionComponent
       if (fire) {
         final before = d.cd;
         live += d.fire(x, y, xm, w, parent!,
-            fireRateMult: fireRateMult,
-            plan: planFor(d),
+            fireRateMult: caster.storm ? 1.0 : fireRateMult,
+            plan: caster.firePlan(d, planFor(d)),
             dmgBonus: bonus,
             liveShots: live);
         if (d.cd > before) fired = true;
@@ -700,6 +741,12 @@ class Vessel extends PositionComponent
       _updateProjectiles(d, dt);
     }
     if (surging && fired) _fullGenTime = 0;
+
+    // Companion and echo shots fly and hit like the ship's own.
+    for (final d in caster.extraGuns) {
+      d.updateCooldown(dt);
+      _updateProjectiles(d, dt);
+    }
 
     // Beam damage — outside projectile loop (beams have 0 projectiles)
     for (final d in guns) {
@@ -1005,8 +1052,8 @@ class Vessel extends PositionComponent
 
   /// Take damage (from hostile collision or projectile)
   void takeDamage(int amount) {
-    // GHOST: a hull hit buys a moment untouchable.
-    if (_ghostTimer > 0) return;
+    // GHOST: a hull hit buys a moment untouchable; so does a sigil's phase.
+    if (_ghostTimer > 0 || caster.untouchable) return;
     final hadShield = shield > 0;
     // Shield absorbs first
     if (shield > 0) {
@@ -1014,6 +1061,10 @@ class Vessel extends PositionComponent
       shield -= absorbed;
       amount -= absorbed.toInt();
       if (amount <= 0) {
+        SoundService.instance.play(SfxEvent.hitShield);
+      } else if (caster.halo) {
+        // HALO: what the shield could not hold does not reach the hull.
+        amount = 0;
         SoundService.instance.play(SfxEvent.hitShield);
       } else if (hull.perk == HullPerk.bulwark) {
         amount = max(1, (amount * config.modBulwarkHull).round());
@@ -1023,6 +1074,7 @@ class Vessel extends PositionComponent
     if (amount > 0) {
       SoundService.instance.play(SfxEvent.hitHull);
       game.sectorHullDamage = true;
+      caster.onHullHit();
       if (mods.ghostSec > 0) _ghostTimer = mods.ghostSec;
       if (mods.timewarp && _timewarpCd <= 0) {
         _timewarpCd = config.modTimewarpCooldown;
@@ -1049,6 +1101,7 @@ class Vessel extends PositionComponent
   /// [_asteroidComboWindow] seconds ramp up: 1st drops shields, 2nd costs half
   /// of max HP, 3rd is fatal. The combo resets once the window lapses.
   void hitByAsteroid() {
+    if (caster.untouchable) return;
     if (_asteroidComboTimer <= 0) _asteroidComboStage = 0;
     _asteroidComboStage++;
     _asteroidComboTimer = _asteroidComboWindow;
@@ -1186,7 +1239,10 @@ class Vessel extends PositionComponent
 
   /// VB6 Vessel.AddScore — add score and check weapon unlock thresholds
   void addScore(int s) {
-    score += s;
+    // FLOW (Prompts/28 §6.2) — 1.0 for a ship that draws no sigils.
+    score += caster.enabled && caster.meter.flow > 0
+        ? (s * caster.meter.scoreMul).round()
+        : s;
     if (nextWeaponLevel < wepLevScores.length &&
         score > wepLevScores[nextWeaponLevel]) {
       nextWeaponLevel++;
@@ -1266,9 +1322,14 @@ class Vessel extends PositionComponent
     // buffer, so transforming inside it would clip the corners. `size` is
     // never touched, so hitboxes/beams/nozzles stay exact.
     final banked = bank.abs() > 0.001;
-    final pulse = config.depthPulseEnabled ? visualScale : 1.0;
+    final lift = caster.poseScale;
+    final pulse = (config.depthPulseEnabled ? visualScale : 1.0) * lift;
     final scaled = (pulse - 1.0).abs() > 0.0001;
-    final transformed = banked || scaled;
+    // A barrel roll seen from above: the ship narrows, flips, widens back.
+    final roll = caster.poseRoll;
+    final rolling = roll.abs() > 0.001;
+    final transformed = banked || scaled || rolling;
+    if (lift > 1.01 && _sprite != null) _renderLiftShadow(canvas, lift);
     if (transformed) {
       canvas.save();
       final cx = size.x / 2, cy = size.y / 2;
@@ -1276,6 +1337,10 @@ class Vessel extends PositionComponent
       if (banked) {
         canvas.rotate(bank * config.bankMaxRoll);
         canvas.scale(1.0 - bank.abs() * config.bankSquashX, 1.0);
+      }
+      if (rolling) {
+        final c = cos(2 * pi * roll);
+        canvas.scale(c.abs() < 0.15 ? 0.15 * c.sign : c, 1.0);
       }
       if (scaled) canvas.scale(pulse);
       canvas.translate(-cx, -cy);
@@ -1309,6 +1374,86 @@ class Vessel extends PositionComponent
 
     if (transformed) canvas.restore();
     if (satellite != null) _renderSatellite(canvas);
+    if (caster.enabled) _renderSigilFx(canvas);
+  }
+
+  /// LOOP and CORKSCREW lift the ship toward the camera; its shadow stays
+  /// on the plane, offset and dark, so the height reads.
+  void _renderLiftShadow(Canvas canvas, double lift) {
+    final k = ((lift - 1) / (config.phaseScale - 1)).clamp(0.0, 1.0);
+    canvas.save();
+    canvas.translate(10 * k, 22 * k);
+    _sprite!.render(canvas,
+        size: size,
+        overridePaint: Paint()
+          ..colorFilter = ColorFilter.mode(
+              Color.fromARGB((90 * k).round(), 0, 0, 0), BlendMode.srcATop));
+    canvas.restore();
+  }
+
+  static const Map<SigilKind, Color> _effectColors = {
+    SigilKind.frenzy: Color(0xFFFFB84D),
+    SigilKind.stasis: Color(0xFF8AB8FF),
+    SigilKind.halo: Color(0xFF7CF0FF),
+    SigilKind.storm: Color(0xFFFF6BD6),
+    SigilKind.echo: Color(0xFF9A7CFF),
+    SigilKind.whirl: Color(0xFF7CFFB2),
+  };
+
+  /// What the caster puts around the ship: the phase outline, FOCUS's hitbox
+  /// and graze ring, one shrinking arc per timed effect, MEGA BLAST's charge.
+  void _renderSigilFx(Canvas canvas) {
+    final c = Offset(size.x / 2, size.y / 2);
+    if (caster.untouchable) {
+      canvas.drawCircle(
+          c,
+          size.x * 0.62 * caster.poseScale,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2.5
+            ..color = const Color(0xCC7CF0FF));
+    }
+    if (caster.focus) {
+      final hx = size.x / 2 * 0.7 * hitboxScale, hy = size.y / 2 * 0.7 * hitboxScale;
+      canvas.drawRect(Rect.fromCenter(center: c, width: hx * 2, height: hy * 2),
+          Paint()..color = const Color(0xAAFFFFFF));
+      canvas.drawCircle(
+          c,
+          grazeRadius,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1
+            ..color = const Color(0x667CF0FF));
+    }
+    var ring = 0;
+    for (final e in caster.effects.entries) {
+      final total = SigilCatalog.of(e.key).duration;
+      if (total <= 0) continue;
+      final r = size.x * 0.72 + ring * 6;
+      canvas.drawArc(
+          Rect.fromCircle(center: c, radius: r),
+          -pi / 2,
+          2 * pi * (e.value / total).clamp(0.0, 1.0),
+          false,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 3
+            ..strokeCap = StrokeCap.round
+            ..color = (_effectColors[e.key] ?? Colors.white).withValues(alpha: 0.8));
+      ring++;
+    }
+    if (caster.megaCharging) {
+      canvas.drawArc(
+          Rect.fromCircle(center: c, radius: size.x * 0.95),
+          -pi / 2,
+          2 * pi * caster.megaProgress,
+          false,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 5
+            ..strokeCap = StrokeCap.round
+            ..color = Colors.white);
+    }
   }
 
   /// The drone, drawn from the ship's local frame. Its own art does not exist

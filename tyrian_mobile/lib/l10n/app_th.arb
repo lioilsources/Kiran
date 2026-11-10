@@ -212,5 +212,13 @@
   "fxSatellite": "มีโดรนรบบินตาม",
   "fxTimewarp": "ตัวเรือโดนแล้วเวลาช้าลง",
   "fxGambler": "ทุกนัดเป็นอาวุธสุ่ม",
-  "vaultAll": "ทั้งหมด"
+  "vaultAll": "ทั้งหมด",
+  "sigilMissUnknown": "รูปทรงที่ไม่รู้จัก",
+  "sigilMissTooSlow": "ช้าเกินไป",
+  "sigilMissSkippedDot": "ข้ามจุด",
+  "sigilMissLeftRimEarly": "ปล่อยเร็วเกินไป",
+  "sigilMissWrongDirection": "วาดกลับด้าน",
+  "sigilMissWrongLayer": "ปุ่มไหล่ผิด",
+  "sigilDry": "พลังงานไม่พอ",
+  "sigilBusy": "ท่าก่อนหน้ายังทำงานอยู่"
 }

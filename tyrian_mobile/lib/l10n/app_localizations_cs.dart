@@ -816,4 +816,28 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get vaultAll => 'VŠE';
+
+  @override
+  String get sigilMissUnknown => 'neznámý tvar';
+
+  @override
+  String get sigilMissTooSlow => 'moc pomalu';
+
+  @override
+  String get sigilMissSkippedDot => 'vynechaný bod';
+
+  @override
+  String get sigilMissLeftRimEarly => 'pustil jsi moc brzy';
+
+  @override
+  String get sigilMissWrongDirection => 'nakresleno pozpátku';
+
+  @override
+  String get sigilMissWrongLayer => 'špatné ramenní tlačítko';
+
+  @override
+  String get sigilDry => 'málo náboje';
+
+  @override
+  String get sigilBusy => 'předchozí ještě běží';
 }

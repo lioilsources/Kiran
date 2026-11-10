@@ -807,4 +807,28 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get vaultAll => 'SEMUA';
+
+  @override
+  String get sigilMissUnknown => 'bentuk tidak dikenal';
+
+  @override
+  String get sigilMissTooSlow => 'terlalu lambat';
+
+  @override
+  String get sigilMissSkippedDot => 'titik terlewat';
+
+  @override
+  String get sigilMissLeftRimEarly => 'dilepas terlalu cepat';
+
+  @override
+  String get sigilMissWrongDirection => 'digambar terbalik';
+
+  @override
+  String get sigilMissWrongLayer => 'tombol bahu salah';
+
+  @override
+  String get sigilDry => 'muatan kurang';
+
+  @override
+  String get sigilBusy => 'yang sebelumnya masih berjalan';
 }

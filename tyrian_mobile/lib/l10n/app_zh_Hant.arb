@@ -212,5 +212,13 @@
   "fxSatellite": "一架戰鬥無人機隨行",
   "fxTimewarp": "船體受擊時時間變慢",
   "fxGambler": "每發都是隨機武器",
-  "vaultAll": "全部"
+  "vaultAll": "全部",
+  "sigilMissUnknown": "未知圖形",
+  "sigilMissTooSlow": "太慢了",
+  "sigilMissSkippedDot": "漏了一個點",
+  "sigilMissLeftRimEarly": "放開太早",
+  "sigilMissWrongDirection": "畫反了",
+  "sigilMissWrongLayer": "肩鍵按錯",
+  "sigilDry": "能量不足",
+  "sigilBusy": "上一個仍在進行"
 }

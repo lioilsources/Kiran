@@ -212,5 +212,13 @@
   "fxSatellite": "Drone tempur ikut terbang",
   "fxTimewarp": "Lambung terkena memperlambat waktu",
   "fxGambler": "Setiap tembakan senjata acak",
-  "vaultAll": "SEMUA"
+  "vaultAll": "SEMUA",
+  "sigilMissUnknown": "bentuk tidak dikenal",
+  "sigilMissTooSlow": "terlalu lambat",
+  "sigilMissSkippedDot": "titik terlewat",
+  "sigilMissLeftRimEarly": "dilepas terlalu cepat",
+  "sigilMissWrongDirection": "digambar terbalik",
+  "sigilMissWrongLayer": "tombol bahu salah",
+  "sigilDry": "muatan kurang",
+  "sigilBusy": "yang sebelumnya masih berjalan"
 }

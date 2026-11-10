@@ -212,5 +212,13 @@
   "fxSatellite": "Um drone de combate acompanha você",
   "fxTimewarp": "Golpe no casco desacelera o tempo",
   "fxGambler": "Cada tiro é uma arma aleatória",
-  "vaultAll": "TODOS"
+  "vaultAll": "TODOS",
+  "sigilMissUnknown": "forma desconhecida",
+  "sigilMissTooSlow": "lento demais",
+  "sigilMissSkippedDot": "ponto pulado",
+  "sigilMissLeftRimEarly": "soltou cedo demais",
+  "sigilMissWrongDirection": "desenhado ao contrário",
+  "sigilMissWrongLayer": "botão de ombro errado",
+  "sigilDry": "carga insuficiente",
+  "sigilBusy": "o anterior ainda está ativo"
 }

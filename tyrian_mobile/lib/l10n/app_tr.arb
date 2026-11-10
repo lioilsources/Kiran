@@ -212,5 +212,13 @@
   "fxSatellite": "Yanında savaş dronu uçar",
   "fxTimewarp": "Gövde darbesi zamanı yavaşlatır",
   "fxGambler": "Her atış rastgele bir silah",
-  "vaultAll": "TÜMÜ"
+  "vaultAll": "TÜMÜ",
+  "sigilMissUnknown": "bilinmeyen şekil",
+  "sigilMissTooSlow": "çok yavaş",
+  "sigilMissSkippedDot": "bir nokta atlandı",
+  "sigilMissLeftRimEarly": "çok erken bırakıldı",
+  "sigilMissWrongDirection": "ters çizildi",
+  "sigilMissWrongLayer": "yanlış omuz tuşu",
+  "sigilDry": "yetersiz şarj",
+  "sigilBusy": "önceki hâlâ sürüyor"
 }

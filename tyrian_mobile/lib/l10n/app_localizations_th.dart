@@ -806,4 +806,28 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get vaultAll => 'ทั้งหมด';
+
+  @override
+  String get sigilMissUnknown => 'รูปทรงที่ไม่รู้จัก';
+
+  @override
+  String get sigilMissTooSlow => 'ช้าเกินไป';
+
+  @override
+  String get sigilMissSkippedDot => 'ข้ามจุด';
+
+  @override
+  String get sigilMissLeftRimEarly => 'ปล่อยเร็วเกินไป';
+
+  @override
+  String get sigilMissWrongDirection => 'วาดกลับด้าน';
+
+  @override
+  String get sigilMissWrongLayer => 'ปุ่มไหล่ผิด';
+
+  @override
+  String get sigilDry => 'พลังงานไม่พอ';
+
+  @override
+  String get sigilBusy => 'ท่าก่อนหน้ายังทำงานอยู่';
 }

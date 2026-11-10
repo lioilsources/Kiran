@@ -677,5 +677,13 @@
   "fxSatellite": "A gun drone rides along",
   "fxTimewarp": "A hull hit slows time",
   "fxGambler": "Every shot is a random gun",
-  "vaultAll": "ALL"
+  "vaultAll": "ALL",
+  "sigilMissUnknown": "unknown shape",
+  "sigilMissTooSlow": "too slow",
+  "sigilMissSkippedDot": "skipped a dot",
+  "sigilMissLeftRimEarly": "let go too early",
+  "sigilMissWrongDirection": "drawn backwards",
+  "sigilMissWrongLayer": "wrong shoulder button",
+  "sigilDry": "not enough charge",
+  "sigilBusy": "previous one still running"
 }

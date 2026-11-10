@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../../game/game_config.dart' as config;
 import '../dev_type.dart';
 import '../device.dart';
 import 'mod_spec.dart';
@@ -70,6 +71,30 @@ class ShotPlan {
       pwrNeed: d.pwrNeed * fx.pwrMul,
       cooldown: d.cooldown / fx.cooldownDiv,
       guide: d.guide + fx.guideAdd,
+    );
+  }
+
+  /// Most parallel streams any plan fires: four from mods, two more from
+  /// OVERSTREAM (Prompts/28 §7).
+  static const maxStreams = 6;
+
+  /// This plan in a sigil's hands: OVERSTREAM [gear] adds streams and costs
+  /// more per shot, FRENZY shortens the cooldown, STORM makes it free.
+  ShotPlan shifted({int gear = 1, double cooldownMul = 1, double pwrMul = 1}) {
+    final g = gear.clamp(1, config.overstreamCost.length);
+    return ShotPlan._(
+      fx: fx,
+      streams: math.min(streams + g - 1, maxStreams),
+      fan: fan,
+      fanAngle: fanAngle,
+      salvo: salvo,
+      damage: damage,
+      speed: speed,
+      projScaleMul: projScaleMul,
+      drawScaleAdd: drawScaleAdd,
+      pwrNeed: pwrNeed * config.overstreamCost[g - 1] * pwrMul,
+      cooldown: cooldown * cooldownMul,
+      guide: guide,
     );
   }
 

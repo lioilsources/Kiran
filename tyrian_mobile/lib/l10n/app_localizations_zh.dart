@@ -800,6 +800,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaultAll => '全部';
+
+  @override
+  String get sigilMissUnknown => '未知图形';
+
+  @override
+  String get sigilMissTooSlow => '太慢了';
+
+  @override
+  String get sigilMissSkippedDot => '漏了一个点';
+
+  @override
+  String get sigilMissLeftRimEarly => '松开太早';
+
+  @override
+  String get sigilMissWrongDirection => '画反了';
+
+  @override
+  String get sigilMissWrongLayer => '肩键按错';
+
+  @override
+  String get sigilDry => '能量不足';
+
+  @override
+  String get sigilBusy => '上一个仍在进行';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1598,4 +1622,28 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get vaultAll => '全部';
+
+  @override
+  String get sigilMissUnknown => '未知圖形';
+
+  @override
+  String get sigilMissTooSlow => '太慢了';
+
+  @override
+  String get sigilMissSkippedDot => '漏了一個點';
+
+  @override
+  String get sigilMissLeftRimEarly => '放開太早';
+
+  @override
+  String get sigilMissWrongDirection => '畫反了';
+
+  @override
+  String get sigilMissWrongLayer => '肩鍵按錯';
+
+  @override
+  String get sigilDry => '能量不足';
+
+  @override
+  String get sigilBusy => '上一個仍在進行';
 }

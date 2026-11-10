@@ -23,3 +23,11 @@ const double landscapeCameraAngle = pi / 2;
   if (!(landscape ?? isLandscape)) return (sx, sy);
   return (-sy, sx);
 }
+
+/// The inverse of [screenToGame]: where a game-space direction points on
+/// screen. The sigil pad uses it to draw ship-space strokes where the thumb
+/// made them.
+(double, double) gameToScreen(double gx, double gy, {bool? landscape}) {
+  if (!(landscape ?? isLandscape)) return (gx, gy);
+  return (gy, -gx);
+}
