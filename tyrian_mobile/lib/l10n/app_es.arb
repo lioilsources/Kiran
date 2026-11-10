@@ -287,5 +287,9 @@
   "hintStream": "Aprieta LT: dos o tres ráfagas",
   "arenaKata": "KATA",
   "arenaKataOff": "NINGUNA",
-  "kataNext": "siguiente {sigil} en {secs} s"
+  "kataNext": "siguiente {sigil} en {secs} s",
+  "arenaGauntlet": "DESAFÍO",
+  "arenaOn": "SÍ",
+  "arenaOff": "NO",
+  "gauntletRating": "Puntuación {rating} · mejor {best}"
 }

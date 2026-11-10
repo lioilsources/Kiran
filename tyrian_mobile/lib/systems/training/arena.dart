@@ -30,6 +30,9 @@ class ArenaSettings {
   /// The kata being run, or null. A kata replaces the drill.
   Kata? kata;
 
+  /// The endless boss run: parts and toughness climb with every kill.
+  bool gauntlet = false;
+
   void stepKata(int dir) {
     final sorted = [...kKatas]..sort((a, b) => a.band.compareTo(b.band));
     final all = <Kata?>[null, ...sorted];
@@ -75,14 +78,18 @@ class ArenaSettings {
 
   /// One sector holding only the boss, with the parts the dial asks for,
   /// sized to a ship that deals [dps].
-  Sector sector(double dps) {
-    final s = Sector(caption: 'ARENA', level: level, sectorBonus: 0);
+  ///
+  /// [parts] and [hpMul] override the dial for a gauntlet round.
+  Sector sector(double dps, {int? parts, double hpMul = 1}) {
+    final p = parts ?? bossParts;
+    final lv = p <= 1 ? 10 : 10 + 5 * (p - 1);
+    final s = Sector(caption: 'ARENA', level: lv, sectorBonus: 0);
     Sector.addBossWave(s,
-        ordinal: ordinal,
+        ordinal: p < 1 ? 1 : p,
         dps: math.max(dps, 100.0),
-        ttk: 18.0 + 4.0 * bossParts,
-        hpFloor: 6000 + 4000 * bossParts,
-        parts: bossPartsForOrdinal(bossParts));
+        ttk: (18.0 + 4.0 * p) * hpMul,
+        hpFloor: ((6000 + 4000 * p) * hpMul).round(),
+        parts: bossPartsForOrdinal(p));
     return s;
   }
 }

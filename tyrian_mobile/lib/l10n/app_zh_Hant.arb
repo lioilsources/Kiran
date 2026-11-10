@@ -287,5 +287,9 @@
   "hintStream": "按住 LT：兩道或三道彈流",
   "arenaKata": "套路",
   "arenaKataOff": "無",
-  "kataNext": "下一個 {sigil}，{secs} 秒後"
+  "kataNext": "下一個 {sigil}，{secs} 秒後",
+  "arenaGauntlet": "連戰",
+  "arenaOn": "開",
+  "arenaOff": "關",
+  "gauntletRating": "評分 {rating} · 最佳 {best}"
 }

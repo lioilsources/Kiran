@@ -287,5 +287,9 @@
   "hintStream": "Нажми LT: две или три струи",
   "arenaKata": "КАТА",
   "arenaKataOff": "НЕТ",
-  "kataNext": "дальше {sigil} через {secs} с"
+  "kataNext": "дальше {sigil} через {secs} с",
+  "arenaGauntlet": "ИСПЫТАНИЕ",
+  "arenaOn": "ВКЛ",
+  "arenaOff": "ВЫКЛ",
+  "gauntletRating": "Рейтинг {rating} · лучший {best}"
 }

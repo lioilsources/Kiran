@@ -1058,4 +1058,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'další $sigil za $secs s';
   }
+
+  @override
+  String get arenaGauntlet => 'GAUNTLET';
+
+  @override
+  String get arenaOn => 'ZAP';
+
+  @override
+  String get arenaOff => 'VYP';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Hodnocení $rating · nejlepší $best';
+  }
 }

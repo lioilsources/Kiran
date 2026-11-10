@@ -287,5 +287,9 @@
   "hintStream": "LT'ye bas: iki ya da üç akış",
   "arenaKata": "KATA",
   "arenaKataOff": "YOK",
-  "kataNext": "sıradaki {sigil}, {secs} sn sonra"
+  "kataNext": "sıradaki {sigil}, {secs} sn sonra",
+  "arenaGauntlet": "MEYDAN OKUMA",
+  "arenaOn": "AÇIK",
+  "arenaOff": "KAPALI",
+  "gauntletRating": "Puan {rating} · en iyi {best}"
 }

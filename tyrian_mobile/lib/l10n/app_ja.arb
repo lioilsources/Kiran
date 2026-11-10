@@ -287,5 +287,9 @@
   "hintStream": "LTを握る: 弾が2本か3本に",
   "arenaKata": "型",
   "arenaKataOff": "なし",
-  "kataNext": "次は {sigil}　あと {secs} 秒"
+  "kataNext": "次は {sigil}　あと {secs} 秒",
+  "arenaGauntlet": "連戦",
+  "arenaOn": "オン",
+  "arenaOff": "オフ",
+  "gauntletRating": "評価 {rating} · 最高 {best}"
 }

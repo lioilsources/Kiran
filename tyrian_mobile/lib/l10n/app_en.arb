@@ -786,5 +786,19 @@
         "type": "String"
       }
     }
+  },
+  "arenaGauntlet": "GAUNTLET",
+  "arenaOn": "ON",
+  "arenaOff": "OFF",
+  "gauntletRating": "Rating {rating} · best {best}",
+  "@gauntletRating": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      },
+      "best": {
+        "type": "int"
+      }
+    }
   }
 }

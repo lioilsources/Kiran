@@ -1063,4 +1063,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'próximo $sigil em $secs s';
   }
+
+  @override
+  String get arenaGauntlet => 'DESAFIO';
+
+  @override
+  String get arenaOn => 'SIM';
+
+  @override
+  String get arenaOff => 'NÃO';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Nota $rating · melhor $best';
+  }
 }

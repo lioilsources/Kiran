@@ -287,5 +287,9 @@
   "hintStream": "LT를 당기세요: 탄이 두세 줄로",
   "arenaKata": "카타",
   "arenaKataOff": "없음",
-  "kataNext": "다음 {sigil} {secs}초 후"
+  "kataNext": "다음 {sigil} {secs}초 후",
+  "arenaGauntlet": "연속 도전",
+  "arenaOn": "켬",
+  "arenaOff": "끔",
+  "gauntletRating": "평가 {rating} · 최고 {best}"
 }

@@ -28,6 +28,7 @@ import '../systems/training/arena.dart';
 import '../systems/training/arena_ghost.dart';
 import '../systems/training/lesson.dart';
 import '../systems/training/kata.dart';
+import '../systems/training/gauntlet.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
@@ -428,6 +429,11 @@ class TyrianGame extends FlameGame
   }
 
   void _startArenaRound() {
+    if (arena.gauntlet && capture == null) {
+      gauntlet ??= Gauntlet(startParts: arena.bossParts);
+    } else {
+      gauntlet = null;
+    }
     loadSector(0);
     vessel.caster.meter.infinite = arena.infiniteCharge;
     vessel.caster.grantCompanions(arena.companions);
@@ -437,6 +443,7 @@ class TyrianGame extends FlameGame
   /// The boss beaten: the next one, straight away.
   void _arenaBossDown() {
     arenaStats.bossDown();
+    gauntlet?.bossDown(vessel.caster.meter.flow);
     showMessage('${arenaStats.bosses}×');
     vessel.shield = vessel.shieldMax;
     _startArenaRound();
@@ -446,6 +453,10 @@ class TyrianGame extends FlameGame
   bool arenaKnockout(Vessel v) {
     if (mode != GameMode.training) return false;
     arenaStats.knockouts++;
+    if (gauntlet != null) {
+      _gauntletOver();
+      return true;
+    }
     v.hp = v.hpMax;
     v.shield = v.shieldMax;
     v.dmgTaken = 4;
@@ -472,7 +483,31 @@ class TyrianGame extends FlameGame
     state = GameState.comCenter;
   }
 
-  Sector _arenaSector() => arena.sector(Campaign.poweredDps(vessel));
+  Sector _arenaSector() {
+    final g = gauntlet;
+    return g == null
+        ? arena.sector(Campaign.poweredDps(vessel))
+        : arena.sector(Campaign.poweredDps(vessel), parts: g.parts, hpMul: g.hpMul);
+  }
+
+  /// The endless boss run, when the dial is on.
+  Gauntlet? gauntlet;
+  int gauntletBest = 0;
+  static const _gauntletKey = 'gauntlet_best';
+
+  void _gauntletOver() {
+    final g = gauntlet!;
+    g.knockout();
+    if (g.rating > gauntletBest) {
+      gauntletBest = g.rating;
+      SharedPreferences.getInstance().then((p) => p.setInt(_gauntletKey, gauntletBest));
+    }
+    showMessage('GAUNTLET ${g.rating}');
+    gauntlet = Gauntlet(startParts: arena.bossParts);
+    vessel.resetVessel();
+    vessel.resetPosition();
+    _startArenaRound();
+  }
 
   /// Sector.complete is a one-way latch and the ComCenter only opens two
   /// seconds later, so without this the whole end-of-sector block ran on every
@@ -1184,6 +1219,8 @@ class TyrianGame extends FlameGame
     await SigilMastery.instance.load();
     await SigilHints.instance.load();
     await _loadKataBest();
+    gauntletBest =
+        (await SharedPreferences.getInstance()).getInt(_gauntletKey) ?? 0;
     // Before any ship loads: a ship's racks take their mods out of the vault.
     await ModsState.instance.load();
     final state = await SaveService.loadGameState();

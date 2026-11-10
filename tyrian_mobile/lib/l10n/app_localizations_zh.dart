@@ -1033,6 +1033,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return '下一个 $sigil，$secs 秒后';
   }
+
+  @override
+  String get arenaGauntlet => '连战';
+
+  @override
+  String get arenaOn => '开';
+
+  @override
+  String get arenaOff => '关';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return '评分 $rating · 最佳 $best';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2063,5 +2077,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String kataNext(String sigil, String secs) {
     return '下一個 $sigil，$secs 秒後';
+  }
+
+  @override
+  String get arenaGauntlet => '連戰';
+
+  @override
+  String get arenaOn => '開';
+
+  @override
+  String get arenaOff => '關';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return '評分 $rating · 最佳 $best';
   }
 }

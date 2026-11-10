@@ -1070,4 +1070,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'prossimo $sigil tra $secs s';
   }
+
+  @override
+  String get arenaGauntlet => 'SFIDA';
+
+  @override
+  String get arenaOn => 'SÌ';
+
+  @override
+  String get arenaOff => 'NO';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Punteggio $rating · record $best';
+  }
 }

@@ -1045,4 +1045,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'tiếp theo $sigil sau $secs giây';
   }
+
+  @override
+  String get arenaGauntlet => 'THỬ THÁCH';
+
+  @override
+  String get arenaOn => 'BẬT';
+
+  @override
+  String get arenaOff => 'TẮT';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Điểm $rating · cao nhất $best';
+  }
 }

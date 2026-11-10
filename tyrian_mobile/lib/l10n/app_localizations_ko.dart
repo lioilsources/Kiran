@@ -1036,4 +1036,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return '다음 $sigil $secs초 후';
   }
+
+  @override
+  String get arenaGauntlet => '연속 도전';
+
+  @override
+  String get arenaOn => '켬';
+
+  @override
+  String get arenaOff => '끔';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return '평가 $rating · 최고 $best';
+  }
 }

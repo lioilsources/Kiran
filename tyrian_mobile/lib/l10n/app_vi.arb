@@ -287,5 +287,9 @@
   "hintStream": "Bóp LT: hai hoặc ba luồng đạn",
   "arenaKata": "KATA",
   "arenaKataOff": "KHÔNG",
-  "kataNext": "tiếp theo {sigil} sau {secs} giây"
+  "kataNext": "tiếp theo {sigil} sau {secs} giây",
+  "arenaGauntlet": "THỬ THÁCH",
+  "arenaOn": "BẬT",
+  "arenaOff": "TẮT",
+  "gauntletRating": "Điểm {rating} · cao nhất {best}"
 }

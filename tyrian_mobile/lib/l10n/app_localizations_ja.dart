@@ -1035,4 +1035,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return '次は $sigil　あと $secs 秒';
   }
+
+  @override
+  String get arenaGauntlet => '連戦';
+
+  @override
+  String get arenaOn => 'オン';
+
+  @override
+  String get arenaOff => 'オフ';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return '評価 $rating · 最高 $best';
+  }
 }

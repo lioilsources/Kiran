@@ -1050,4 +1050,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'sıradaki $sigil, $secs sn sonra';
   }
+
+  @override
+  String get arenaGauntlet => 'MEYDAN OKUMA';
+
+  @override
+  String get arenaOn => 'AÇIK';
+
+  @override
+  String get arenaOff => 'KAPALI';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Puan $rating · en iyi $best';
+  }
 }

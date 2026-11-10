@@ -1041,4 +1041,18 @@ class AppLocalizationsTh extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'ถัดไป $sigil ใน $secs วิ';
   }
+
+  @override
+  String get arenaGauntlet => 'ด่านต่อเนื่อง';
+
+  @override
+  String get arenaOn => 'เปิด';
+
+  @override
+  String get arenaOff => 'ปิด';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'คะแนน $rating · ดีสุด $best';
+  }
 }

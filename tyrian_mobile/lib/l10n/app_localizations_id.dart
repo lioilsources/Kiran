@@ -1057,4 +1057,18 @@ class AppLocalizationsId extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'berikutnya $sigil dalam $secs dtk';
   }
+
+  @override
+  String get arenaGauntlet => 'TANTANGAN';
+
+  @override
+  String get arenaOn => 'AKTIF';
+
+  @override
+  String get arenaOff => 'MATI';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Nilai $rating · terbaik $best';
+  }
 }

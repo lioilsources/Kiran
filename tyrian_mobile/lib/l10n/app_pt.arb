@@ -287,5 +287,9 @@
   "hintStream": "Aperte LT: duas ou três rajadas",
   "arenaKata": "KATA",
   "arenaKataOff": "NENHUMA",
-  "kataNext": "próximo {sigil} em {secs} s"
+  "kataNext": "próximo {sigil} em {secs} s",
+  "arenaGauntlet": "DESAFIO",
+  "arenaOn": "SIM",
+  "arenaOff": "NÃO",
+  "gauntletRating": "Nota {rating} · melhor {best}"
 }

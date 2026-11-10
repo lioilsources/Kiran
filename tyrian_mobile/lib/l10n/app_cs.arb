@@ -287,5 +287,9 @@
   "hintStream": "Stiskni LT: dva nebo tři proudy",
   "arenaKata": "KATA",
   "arenaKataOff": "ŽÁDNÁ",
-  "kataNext": "další {sigil} za {secs} s"
+  "kataNext": "další {sigil} za {secs} s",
+  "arenaGauntlet": "GAUNTLET",
+  "arenaOn": "ZAP",
+  "arenaOff": "VYP",
+  "gauntletRating": "Hodnocení {rating} · nejlepší {best}"
 }

@@ -287,5 +287,9 @@
   "hintStream": "กด LT: ยิงสองหรือสามสาย",
   "arenaKata": "คาตะ",
   "arenaKataOff": "ไม่มี",
-  "kataNext": "ถัดไป {sigil} ใน {secs} วิ"
+  "kataNext": "ถัดไป {sigil} ใน {secs} วิ",
+  "arenaGauntlet": "ด่านต่อเนื่อง",
+  "arenaOn": "เปิด",
+  "arenaOff": "ปิด",
+  "gauntletRating": "คะแนน {rating} · ดีสุด {best}"
 }

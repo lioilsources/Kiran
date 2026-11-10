@@ -1852,6 +1852,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'next {sigil} in {secs} s'**
   String kataNext(String sigil, String secs);
+
+  /// No description provided for @arenaGauntlet.
+  ///
+  /// In en, this message translates to:
+  /// **'GAUNTLET'**
+  String get arenaGauntlet;
+
+  /// No description provided for @arenaOn.
+  ///
+  /// In en, this message translates to:
+  /// **'ON'**
+  String get arenaOn;
+
+  /// No description provided for @arenaOff.
+  ///
+  /// In en, this message translates to:
+  /// **'OFF'**
+  String get arenaOff;
+
+  /// No description provided for @gauntletRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating {rating} · best {best}'**
+  String gauntletRating(int rating, int best);
 }
 
 class _AppLocalizationsDelegate

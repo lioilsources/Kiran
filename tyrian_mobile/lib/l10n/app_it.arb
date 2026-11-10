@@ -287,5 +287,9 @@
   "hintStream": "Premi LT: due o tre raffiche",
   "arenaKata": "KATA",
   "arenaKataOff": "NESSUNA",
-  "kataNext": "prossimo {sigil} tra {secs} s"
+  "kataNext": "prossimo {sigil} tra {secs} s",
+  "arenaGauntlet": "SFIDA",
+  "arenaOn": "SÌ",
+  "arenaOff": "NO",
+  "gauntletRating": "Punteggio {rating} · record {best}"
 }

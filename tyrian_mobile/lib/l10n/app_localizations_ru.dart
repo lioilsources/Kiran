@@ -1069,4 +1069,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String kataNext(String sigil, String secs) {
     return 'дальше $sigil через $secs с';
   }
+
+  @override
+  String get arenaGauntlet => 'ИСПЫТАНИЕ';
+
+  @override
+  String get arenaOn => 'ВКЛ';
+
+  @override
+  String get arenaOff => 'ВЫКЛ';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Рейтинг $rating · лучший $best';
+  }
 }

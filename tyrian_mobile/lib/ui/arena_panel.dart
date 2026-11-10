@@ -40,7 +40,7 @@ class ArenaPanel extends StatefulWidget {
   State<ArenaPanel> createState() => _ArenaPanelState();
 }
 
-enum _Row { parts, companions, charge, speed, drill, kata, fight, newBoss, leave }
+enum _Row { parts, companions, charge, speed, drill, kata, gauntlet, fight, newBoss, leave }
 
 class _ArenaPanelState extends State<ArenaPanel> {
   final _focus = FocusNode();
@@ -56,7 +56,7 @@ class _ArenaPanelState extends State<ArenaPanel> {
   ArenaSettings get _a => widget.game.arena;
 
   String get _dialKey =>
-      '${_a.bossParts}|${_a.companions}|${_a.infiniteCharge}|${_a.drill}|${_a.kata?.id}';
+      '${_a.bossParts}|${_a.companions}|${_a.infiniteCharge}|${_a.drill}|${_a.kata?.id}|${_a.gauntlet}';
 
   List<_Row> get _rows => [
         _Row.parts,
@@ -65,6 +65,7 @@ class _ArenaPanelState extends State<ArenaPanel> {
         _Row.speed,
         _Row.drill,
         _Row.kata,
+        _Row.gauntlet,
         _Row.fight,
         if (widget.inArena) _Row.newBoss,
         _Row.leave,
@@ -103,6 +104,8 @@ class _ArenaPanelState extends State<ArenaPanel> {
           _a.stepDrill(dir);
         case _Row.kata:
           _a.stepKata(dir);
+        case _Row.gauntlet:
+          _a.gauntlet = !_a.gauntlet;
         default:
           break;
       }
@@ -264,6 +267,10 @@ class _ArenaPanelState extends State<ArenaPanel> {
               ? l.arenaKataOff
               : '${_a.kata!.id.toUpperCase()} · ${_a.kata!.band}'
                   '${widget.game.kataBest[_a.kata!.id] == null ? '' : ' · ${widget.game.kataBest[_a.kata!.id]}'}'
+        ),
+      _Row.gauntlet => (
+          l.arenaGauntlet,
+          '${_a.gauntlet ? l.arenaOn : l.arenaOff} · ${widget.game.gauntletBest}'
         ),
       _Row.fight => (widget.inArena ? l.resume : l.arenaFight, ''),
       _Row.newBoss => (l.arenaNewBoss, ''),
@@ -453,6 +460,12 @@ class ArenaStrip extends StatelessWidget {
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Text('${l.arena} · ${l.arenaSummary(st.bosses, st.knockouts)} · Σ $casts · ${(acc * 100).round()} %',
                 style: const TextStyle(color: Colors.white70, fontSize: 12, letterSpacing: 1)),
+            if (game.gauntlet != null) ...[
+              const SizedBox(width: 12),
+              Text(l.gauntletRating(game.gauntlet!.rating, game.gauntletBest),
+                  style: const TextStyle(
+                      color: Color(0xFFFF8A65), fontSize: 13, fontWeight: FontWeight.bold)),
+            ],
             if (game.kataRun != null) ..._kata(game, l),
             if (drill != null) ...[
               const SizedBox(width: 14),

@@ -287,5 +287,9 @@
   "hintStream": "Tekan LT: dua atau tiga aliran",
   "arenaKata": "KATA",
   "arenaKataOff": "TIDAK ADA",
-  "kataNext": "berikutnya {sigil} dalam {secs} dtk"
+  "kataNext": "berikutnya {sigil} dalam {secs} dtk",
+  "arenaGauntlet": "TANTANGAN",
+  "arenaOn": "AKTIF",
+  "arenaOff": "MATI",
+  "gauntletRating": "Nilai {rating} · terbaik {best}"
 }

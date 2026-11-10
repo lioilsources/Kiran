@@ -287,5 +287,9 @@
   "hintStream": "LT drücken: zwei oder drei Strahlen",
   "arenaKata": "KATA",
   "arenaKataOff": "KEINE",
-  "kataNext": "nächstes {sigil} in {secs} s"
+  "kataNext": "nächstes {sigil} in {secs} s",
+  "arenaGauntlet": "SPIESSRUTENLAUF",
+  "arenaOn": "AN",
+  "arenaOff": "AUS",
+  "gauntletRating": "Wertung {rating} · Bestwert {best}"
 }
