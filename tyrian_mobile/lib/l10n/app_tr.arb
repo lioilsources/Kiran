@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Sağ çubuğu hızla it",
   "hintLoop": "Bir daire çiz: atışların üstünden uçarsın",
-  "hintStream": "LT'ye bas: iki ya da üç akış"
+  "hintStream": "LT'ye bas: iki ya da üç akış",
+  "arenaKata": "KATA",
+  "arenaKataOff": "YOK",
+  "kataNext": "sıradaki {sigil}, {secs} sn sonra"
 }

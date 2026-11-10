@@ -284,5 +284,8 @@
   "lessonTempo": "テンポ {pct} %",
   "hintHop": "右スティックをはじく",
   "hintLoop": "円を描くと弾の上を飛び越える",
-  "hintStream": "LTを握る: 弾が2本か3本に"
+  "hintStream": "LTを握る: 弾が2本か3本に",
+  "arenaKata": "型",
+  "arenaKataOff": "なし",
+  "kataNext": "次は {sigil}　あと {secs} 秒"
 }

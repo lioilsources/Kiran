@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Rechten Stick antippen",
   "hintLoop": "Zeichne einen Kreis: du fliegst über die Schüsse",
-  "hintStream": "LT drücken: zwei oder drei Strahlen"
+  "hintStream": "LT drücken: zwei oder drei Strahlen",
+  "arenaKata": "KATA",
+  "arenaKataOff": "KEINE",
+  "kataNext": "nächstes {sigil} in {secs} s"
 }

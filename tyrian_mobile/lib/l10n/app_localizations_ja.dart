@@ -1024,4 +1024,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get hintStream => 'LTを握る: 弾が2本か3本に';
+
+  @override
+  String get arenaKata => '型';
+
+  @override
+  String get arenaKataOff => 'なし';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '次は $sigil　あと $secs 秒';
+  }
 }

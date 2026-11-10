@@ -8,6 +8,7 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'challenge.dart';
 import 'capture_director.dart';
@@ -26,6 +27,7 @@ import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena.dart';
 import '../systems/training/arena_ghost.dart';
 import '../systems/training/lesson.dart';
+import '../systems/training/kata.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
@@ -251,6 +253,37 @@ class TyrianGame extends FlameGame
   /// The drilled sigil's lesson (Prompts/29 §4), or null in free play.
   Lesson? lesson;
 
+  /// The kata in progress (Prompts/29 §5.4), and how the last one went.
+  KataRun? kataRun;
+  String lastKataGrade = '';
+  double _kataRestart = 0;
+
+  /// Best grade per kata, kept across sessions.
+  static const _kataKey = 'kata_best';
+  final Map<String, String> kataBest = {};
+
+  static const _gradeOrder = ['', 'D', 'C', 'B', 'A', 'S'];
+
+  Future<void> _loadKataBest() async {
+    final prefs = await SharedPreferences.getInstance();
+    for (final e in prefs.getStringList(_kataKey) ?? const <String>[]) {
+      final i = e.indexOf('=');
+      if (i > 0) kataBest[e.substring(0, i)] = e.substring(i + 1);
+    }
+  }
+
+  void _kataFinished(KataRun run) {
+    lastKataGrade = run.grade;
+    showMessage('${run.kata.id.toUpperCase()} ${run.grade}');
+    final id = run.kata.id;
+    if (_gradeOrder.indexOf(run.grade) > _gradeOrder.indexOf(kataBest[id] ?? '')) {
+      kataBest[id] = run.grade;
+      SharedPreferences.getInstance().then((p) => p.setStringList(
+          _kataKey, [for (final e in kataBest.entries) '${e.key}=${e.value}']));
+    }
+    _kataRestart = 2.0;
+  }
+
   /// World speed the arena runs at now: a filmed take's, the lesson's
   /// step, or the dial.
   double get arenaSpeed =>
@@ -262,6 +295,14 @@ class TyrianGame extends FlameGame
   /// Set up the drill's lesson and the ghost that goes with it.
   void _setupDrill() {
     if (capture != null) return; // the director drives the ghost
+    final k = arena.kata;
+    if (k == null) {
+      kataRun = null;
+    } else if (kataRun?.kata != k) {
+      kataRun = KataRun(k, tempo: 1.0);
+      lastKataGrade = '';
+    }
+    vessel.caster.onHullHitHook = kataRun == null ? null : () => kataRun?.onHullHit();
     final d = arena.drill;
     if (d == null) {
       lesson = null;
@@ -299,6 +340,11 @@ class TyrianGame extends FlameGame
   void _onArenaReading(SigilReading r) {
     if (ghost != null && !sigilDemo) return; // the ghost's own drawing
     arenaStats.onReading(r);
+    final kr = kataRun;
+    if (kr != null && !kr.done) {
+      kr.onReading(r);
+      if (kr.done) _kataFinished(kr);
+    }
     final l = lesson;
     if (l != null) {
       final was = l.phase;
@@ -856,7 +902,16 @@ class TyrianGame extends FlameGame
       dt *= s;
       // A standing world still reads the stick, at the wall clock.
       inputDt = s > 0 ? dt : inputDt;
-      if (state == GameState.playing) arenaStats.tick(dt);
+      if (state == GameState.playing) {
+        arenaStats.tick(dt);
+        kataRun?.tick(dt);
+        if (_kataRestart > 0) {
+          _kataRestart -= dt;
+          if (_kataRestart <= 0 && arena.kata != null) {
+            kataRun = KataRun(arena.kata!);
+          }
+        }
+      }
     }
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
@@ -1128,6 +1183,7 @@ class TyrianGame extends FlameGame
     await PadSettings.init();
     await SigilMastery.instance.load();
     await SigilHints.instance.load();
+    await _loadKataBest();
     // Before any ship loads: a ship's racks take their mods out of the vault.
     await ModsState.instance.load();
     final state = await SaveService.loadGameState();

@@ -1046,4 +1046,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get hintStream => 'Tekan LT: dua atau tiga aliran';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'TIDAK ADA';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'berikutnya $sigil dalam $secs dtk';
+  }
 }

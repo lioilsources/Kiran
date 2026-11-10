@@ -1052,4 +1052,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get hintStream => 'Aperte LT: duas ou três rajadas';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NENHUMA';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'próximo $sigil em $secs s';
+  }
 }

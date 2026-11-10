@@ -1025,4 +1025,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hintStream => 'LT를 당기세요: 탄이 두세 줄로';
+
+  @override
+  String get arenaKata => '카타';
+
+  @override
+  String get arenaKataOff => '없음';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '다음 $sigil $secs초 후';
+  }
 }

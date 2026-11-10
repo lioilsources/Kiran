@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Sentil stik kanan",
   "hintLoop": "Gambar lingkaran: kamu melayang di atas tembakan",
-  "hintStream": "Tekan LT: dua atau tiga aliran"
+  "hintStream": "Tekan LT: dua atau tiga aliran",
+  "arenaKata": "KATA",
+  "arenaKataOff": "TIDAK ADA",
+  "kataNext": "berikutnya {sigil} dalam {secs} dtk"
 }

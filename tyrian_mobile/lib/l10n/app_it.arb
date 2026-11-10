@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Scatta lo stick destro",
   "hintLoop": "Disegna un cerchio: voli sopra i colpi",
-  "hintStream": "Premi LT: due o tre raffiche"
+  "hintStream": "Premi LT: due o tre raffiche",
+  "arenaKata": "KATA",
+  "arenaKataOff": "NESSUNA",
+  "kataNext": "prossimo {sigil} tra {secs} s"
 }

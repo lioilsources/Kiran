@@ -5,6 +5,7 @@ import '../sector.dart';
 import '../sigils/sigil_catalog.dart';
 import '../sigils/sigil_recognizer.dart';
 import '../sigils/sigil_spec.dart';
+import 'kata.dart';
 
 /// The training arena's dials (Prompts/29 §3): a boss that comes back the
 /// moment it dies, with as many bolted-on parts as asked for, and the
@@ -25,6 +26,17 @@ class ArenaSettings {
 
   /// The sigil being drilled, or null for free play.
   SigilKind? drill;
+
+  /// The kata being run, or null. A kata replaces the drill.
+  Kata? kata;
+
+  void stepKata(int dir) {
+    final sorted = [...kKatas]..sort((a, b) => a.band.compareTo(b.band));
+    final all = <Kata?>[null, ...sorted];
+    final i = all.indexOf(kata);
+    kata = all[((i < 0 ? 0 : i) + dir) % all.length];
+    if (kata != null) drill = null;
+  }
 
   static const List<double> speeds = [1.0, 0.5, 0.25];
   static const int maxParts = 4;
@@ -51,6 +63,7 @@ class ArenaSettings {
     final all = drills;
     final i = all.indexOf(drill);
     drill = all[((i < 0 ? 0 : i) + dir) % all.length];
+    if (drill != null) kata = null;
   }
 
   /// The VB6 level the arena boss is built at: deeper for more parts, so its

@@ -1022,6 +1022,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hintStream => '按住 LT：两道或三道弹流';
+
+  @override
+  String get arenaKata => '套路';
+
+  @override
+  String get arenaKataOff => '无';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '下一个 $sigil，$secs 秒后';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2042,4 +2053,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get hintStream => '按住 LT：兩道或三道彈流';
+
+  @override
+  String get arenaKata => '套路';
+
+  @override
+  String get arenaKataOff => '無';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '下一個 $sigil，$secs 秒後';
+  }
 }

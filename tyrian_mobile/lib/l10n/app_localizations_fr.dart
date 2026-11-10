@@ -1059,4 +1059,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get hintStream => 'Presse LT : deux ou trois flux';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'AUCUN';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'suivant $sigil dans $secs s';
+  }
 }

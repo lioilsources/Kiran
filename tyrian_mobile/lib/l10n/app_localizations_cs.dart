@@ -1047,4 +1047,15 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get hintStream => 'Stiskni LT: dva nebo tři proudy';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'ŽÁDNÁ';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'další $sigil za $secs s';
+  }
 }

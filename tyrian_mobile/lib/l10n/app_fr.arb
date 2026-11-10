@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Donne un coup de stick droit",
   "hintLoop": "Trace un cercle : tu passes au-dessus des tirs",
-  "hintStream": "Presse LT : deux ou trois flux"
+  "hintStream": "Presse LT : deux ou trois flux",
+  "arenaKata": "KATA",
+  "arenaKataOff": "AUCUN",
+  "kataNext": "suivant {sigil} dans {secs} s"
 }

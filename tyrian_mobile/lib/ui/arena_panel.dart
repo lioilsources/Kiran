@@ -40,7 +40,7 @@ class ArenaPanel extends StatefulWidget {
   State<ArenaPanel> createState() => _ArenaPanelState();
 }
 
-enum _Row { parts, companions, charge, speed, drill, fight, newBoss, leave }
+enum _Row { parts, companions, charge, speed, drill, kata, fight, newBoss, leave }
 
 class _ArenaPanelState extends State<ArenaPanel> {
   final _focus = FocusNode();
@@ -56,7 +56,7 @@ class _ArenaPanelState extends State<ArenaPanel> {
   ArenaSettings get _a => widget.game.arena;
 
   String get _dialKey =>
-      '${_a.bossParts}|${_a.companions}|${_a.infiniteCharge}|${_a.drill}';
+      '${_a.bossParts}|${_a.companions}|${_a.infiniteCharge}|${_a.drill}|${_a.kata?.id}';
 
   List<_Row> get _rows => [
         _Row.parts,
@@ -64,6 +64,7 @@ class _ArenaPanelState extends State<ArenaPanel> {
         _Row.charge,
         _Row.speed,
         _Row.drill,
+        _Row.kata,
         _Row.fight,
         if (widget.inArena) _Row.newBoss,
         _Row.leave,
@@ -100,6 +101,8 @@ class _ArenaPanelState extends State<ArenaPanel> {
           _a.stepSpeed(dir);
         case _Row.drill:
           _a.stepDrill(dir);
+        case _Row.kata:
+          _a.stepKata(dir);
         default:
           break;
       }
@@ -255,6 +258,13 @@ class _ArenaPanelState extends State<ArenaPanel> {
       _Row.charge => (l.arenaCharge, _a.infiniteCharge ? '∞' : l.arenaChargeNormal),
       _Row.speed => (l.arenaSpeed, '${(_a.speed * 100).round()} %'),
       _Row.drill => (l.arenaDrill, drill?.name ?? l.arenaFreePlay),
+      _Row.kata => (
+          l.arenaKata,
+          _a.kata == null
+              ? l.arenaKataOff
+              : '${_a.kata!.id.toUpperCase()} · ${_a.kata!.band}'
+                  '${widget.game.kataBest[_a.kata!.id] == null ? '' : ' · ${widget.game.kataBest[_a.kata!.id]}'}'
+        ),
       _Row.fight => (widget.inArena ? l.resume : l.arenaFight, ''),
       _Row.newBoss => (l.arenaNewBoss, ''),
       _Row.leave => (l.arenaLeave, ''),
@@ -379,6 +389,33 @@ class ArenaStrip extends StatelessWidget {
   final TyrianGame game;
   const ArenaStrip({super.key, required this.game});
 
+  /// The kata: the next sigil to draw and when, or the grade just earned.
+  static List<Widget> _kata(TyrianGame game, AppLocalizations l) {
+    final run = game.kataRun!;
+    const gold = Color(0xFFFFE070);
+    final next = run.next;
+    final head = '  ${run.kata.id.toUpperCase()} ${run.step}/${run.kata.chain.length}';
+    if (next == null) {
+      return [
+        Text('$head  ${game.lastKataGrade}',
+            style: const TextStyle(color: gold, fontSize: 15, fontWeight: FontWeight.w900)),
+      ];
+    }
+    final spec = SigilCatalog.of(next);
+    final secs = run.dueIn.clamp(0.0, 99.0).toStringAsFixed(1);
+    return [
+      Text(head, style: const TextStyle(color: gold, fontSize: 13, fontWeight: FontWeight.bold)),
+      const SizedBox(width: 8),
+      SigilGlyph(spec: spec, size: 30),
+      const SizedBox(width: 6),
+      Text(l.kataNext(spec.name, secs),
+          style: TextStyle(
+              color: SigilHud.layerColors[spec.layer],
+              fontSize: 13,
+              fontWeight: FontWeight.bold)),
+    ];
+  }
+
   /// Where the lesson is: the step and its count, or the drill's tempo.
   static String _step(Lesson lesson, AppLocalizations l) {
     final label = switch (lesson.phase) {
@@ -416,6 +453,7 @@ class ArenaStrip extends StatelessWidget {
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Text('${l.arena} · ${l.arenaSummary(st.bosses, st.knockouts)} · Σ $casts · ${(acc * 100).round()} %',
                 style: const TextStyle(color: Colors.white70, fontSize: 12, letterSpacing: 1)),
+            if (game.kataRun != null) ..._kata(game, l),
             if (drill != null) ...[
               const SizedBox(width: 14),
               SigilGlyph(spec: drill, size: 30),

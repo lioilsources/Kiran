@@ -1054,4 +1054,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hintStream => 'LT drücken: zwei oder drei Strahlen';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'KEINE';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'nächstes $sigil in $secs s';
+  }
 }

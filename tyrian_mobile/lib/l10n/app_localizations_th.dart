@@ -1030,4 +1030,15 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get hintStream => 'กด LT: ยิงสองหรือสามสาย';
+
+  @override
+  String get arenaKata => 'คาตะ';
+
+  @override
+  String get arenaKataOff => 'ไม่มี';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'ถัดไป $sigil ใน $secs วิ';
+  }
 }

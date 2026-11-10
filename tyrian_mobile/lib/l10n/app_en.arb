@@ -773,5 +773,18 @@
   },
   "hintHop": "Flick the right stick",
   "hintLoop": "Draw a circle: you fly over the shots",
-  "hintStream": "Squeeze LT: two or three streams"
+  "hintStream": "Squeeze LT: two or three streams",
+  "arenaKata": "KATA",
+  "arenaKataOff": "NONE",
+  "kataNext": "next {sigil} in {secs} s",
+  "@kataNext": {
+    "placeholders": {
+      "sigil": {
+        "type": "String"
+      },
+      "secs": {
+        "type": "String"
+      }
+    }
+  }
 }

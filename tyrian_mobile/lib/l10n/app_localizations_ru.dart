@@ -1058,4 +1058,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hintStream => 'Нажми LT: две или три струи';
+
+  @override
+  String get arenaKata => 'КАТА';
+
+  @override
+  String get arenaKataOff => 'НЕТ';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'дальше $sigil через $secs с';
+  }
 }

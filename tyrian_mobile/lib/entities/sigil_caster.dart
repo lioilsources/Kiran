@@ -535,8 +535,13 @@ class SigilCaster {
     if (enabled && _killWindow > 0) meter.add(config.chargeKill);
   }
 
+  /// The arena's kata counts hull hits against the grade.
+  void Function()? onHullHitHook;
+
   void onHullHit() {
-    if (enabled) meter.onHullHit();
+    if (!enabled) return;
+    meter.onHullHit();
+    onHullHitHook?.call();
   }
 
   // ── MEGA BLAST ──

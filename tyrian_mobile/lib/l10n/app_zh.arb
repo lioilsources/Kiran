@@ -284,5 +284,8 @@
   "lessonTempo": "节奏 {pct} %",
   "hintHop": "轻弹右摇杆",
   "hintLoop": "画一个圆：从弹幕上方飞过",
-  "hintStream": "按住 LT：两道或三道弹流"
+  "hintStream": "按住 LT：两道或三道弹流",
+  "arenaKata": "套路",
+  "arenaKataOff": "无",
+  "kataNext": "下一个 {sigil}，{secs} 秒后"
 }

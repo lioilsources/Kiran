@@ -1042,4 +1042,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hintStream => 'Squeeze LT: two or three streams';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NONE';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'next $sigil in $secs s';
+  }
 }

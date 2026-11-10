@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Dê um toque no analógico direito",
   "hintLoop": "Desenhe um círculo: você passa por cima dos tiros",
-  "hintStream": "Aperte LT: duas ou três rajadas"
+  "hintStream": "Aperte LT: duas ou três rajadas",
+  "arenaKata": "KATA",
+  "arenaKataOff": "NENHUMA",
+  "kataNext": "próximo {sigil} em {secs} s"
 }

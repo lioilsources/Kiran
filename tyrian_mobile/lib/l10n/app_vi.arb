@@ -284,5 +284,8 @@
   "lessonTempo": "NHỊP {pct} %",
   "hintHop": "Gạt nhanh cần phải",
   "hintLoop": "Vẽ một vòng tròn: bay qua làn đạn",
-  "hintStream": "Bóp LT: hai hoặc ba luồng đạn"
+  "hintStream": "Bóp LT: hai hoặc ba luồng đạn",
+  "arenaKata": "KATA",
+  "arenaKataOff": "KHÔNG",
+  "kataNext": "tiếp theo {sigil} sau {secs} giây"
 }

@@ -1039,4 +1039,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hintStream => 'LT\'ye bas: iki ya da üç akış';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'YOK';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'sıradaki $sigil, $secs sn sonra';
+  }
 }

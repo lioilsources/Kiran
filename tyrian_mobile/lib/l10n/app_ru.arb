@@ -284,5 +284,8 @@
   "lessonTempo": "ТЕМП {pct} %",
   "hintHop": "Резко толкни правый стик",
   "hintLoop": "Нарисуй круг — пролетишь над выстрелами",
-  "hintStream": "Нажми LT: две или три струи"
+  "hintStream": "Нажми LT: две или три струи",
+  "arenaKata": "КАТА",
+  "arenaKataOff": "НЕТ",
+  "kataNext": "дальше {sigil} через {secs} с"
 }

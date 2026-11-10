@@ -284,5 +284,8 @@
   "lessonTempo": "TEMPO {pct} %",
   "hintHop": "Mueve rápido el stick derecho",
   "hintLoop": "Dibuja un círculo: pasas sobre los disparos",
-  "hintStream": "Aprieta LT: dos o tres ráfagas"
+  "hintStream": "Aprieta LT: dos o tres ráfagas",
+  "arenaKata": "KATA",
+  "arenaKataOff": "NINGUNA",
+  "kataNext": "siguiente {sigil} en {secs} s"
 }

@@ -284,5 +284,8 @@
   "lessonTempo": "จังหวะ {pct} %",
   "hintHop": "ปัดสติกขวา",
   "hintLoop": "วาดวงกลม: บินข้ามกระสุน",
-  "hintStream": "กด LT: ยิงสองหรือสามสาย"
+  "hintStream": "กด LT: ยิงสองหรือสามสาย",
+  "arenaKata": "คาตะ",
+  "arenaKataOff": "ไม่มี",
+  "kataNext": "ถัดไป {sigil} ใน {secs} วิ"
 }

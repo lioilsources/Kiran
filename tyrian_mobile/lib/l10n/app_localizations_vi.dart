@@ -1034,4 +1034,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get hintStream => 'Bóp LT: hai hoặc ba luồng đạn';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'KHÔNG';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'tiếp theo $sigil sau $secs giây';
+  }
 }

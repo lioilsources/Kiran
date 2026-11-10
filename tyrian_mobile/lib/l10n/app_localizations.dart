@@ -1834,6 +1834,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Squeeze LT: two or three streams'**
   String get hintStream;
+
+  /// No description provided for @arenaKata.
+  ///
+  /// In en, this message translates to:
+  /// **'KATA'**
+  String get arenaKata;
+
+  /// No description provided for @arenaKataOff.
+  ///
+  /// In en, this message translates to:
+  /// **'NONE'**
+  String get arenaKataOff;
+
+  /// No description provided for @kataNext.
+  ///
+  /// In en, this message translates to:
+  /// **'next {sigil} in {secs} s'**
+  String kataNext(String sigil, String secs);
 }
 
 class _AppLocalizationsDelegate
