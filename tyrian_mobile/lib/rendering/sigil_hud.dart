@@ -51,6 +51,8 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
     }
     final caster = game.vessel.caster;
     if (!caster.enabled) return;
+    // Filmed takes get their input panel drawn by the assembler, upright.
+    if (game.capture != null) return;
     final c = centre;
     final rec = caster.recognizer;
     final drawing = rec.drawing;

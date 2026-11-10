@@ -10,7 +10,9 @@ import '../sigils/stick_trace.dart';
 /// Prompts/29 §4.1) and the capture mode for the tutorial videos both run
 /// on it; with `--dart-define=SIGIL_DEMO=true` it flies the arena.
 class ArenaGhost {
-  ArenaGhost(this.sigils, {this.rest = 1.4, this.mirrorEvery = 2});
+  ArenaGhost(this.sigils,
+      {this.rest = 1.4, this.mirrorEvery = 2, this.once = false, double lead = 0.8})
+      : _wait = lead;
 
   /// Every sigil in teaching order, flicks drawn forward.
   factory ArenaGhost.catalogue() => ArenaGhost([
@@ -27,12 +29,15 @@ class ArenaGhost {
   /// Every n-th drawing is mirrored, to show both sides.
   final int mirrorEvery;
 
+  /// Draw one sigil and then rest for good (a filmed take).
+  final bool once;
+
   int _next = 0;
   int _drawn = 0;
   List<StickSample> _trace = const [];
   SigilLayer _layer = SigilLayer.hull;
   double _t = 0;
-  double _wait = 0.8;
+  double _wait;
 
   /// The sigil being drawn now, for a caption.
   SigilSpec? current;
@@ -49,7 +54,7 @@ class ArenaGhost {
     }
     _t += dt;
     if (_trace.isEmpty || _t > _trace.last.$1) {
-      _wait = rest;
+      _wait = once ? double.infinity : rest;
       if (current != null) onDrawn?.call();
       current = null;
       return const PadFrame(fire: true);

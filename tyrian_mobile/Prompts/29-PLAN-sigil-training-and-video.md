@@ -32,6 +32,34 @@ Dokument je psaný pro implementační session (Opus).
 
 ---
 
+## Stav implementace (2026-11-11, větev `feat/sigils`)
+
+| Část | Stav | Kde |
+|---|---|---|
+| Aréna: boss 0–4 částí, companioni 0–2, ∞ náboj, rychlost 100/50/25 %, dril | hotovo | `lib/systems/training/arena.dart`, `lib/ui/arena_panel.dart` |
+| Lekce 5 kroků (ukázka → obkreslení → pomalu → naostro → 5× po sobě), tempo bez stropu | hotovo | `lib/systems/training/lesson.dart` |
+| Mistrovství (naučeno, nejlepší přesnost/čas, rekordní tempo, hodnost z ostré hry) | hotovo, ukládá se | `SigilMastery` |
+| Duch (sám kreslí sigily), `SIGIL_DEMO`, `ARENA_AUTOSTART`, `WINDOWED`, `MUTE` | hotovo | `arena_ghost.dart`, `main.dart` |
+| Nahrávání mimo reálný čas (`LESSON_CAPTURE`), `events.json` | hotovo | `lib/game/capture_director.dart`, `bin/tutorial_capture.sh` |
+| Hlas přes službu audio na SPARKu, kontrola délky (§7.4) | hotovo | `bin/tutorial_narrate.py` |
+| Skládání svislého videa 1080×1920 (hra nahoře, vstupní panel a titulky dole, pružné zastavení) | hotovo | `bin/tutorial_assemble.py`, testy `tutorial/tests/` |
+| Pilot LOOP cs/en/ja | rozpracováno — čeká na verdikt uživatele | `run/tutorial/loop/out/` |
+| Zkoušky, kata, gauntlet, denní výzva, nápovědy ve hře (§5b), manifest | nezačato | — |
+
+**Zjištění k hlasu (pilot):** služba audio (AiStack `services/audio`) má komerčně
+použitelné enginy Kokoro (en, es, fr, it, ja, pt, zh), Piper (cs) a Chatterbox
+Multilingual (de, ko, ru, tr a další). Pokrytí: **12 z 15 jazyků**; id, th a vi
+nepokryje nic komerčního → zatím jen titulky (otázka č. 6). **Kokoro japonsky
+selhal**: věty o 4 s trvaly 17–20 s, kontrola délky je vyřadila a video má v
+japonštině jen titulky. Další pokus: Chatterbox `ja` (GPU, profil `tts-gpu`).
+
+**Nahrávání v praxi:** desktop běží na šířku, záběr se nahrává jako 1280×960 a
+při skládání se otočí zpět na výšku (vpřed = nahoru). HUD sigil padu se v záběru
+nekreslí — vstupní panel kreslí skládací skript sám, na výšku, z `events.json`.
+Aplikace pro nahrávání je podepsaná jen ad hoc a bez Game Center entitlementu.
+
+---
+
 ## 1. Princip: jedna lekce, dva výstupy
 
 ```

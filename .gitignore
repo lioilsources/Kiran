@@ -1,1 +1,4 @@
 .DS_Store
+# Runtime data of the repo tools (tutorial captures, voices, renders).
+run/
+.env

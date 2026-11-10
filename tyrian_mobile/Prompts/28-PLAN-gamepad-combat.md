@@ -41,6 +41,21 @@ prstem po 3×3 bodech; tady se totéž kreslí páčkou. Návazný plán výuky 
 
 ---
 
+## Stav implementace (2026-11-11, větev `feat/sigils`)
+
+Hotovo: rozpoznávač (kruh, hystereze, oblouky, tětivy, kruh odkudkoli, diagnóza
+netref), přesnost tahu, katalog 27 sigilů, NÁBOJ a FLOW, fáze na všech třech
+vstupech zásahu, graze, OVERSTREAM, MEGA BLAST, FOCUS, BREAK, výměna zbraní,
+companioni, CALTROP, ECHO, sigil pad v HUD (vždy vidět), grimoár (Back),
+klávesnice (numpad), schémata `classic`/`sigil` a levák v pauze, aréna (plán 29).
+
+Nehotovo: co-op (`protocolVersion 5`; do té doby se v co-opu sigily vypínají),
+odemykání po stupních (teď je odemčeno vše), varianty a tlačítko X, vibrace,
+konfigurace Steam Input, ověření na skutečném padu a Steam Decku (ladění zón
+páčky dělá uživatel). Zvuky sigilů zatím půjčují existující SFX.
+
+---
+
 ## 1. Co svět zná — a co z toho skládáme
 
 Nic z toho není nové samo o sobě. Nové je to pohromadě, na jedné páčce, ve střílečce.

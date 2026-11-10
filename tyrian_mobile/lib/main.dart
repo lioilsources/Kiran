@@ -14,6 +14,8 @@ import 'l10n/l10n.dart';
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
 import 'ui/arena_panel.dart';
+import 'game/capture_director.dart';
+import 'systems/sigils/sigil_catalog.dart';
 import 'ui/grimoire.dart';
 import 'input/pad_scheme.dart';
 import 'input/gamepad_input.dart';
@@ -117,6 +119,11 @@ void main() async {
     final prefs = await SharedPreferences.getInstance();
     // WINDOWED: capture runs (Prompts/29) must not take over the screen.
     const windowed = bool.fromEnvironment('WINDOWED');
+    // A filmed lesson needs a known frame: 1280×960 turns into the 3:4
+    // portrait field of a vertical video.
+    if (CaptureDirector.requested) {
+      await windowManager.setSize(const Size(1280, 960));
+    }
     if (!windowed && (prefs.getBool('fullscreen') ?? true)) {
       await windowManager.setFullScreen(true);
     }
@@ -266,6 +273,15 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       // ARENA_AUTOSTART: straight into the arena (demo and video capture).
       if (const bool.fromEnvironment('ARENA_AUTOSTART') && _game.sigilsAvailable) {
         await _enterArena();
+      }
+      // LESSON_CAPTURE=<sigil>: film it for the tutorial videos and quit.
+      final kind = SigilCatalog.byId(CaptureDirector.sigilId)?.kind;
+      if (kind != null) {
+        _game.arena
+          ..bossParts = 1
+          ..infiniteCharge = true;
+        if (_game.mode != GameMode.training) await _enterArena();
+        _game.capture = CaptureDirector.standard(_game, kind)..start();
       }
     };
 

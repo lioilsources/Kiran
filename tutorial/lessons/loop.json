@@ -1,0 +1,16 @@
+{
+  "id": "loop",
+  "sigil": "loop",
+  "series": 9,
+  "next": "slalom",
+  "beats": [
+    {"kind": "take", "take": "hook", "voice": null},
+    {"kind": "card", "voice": "loop.name", "min": 0.9},
+    {"kind": "take", "take": "slow", "until": "phase", "voice": "loop.shape"},
+    {"kind": "freeze", "take": "slow", "at": "phase", "voice": "loop.phase", "min": 1.6,
+     "callouts": ["phase", "cost"]},
+    {"kind": "take", "take": "slow", "from": "phase", "voice": null},
+    {"kind": "take", "take": "use", "voice": "loop.use"},
+    {"kind": "outro", "voice": "outro", "min": 1.8}
+  ]
+}

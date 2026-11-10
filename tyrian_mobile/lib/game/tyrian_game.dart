@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'challenge.dart';
+import 'capture_director.dart';
 import 'frame_capture.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
@@ -249,11 +250,17 @@ class TyrianGame extends FlameGame
   /// The drilled sigil's lesson (Prompts/29 §4), or null in free play.
   Lesson? lesson;
 
-  /// World speed the arena runs at now: the lesson's step, or the dial.
-  double get arenaSpeed => lesson?.worldSpeed ?? arena.speed;
+  /// World speed the arena runs at now: a filmed take's, the lesson's
+  /// step, or the dial.
+  double get arenaSpeed =>
+      capture?.speed ?? lesson?.worldSpeed ?? arena.speed;
+
+  /// Filming a lesson for the tutorial videos (Prompts/29 §6.3).
+  CaptureDirector? capture;
 
   /// Set up the drill's lesson and the ghost that goes with it.
   void _setupDrill() {
+    if (capture != null) return; // the director drives the ghost
     final d = arena.drill;
     if (d == null) {
       lesson = null;
@@ -798,6 +805,12 @@ class TyrianGame extends FlameGame
   void update(double dt) {
     frameCount++;
     _capture?.tick(dt);
+    // Filming runs off the wall clock: one fixed step per frame on disk.
+    final cap = capture;
+    if (cap != null) {
+      if (cap.busy || cap.finished) return;
+      dt = CaptureDirector.step;
+    }
     // The pad is polled on the wall clock; the arena's world runs at its own.
     _pollPad(dt);
     var inputDt = dt;
@@ -897,6 +910,8 @@ class TyrianGame extends FlameGame
         coopHost!.sendSnapshot(extractSnapshot());
       } catch (_) {}
     }
+
+    capture?.afterStep();
   }
 
   /// Immersive experiment (Feature 1): dead-zone camera follow.
