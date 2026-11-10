@@ -25,11 +25,12 @@ SHIP = ROOT / 'tyrian_mobile/assets/skins/default/sprites/falcon1.png'
 
 FONT = '/System/Library/Fonts/HelveticaNeue.ttc'
 FACE_BLACK = 9   # Condensed Black — the wordmark
-FACE_BOLD = 4    # Condensed Bold — the subtitle
 
 CYAN = (74, 222, 232)
+# The wordmark is the only type allowed on capsules: Steam's asset rules reject
+# any other text (taglines, genre, URLs), and the first review did exactly that
+# over a "ROGUELIKE ARCADE SHMUP" subtitle. Keep the copy on the store page.
 WORDMARK = 'KIRIAN'
-SUBTITLE = 'ROGUELIKE ARCADE SHMUP'
 
 # name: (w, h, plate, layout)
 TARGETS = [
@@ -117,10 +118,8 @@ def build(name, w, h, plate_img, layout):
     if layout == 'hero_left':
         s = ship(round(h * 0.62))
         place(s, 0.83, 0.47)
-        text(d, (round(w * 0.06), round(h * 0.56)), WORDMARK,
+        text(d, (round(w * 0.06), round(h * 0.60)), WORDMARK,
              round(h * 0.30), FACE_BLACK, (255, 255, 255, 255))
-        text(d, (round(w * 0.065), round(h * 0.70)), SUBTITLE,
-             round(h * 0.075), FACE_BOLD, CYAN + (255,))
 
     elif layout == 'wordmark_only':
         s = ship(round(h * 0.72))
@@ -131,10 +130,8 @@ def build(name, w, h, plate_img, layout):
     elif layout == 'stacked':
         s = ship(round(h * 0.40))
         place(s, 0.5, 0.36)
-        text(d, (w // 2, round(h * 0.80)), WORDMARK,
+        text(d, (w // 2, round(h * 0.82)), WORDMARK,
              round(h * 0.16), FACE_BLACK, (255, 255, 255, 255), anchor='ms')
-        text(d, (w // 2, round(h * 0.86)), SUBTITLE,
-             round(h * 0.040), FACE_BOLD, CYAN + (255,), anchor='ms')
 
     elif layout == 'art_only':
         # The hero sits behind Steam's own logo overlay, so it carries no type.
@@ -151,10 +148,8 @@ def logo(w=1280, h=720):
     """Transparent library logo — Steam lays this over the hero itself."""
     im = Image.new('RGBA', (w, h), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    text(d, (w // 2, round(h * 0.56)), WORDMARK,
+    text(d, (w // 2, round(h * 0.62)), WORDMARK,
          round(h * 0.34), FACE_BLACK, (255, 255, 255, 255), anchor='ms')
-    text(d, (w // 2, round(h * 0.68)), SUBTITLE,
-         round(h * 0.075), FACE_BOLD, CYAN + (255,), anchor='ms')
     return im
 
 
