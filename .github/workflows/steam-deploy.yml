@@ -11,19 +11,21 @@
 #
 # Depot layout (Steamworks defaults): <APPID+1> = windows, <APPID+2> = linux.
 #
-# A tag uploads a build and stops there — it sets no branch live. That is
-# deliberate twice over. Promotion is a decision a human should make in
-# Steamworks, and setting a branch live from CI is also impossible to bootstrap:
-# a branch other than `default` cannot be created until `default` already has a
-# build on it, so a workflow that names one fails with "Failed to commit build"
-# while the depots upload perfectly — which is exactly how v3.6.1 failed twice.
-# game-ci/steam-deploy only passes `--branch` when releaseBranch is non-empty
-# (see its src/build-cli-args.ts), so leaving it empty is the supported way to
-# upload without promoting.
+# A tag push uploads the build and sets it live on the `default` branch. While
+# the game is unreleased that reaches nobody but the developer account, so
+# promotion by hand only cost a click per release. Once the game ships, change
+# the tag case below to a testing branch and promote `default` by hand again.
 #
-# To promote: Steamworks → SteamPipe → Buildy, pick the build, "Aktivovat build
-# na větvi". Or run this workflow by hand with releaseBranch set, once the
-# branch exists.
+# A branch can only be named once it exists, and Steam creates none before
+# `default` has a build: a workflow naming a branch on a fresh app fails with
+# "Failed to commit build" while the depots upload perfectly, which is how v3.6.1
+# failed twice. `default` has had a build since v3.9.1, so this is safe now.
+# game-ci/steam-deploy only passes `--branch` when releaseBranch is non-empty
+# (see its src/build-cli-args.ts); an empty value is the upload-only mode.
+#
+# Run by hand with releaseBranch set to promote to another branch, or empty to
+# upload without promoting. Manual promotion: Steamworks → SteamPipe → Buildy,
+# pick the build, "Aktivovat build na větvi".
 name: Steam Deploy
 
 on:
@@ -176,5 +178,6 @@ jobs:
           rootPath: steam-build
           depot1Path: windows
           depot2Path: linux
-          # Empty on a tag push: upload only, promote by hand. See the header.
-          releaseBranch: ${{ inputs.releaseBranch }}
+          # Tag push: `default`. Manual run: whatever was typed, empty = upload only.
+          # See the header.
+          releaseBranch: ${{ github.event_name == 'push' && 'default' || inputs.releaseBranch }}
