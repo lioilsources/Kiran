@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'duel_space.dart';
+import '../services/asset_library.dart';
+import '../services/sound_service.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena_ghost.dart';
@@ -65,6 +67,10 @@ class CaptureDirector {
   List<Map<String, dynamic>> _frames = [];
   List<Map<String, dynamic>> _readings = [];
 
+  /// Effects asked for during the step being filmed: the game is silent
+  /// while it films, and the video gets its sound from this list.
+  final List<String> _sfx = [];
+
   CaptureSegment? get current =>
       _seg >= 0 && _seg < segments.length ? segments[_seg] : null;
 
@@ -77,6 +83,7 @@ class CaptureDirector {
       ..createSync(recursive: true);
     // ignore: avoid_print
     print('[CAPTURE] lesson $sigilId → ${_root.path}');
+    SoundService.onPlay = (e) => _sfx.add(e.name);
     game.vessel.caster.onReading = (r) => _readings.add({
           'f': _frame,
           'sigil': r.spec?.id,
@@ -135,7 +142,9 @@ class CaptureDirector {
       if (game.duel.geometry)
         'a': double.parse(
             (caster.padFrame.heading - uprightAngle).toStringAsFixed(4)),
+      if (_sfx.isNotEmpty) 's': List.of(_sfx),
     });
+    _sfx.clear();
     _shoot('${_root.path}/${seg.name}/frame_${_frame.toString().padLeft(5, '0')}.png');
     _frame++;
     _segT += step;
@@ -179,6 +188,8 @@ class CaptureDirector {
       'fps': 60,
       // The arena is a duel: the field is filmed upright, not on its side.
       'orientation': game.duel.geometry ? 'duel' : 'flight',
+      // Whose effects and music the video is mixed from.
+      'skin': AssetLibrary.instance.skinId,
       'width': game.canvasSize.x.round(),
       'height': game.canvasSize.y.round(),
       'segments': _log,

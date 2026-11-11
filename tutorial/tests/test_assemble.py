@@ -117,6 +117,33 @@ class AssembleTest(unittest.TestCase):
         c.panel(ImageDraw.Draw(b, 'RGBA'), dict(stick, a=1.5707963), None)
         self.assertNotEqual(a.tobytes(), b.tobytes())
 
+    def test_effects_land_where_the_capture_logged_them(self):
+        path = os.path.join(self.run, 'capture', 'events.json')
+        ev = json.load(open(path))
+        hook = next(s for s in ev['segments'] if s['name'] == 'hook')
+        hook['stick'][2]['s'] = ['fireBullet', 'explosionSmall']
+        hook['stick'][3]['s'] = ['fireBullet']  # 1/60 s later: under the floor
+        json.dump(ev, open(path, 'w'))
+        sfx = os.path.join(self.tmp, 'tyrian_mobile', 'assets', 'skins', 'default', 'sfx')
+        os.makedirs(sfx)
+        # A tone as the effect; ffmpeg reads it by its content.
+        with wave.open(os.path.join(sfx, 'fire_bullet.ogg'), 'w') as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(8000)
+            w.writeframes(struct.pack('<h', 12000) * 800)
+        c = assemble.Cutter(self.lesson, 'en')
+        total = c.cut()
+        self.assertEqual([n for _, n in c.sfx], ['fireBullet', 'explosionSmall'])
+        self.assertAlmostEqual(c.sfx[0][0], 2 / assemble.FPS)
+        bed = c.effects_bed(total)
+        with wave.open(bed) as w:
+            frames = w.readframes(w.getnframes())
+        loud = [abs(v) for v in struct.unpack(f'<{len(frames) // 2}h', frames)]
+        at = int(2 / assemble.FPS * assemble.BED_RATE)
+        self.assertGreater(max(loud[at:at + 1000]), 1000)
+        self.assertEqual(max(loud[:at - 10]), 0, 'nothing before the shot')
+
     def test_over_the_shorts_limit_refuses(self):
         voice = os.path.join(self.run, 'voice', 'en')
         os.makedirs(voice)

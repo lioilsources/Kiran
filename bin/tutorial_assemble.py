@@ -20,7 +20,13 @@ fifth and the right edge stay clear of TikTok's and Shorts' buttons.
 Elastic beats: a take runs at its own length; a freeze or a card holds as
 long as its sentence takes in this language (never shorter than "min").
 That is how one cut fits fifteen languages of different lengths.
+
+Sound: the voice on top; under it the game's own effects, placed where the
+capture logged them (events.json, "s" per frame — the game films silent),
+and the skin's boss theme. Both stay low and dip further while the voice
+speaks, so the voice is never covered and a silent beat is never silent.
 """
+import array
 import json
 import math
 import os
@@ -41,6 +47,14 @@ FONT_PATHS = [
     '/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf',
 ]
 LAYER = {'hull': (92, 242, 232), 'arms': (255, 184, 77), 'wing': (124, 255, 138)}
+SKINS = os.path.join('tyrian_mobile', 'assets', 'skins')
+BED_RATE = 24000          # the effects bed, mono: plenty for a bed under a voice
+SFX_FLOOR = 0.07          # s between two of the same effect, as in the game
+SFX_GAIN = {'fireBullet': 0.35, 'fireBeam': 0.4, 'explosionSmall': 0.7,
+            'explosionLarge': 0.9}
+SFX_BUS = 0.5             # the effects under everything
+MUSIC_BUS = 0.22          # the boss theme under everything
+MUSIC_TIER = 5            # theme_5: the boss tier; every lesson is a duel
 GOLD = (255, 224, 112)
 MAX_SECONDS = 59.0
 
@@ -86,6 +100,9 @@ class Cutter:
         os.makedirs(self.frames_dir)
         self.n = 0
         self.audio = []  # (start seconds, wav path)
+        self.sfx = []    # (start seconds, effect name)
+        self._last_sfx = {}
+        self.skin = self.events.get('skin') or 'default'
         self.f_title = font(64)
         self.f_sub = font(46)
         self.f_small = font(34)
@@ -270,6 +287,7 @@ class Cutter:
                 lo = self.phase_frame(take) if b.get('from') == 'phase' else 0
                 hi = self.phase_frame(take) if b.get('until') == 'phase' else frames
                 for i in range(lo, hi):
+                    self.effects(self.takes[take]['stick'][i].get('s'))
                     self.emit(self.frame(take, i, sub))
             elif kind == 'freeze':
                 take = b['take']
@@ -288,6 +306,62 @@ class Cutter:
             sys.exit(f'{self.lang}: {total:.1f}s is over the {MAX_SECONDS}s Shorts limit')
         return total
 
+    # ── the bed under the voice ──
+
+    def effects(self, names):
+        """The effects the game asked for on the frame about to be emitted."""
+        t = self.n / FPS
+        for name in names or ():
+            last = self._last_sfx.get(name)
+            if last is not None and t - last < SFX_FLOOR:
+                continue
+            self._last_sfx[name] = t
+            self.sfx.append((t, name))
+
+    def asset(self, kind, name):
+        """The skin's file, or the default skin's."""
+        for skin in (self.skin, 'default'):
+            p = os.path.join(ROOT, SKINS, skin, kind, name)
+            if os.path.exists(p):
+                return p
+        return None
+
+    @staticmethod
+    def pcm(path):
+        """A sound file as mono samples at BED_RATE."""
+        raw = subprocess.run(
+            ['ffmpeg', '-loglevel', 'error', '-i', path, '-ac', '1', '-ar', str(BED_RATE),
+             '-f', 's16le', '-'], check=True, capture_output=True).stdout
+        a = array.array('h')
+        a.frombytes(raw)
+        return a
+
+    def effects_bed(self, total):
+        """Every logged effect mixed into one mono WAV; None when there are none."""
+        if not self.sfx:
+            return None
+        n = int(total * BED_RATE) + 1
+        bed = array.array('f', bytes(4 * n))
+        clips = {}
+        for t, name in self.sfx:
+            if name not in clips:
+                file = re_snake(name) + '.ogg'
+                path = self.asset('sfx', file)
+                clips[name] = self.pcm(path) if path else array.array('h')
+            clip = clips[name]
+            g = SFX_GAIN.get(name, 0.6) / 32768.0
+            at = int(t * BED_RATE)
+            for k in range(min(len(clip), n - at)):
+                bed[at + k] += clip[k] * g
+        out = os.path.join(self.run, f'bed_{self.lang}.wav')
+        pcm = array.array('h', (max(-32767, min(32767, int(v * 32767))) for v in bed))
+        with wave.open(out, 'w') as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(BED_RATE)
+            w.writeframes(pcm.tobytes())
+        return out
+
     def encode(self, total):
         out_dir = os.path.join(self.run, 'out')
         os.makedirs(out_dir, exist_ok=True)
@@ -295,20 +369,49 @@ class Cutter:
         cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-framerate', str(FPS),
                '-i', os.path.join(self.frames_dir, 'f_%06d.png')]
         filt = []
-        for k, (start, wav) in enumerate(self.audio):
+        k = 0
+        for start, wav in self.audio:
+            k += 1
             cmd += ['-i', wav]
             ms = int(start * 1000)
-            filt.append(f'[{k + 1}:a]adelay={ms}|{ms}[a{k}]')
-        if self.audio:
-            mix = ''.join(f'[a{k}]' for k in range(len(self.audio)))
-            filt.append(f'{mix}amix=inputs={len(self.audio)}:normalize=0,'
-                        f'apad,atrim=0:{total:.3f},loudnorm=I=-14:TP=-1.5[aout]')
+            filt.append(f'[{k}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo[a{k}]')
+        voices = [f'[a{j}]' for j in range(1, k + 1)]
+        bed = []
+        fx = self.effects_bed(total)
+        if fx:
+            k += 1
+            cmd += ['-i', fx]
+            filt.append(f'[{k}:a]aformat=channel_layouts=stereo,volume={SFX_BUS}[fx]')
+            bed.append('[fx]')
+        theme = self.asset('music', f'theme_{MUSIC_TIER}.ogg')
+        if theme:
+            k += 1
+            cmd += ['-stream_loop', '-1', '-i', theme]
+            filt.append(f'[{k}:a]atrim=0:{total:.3f},aformat=channel_layouts=stereo,'
+                        f'volume={MUSIC_BUS},afade=t=out:st={max(0.0, total - 1.5):.3f}:d=1.5[mus]')
+            bed.append('[mus]')
+        tail = f'apad,atrim=0:{total:.3f},loudnorm=I=-14:TP=-1.5[aout]'
+        if voices and bed:
+            # The voice dips the bed: a sidechain on the effects and the theme.
+            filt.append(f'{"".join(voices)}amix=inputs={len(voices)}:normalize=0,asplit[v][vk]')
+            filt.append(f'{"".join(bed)}amix=inputs={len(bed)}:normalize=0[b]')
+            filt.append('[b][vk]sidechaincompress=threshold=0.015:ratio=6:attack=30:release=450[bd]')
+            filt.append(f'[v][bd]amix=inputs=2:normalize=0,{tail}')
+        elif voices or bed:
+            src = voices or bed
+            filt.append(f'{"".join(src)}amix=inputs={len(src)}:normalize=0,{tail}')
+        if filt:
             cmd += ['-filter_complex', ';'.join(filt), '-map', '0:v', '-map', '[aout]',
                     '-c:a', 'aac', '-b:a', '160k']
         cmd += ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18',
                 '-preset', 'medium', '-movflags', '+faststart', out]
         subprocess.run(cmd, check=True)
         return out
+
+
+def re_snake(name):
+    """fireBullet → fire_bullet: the game's effect name as its file's."""
+    return ''.join('_' + c.lower() if c.isupper() else c for c in name)
 
 
 def main():
@@ -320,6 +423,9 @@ def main():
         total = c.cut()
         out = c.encode(total)
         shutil.rmtree(c.frames_dir, ignore_errors=True)
+        bed = os.path.join(c.run, f'bed_{lang}.wav')
+        if os.path.exists(bed):
+            os.remove(bed)
         print(f'{lang}: {total:.1f}s → {out}')
 
 

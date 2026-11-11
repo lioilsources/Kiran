@@ -419,6 +419,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    // A film runs off the wall clock and nobody is playing it: another
+    // window taking focus must not pause it halfway through a take.
+    if (_game.capture != null || const bool.fromEnvironment('FRAME_STEP')) return;
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       AchievementService.instance.flush();
