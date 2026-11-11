@@ -53,7 +53,7 @@ class ParallaxBackground extends Component
     if (_offsets.length != _layers.length) {
       _offsets = List.filled(_layers.length, 0.0);
     }
-    final scaledDt = dt * config.originalFps;
+    final scaledDt = dt * config.originalFps * game.duel.bgSpeed;
     for (int i = 0; i < _layers.length; i++) {
       _offsets[i] += _speeds[min(i, _speeds.length - 1)] * scaledDt;
       final imgH = _layers[i].height * _layerScale(_layers[i]);
@@ -64,6 +64,8 @@ class ParallaxBackground extends Component
   @override
   void render(ui.Canvas canvas) {
     if (_offsets.length != _layers.length) return;
+    final angle = game.duel.frameAngle;
+    if (angle != 0) return _renderTurned(canvas, angle);
     // Banking world shift, scaled by layer depth (slower = farther = less)
     final t = game.worldShiftX / config.bankWorldShift;
     for (int i = 0; i < _layers.length; i++) {
@@ -86,6 +88,50 @@ class ParallaxBackground extends Component
   // danger escalation set by [setLevel]. Note drawImage ignores Paint.color's
   // RGB and honours only its alpha, so the tint has to ride the colour filter.
   final _bgPaint = ui.Paint()..color = const ui.Color(0x99FFFFFF);
+
+  /// The duel's frame (Prompts/30 §8.3): the layers turned about the field's
+  /// centre with the ship. Upright, the field is as wide as it is long, so
+  /// each layer is enlarged to span it in one piece; mid-turn the corners are
+  /// filled with neighbouring tiles, every other one mirrored so they meet
+  /// without a seam.
+  void _renderTurned(ui.Canvas canvas, double angle) {
+    final w = config.gameWidth, h = config.gameHeight;
+    final r = sqrt(w * w + h * h) / 2;
+    final enlarge = (h + 2 * _pad) / (w + 2 * _pad);
+    canvas.save();
+    canvas.translate(w / 2, h / 2);
+    canvas.rotate(angle);
+    canvas.translate(-w / 2, -h / 2);
+    for (int i = 0; i < _layers.length; i++) {
+      final img = _layers[i];
+      final scale = _layerScale(img) * enlarge;
+      final tileW = img.width * scale;
+      final imgH = img.height * scale;
+      // The scroll keeps its pace in screen pixels.
+      final offset = _offsets[i] * enlarge % imgH;
+      final x0 = w / 2 - tileW / 2;
+      final cols = ((r - w / 2) / tileW).ceil() + 1;
+      final rowFrom = ((h / 2 - r - offset) / imgH).floor();
+      final rowTo = ((h / 2 + r - offset) / imgH).ceil();
+      for (var c = -cols; c <= cols; c++) {
+        final x = x0 + c * tileW;
+        for (var row = rowFrom; row <= rowTo; row++) {
+          final y = offset + row * imgH;
+          canvas.save();
+          if (c.isOdd) {
+            canvas.translate(x + tileW, y);
+            canvas.scale(-scale, scale);
+          } else {
+            canvas.translate(x, y);
+            canvas.scale(scale);
+          }
+          canvas.drawImage(img, ui.Offset.zero, _bgPaint);
+          canvas.restore();
+        }
+      }
+    }
+    canvas.restore();
+  }
 
   void _drawLayer(
       ui.Canvas canvas, ui.Image img, double scale, double y, double xShift) {

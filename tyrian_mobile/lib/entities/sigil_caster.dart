@@ -17,6 +17,7 @@ import '../systems/sigils/sigil_spec.dart';
 import 'boss.dart';
 import 'companion.dart';
 import 'hostile.dart';
+import 'ship_frame.dart';
 import 'sigil_fx.dart';
 import 'vessel.dart';
 
@@ -40,6 +41,14 @@ class SigilCaster {
   /// The hull sigil in flight, if any.
   SigilRun? run;
   Vector2 _origin = Vector2.zero();
+
+  /// The ship's frame when [run] was cast: its path and its shots are laid
+  /// out in it, whatever the nose does meanwhile (Prompts/30 §6.4).
+  ShipFrame _runFrame = ShipFrame.flight;
+
+  /// The frame the pad is read in this frame: the stance's in a duel, the
+  /// flight's otherwise. Set by the game before [input]; the HUD draws it.
+  ShipFrame padFrame = ShipFrame.flight;
 
   /// A sigil drawn during the last stretch of [run], cast when it ends.
   SigilReading? _queued;
@@ -77,6 +86,8 @@ class SigilCaster {
   double _megaHeld = 0;
   bool megaCharging = false;
   double megaShield = 0, megaGen = 0;
+
+  /// Where the beam goes, world space.
   double _megaAimX = 0, _megaAimY = -1;
   double _genLock = 0;
 
@@ -207,6 +218,14 @@ class SigilCaster {
 
   // ── Lifecycle ──
 
+  /// The running sigil stops here, unpaid for and unrefunded: a duel's
+  /// doors open (Prompts/30 §8.5).
+  void endRun() {
+    run = null;
+    _queued = null;
+    _inPhase = false;
+  }
+
   /// A new sector or a fresh ship: nothing carries over but the meter.
   void reset({bool meterToo = false}) {
     run = null;
@@ -254,8 +273,9 @@ class SigilCaster {
       _megaHeld += dt;
       if (drawX * drawX + drawY * drawY > 0.25) {
         final l = math.sqrt(drawX * drawX + drawY * drawY);
-        _megaAimX = drawX / l;
-        _megaAimY = drawY / l;
+        final (ax, ay) = padFrame.toWorld(drawX / l, drawY / l);
+        _megaAimX = ax;
+        _megaAimY = ay;
       }
       if (!megaCharging && _megaHeld >= config.megaArm) _startMega();
       if (megaCharging) _chargeMega(dt);
@@ -345,6 +365,7 @@ class SigilCaster {
     }
     run = SigilRun(spec, mirrored: r.mirrored, flickDot: r.flickDot);
     _origin = vessel.position.clone();
+    _runFrame = vessel.frame;
   }
 
   void _castArms(SigilSpec spec, SigilReading r) {
@@ -371,8 +392,9 @@ class SigilCaster {
     switch (spec.kind) {
       case SigilKind.ping:
         final d = SigilRun(spec, flickDot: r.flickDot);
-        pingX = d.dirX;
-        pingY = d.dirY;
+        final (px, py) = vessel.frame.toWorld(d.dirX, d.dirY);
+        pingX = px;
+        pingY = py;
         _pingLeft = spec.duration;
       case SigilKind.wingman:
         // Drawn left to right: the wingman takes the right flank.
@@ -435,7 +457,7 @@ class SigilCaster {
       r.advance(dt);
       _fly(r, dt);
       for (final c in r.dueCues()) {
-        _fireCue(c, flickX: r.dirX, flickY: r.dirY);
+        _fireCue(c, flickX: r.dirX, flickY: r.dirY, frame: _runFrame);
       }
       if (r.done) {
         run = null;
@@ -456,23 +478,34 @@ class SigilCaster {
       }
     }
 
-    echoTrail.record(vessel.position.x, vessel.position.y, vessel.fire, dt);
+    echoTrail.record(vessel.position.x, vessel.position.y, vessel.fire, dt,
+        heading: vessel.heading);
     companions.removeWhere((c) => c.isRemoved || c.gone);
     caltrops.removeWhere((m) => m.isRemoved);
   }
 
   void _fly(SigilRun r, double dt) {
     final p = r.pose;
+    final f = _runFrame;
     switch (r.spec.control) {
       case SigilControl.none:
-        vessel.adjustPosition(_origin.x + p.dx, _origin.y + p.dy);
+        final (wx, wy) = f.toWorld(p.dx, p.dy);
+        vessel.adjustPosition(_origin.x + wx, _origin.y + wy);
       case SigilControl.verticalOnly:
         final t = _shadowTarget(r.mirrored);
         if (t != null) {
           final k = 1 - math.exp(-8 * dt);
-          vessel.adjustPosition(
-              vessel.position.x + (t.hostCenter.x - vessel.position.x) * k,
-              vessel.position.y);
+          if (f.isIdentity) {
+            vessel.adjustPosition(
+                vessel.position.x + (t.hostCenter.x - vessel.position.x) * k,
+                vessel.position.y);
+          } else {
+            // Across the nose only: SHADOW keeps its line, sideways.
+            final (lx, _) = f.toShip(t.hostCenter.x - vessel.position.x,
+                t.hostCenter.y - vessel.position.y);
+            vessel.adjustPosition(vessel.position.x + f.rx * lx * k,
+                vessel.position.y + f.ry * lx * k);
+          }
         }
       case SigilControl.full:
         break;
@@ -484,13 +517,16 @@ class SigilCaster {
   Hostile? _shadowTarget(bool mirrored) {
     Hostile? best;
     var bestD = double.infinity;
+    final fr = _runFrame;
     for (final f in vessel.game.activeFleets) {
       for (final h in f.hostiles) {
-        if (h.isDead || h.y2 < 0) continue;
+        if (h.isDead || h.offField) continue;
         final c = h.hostCenter;
-        if (c.y > vessel.position.y) continue;
-        var d = (c.x - vessel.position.x).abs() + (vessel.position.y - c.y) * 0.3;
-        final side = c.x - vessel.position.x;
+        // Ship space; at heading 0 these are the flight's own numbers.
+        final (lx, ly) = fr.toShip(c.x - vessel.position.x, c.y - vessel.position.y);
+        if (ly > 0) continue;
+        var d = lx.abs() + (-ly) * 0.3;
+        final side = lx;
         if ((mirrored && side > 0) || (!mirrored && side < 0)) d *= 1.4;
         if (d < bestD) {
           bestD = d;
@@ -514,8 +550,11 @@ class SigilCaster {
 
   // ── Fire ──
 
-  /// Shots of [c] from the front gun, through its plan (mods apply).
-  void _fireCue(FireCue c, {double flickX = 0, double flickY = -1}) {
+  /// Shots of [c] from the front gun, through its plan (mods apply), laid
+  /// out in [frame] — the run's, or the ship's now.
+  void _fireCue(FireCue c,
+      {double flickX = 0, double flickY = -1, ShipFrame? frame}) {
+    final f = frame ?? vessel.frame;
     final gun = vessel.getDevice(WeaponSlot.frontGun);
     if (gun == null) return;
     var live = 0;
@@ -530,13 +569,15 @@ class SigilCaster {
     final n = vessel.nozzle;
     final dirs = cueDirections(c, flickX: flickX, flickY: flickY);
     for (final (ux, uy) in dirs) {
+      final (vx, vy) = f.toWorld(speed * ux, speed * uy);
       gun.spawnShot(n.x, n.y,
-          vx: speed * ux,
-          speed: speed * uy,
+          vx: vx,
+          speed: vy,
           damage: dmg,
           scale: 1.0,
           plan: plan,
-          img: img);
+          img: img,
+          centred: !f.isIdentity);
     }
     SoundService.instance.play(SfxEvent.fireBullet);
   }
@@ -624,8 +665,9 @@ class SigilCaster {
     }
     megaCharging = true;
     megaShield = megaGen = 0;
-    _megaAimX = 0;
-    _megaAimY = -1;
+    // Straight ahead until the stick says otherwise.
+    _megaAimX = vessel.frame.fx;
+    _megaAimY = vessel.frame.fy;
   }
 
   void _chargeMega(double dt) {
@@ -676,7 +718,7 @@ class SigilCaster {
 
     for (final f in [...game.activeFleets]) {
       for (final h in [...f.hostiles]) {
-        if (h.isDead || h.y2 < 0) continue;
+        if (h.isDead || h.offField) continue;
         final c = h.hostCenter;
         if (!inBeam(c.x, c.y)) continue;
         final boss = h is Boss || h is BossPart;
@@ -699,7 +741,7 @@ class SigilCaster {
     final r2 = radius * radius;
     for (final f in [...game.activeFleets]) {
       for (final h in [...f.hostiles]) {
-        if (h.isDead || h.y2 < 0) continue;
+        if (h.isDead || h.offField) continue;
         final c = h.hostCenter;
         final dx = c.x - x, dy = c.y - y;
         if (dx * dx + dy * dy > r2) continue;

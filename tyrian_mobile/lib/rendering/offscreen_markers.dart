@@ -33,6 +33,8 @@ class OffscreenEnemyMarkers extends Component
   void update(double dt) {
     _left = _right = _up = _down = 0;
     if (game.state != GameState.playing) return;
+    // A duel's arena is the whole screen; nothing hides past an edge.
+    if (game.duel.geometry) return;
 
     // Visible world window, mirroring _updateImmersiveCamera's geometry.
     final zoom = game.camera.viewfinder.zoom;

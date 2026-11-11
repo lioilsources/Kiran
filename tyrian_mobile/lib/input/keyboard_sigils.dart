@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+import '../entities/ship_frame.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/sigils/sigil_grid.dart';
 import '../systems/sigils/sigil_spec.dart';
@@ -47,22 +48,26 @@ class KeyboardSigils {
   /// OVERSTREAM gear set with Q and E, 1..3.
   int gear = 1;
 
-  /// The dot a key stands for, in ship space.
-  static int? dotFor(LogicalKeyboardKey k, {bool? landscape}) {
+  /// The dot a key stands for, in ship space. [frame] is the pad's frame in
+  /// a duel (Prompts/30 §6.6): the keys stay the circle as seen on screen,
+  /// read the way the turned pad is.
+  static int? dotFor(LogicalKeyboardKey k, {bool? landscape, ShipFrame? frame}) {
     final d = _keys[k];
     if (d == null) return null;
     if (d.$1 == 0 && d.$2 == 0) return 4;
-    final (gx, gy) =
+    var (gx, gy) =
         platform.screenToGame(d.$1.toDouble(), d.$2.toDouble(), landscape: landscape);
+    if (frame != null) (gx, gy) = frame.toShip(gx, gy);
     return SigilGrid.rimDotFor(gx, gy);
   }
 
   /// This frame's keys. Returns a finished drawing once the keys settle.
-  (List<int>, SigilLayer, double)? update(KeyboardInput kb, double dt) {
+  (List<int>, SigilLayer, double)? update(KeyboardInput kb, double dt,
+      {ShipFrame? frame}) {
     for (final k in kb.takePresses()) {
       if (k == LogicalKeyboardKey.keyQ) gear = (gear - 1).clamp(1, 3);
       if (k == LogicalKeyboardKey.keyE) gear = (gear + 1).clamp(1, 3);
-      final dot = dotFor(k);
+      final dot = dotFor(k, frame: frame);
       if (dot == null) continue;
       if (_dots.isEmpty) {
         _layer = kb.anyPressed(_arms)

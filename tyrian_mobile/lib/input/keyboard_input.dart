@@ -50,6 +50,25 @@ class KeyboardInput {
     return v;
   }
 
+  /// WASD alone: in a duel the arrows aim instead (Prompts/30 §6.6).
+  double get wasdX =>
+      (_pressed.contains(LogicalKeyboardKey.keyD) ? 1.0 : 0.0) -
+      (_pressed.contains(LogicalKeyboardKey.keyA) ? 1.0 : 0.0);
+  double get wasdY =>
+      (_pressed.contains(LogicalKeyboardKey.keyS) ? 1.0 : 0.0) -
+      (_pressed.contains(LogicalKeyboardKey.keyW) ? 1.0 : 0.0);
+
+  /// The arrows alone, screen space.
+  double get arrowX =>
+      (_pressed.contains(LogicalKeyboardKey.arrowRight) ? 1.0 : 0.0) -
+      (_pressed.contains(LogicalKeyboardKey.arrowLeft) ? 1.0 : 0.0);
+  double get arrowY =>
+      (_pressed.contains(LogicalKeyboardKey.arrowDown) ? 1.0 : 0.0) -
+      (_pressed.contains(LogicalKeyboardKey.arrowUp) ? 1.0 : 0.0);
+
+  /// Any key at all is down.
+  bool get anyKey => _pressed.isNotEmpty;
+
   bool get fire => _pressed.contains(LogicalKeyboardKey.space);
   bool get pause => _pressed.contains(LogicalKeyboardKey.escape);
 

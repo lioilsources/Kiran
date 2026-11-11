@@ -5,6 +5,7 @@ import '../sector.dart';
 import '../sigils/sigil_catalog.dart';
 import '../sigils/sigil_recognizer.dart';
 import '../sigils/sigil_spec.dart';
+import 'duel_drill.dart';
 import 'kata.dart';
 
 /// The training arena's dials (Prompts/29 §3): a boss that comes back the
@@ -32,6 +33,18 @@ class ArenaSettings {
 
   /// The endless boss run: parts and toughness climb with every kill.
   bool gauntlet = false;
+
+  /// The duel drill being run, or null (Prompts/30 §9).
+  DuelDrillKind? duelDrill;
+
+  void stepDuelDrill(int dir) {
+    final all = <DuelDrillKind?>[null, ...DuelDrillKind.values];
+    final i = all.indexOf(duelDrill);
+    duelDrill = all[((i < 0 ? 0 : i) + dir) % all.length];
+  }
+
+  /// The boss only hovers: something is being taught.
+  bool get calmBoss => duelDrill != null || drill != null;
 
   void stepKata(int dir) {
     final sorted = [...kKatas]..sort((a, b) => a.band.compareTo(b.band));
@@ -90,6 +103,8 @@ class ArenaSettings {
         ttk: (18.0 + 4.0 * p) * hpMul,
         hpFloor: ((6000 + 4000 * p) * hpMul).round(),
         parts: bossPartsForOrdinal(p));
+    // No waves to wait behind: the arena's boss comes down at once.
+    s.fleets.last.enterTime = 1.0;
     return s;
   }
 }

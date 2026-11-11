@@ -1050,4 +1050,88 @@ class AppLocalizationsKo extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return '평가 $rating · 최고 $best';
   }
+
+  @override
+  String get duelWarning => '경고';
+
+  @override
+  String get duelHintPad1 => '오른쪽 스틱으로 조준하고 사격';
+
+  @override
+  String get duelHintPad2Rt => 'RT, LB 또는 RB를 누른 채 오른쪽 스틱으로 시질을 그린다';
+
+  @override
+  String get duelHintPad2Lt => 'LT, LB 또는 RB를 누른 채 오른쪽 스틱으로 시질을 그린다';
+
+  @override
+  String get duelHintClassic => '왼쪽 스틱으로 비행 · B, RB 또는 RT로 기수 방향 사격';
+
+  @override
+  String get duelHintKeys1 => '방향키로 조준하고 사격 · WASD로 비행';
+
+  @override
+  String get duelHintKeys2 => '스페이스로 기수 방향 사격 · 숫자 키패드로 시질을 그린다';
+
+  @override
+  String get arenaDuelBinding => '결투 자세';
+
+  @override
+  String get duelBindingRt => 'RT + 스틱';
+
+  @override
+  String get duelBindingLt => 'LT + 스틱';
+
+  @override
+  String get arenaDuelFrame => '패드의 앞쪽';
+
+  @override
+  String get duelFrameNose => '기수';
+
+  @override
+  String get duelFrameUp => '위';
+
+  @override
+  String get arenaDuelAimFires => '조준하면 사격';
+
+  @override
+  String get duelCutInFirst => '보스 클로즈업: 처음만';
+
+  @override
+  String get duelCutInAlways => '보스 클로즈업: 항상';
+
+  @override
+  String get duelCutInNever => '보스 클로즈업: 안 함';
+
+  @override
+  String get arenaDuelDrill => '결투 훈련';
+
+  @override
+  String get duelDrillOff => '없음';
+
+  @override
+  String get duelDrillAim => '조준하고 사격';
+
+  @override
+  String get duelDrillAimHow => '오른쪽 스틱을 보스에게 향하고 맞혀라';
+
+  @override
+  String get duelDrillHold => '기수 고정';
+
+  @override
+  String get duelDrillHoldHow => '자세 버튼을 누른 채 날면 기수가 그대로다';
+
+  @override
+  String get duelDrillDraw => '앞으로 그리기';
+
+  @override
+  String get duelDrillDrawHow => '자세를 잡고 보스 쪽으로 시질을 그려라';
+
+  @override
+  String get duelDrillTurn => '뒤돌기';
+
+  @override
+  String get duelDrillTurnHow => '보스가 아래에 있다: 기수를 돌려 맞혀라';
+
+  @override
+  String get duelDrillDone => '완료';
 }

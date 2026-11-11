@@ -1059,4 +1059,90 @@ class AppLocalizationsVi extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Điểm $rating · cao nhất $best';
   }
+
+  @override
+  String get duelWarning => 'CẢNH BÁO';
+
+  @override
+  String get duelHintPad1 => 'Cần phải ngắm và bắn';
+
+  @override
+  String get duelHintPad2Rt => 'Giữ RT, LB hoặc RB: cần phải vẽ sigil';
+
+  @override
+  String get duelHintPad2Lt => 'Giữ LT, LB hoặc RB: cần phải vẽ sigil';
+
+  @override
+  String get duelHintClassic =>
+      'Cần trái để bay · B, RB hoặc RT bắn theo hướng mũi tàu';
+
+  @override
+  String get duelHintKeys1 => 'Phím mũi tên ngắm và bắn · WASD để bay';
+
+  @override
+  String get duelHintKeys2 =>
+      'Phím cách bắn theo hướng mũi tàu · bàn phím số vẽ sigil';
+
+  @override
+  String get arenaDuelBinding => 'THẾ ĐẤU';
+
+  @override
+  String get duelBindingRt => 'RT + CẦN';
+
+  @override
+  String get duelBindingLt => 'LT + CẦN';
+
+  @override
+  String get arenaDuelFrame => 'PHÍA TRƯỚC TRÊN TAY CẦM';
+
+  @override
+  String get duelFrameNose => 'MŨI TÀU';
+
+  @override
+  String get duelFrameUp => 'LÊN TRÊN';
+
+  @override
+  String get arenaDuelAimFires => 'NGẮM LÀ BẮN';
+
+  @override
+  String get duelCutInFirst => 'CẬN CẢNH TRÙM: LẦN ĐẦU';
+
+  @override
+  String get duelCutInAlways => 'CẬN CẢNH TRÙM: LUÔN LUÔN';
+
+  @override
+  String get duelCutInNever => 'CẬN CẢNH TRÙM: KHÔNG BAO GIỜ';
+
+  @override
+  String get arenaDuelDrill => 'LUYỆN ĐẤU';
+
+  @override
+  String get duelDrillOff => 'KHÔNG';
+
+  @override
+  String get duelDrillAim => 'NGẮM VÀ BẮN';
+
+  @override
+  String get duelDrillAimHow => 'Hướng cần phải về phía trùm và bắn trúng';
+
+  @override
+  String get duelDrillHold => 'GIỮ MŨI TÀU';
+
+  @override
+  String get duelDrillHoldHow => 'Giữ một nút thế đấu và bay: mũi tàu đứng yên';
+
+  @override
+  String get duelDrillDraw => 'VẼ VỀ PHÍA TRƯỚC';
+
+  @override
+  String get duelDrillDrawHow => 'Trong thế đấu, vẽ một sigil về phía trùm';
+
+  @override
+  String get duelDrillTurn => 'QUAY LẠI';
+
+  @override
+  String get duelDrillTurnHow => 'Trùm ở bên dưới: xoay mũi tàu và bắn trúng';
+
+  @override
+  String get duelDrillDone => 'XONG';
 }

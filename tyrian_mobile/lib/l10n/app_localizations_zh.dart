@@ -1047,6 +1047,90 @@ class AppLocalizationsZh extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return '评分 $rating · 最佳 $best';
   }
+
+  @override
+  String get duelWarning => '警告';
+
+  @override
+  String get duelHintPad1 => '右摇杆瞄准并射击';
+
+  @override
+  String get duelHintPad2Rt => '按住 RT、LB 或 RB：右摇杆绘制符印';
+
+  @override
+  String get duelHintPad2Lt => '按住 LT、LB 或 RB：右摇杆绘制符印';
+
+  @override
+  String get duelHintClassic => '左摇杆飞行 · B、RB 或 RT 朝机头方向射击';
+
+  @override
+  String get duelHintKeys1 => '方向键瞄准并射击 · WASD 飞行';
+
+  @override
+  String get duelHintKeys2 => '空格朝机头方向射击 · 数字小键盘绘制符印';
+
+  @override
+  String get arenaDuelBinding => '决斗架势';
+
+  @override
+  String get duelBindingRt => 'RT + 摇杆';
+
+  @override
+  String get duelBindingLt => 'LT + 摇杆';
+
+  @override
+  String get arenaDuelFrame => '手柄上的前方';
+
+  @override
+  String get duelFrameNose => '机头';
+
+  @override
+  String get duelFrameUp => '上方';
+
+  @override
+  String get arenaDuelAimFires => '瞄准即射击';
+
+  @override
+  String get duelCutInFirst => '首领特写：仅首次';
+
+  @override
+  String get duelCutInAlways => '首领特写：每次';
+
+  @override
+  String get duelCutInNever => '首领特写：从不';
+
+  @override
+  String get arenaDuelDrill => '决斗训练';
+
+  @override
+  String get duelDrillOff => '无';
+
+  @override
+  String get duelDrillAim => '瞄准射击';
+
+  @override
+  String get duelDrillAimHow => '把右摇杆对准首领并命中它';
+
+  @override
+  String get duelDrillHold => '锁定机头';
+
+  @override
+  String get duelDrillHoldHow => '按住架势键飞行：机头保持不动';
+
+  @override
+  String get duelDrillDraw => '向前绘制';
+
+  @override
+  String get duelDrillDrawHow => '在架势中朝首领方向绘制符印';
+
+  @override
+  String get duelDrillTurn => '掉头';
+
+  @override
+  String get duelDrillTurnHow => '首领在你下方：转动机头并命中它';
+
+  @override
+  String get duelDrillDone => '完成';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2092,4 +2176,88 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String gauntletRating(int rating, int best) {
     return '評分 $rating · 最佳 $best';
   }
+
+  @override
+  String get duelWarning => '警告';
+
+  @override
+  String get duelHintPad1 => '右搖桿瞄準並射擊';
+
+  @override
+  String get duelHintPad2Rt => '按住 RT、LB 或 RB：右搖桿繪製符印';
+
+  @override
+  String get duelHintPad2Lt => '按住 LT、LB 或 RB：右搖桿繪製符印';
+
+  @override
+  String get duelHintClassic => '左搖桿飛行 · B、RB 或 RT 朝機頭方向射擊';
+
+  @override
+  String get duelHintKeys1 => '方向鍵瞄準並射擊 · WASD 飛行';
+
+  @override
+  String get duelHintKeys2 => '空白鍵朝機頭方向射擊 · 數字鍵盤繪製符印';
+
+  @override
+  String get arenaDuelBinding => '決鬥架勢';
+
+  @override
+  String get duelBindingRt => 'RT + 搖桿';
+
+  @override
+  String get duelBindingLt => 'LT + 搖桿';
+
+  @override
+  String get arenaDuelFrame => '手把上的前方';
+
+  @override
+  String get duelFrameNose => '機頭';
+
+  @override
+  String get duelFrameUp => '上方';
+
+  @override
+  String get arenaDuelAimFires => '瞄準即射擊';
+
+  @override
+  String get duelCutInFirst => '首領特寫：僅首次';
+
+  @override
+  String get duelCutInAlways => '首領特寫：每次';
+
+  @override
+  String get duelCutInNever => '首領特寫：從不';
+
+  @override
+  String get arenaDuelDrill => '決鬥訓練';
+
+  @override
+  String get duelDrillOff => '無';
+
+  @override
+  String get duelDrillAim => '瞄準射擊';
+
+  @override
+  String get duelDrillAimHow => '把右搖桿對準首領並命中它';
+
+  @override
+  String get duelDrillHold => '鎖定機頭';
+
+  @override
+  String get duelDrillHoldHow => '按住架勢鍵飛行：機頭保持不動';
+
+  @override
+  String get duelDrillDraw => '向前繪製';
+
+  @override
+  String get duelDrillDrawHow => '在架勢中朝首領方向繪製符印';
+
+  @override
+  String get duelDrillTurn => '迴轉';
+
+  @override
+  String get duelDrillTurnHow => '首領在你下方：轉動機頭並命中它';
+
+  @override
+  String get duelDrillDone => '完成';
 }

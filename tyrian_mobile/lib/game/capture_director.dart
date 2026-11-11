@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'duel_space.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena_ghost.dart';
@@ -129,6 +130,11 @@ class CaptureDirector {
       'd': rec.drawing ? rec.drawn : const <int>[],
       'u': caster.untouchable,
       'l': rec.drawing ? rec.layer.name : null,
+      // In a duel the pad turns with the nose: the angle to turn the panel
+      // by so the stroke shows where the thumb made it (Prompts/30 §10).
+      if (game.duel.geometry)
+        'a': double.parse(
+            (caster.padFrame.heading - uprightAngle).toStringAsFixed(4)),
     });
     _shoot('${_root.path}/${seg.name}/frame_${_frame.toString().padLeft(5, '0')}.png');
     _frame++;
@@ -148,7 +154,9 @@ class CaptureDirector {
   Future<void> _shoot(String path) async {
     busy = true;
     try {
-      final w = game.size.x.round(), h = game.size.y.round();
+      // The canvas, not game.size: that is the viewport's virtual size, and
+      // filming it cut the right and bottom off every frame.
+      final w = game.canvasSize.x.round(), h = game.canvasSize.y.round();
       final rec = ui.PictureRecorder();
       game.render(ui.Canvas(rec));
       final img = await rec.endRecording().toImage(w, h);
@@ -169,8 +177,10 @@ class CaptureDirector {
         .convert({
       'sigil': sigilId,
       'fps': 60,
-      'width': game.size.x.round(),
-      'height': game.size.y.round(),
+      // The arena is a duel: the field is filmed upright, not on its side.
+      'orientation': game.duel.geometry ? 'duel' : 'flight',
+      'width': game.canvasSize.x.round(),
+      'height': game.canvasSize.y.round(),
       'segments': _log,
     }));
     // ignore: avoid_print

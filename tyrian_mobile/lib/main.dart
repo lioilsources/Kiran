@@ -20,6 +20,8 @@ import 'ui/grimoire.dart';
 import 'input/pad_scheme.dart';
 import 'input/gamepad_input.dart';
 import 'systems/campaign.dart';
+import 'systems/duel_director.dart';
+import 'systems/sector.dart';
 import 'ui/campaign_map.dart';
 import 'ui/campaign_result.dart';
 import 'ui/com_center.dart';
@@ -119,10 +121,11 @@ void main() async {
     final prefs = await SharedPreferences.getInstance();
     // WINDOWED: capture runs (Prompts/29) must not take over the screen.
     const windowed = bool.fromEnvironment('WINDOWED');
-    // A filmed lesson needs a known frame: 1280×960 turns into the 3:4
-    // portrait field of a vertical video.
+    // A filmed lesson needs a known frame. The arena is a duel, filmed
+    // upright and square (Prompts/30 §10): the top 1080×1080 of a vertical
+    // video. Small enough for a laptop's screen not to clip it.
     if (CaptureDirector.requested) {
-      await windowManager.setSize(const Size(1280, 960));
+      await windowManager.setSize(const Size(900, 900));
     }
     if (!windowed && (prefs.getBool('fullscreen') ?? true)) {
       await windowManager.setFullScreen(true);
@@ -273,6 +276,21 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       // ARENA_AUTOSTART: straight into the arena (demo and video capture).
       if (const bool.fromEnvironment('ARENA_AUTOSTART') && _game.sigilsAvailable) {
         await _enterArena();
+      }
+      // DUEL_PREVIEW: an endless run straight to the first boss's doors.
+      if (const bool.fromEnvironment('DUEL_PREVIEW')) {
+        if (!_runInProgress) _game.resetForNewGame();
+        _runInProgress = true;
+        _game.currentSectorIndex = Sector.firstIndexForLevel(10);
+        await AssetLibrary.instance
+            .loadZoneBackgrounds(_game.zoneForIndex(_game.currentSectorIndex));
+        if (!mounted) return;
+        setState(() {
+          _screen = _ScreenState.game;
+          _showComCenter = false;
+        });
+        _game.startGame();
+        _game.previewBoss();
       }
       // LESSON_CAPTURE=<sigil>: film it for the tutorial videos and quit.
       final kind = SigilCatalog.byId(CaptureDirector.sigilId)?.kind;
@@ -1310,6 +1328,17 @@ class _PauseMenuState extends State<_PauseMenu> {
                 ? context.l10n.padSouthpawOn
                 : context.l10n.padSouthpawOff,
             () => setState(() => PadSettings.setSouthpaw(!PadSettings.southpaw)),
+          ),
+        // The boss duel's close-up (Prompts/30 §8.5): first time, always, never.
+        if (platform.isDesktop)
+          (
+            switch (DuelDirector.cutInMode) {
+              CutInMode.firstTime => context.l10n.duelCutInFirst,
+              CutInMode.always => context.l10n.duelCutInAlways,
+              CutInMode.never => context.l10n.duelCutInNever,
+            },
+            () => setState(() => DuelDirector.setCutInMode(CutInMode.values[
+                (DuelDirector.cutInMode.index + 1) % CutInMode.values.length])),
           ),
         if (widget.onMainMenu != null) (context.l10n.mainMenu, () => widget.onMainMenu!()),
         if (widget.onQuit != null) (context.l10n.quitToDesktop, () => widget.onQuit!()),

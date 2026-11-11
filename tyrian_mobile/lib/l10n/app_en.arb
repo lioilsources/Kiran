@@ -800,5 +800,33 @@
         "type": "int"
       }
     }
-  }
+  },
+  "duelWarning": "WARNING",
+  "duelHintPad1": "Right stick aims and fires",
+  "duelHintPad2Rt": "Hold RT, LB or RB: the right stick draws sigils",
+  "duelHintPad2Lt": "Hold LT, LB or RB: the right stick draws sigils",
+  "duelHintClassic": "Left stick flies · B, RB or RT fire where the nose points",
+  "duelHintKeys1": "Arrows aim and fire · WASD flies",
+  "duelHintKeys2": "Space fires where the nose points · the numpad draws sigils",
+  "arenaDuelBinding": "DUEL STANCE",
+  "duelBindingRt": "RT + STICK",
+  "duelBindingLt": "LT + STICK",
+  "arenaDuelFrame": "PAD FORWARD",
+  "duelFrameNose": "THE NOSE",
+  "duelFrameUp": "UP",
+  "arenaDuelAimFires": "AIMING FIRES",
+  "duelCutInFirst": "BOSS CLOSE-UP: FIRST TIME",
+  "duelCutInAlways": "BOSS CLOSE-UP: ALWAYS",
+  "duelCutInNever": "BOSS CLOSE-UP: NEVER",
+  "arenaDuelDrill": "DUEL DRILL",
+  "duelDrillOff": "NONE",
+  "duelDrillAim": "AIM AND FIRE",
+  "duelDrillAimHow": "Point the right stick at the boss and hit it",
+  "duelDrillHold": "HOLD THE NOSE",
+  "duelDrillHoldHow": "Hold a stance button and fly: the nose stays put",
+  "duelDrillDraw": "DRAW FORWARD",
+  "duelDrillDrawHow": "In the stance, draw a sigil toward the boss",
+  "duelDrillTurn": "TURN ROUND",
+  "duelDrillTurnHow": "The boss is below you: turn the nose and hit it",
+  "duelDrillDone": "DONE"
 }

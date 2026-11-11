@@ -61,7 +61,8 @@ class Collectable extends PositionComponent
     // ship. Host only; the client sees it through snapshots.
     if (game.coopRole != CoopRole.client) {
       final v = game.vessel;
-      final r = v.mods.magnetRadius;
+      // A duel has no "down" to fall to: its pickups all come to the ship.
+      final r = game.duel.magnet ? double.infinity : v.mods.magnetRadius;
       if (r > 0 && v.visible) {
         final c = position + size / 2;
         final to = v.position - c;

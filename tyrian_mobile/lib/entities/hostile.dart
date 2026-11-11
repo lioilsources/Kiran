@@ -62,6 +62,11 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
   /// Visual-only depth pulse (Feature 2 experiment). Multiplies the render scale
   /// in HostileBatchRenderer; never touches [size], so collisions are unchanged.
   double visualScale = 1.0;
+
+  /// The angle the sprite is drawn at. Art is generated nose-up; π turns it
+  /// to face the player, as every enemy of the flight is drawn. A duel boss
+  /// stands upright instead (Prompts/30 §7.1).
+  double drawAngle = pi;
   double _depthTime = 0.0;
   final double _depthPhase = Random().nextDouble() * 2 * pi; // desync per enemy
 
@@ -93,6 +98,18 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
 
   double get x2 => position.x + size.x;
   double get y2 => position.y + size.y;
+
+  /// Far enough in to shoot and to count as a target: past the top edge in
+  /// the flight; inside the field in a duel, where a boss comes in from
+  /// another side (Prompts/30 §3).
+  bool get entered => game.duel.geometry
+      ? inPlayField(position.x, position.y, size.x, size.y)
+      : y2 > 0;
+
+  /// Not yet on the field at all — the flight's `y2 < 0`.
+  bool get offField => game.duel.geometry
+      ? !inPlayField(position.x, position.y, size.x, size.y)
+      : y2 < 0;
   Vector2 get hostCenter => Vector2(position.x + size.x / 2, position.y + size.y / 2);
 
   Sprite? _sprite;
@@ -346,8 +363,7 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
     final hmy = size.y * (1 - cf) / 2;
     for (final vessel in game.allVessels) {
       if (!vessel.visible) continue;
-      final vhx = vessel.size.x / 2 * cf;
-      final vhy = vessel.size.y / 2 * cf;
+      final (vhx, vhy) = vessel.hitHalf(scaled: false);
 
       // AABB collision with player (shrunk hitboxes)
       if (vessel.dmgTaken > 0) continue; // invulnerability frames

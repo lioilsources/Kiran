@@ -7,11 +7,13 @@ import '../entities/boss.dart';
 import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
 import '../input/gamepad_input.dart';
+import '../input/pad_scheme.dart';
 import '../l10n/l10n.dart';
 import '../rendering/sigil_hud.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena.dart';
+import '../systems/training/duel_drill.dart';
 import '../systems/training/lesson.dart';
 import 'sigil_glyph.dart';
 
@@ -40,7 +42,22 @@ class ArenaPanel extends StatefulWidget {
   State<ArenaPanel> createState() => _ArenaPanelState();
 }
 
-enum _Row { parts, companions, charge, speed, drill, kata, gauntlet, fight, newBoss, leave }
+enum _Row {
+  parts,
+  companions,
+  charge,
+  speed,
+  duelDrill,
+  drill,
+  kata,
+  gauntlet,
+  duelBinding,
+  duelFrame,
+  duelAimFires,
+  fight,
+  newBoss,
+  leave,
+}
 
 class _ArenaPanelState extends State<ArenaPanel> {
   final _focus = FocusNode();
@@ -56,16 +73,24 @@ class _ArenaPanelState extends State<ArenaPanel> {
   ArenaSettings get _a => widget.game.arena;
 
   String get _dialKey =>
-      '${_a.bossParts}|${_a.companions}|${_a.infiniteCharge}|${_a.drill}|${_a.kata?.id}|${_a.gauntlet}';
+      '${_a.bossParts}|${_a.companions}|${_a.infiniteCharge}|${_a.drill}|${_a.kata?.id}|${_a.gauntlet}|${_a.duelDrill}';
+
+  /// The duel's pilot switches (Prompts/30 §14, step 0) show with the sigil
+  /// pad; the classic pad only aims.
+  bool get _sigilPad => PadSettings.scheme == PadScheme.sigil;
 
   List<_Row> get _rows => [
         _Row.parts,
         _Row.companions,
         _Row.charge,
         _Row.speed,
+        _Row.duelDrill,
         _Row.drill,
         _Row.kata,
         _Row.gauntlet,
+        if (_sigilPad) _Row.duelBinding,
+        if (_sigilPad) _Row.duelFrame,
+        _Row.duelAimFires,
         _Row.fight,
         if (widget.inArena) _Row.newBoss,
         _Row.leave,
@@ -106,6 +131,20 @@ class _ArenaPanelState extends State<ArenaPanel> {
           _a.stepKata(dir);
         case _Row.gauntlet:
           _a.gauntlet = !_a.gauntlet;
+        case _Row.duelDrill:
+          _a.stepDuelDrill(dir);
+        case _Row.duelBinding:
+          PadSettings.setDuel(
+              binding: PadSettings.duelBinding == DuelBinding.rtStance
+                  ? DuelBinding.ltStance
+                  : DuelBinding.rtStance);
+        case _Row.duelFrame:
+          PadSettings.setDuel(
+              frame: PadSettings.duelPadFrame == DuelPadFrame.nose
+                  ? DuelPadFrame.screenUp
+                  : DuelPadFrame.nose);
+        case _Row.duelAimFires:
+          PadSettings.setDuel(aimFires: !PadSettings.duelAimFires);
         default:
           break;
       }
@@ -183,6 +222,15 @@ class _ArenaPanelState extends State<ArenaPanel> {
     }
     return KeyEventResult.handled;
   }
+
+  static String _duelDrillName(DuelDrillKind? k, AppLocalizations l) =>
+      switch (k) {
+        null => l.duelDrillOff,
+        DuelDrillKind.aim => l.duelDrillAim,
+        DuelDrillKind.hold => l.duelDrillHold,
+        DuelDrillKind.draw => l.duelDrillDraw,
+        DuelDrillKind.turn => l.duelDrillTurn,
+      };
 
   String _partsLabel(AppLocalizations l) {
     if (_a.bossParts == 0) return '0 · ${l.arenaBareCore}';
@@ -271,6 +319,23 @@ class _ArenaPanelState extends State<ArenaPanel> {
       _Row.gauntlet => (
           l.arenaGauntlet,
           '${_a.gauntlet ? l.arenaOn : l.arenaOff} · ${widget.game.gauntletBest}'
+        ),
+      _Row.duelDrill => (l.arenaDuelDrill, _duelDrillName(_a.duelDrill, l)),
+      _Row.duelBinding => (
+          l.arenaDuelBinding,
+          PadSettings.duelBinding == DuelBinding.rtStance
+              ? l.duelBindingRt
+              : l.duelBindingLt
+        ),
+      _Row.duelFrame => (
+          l.arenaDuelFrame,
+          PadSettings.duelPadFrame == DuelPadFrame.nose
+              ? l.duelFrameNose
+              : l.duelFrameUp
+        ),
+      _Row.duelAimFires => (
+          l.arenaDuelAimFires,
+          PadSettings.duelAimFires ? l.arenaOn : l.arenaOff
         ),
       _Row.fight => (widget.inArena ? l.resume : l.arenaFight, ''),
       _Row.newBoss => (l.arenaNewBoss, ''),
@@ -423,6 +488,28 @@ class ArenaStrip extends StatelessWidget {
     ];
   }
 
+  /// The duel drill: what it is, what to do, how far along.
+  static List<Widget> _duelDrill(DuelDrill d, AppLocalizations l) {
+    const cyan = Color(0xFF5CF2E8);
+    final how = switch (d.kind) {
+      DuelDrillKind.aim => l.duelDrillAimHow,
+      DuelDrillKind.hold => l.duelDrillHoldHow,
+      DuelDrillKind.draw => l.duelDrillDrawHow,
+      DuelDrillKind.turn => l.duelDrillTurnHow,
+    };
+    return [
+      const SizedBox(width: 14),
+      Text(_ArenaPanelState._duelDrillName(d.kind, l),
+          style: const TextStyle(color: cyan, fontSize: 13, fontWeight: FontWeight.w900)),
+      const SizedBox(width: 8),
+      Text(how, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      const SizedBox(width: 8),
+      Text(d.done ? l.duelDrillDone : '${d.progress}/${d.needed}',
+          style: const TextStyle(
+              color: Color(0xFFFFE070), fontSize: 13, fontWeight: FontWeight.w800)),
+    ];
+  }
+
   /// Where the lesson is: the step and its count, or the drill's tempo.
   static String _step(Lesson lesson, AppLocalizations l) {
     final label = switch (lesson.phase) {
@@ -467,6 +554,7 @@ class ArenaStrip extends StatelessWidget {
                       color: Color(0xFFFF8A65), fontSize: 13, fontWeight: FontWeight.bold)),
             ],
             if (game.kataRun != null) ..._kata(game, l),
+            if (game.duelDrillRun != null) ..._duelDrill(game.duelDrillRun!, l),
             if (drill != null) ...[
               const SizedBox(width: 14),
               SigilGlyph(spec: drill, size: 30),

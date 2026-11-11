@@ -1049,4 +1049,88 @@ class AppLocalizationsJa extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return '評価 $rating · 最高 $best';
   }
+
+  @override
+  String get duelWarning => '警告';
+
+  @override
+  String get duelHintPad1 => '右スティックで照準と射撃';
+
+  @override
+  String get duelHintPad2Rt => 'RT・LB・RBを押しながら右スティックでシジルを描く';
+
+  @override
+  String get duelHintPad2Lt => 'LT・LB・RBを押しながら右スティックでシジルを描く';
+
+  @override
+  String get duelHintClassic => '左スティックで移動 · B・RB・RTで機首の向きに射撃';
+
+  @override
+  String get duelHintKeys1 => '矢印キーで照準と射撃 · WASDで移動';
+
+  @override
+  String get duelHintKeys2 => 'スペースで機首の向きに射撃 · テンキーでシジルを描く';
+
+  @override
+  String get arenaDuelBinding => '決闘の構え';
+
+  @override
+  String get duelBindingRt => 'RT + スティック';
+
+  @override
+  String get duelBindingLt => 'LT + スティック';
+
+  @override
+  String get arenaDuelFrame => 'パッドの前方';
+
+  @override
+  String get duelFrameNose => '機首';
+
+  @override
+  String get duelFrameUp => '上';
+
+  @override
+  String get arenaDuelAimFires => '照準で射撃';
+
+  @override
+  String get duelCutInFirst => 'ボスのクローズアップ：初回のみ';
+
+  @override
+  String get duelCutInAlways => 'ボスのクローズアップ：毎回';
+
+  @override
+  String get duelCutInNever => 'ボスのクローズアップ：なし';
+
+  @override
+  String get arenaDuelDrill => '決闘ドリル';
+
+  @override
+  String get duelDrillOff => 'なし';
+
+  @override
+  String get duelDrillAim => '狙って撃つ';
+
+  @override
+  String get duelDrillAimHow => '右スティックをボスに向けて当てよう';
+
+  @override
+  String get duelDrillHold => '機首を保つ';
+
+  @override
+  String get duelDrillHoldHow => '構えボタンを押したまま飛ぶと機首は動かない';
+
+  @override
+  String get duelDrillDraw => '前方に描く';
+
+  @override
+  String get duelDrillDrawHow => '構えたままボスの方向へシジルを描こう';
+
+  @override
+  String get duelDrillTurn => '振り返る';
+
+  @override
+  String get duelDrillTurnHow => 'ボスは下にいる：機首を回して当てよう';
+
+  @override
+  String get duelDrillDone => '完了';
 }

@@ -1079,4 +1079,96 @@ class AppLocalizationsDe extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Wertung $rating · Bestwert $best';
   }
+
+  @override
+  String get duelWarning => 'WARNUNG';
+
+  @override
+  String get duelHintPad1 => 'Rechter Stick zielt und feuert';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Halte RT, LB oder RB: Der rechte Stick zeichnet Sigillen';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Halte LT, LB oder RB: Der rechte Stick zeichnet Sigillen';
+
+  @override
+  String get duelHintClassic =>
+      'Linker Stick fliegt · B, RB oder RT feuern, wohin die Nase zeigt';
+
+  @override
+  String get duelHintKeys1 => 'Pfeiltasten zielen und feuern · WASD fliegt';
+
+  @override
+  String get duelHintKeys2 =>
+      'Leertaste feuert, wohin die Nase zeigt · der Ziffernblock zeichnet Sigillen';
+
+  @override
+  String get arenaDuelBinding => 'DUELL-HALTUNG';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'PAD-VORNE';
+
+  @override
+  String get duelFrameNose => 'DIE NASE';
+
+  @override
+  String get duelFrameUp => 'OBEN';
+
+  @override
+  String get arenaDuelAimFires => 'ZIELEN FEUERT';
+
+  @override
+  String get duelCutInFirst => 'BOSS-NAHAUFNAHME: ERSTES MAL';
+
+  @override
+  String get duelCutInAlways => 'BOSS-NAHAUFNAHME: IMMER';
+
+  @override
+  String get duelCutInNever => 'BOSS-NAHAUFNAHME: NIE';
+
+  @override
+  String get arenaDuelDrill => 'DUELL-ÜBUNG';
+
+  @override
+  String get duelDrillOff => 'KEINE';
+
+  @override
+  String get duelDrillAim => 'ZIELEN UND FEUERN';
+
+  @override
+  String get duelDrillAimHow =>
+      'Richte den rechten Stick auf den Boss und triff ihn';
+
+  @override
+  String get duelDrillHold => 'NASE HALTEN';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Halte eine Haltungstaste und fliege: Die Nase bleibt stehen';
+
+  @override
+  String get duelDrillDraw => 'NACH VORNE ZEICHNEN';
+
+  @override
+  String get duelDrillDrawHow =>
+      'Zeichne in der Haltung ein Sigill zum Boss hin';
+
+  @override
+  String get duelDrillTurn => 'UMDREHEN';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Der Boss ist unter dir: Dreh die Nase und triff ihn';
+
+  @override
+  String get duelDrillDone => 'GESCHAFFT';
 }

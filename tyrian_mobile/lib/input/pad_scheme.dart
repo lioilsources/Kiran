@@ -15,6 +15,30 @@ enum PadScheme {
   sigil,
 }
 
+/// How the sigil pad works in a boss duel (Prompts/30 §6). The right stick
+/// aims there, so a sigil needs something held; the two tables differ in
+/// what. Both stay until the pilot picks one.
+enum DuelBinding {
+  /// RT fires along the held heading and opens the hull stance; LB and RB
+  /// open the arms and wing stances. LT stays OVERSTREAM.
+  rtStance,
+
+  /// RT only fires; LT opens the hull stance and its depth still picks the
+  /// stream. LB and RB as above.
+  ltStance,
+}
+
+/// Where "forward" is on the sigil pad in a duel.
+enum DuelPadFrame {
+  /// Where the nose pointed when the stance opened: the ship moves the way
+  /// the thumb moved.
+  nose,
+
+  /// Always up on the pad, as the grimoire draws it; the sigil still flies
+  /// along the nose.
+  screenUp,
+}
+
 /// The player's pad settings, loaded once at startup.
 abstract final class PadSettings {
   static PadScheme scheme = PadScheme.sigil;
@@ -22,8 +46,18 @@ abstract final class PadSettings {
   /// Left-handed: the sticks, the triggers and the shoulders swap sides.
   static bool southpaw = false;
 
+  /// The duel's pilot switches (Prompts/30 §14, step 0).
+  static DuelBinding duelBinding = DuelBinding.rtStance;
+  static DuelPadFrame duelPadFrame = DuelPadFrame.nose;
+
+  /// Aiming the right stick fires by itself, twin-stick style.
+  static bool duelAimFires = true;
+
   static const _keyScheme = 'pad_scheme';
   static const _keySouthpaw = 'pad_southpaw';
+  static const _keyDuelBinding = 'pad_duel_binding';
+  static const _keyDuelPadFrame = 'pad_duel_frame';
+  static const _keyDuelAimFires = 'pad_duel_aim_fires';
 
   static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -31,6 +65,24 @@ abstract final class PadSettings {
         (s) => s.name == prefs.getString(_keyScheme),
         orElse: () => PadScheme.sigil);
     southpaw = prefs.getBool(_keySouthpaw) ?? false;
+    duelBinding = DuelBinding.values.firstWhere(
+        (b) => b.name == prefs.getString(_keyDuelBinding),
+        orElse: () => DuelBinding.rtStance);
+    duelPadFrame = DuelPadFrame.values.firstWhere(
+        (f) => f.name == prefs.getString(_keyDuelPadFrame),
+        orElse: () => DuelPadFrame.nose);
+    duelAimFires = prefs.getBool(_keyDuelAimFires) ?? true;
+  }
+
+  static Future<void> setDuel(
+      {DuelBinding? binding, DuelPadFrame? frame, bool? aimFires}) async {
+    if (binding != null) duelBinding = binding;
+    if (frame != null) duelPadFrame = frame;
+    if (aimFires != null) duelAimFires = aimFires;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyDuelBinding, duelBinding.name);
+    await prefs.setString(_keyDuelPadFrame, duelPadFrame.name);
+    await prefs.setBool(_keyDuelAimFires, duelAimFires);
   }
 
   static Future<void> setScheme(PadScheme s) async {

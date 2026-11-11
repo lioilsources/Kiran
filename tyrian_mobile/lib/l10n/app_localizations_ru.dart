@@ -1083,4 +1083,91 @@ class AppLocalizationsRu extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Рейтинг $rating · лучший $best';
   }
+
+  @override
+  String get duelWarning => 'ВНИМАНИЕ';
+
+  @override
+  String get duelHintPad1 => 'Правый стик целится и стреляет';
+
+  @override
+  String get duelHintPad2Rt => 'Держи RT, LB или RB: правый стик рисует сигилы';
+
+  @override
+  String get duelHintPad2Lt => 'Держи LT, LB или RB: правый стик рисует сигилы';
+
+  @override
+  String get duelHintClassic =>
+      'Левый стик — полёт · B, RB или RT стреляют туда, куда смотрит нос';
+
+  @override
+  String get duelHintKeys1 => 'Стрелки целятся и стреляют · WASD — полёт';
+
+  @override
+  String get duelHintKeys2 =>
+      'Пробел стреляет туда, куда смотрит нос · цифровой блок рисует сигилы';
+
+  @override
+  String get arenaDuelBinding => 'СТОЙКА В ДУЭЛИ';
+
+  @override
+  String get duelBindingRt => 'RT + СТИК';
+
+  @override
+  String get duelBindingLt => 'LT + СТИК';
+
+  @override
+  String get arenaDuelFrame => 'ВПЕРЁД НА ГЕЙМПАДЕ';
+
+  @override
+  String get duelFrameNose => 'НОС';
+
+  @override
+  String get duelFrameUp => 'ВВЕРХ';
+
+  @override
+  String get arenaDuelAimFires => 'ПРИЦЕЛ СТРЕЛЯЕТ';
+
+  @override
+  String get duelCutInFirst => 'КРУПНЫЙ ПЛАН БОССА: ПЕРВЫЙ РАЗ';
+
+  @override
+  String get duelCutInAlways => 'КРУПНЫЙ ПЛАН БОССА: ВСЕГДА';
+
+  @override
+  String get duelCutInNever => 'КРУПНЫЙ ПЛАН БОССА: НИКОГДА';
+
+  @override
+  String get arenaDuelDrill => 'ТРЕНИРОВКА ДУЭЛИ';
+
+  @override
+  String get duelDrillOff => 'НЕТ';
+
+  @override
+  String get duelDrillAim => 'ЦЕЛЬСЯ И СТРЕЛЯЙ';
+
+  @override
+  String get duelDrillAimHow => 'Наведи правый стик на босса и попадай';
+
+  @override
+  String get duelDrillHold => 'ДЕРЖИ НОС';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Держи кнопку стойки и лети: нос остаётся на месте';
+
+  @override
+  String get duelDrillDraw => 'РИСУЙ ВПЕРЁД';
+
+  @override
+  String get duelDrillDrawHow => 'В стойке нарисуй сигил в сторону босса';
+
+  @override
+  String get duelDrillTurn => 'РАЗВЕРНИСЬ';
+
+  @override
+  String get duelDrillTurnHow => 'Босс под тобой: разверни нос и попадай';
+
+  @override
+  String get duelDrillDone => 'ГОТОВО';
 }

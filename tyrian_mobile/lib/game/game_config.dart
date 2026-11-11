@@ -292,3 +292,26 @@ const double haloRegenMul = 4;
 const double caltropLife = 4;           // s
 const double caltropRadius = 90;        // px
 const double caltropDmg = 900;
+
+// --- Boss duel (Prompts/30) --------------------------------------------------
+// Tuning of the duel, not VB6 numbers: HP, damage and cadence stay the same.
+const double duelAimDeadzone = 0.25;    // stick deflection from which it aims
+const double duelAimFireZone = 0.25;    // from which aiming also fires
+const double duelTurnRate = 720 * pi / 180; // rad/s the nose turns; 0 = at once
+const double duelRunTrackRate = 180 * pi / 180; // rad/s, nose on the target mid-sigil
+const double duelStanceOn = 0.15;       // trigger depth that opens the stance
+const double duelStanceOff = 0.08;      // and that closes it again
+const double duelPadSnap = 0;           // stance frame snap in rad, 0 = off
+const double duelWarning = 1.5;         // s of the four doors into a duel
+const double duelCutIn = 2.2;
+const double duelTurn = 1.2;
+const double duelEntrance = 1.5;
+const double duelOutro = 2.0;           // s after the boss falls
+const double duelTurnBack = 1.0;
+const double duelCutInSkippable = 0.4;  // s before the close-up may be skipped
+const double duelBgDrift = 0.35;        // background speed against the flight's
+const double duelKeepOut = 140;         // px a boss move never ends closer than
+const double duelShipStartV = 0.85;     // where the ship starts, screen height
+const double duelBossHomeV = 0.28;      // where the boss settles, screen height
+const double duelAimLine = 140;         // px of the aiming line ahead of the nose
+const double duelBossTurnRate = 90 * pi / 180; // rad/s a ship boss turns to face you

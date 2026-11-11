@@ -1084,4 +1084,94 @@ class AppLocalizationsIt extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Punteggio $rating · record $best';
   }
+
+  @override
+  String get duelWarning => 'ATTENZIONE';
+
+  @override
+  String get duelHintPad1 => 'Lo stick destro mira e spara';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Tieni RT, LB o RB: lo stick destro traccia i sigilli';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Tieni LT, LB o RB: lo stick destro traccia i sigilli';
+
+  @override
+  String get duelHintClassic =>
+      'Lo stick sinistro vola · B, RB o RT sparano dove punta il muso';
+
+  @override
+  String get duelHintKeys1 => 'Le frecce mirano e sparano · WASD vola';
+
+  @override
+  String get duelHintKeys2 =>
+      'Spazio spara dove punta il muso · il tastierino numerico traccia i sigilli';
+
+  @override
+  String get arenaDuelBinding => 'POSTURA DA DUELLO';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'AVANTI SUL PAD';
+
+  @override
+  String get duelFrameNose => 'IL MUSO';
+
+  @override
+  String get duelFrameUp => 'SU';
+
+  @override
+  String get arenaDuelAimFires => 'MIRARE SPARA';
+
+  @override
+  String get duelCutInFirst => 'PRIMO PIANO DEL BOSS: LA PRIMA VOLTA';
+
+  @override
+  String get duelCutInAlways => 'PRIMO PIANO DEL BOSS: SEMPRE';
+
+  @override
+  String get duelCutInNever => 'PRIMO PIANO DEL BOSS: MAI';
+
+  @override
+  String get arenaDuelDrill => 'ESERCIZIO DI DUELLO';
+
+  @override
+  String get duelDrillOff => 'NESSUNO';
+
+  @override
+  String get duelDrillAim => 'MIRA E SPARA';
+
+  @override
+  String get duelDrillAimHow => 'Punta lo stick destro sul boss e colpiscilo';
+
+  @override
+  String get duelDrillHold => 'TIENI IL MUSO';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Tieni un tasto di postura e vola: il muso resta fermo';
+
+  @override
+  String get duelDrillDraw => 'TRACCIA IN AVANTI';
+
+  @override
+  String get duelDrillDrawHow => 'In postura, traccia un sigillo verso il boss';
+
+  @override
+  String get duelDrillTurn => 'GIRATI';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Il boss è sotto di te: gira il muso e colpiscilo';
+
+  @override
+  String get duelDrillDone => 'FATTO';
 }
