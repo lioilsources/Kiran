@@ -74,7 +74,9 @@ jako přepínače v aréně. Pilot s padem v ruce zatím neproběhl, rozhodnutí
 | HUD: VAROVÁNÍ, střih ve hře, nápověda, čára míření, značky padu | `rendering/duel_hud.dart`, `sigil_hud.dart`, `vessel.dart` | hotovo |
 | Aréna = duel, duch v duelu, dril duelu (4 lekce), přepínače pilotu | `training/`, `ui/arena_panel.dart` | hotovo |
 | Nastavení střihu (pauza), l10n (28 klíčů, 16 ARB) | `main.dart`, `lib/l10n/` | hotovo |
-| Videa na šířku (`orientation`, čtverec 1080, natočený pad) | `capture_director.dart`, `bin/tutorial_assemble.py` | hotovo; LOOP natočit znovu |
+| Videa na šířku (`orientation`, čtverec 1080, natočený pad) | `capture_director.dart`, `bin/tutorial_assemble.py` | hotovo; LOOP natočen znovu v duelu (cs/en/ja) |
+| Zvuk videí: efekty ze hry a bossovská hudba pod hlasem, ztlumené sidechainem (přání uživatele 2026-11-11) | `sound_service.dart` (`onPlay`), `capture_director.dart`, `bin/tutorial_assemble.py` | hotovo |
+| Namluvený text lekcí pro duel („drž RT a pravou páčkou…“) | `tutorial/narration/*.json` | čeká na verdikt hlasu; přenamluvení stojí čas na GPU stroji |
 | Přeměření `bossUnder` | `campaign.dart` | čeká na pilot (otázka č. 7) |
 | Generovaný detail bosse, `DuelSnap` | — | volitelné, nezačato |
 
