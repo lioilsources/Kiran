@@ -490,7 +490,7 @@ class TyrianGame extends FlameGame
     _startArenaRound();
   }
 
-  void _startArenaRound() {
+  void _startArenaRound({bool next = false}) {
     if (arena.gauntlet && capture == null) {
       gauntlet ??= Gauntlet(startParts: arena.bossParts);
     } else {
@@ -499,9 +499,9 @@ class TyrianGame extends FlameGame
     loadSector(0);
     // The arena is always a duel (Prompts/30 §9): no doors, the boss comes
     // straight down.
-    duel.startArena();
+    duel.startArena(place: !next);
     // TURN ROUND starts the ship high, with the boss coming in below it.
-    if (arena.duelDrill == DuelDrillKind.turn) {
+    if (!next && arena.duelDrill == DuelDrillKind.turn) {
       vessel.position.setFrom(duelToGame(0.5, 0.2));
     }
     vessel.caster.meter.infinite = arena.infiniteCharge;
@@ -515,7 +515,7 @@ class TyrianGame extends FlameGame
     gauntlet?.bossDown(vessel.caster.meter.flow);
     showMessage('${arenaStats.bosses}×');
     vessel.shield = vessel.shieldMax;
-    _startArenaRound();
+    _startArenaRound(next: true);
   }
 
   /// The ship would have died. The arena patches it up and counts it.

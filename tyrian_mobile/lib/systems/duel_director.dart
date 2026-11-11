@@ -169,8 +169,8 @@ class DuelDirector {
     return identical(f, _boss);
   }
 
-  /// A fleet that is not the boss stays quiet while a duel is under way.
-  bool silences(Fleet f) => active && !identical(f, _boss);
+  /// A fleet that is not a boss stays quiet while a duel is under way.
+  bool silences(Fleet f) => active && f.bossSpec == null;
 
   /// The field may finish its sector: not while a duel is on.
   bool get holdsCompletion => active && !arena;
@@ -188,12 +188,14 @@ class DuelDirector {
   }
 
   /// The arena: the duel is already on, the boss comes straight down.
-  void startArena() {
+  /// [place] puts the ship at the start; the next boss of a round leaves it
+  /// where it is.
+  void startArena({bool place = true}) {
     arena = true;
     _boss = null;
     _released = true;
     _enter(DuelPhase.entrance);
-    placeShip();
+    if (place) placeShip();
   }
 
   /// The ship where a duel starts: low in the middle, nose up.
@@ -227,6 +229,8 @@ class DuelDirector {
         _fromHeading = game.vessel.heading;
       case DuelPhase.entrance:
         _released = true;
+        // The stick starts the duel aiming, whatever it was doing before.
+        game.duelStick.reset();
       case DuelPhase.turnBack:
         _from = game.vessel.position.clone();
         _fromHeading = game.vessel.heading;

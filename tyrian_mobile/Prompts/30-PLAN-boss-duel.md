@@ -57,7 +57,47 @@ kódu, a co musí rozhodnout ruka.
 
 ## Stav implementace
 
-Nic z toho není v kódu. Čeká se na pilot (§14, krok 0).
+**2026-11-11, větev `feat/boss-duel` (z `feat/sigils`), jen lokálně.** Kroky 0–4 jsou v kódu
+najednou, protože na volbě mapování nezávisí: obě mapování i oba rámy padu žijí vedle sebe
+jako přepínače v aréně. Pilot s padem v ruce zatím neproběhl, rozhodnutí č. 1–3 (§15) čekají.
+
+| Část | Kde | Stav |
+|---|---|---|
+| Rám lodi, kurz, hitbox | `entities/ship_frame.dart`, `vessel.dart`, `device.dart` | hotovo; při kurzu 0 identita bit po bitu |
+| Střely (centrované, box podél letu, vlnění, odraz, ořez) | `projectile.dart`, `batch_renderer.dart`, `tyrian_game.dart` | hotovo |
+| Sigily, companioni, echo, MEGA BLAST, SHADOW, PING | `sigil_caster.dart`, `companion.dart`, `sigil_fx.dart` | hotovo |
+| Páčka v duelu, obě mapování, rámy padu, západka | `input/duel_stick.dart`, `pad_scheme.dart` | hotovo |
+| Klávesnice (WASD letí, šipky míří), myš, numpad v rámu padu | `keyboard_input.dart`, `keyboard_sigils.dart`, `tyrian_game.dart` | hotovo |
+| Boss: postoj, `DuelBrain`, vzory, části, lišta HP nahoře | `boss.dart`, `systems/duel_brain.dart` | hotovo |
+| Přechod (8 dob), hudba, bonusy, dokončení sektoru | `systems/duel_director.dart`, `sector.dart`, `fleet.dart` | hotovo |
+| Pozadí v otočeném rámu | `parallax_bg.dart`, `starfield.dart` | hotovo |
+| HUD: VAROVÁNÍ, střih ve hře, nápověda, čára míření, značky padu | `rendering/duel_hud.dart`, `sigil_hud.dart`, `vessel.dart` | hotovo |
+| Aréna = duel, duch v duelu, dril duelu (4 lekce), přepínače pilotu | `training/`, `ui/arena_panel.dart` | hotovo |
+| Nastavení střihu (pauza), l10n (28 klíčů, 16 ARB) | `main.dart`, `lib/l10n/` | hotovo |
+| Videa na šířku (`orientation`, čtverec 1080, natočený pad) | `capture_director.dart`, `bin/tutorial_assemble.py` | hotovo; LOOP natočit znovu |
+| Přeměření `bossUnder` | `campaign.dart` | čeká na pilot (otázka č. 7) |
+| Generovaný detail bosse, `DuelSnap` | — | volitelné, nezačato |
+
+Nástroje: `bin/macos_build.sh <jméno> [--dart-define=…]` (lokální build s podpisem ad hoc),
+`--dart-define=DUEL_PREVIEW=true` (endless rovnou ke dveřím prvního bosse; se `SIGIL_DEMO`
+hraje duch), `FRAME_DUMP` + `FRAME_STEP=true` + `FRAME_EVERY` + `FRAME_LIMIT` (plynulý film).
+
+Odchylky od plánu, s důvodem:
+
+- **Po MEGA BLAST páčka míří hned**, bez průchodu středem: čumák už míří tam, kam šel paprsek.
+- **Bonusy v duelu vždy letí k lodi** (ne „padají dolů“): v duelu vznikají jen v dohře.
+- **Nezranitelnost při přechodu** je podmínka `duel.shelters` ve `Vessel.takeDamage`, ne druhý
+  zdroj `SigilCaster.untouchable` — ten řídí i graze a kreslení fáze.
+- **P2 na druhém padu v duelu nenastane:** druhá loď vzniká jen se síťovým klientem a ten
+  duel vypíná (`duelEnabled` = desktop, ne klient, ne co-op).
+- **Lekce „Souboj“ jsou dril arény** (řádek DRIL DUELU: miř a pal, drž čumák, kresli vpřed,
+  otoč se), ne nová fáze `Lesson`. Při lekci nebo drilu boss jen pluje (`calm`).
+- **Pozadí v duelu** je zvětšené ×1,7 přes celou šířku; zrcadlené dlaždice jen v rozích
+  během obratu. Švy, které je vidět, jsou švy samotných vrstev (v letu taky, jen svisle).
+- **Arénní boss nastupuje po 1 s** (dřív 3 s) a další kolo nechá loď, kde je.
+- **Opraveno po cestě:** záznam pro videa a `FRAME_DUMP` braly virtuální velikost viewportu
+  místo plátna a ořezávaly pravou a dolní část obrazu (týká se i pilotu LOOP z plánu 29);
+  rozložení pole se při změně okna počítalo z téže virtuální velikosti.
 
 ---
 
