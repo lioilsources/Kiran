@@ -9,10 +9,13 @@ only). Beats come from tutorial/lessons/<id>.json, words from
 tutorial/narration/<lang>.json. Output: out/<id>_<lang>.mp4, 1080×1920,
 60 fps, H.264 + AAC.
 
-The frame: the game on top (the landscape capture turned back upright,
-1080×1440), the input panel below it — the stick, the circle, the stroke
-being drawn — and the subtitle. The bottom fifth and the right edge stay
-clear of TikTok's and Shorts' buttons.
+The frame: the game on top, the input panel below it — the stick, the
+circle, the stroke being drawn — and the subtitle. A flight take is the
+landscape capture turned back upright, 1080×1440, with the subtitle over its
+foot; a duel take (Prompts/30 §10, `orientation: duel` in events.json) is
+filmed upright already, 1080×1080, with a taller panel turned the way the
+pad was. The subtitle sits over the foot of the game picture. The bottom
+fifth and the right edge stay clear of TikTok's and Shorts' buttons.
 
 Elastic beats: a take runs at its own length; a freeze or a card holds as
 long as its sentence takes in this language (never shorter than "min").
@@ -88,46 +91,65 @@ class Cutter:
         self.f_small = font(34)
         self.f_call = font(40)
         self.trail = []
+        # A duel is filmed upright and square; the flight on its side.
+        self.duel = self.events.get('orientation') == 'duel'
+        self.game_h = 1080 if self.duel else GAME_H
 
     # ── one output frame ──
 
     def game_image(self, take, i):
         path = os.path.join(self.cap, take, f'frame_{i:05d}.png')
         im = Image.open(path).convert('RGB')
-        # The landscape capture is the portrait field turned a quarter
-        # counter-clockwise; a quarter clockwise turns it back upright.
-        im = im.transpose(Image.Transpose.ROTATE_270)
+        game_h = self.game_h
+        if not self.duel:
+            # The landscape capture is the portrait field turned a quarter
+            # counter-clockwise; a quarter clockwise turns it back upright.
+            im = im.transpose(Image.Transpose.ROTATE_270)
         # Fill the width, keep the aspect, crop what overhangs top and bottom
         # evenly: the window is not always the size that was asked for.
         h = round(im.height * W / im.width)
         im = im.resize((W, h), Image.Resampling.LANCZOS)
-        if h > GAME_H:
-            top = (h - GAME_H) // 2
-            im = im.crop((0, top, W, top + GAME_H))
-        elif h < GAME_H:
-            pad = Image.new('RGB', (W, GAME_H), (4, 6, 12))
-            pad.paste(im, (0, (GAME_H - h) // 2))
+        if h > game_h:
+            top = (h - game_h) // 2
+            im = im.crop((0, top, W, top + game_h))
+        elif h < game_h:
+            pad = Image.new('RGB', (W, game_h), (4, 6, 12))
+            pad.paste(im, (0, (game_h - h) // 2))
             im = pad
         return im
 
     def panel(self, draw, stick, sub):
-        cy = GAME_H + 150
+        cy = self.game_h + (210 if self.duel else 150)
         cx = W // 2
-        r = 105
+        r = 140 if self.duel else 105
+        # A duel's pad turns with the nose: ship space onto the screen.
+        a = stick.get('a', 0.0)
+        ca, sa = math.cos(a), math.sin(a)
+
+        def turn(x, y):
+            return x * ca - y * sa, x * sa + y * ca
+
         layer = stick.get('l') or 'hull'
         col = LAYER.get(layer, LAYER['hull'])
         draw.ellipse([cx - r - 18, cy - r - 18, cx + r + 18, cy + r + 18], fill=(8, 12, 22))
         draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col + (90,), width=2)
         picked = set(stick.get('d') or [])
         for d in range(9):
-            x, y = dot_xy(d, r)
+            x, y = turn(*dot_xy(d, r))
             rr = 11 if d in picked else 7
             draw.ellipse([cx + x - rr, cy + y - rr, cx + x + rr, cy + y + rr],
                          fill=col if d in picked else (130, 130, 140))
+        if self.duel:
+            # The nose: where forward is on the pad.
+            nx, ny = turn(0, -(r + 30))
+            bx, by = turn(0, -(r + 12))
+            px, py = turn(9, 0)
+            draw.polygon([(cx + nx, cy + ny), (cx + bx + px, cy + by + py),
+                          (cx + bx - px, cy + by - py)], fill=(235, 235, 240))
         if len(self.trail) > 1:
-            pts = [(cx + x * r, cy + y * r) for x, y in self.trail]
+            pts = [(cx + turn(x, y)[0] * r, cy + turn(x, y)[1] * r) for x, y in self.trail]
             draw.line(pts, fill=col, width=7, joint='curve')
-        sx, sy = stick.get('x', 0), stick.get('y', 0)
+        sx, sy = turn(stick.get('x', 0), stick.get('y', 0))
         draw.ellipse([cx + sx * r - 15, cy + sy * r - 15, cx + sx * r + 15, cy + sy * r + 15],
                      fill=(255, 255, 255), outline=col, width=4)
         if sub:
@@ -154,7 +176,8 @@ class Cutter:
                 else:
                     line = t
         lines.append(line)
-        y = GAME_H - 40 - 58 * len(lines)
+        # Over the foot of the game picture, clear of the bottom fifth.
+        y = self.game_h - 40 - 58 * len(lines)
         for ln in lines:
             tw = draw.textlength(ln, font=self.f_sub)
             x = (W - 60 - tw) / 2
