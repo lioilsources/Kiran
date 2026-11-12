@@ -21,17 +21,19 @@ Pořadí: úklid → malé PR → lokalizace proti stacku → pilot ovládání 
 
 ### Rozdělané mimo PR
 
+Worktree níže jsou na druhém stroji; K0 běžel na MacBooku, kde je jen čistý `main`. Jejich stav a lokální větev `feat/mod-icons` (na GitHubu není) se tu ověřit nedají.
+
 - **Hlavní worktree** stojí na lokální větvi `feat/mod-icons`, dva commity za `origin/main`. Necommitnuté: šablona `mod_icon` v pipeline (`assets.go`, `prompts.go`, test, `variantsheet`), složka `store/reddit/` a starší kopie plánu 28 jako nesledovaný soubor (liší se od verze na `feat/sigils`). Změny ve `store/steam/` jsou shodné s `origin/main` a po posunu větve zmizí.
 - **Worktree vedle repa:** `Kiran-flip` a `Kiran-sigils` (živé, stack #59–#61), `Kiran-29` (větev `fix/no-empty-bonus-2.10` je mergnutá PR #46, v2.10.6 je venku), `Kiran-rl` (`rl-headless`, stojí na 3.7.0).
 - **Grafika vygenerovaná a nevybraná:**
   - trupy, pody a dron pro 24 skinů, 4 varianty (picker `hullpicks`); ve hře jede tint fallback;
   - tvorové místo bossů-lodí pro 22 skinů (picker `bosspicks`); ve hře je tvor jen u `default` a `abadox` (3.9.2).
   Odkazy na pickery a umístění výstupů jsou v paměti projektu, ne v repu.
-- **Plán 27 (mody, trupy):** kroky 1 a 2 jsou venku (3.9.0, 3.9.1). Krok 3 (3.10.0, grafika pilot) čeká na výběr. Ovládání HANGAR a VAULT padem a klávesnicí pořád chybí: `lib/ui/loadout_cursor.dart` o hangáru ani vaultu neví.
+- **Plán 27 (mody, trupy):** kroky 1 a 2 jsou venku (3.9.0, 3.9.1). Krok 3 (3.10.0, grafika pilot) čeká na výběr. Ovládání HANGAR a VAULT padem a klávesnicí pořád chybí (ověřeno K0 na `origin/main` i `feat/boss-duel`): `lib/ui/loadout_cursor.dart` o hangáru ani vaultu neví a `lib/ui/hangar_panel.dart` nemá žádný focus ani obsluhu kláves.
 - **Roadmapa 25, Tier 1:** obtížnost (`Challenge`) a vzory střelby (`fire_pattern.dart`) jsou v kódu. Jukebox není. Rear slot, tiery štítu, oprava trupu a arcade mód nejsou; část z toho nahradily mody.
 - **Plány 28–30:** stav je v tabulkách přímo v plánech (na `feat/boss-duel`). Nehotové: odemykání po stupních, varianty a tlačítko X, vibrace, Steam Input, sigily klienta v co-opu, zkoušky stupňů, denní výzva, přeměření `bossUnder`. Nic z toho se neověřilo na skutečném padu ani na Steam Decku.
 - **Steam:** CI nahrává build a tag `v3.*` ho rovnou nastaví živě na větvi `default` (PR #57). Datum vydání není nastavené (`store/steam/store-copy.md`). Stav stránky ve Steamworks (schválené Coming Soon, dotazník, cena) v repu není.
-- **Kampaň:** režim, mapa, 20 uzlů, skládaní bossové a patnáct druhů úkolů jsou v `lib/systems/campaign.dart`. Co zbývá z původních šesti kroků (klikatá mapa, art dílů bossů, achievementy), zjistí K0.
+- **Kampaň:** režim, mapa, 20 uzlů, skládaní bossové a patnáct druhů úkolů jsou v `lib/systems/campaign.dart`. Z původních šesti kroků (ověřeno K0, `origin/main`): klikatá mapa je hotová (`campaign_map.dart` kreslí hadovitou trasu obloukem); art dílů bossů je hotový (`boss_turret`, `boss_shield`, `boss_thruster`, `boss_cannon` i úlomky jsou ve všech 24 skinech a atlasech). **Chybí achievementy kampaně:** `achievement_service.dart` žádný nemá.
 
 ## 2. Rozhodnutí vlastníka, která platí (neptat se znovu)
 
