@@ -163,7 +163,7 @@ class _CampaignResultCardState extends State<CampaignResultCard> {
                   Container(
                     width: 6,
                     height: 30,
-                    margin: const EdgeInsets.only(right: 8),
+                    margin: const EdgeInsetsDirectional.only(end: 8),
                     color: ModText.colorOf(m),
                   ),
                   Expanded(

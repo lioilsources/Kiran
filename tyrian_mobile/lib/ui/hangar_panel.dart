@@ -191,7 +191,7 @@ class HangarPanelState extends State<HangarPanel> {
                 children: [
                   if (!unlocked)
                     const Padding(
-                      padding: EdgeInsets.only(right: 4),
+                      padding: EdgeInsetsDirectional.only(end: 4),
                       child: Icon(Icons.lock, size: 12, color: Colors.white54),
                     ),
                   Text(
@@ -248,7 +248,7 @@ class HangarPanelState extends State<HangarPanel> {
             width: 56,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
                 _rackLabel(r).toUpperCase(),
                 maxLines: 1,
@@ -262,7 +262,7 @@ class HangarPanelState extends State<HangarPanel> {
             for (var s = 0; s < rack.sockets; s++)
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 3),
+                  padding: const EdgeInsetsDirectional.only(end: 3),
                   child: s < rack.fitted.length
                       ? _modChip(
                           rack.fitted[s],

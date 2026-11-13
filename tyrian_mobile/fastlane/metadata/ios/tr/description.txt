@@ -1,0 +1,23 @@
+Yalnız bir savaş gemisiyle düşmanlarla dolu sonsuz bir koridorda, her seferinde altmış saniyelik bir sektör uç.
+
+Kirian, roguelike döngüsü üzerine kurulu dikey bir arcade nişancı oyunudur. Gemiyi kaybetmek koşuyu bitirmez: her silahı, krediyi ve puanı korur, daha ileri gitmek için Sektör 1’e dönersin. İlerleme kalıcıdır. Yalnızca gövde sıfırlanır.
+
+ELEMENTAL YOK EDİŞ
+Düşmanlar onları indiren silaha göre ölür: su patlamaları, kırılan buz, alevler, şimşek ya da macenta plazma novası. Her öldürme bir bakışta anlaşılır.
+
+SAVAŞ GEMİNİ İNŞA ET
+Sektörler arasında Com Center’da ön silahları, yan silahları, jeneratörleri, gövdeyi ve kalkanları yirmi beş seviye boyunca geliştirirsin. Güç sınırlıdır, bu yüzden her donanım bir ödünleşimdir. Skor asla sıfırlanmaz ve daha yüksek silah kademelerinin kilidini kalıcı olarak açar.
+
+EL YAPIMI DALGALAR, SONRA SONSUZLUK
+Altı bölgede on sekiz el yapımı sektör, ardından her beşinci seviyede patron çıkan sonsuz bir üretici.
+
+İKİ OYUNCU, BİR ODA
+Otomatik keşifle yerel Wi-Fi üzerinden co-op. Hesap yok, sunucu yok, internet yok.
+
+ON DÖRT GÖRÜNÜM
+Her skin gemileri, düşmanları, arka planları, arayüzü ve sesi yeniden biçimlendirir. Üçü ücretsiz, diğer on biri tek seferlik satın alma. Reklam yok, abonelik yok.
+
+İYİ HİSSETTİRMEK İÇİN YAPILDI
+Bloom, tarama çizgileri ve kromatik sapma için GPU shader’ları, fizik tabanlı parçalanma. Dokunmatik, klavye veya kontrol cihazıyla oyna.
+
+İki Game Center sıralaması ve başarımlar. Arayüz 45 dilde kullanılabilir.

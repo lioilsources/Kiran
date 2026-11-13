@@ -1,0 +1,1 @@
+Roguelike arcade shmup. Öl, her şeyi koru, daha ileri git. Yerel co-op.

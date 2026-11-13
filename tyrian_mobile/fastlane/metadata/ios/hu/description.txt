@@ -1,0 +1,23 @@
+Repülj egy magányos csatahajóval ellenségek végtelen folyosóján át, egyszerre egy hatvanmásodperces szektorral.
+
+A Kirian egy függőleges arcade lövöldözős játék roguelike körforgásra építve. A hajó elvesztése nem a futam vége: megtartasz minden fegyvert, kreditet és pontot, és az 1. szektorból indulsz újra, hogy mélyebbre juss. A haladás végleges. Csak a törzs áll vissza.
+
+ELEMI PUSZTÍTÁS
+Az ellenségek a fegyver szerint pusztulnak: vízrobbanások, szilánkokra törő jég, lángok, villámok vagy bíbor plazmanóva. Minden kivégzés első pillantásra olvasható.
+
+ÉPÍTSD FEL A CSATAHAJÓD
+A szektorok között a Com Centerben fejleszted az elülső és oldalsó fegyvereket, generátorokat, törzset és pajzsokat huszonöt szinten. Az energia véges, így minden felszerelés kompromisszum. A pontszám sosem nullázódik, és véglegesen feloldja a magasabb fegyverszinteket.
+
+KÉZZEL KÉSZÍTETT HULLÁMOK, AZTÁN VÉGTELEN
+Tizennyolc kézzel készített szektor hat zónában, majd végtelen generátor, minden ötödik szinten főellenséggel.
+
+KÉT JÁTÉKOS, EGY SZOBA
+Co-op helyi Wi-Fin automatikus felderítéssel. Nincs fiók, nincs szerver, nincs internet.
+
+TIZENNÉGY KINÉZET
+Minden skin átalakítja a hajókat, ellenségeket, hátterek, felületet és hangot. Három ingyenes, a többi tizenegy egyszeri vásárlás. Nincs hirdetés, nincs előfizetés.
+
+ÚGY ÉPÍTVE, HOGY JÓ LEGYEN ÉRZÉSRE
+GPU-shaderek bloomhoz, scanline-okhoz és kromatikus aberrációhoz, fizikai alapú szétesés. Játssz érintéssel, billentyűzettel vagy kontrollerrel.
+
+Két Game Center ranglista és eredmények. A felület 45 nyelven érhető el.

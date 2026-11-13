@@ -2,7 +2,7 @@
 import re, pathlib
 from PIL import Image, ImageDraw, ImageFont
 
-ROOT = pathlib.Path('/Users/ol1n/Dev/GitHub/Kiran')
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 SKINS = ROOT / 'tyrian_mobile/assets/skins'
 OUT = ROOT / 'store/iap-review'
 

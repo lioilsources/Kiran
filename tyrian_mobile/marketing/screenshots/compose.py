@@ -24,9 +24,11 @@ without localizing the app. Every file is flattened RGB: App Store Connect
 rejects alpha.
 
 The header and search assets are new in App Store Connect (iOS 27+, both
-optional, attached per localization). Apple publishes sizes but no crop rule,
-so everything that matters is kept in the centre; check Preview in App Store
-Connect on iPhone and iPad before submitting.
+optional, attached per localization). Apple crops both to an art safe area
+(header 1646x661 centred, search 2168x1030 at x 836, y 765), so everything
+that matters is kept in the centre; check Preview in App Store Connect on
+iPhone and iPad before submitting. marketing/tools/store_boss_creative.py
+makes a text-free boss-fight alternative for both slots.
 """
 import argparse
 import pathlib

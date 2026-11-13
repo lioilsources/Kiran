@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "تستخدم Kirian البلوتوث للعثور على لاعب قريب للّعب التعاوني المحلي عندما لا تكونان على شبكة Wi-Fi نفسها.";
+"NSBluetoothPeripheralUsageDescription" = "تستخدم Kirian البلوتوث للعثور على لاعب قريب للّعب التعاوني المحلي عندما لا تكونان على شبكة Wi-Fi نفسها.";
+"NSLocalNetworkUsageDescription" = "تبحث Kirian عن ألعاب تعاونية مستضافة على شبكة Wi-Fi لديك أو على أجهزة قريبة، وتتيح للاعبين الآخرين العثور على لعبتك.";
+"NSMicrophoneUsageDescription" = "لا تستخدم Kirian الميكروفون. هذا الإذن مطلوب من إطار عمل الصوت.";

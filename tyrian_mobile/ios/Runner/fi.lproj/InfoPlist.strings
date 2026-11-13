@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "Kirian käyttää Bluetoothia löytääkseen lähellä olevan pelaajan paikalliseen yhteispeliin, kun ette ole samassa Wi-Fi-verkossa.";
+"NSBluetoothPeripheralUsageDescription" = "Kirian käyttää Bluetoothia löytääkseen lähellä olevan pelaajan paikalliseen yhteispeliin, kun ette ole samassa Wi-Fi-verkossa.";
+"NSLocalNetworkUsageDescription" = "Kirian etsii yhteispelejä Wi-Fi-verkostasi tai lähellä olevilta laitteilta ja antaa muiden pelaajien löytää omasi.";
+"NSMicrophoneUsageDescription" = "Kirian ei käytä mikrofonia. Äänikehys vaatii tämän luvan.";

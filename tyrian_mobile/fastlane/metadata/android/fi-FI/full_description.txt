@@ -1,0 +1,23 @@
+Lennä yksinäisellä taistelualuksella päättymättömän vihollisten käytävän läpi, kuusikymmentä sekuntia kestävä sektori kerrallaan.
+
+Kirian on pystysuuntainen arcade-ammuntapeli, joka rakentuu roguelike-kierron varaan. Aluksen menettäminen ei lopeta ajoa: säilytät jokaisen aseen, krediitin ja pisteen ja palaat sektoriin 1 päästäksesi syvemmälle. Edistyminen on pysyvää. Vain runko nollautuu.
+
+ELEMENTTITUHO
+Viholliset kuolevat aseen mukaan: vesiräjähdyksiä, särkyvää jäätä, palavaa liekkiä, salamoita tai magentanvärinen plasmanova. Jokainen tappo erottuu yhdellä silmäyksellä.
+
+RAKENNA TAISTELUALUKSESI
+Sektorien välillä Com Centerissä päivität etuaseet, sivuaseet, generaattorit, rungon ja kilvet kahdenkymmenenviiden tason yli. Virta on rajallista, joten jokainen varustus on kompromissi. Pisteet eivät nollaudu koskaan ja avaavat pysyvästi korkeampia asetasoja.
+
+KÄSINTEHDYT AALLOT, SITTEN LOPUTTOMASTI
+Kahdeksantoista käsintehtyä sektoria kuudella alueella, sitten loputon generaattori ja pomo joka viidennellä tasolla.
+
+KAKSI PELAAJAA, YKSI HUONE
+Yhteispeli paikallisessa Wi-Fissä automaattisella löytämisellä. Ei tilejä, ei palvelimia, ei internetiä.
+
+NELJÄTOISTA ULKOASUA
+Jokainen skini muuttaa alukset, viholliset, taustat, käyttöliittymän ja äänen. Kolme on ilmaista, loput yksitoista ovat kertaostoksia. Ei mainoksia, ei tilauksia.
+
+TEHTY TUNTUMAAN OIKEALTA
+GPU-varjostimet bloomiin, viivajuoviin ja kromaattiseen aberraatioon, fysiikkapohjainen särkyminen. Pelaa kosketuksella, näppäimistöllä tai ohjaimella.
+
+Kaksi Game Center -tulostaulua ja saavutuksia. Käyttöliittymä on saatavilla 45 kielellä.

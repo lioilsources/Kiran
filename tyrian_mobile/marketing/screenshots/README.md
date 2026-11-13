@@ -80,11 +80,20 @@ Asset Library to ship them without a new version. Both optional, shown on iOS
 
 - **Header** carries no text, so the same file can go on every localization.
   A row of gameplay screens in five skins: one idea, the same game in many
-  looks. Apple publishes no crop rule, so the middle three screens are what
-  must survive; the outer two are allowed to be cut.
+  looks. Apple crops it to a central art safe area of 1646×661 on iPhone, so
+  the middle three screens are what must survive; the outer two may be cut.
 - **Search results** is localized: three gameplay screens and one line in the
   listing language. Apple's guidance for that slot is the real app shown
   clearly, plus one short line.
+- **Safe areas** (Apple's creative assets specifications): header 1646×661
+  centred in 3840×1646; search results 2168×1030 at x 836, y 765 in
+  3840×2560. Anything outside may be cropped.
+- **Boss key art, the text-free alternative:** `marketing/tools/store_boss_creative.py`
+  draws a boss fight from the game's own sprites into
+  `marketing/appstore-creative-boss/` (both slots, one file for every
+  localization). It asserts that the boss and the player ship stay inside the
+  safe areas. Which set ships is chosen when uploading; `compose.py` keeps
+  writing its own per-language set.
 - Not allowed in either: prices, URLs, ©, other platforms' logos, Apple
   badges. Must meet the 4+ standard.
 - Check the Preview in App Store Connect on iPhone and iPad before submitting.

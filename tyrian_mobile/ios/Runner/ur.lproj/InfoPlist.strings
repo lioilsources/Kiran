@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "جب آپ ایک ہی Wi-Fi پر نہ ہوں تو لوکل کو-آپ کے لیے قریبی کھلاڑی تلاش کرنے کو Kirian بلوٹوتھ استعمال کرتا ہے۔";
+"NSBluetoothPeripheralUsageDescription" = "جب آپ ایک ہی Wi-Fi پر نہ ہوں تو لوکل کو-آپ کے لیے قریبی کھلاڑی تلاش کرنے کو Kirian بلوٹوتھ استعمال کرتا ہے۔";
+"NSLocalNetworkUsageDescription" = "Kirian آپ کے Wi-Fi یا قریبی آلات پر ہوسٹ کی گئی کو-آپ گیمز تلاش کرتا ہے اور دوسرے کھلاڑیوں کو آپ کی گیم ڈھونڈنے دیتا ہے۔";
+"NSMicrophoneUsageDescription" = "Kirian مائیکروفون استعمال نہیں کرتا۔ آڈیو فریم ورک کو یہ اجازت درکار ہے۔";

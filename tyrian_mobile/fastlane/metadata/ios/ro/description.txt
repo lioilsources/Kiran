@@ -1,0 +1,23 @@
+Pilotează o navă de luptă singuratică printr-un coridor nesfârșit de dușmani, un sector de șaizeci de secunde pe rând.
+
+Kirian este un shooter arcade vertical construit pe o buclă roguelike. Pierderea navei nu încheie parcursul: păstrezi fiecare armă, credit și punct și revii în Sectorul 1 ca să ajungi mai departe. Progresul este permanent. Doar carcasa se resetează.
+
+DISTRUGERE ELEMENTALĂ
+Dușmanii mor după arma care i-a doborât: explozii de apă, gheață sfărâmată, flăcări, fulgere sau o nova de plasmă magenta. Fiecare eliminare se citește dintr-o privire.
+
+CONSTRUIEȘTE-ȚI NAVA DE LUPTĂ
+Între sectoare, în Com Center îmbunătățești armele din față și laterale, generatoarele, carcasa și scuturile pe douăzeci și cinci de niveluri. Energia este limitată, deci fiecare echipare e un compromis. Scorul nu se resetează niciodată și deblochează permanent niveluri mai înalte de arme.
+
+VALURI FĂCUTE DE MÂNĂ, APOI LA INFINIT
+Optsprezece sectoare făcute de mână în șase zone, apoi un generator nesfârșit, cu boss la fiecare al cincilea nivel.
+
+DOI JUCĂTORI, O CAMERĂ
+Co-op prin Wi-Fi local cu descoperire automată. Fără conturi, fără servere, fără internet.
+
+PAISPREZECE ASPECTE
+Fiecare skin schimbă stilul navelor, dușmanilor, fundalurilor, interfeței și sunetului. Trei sunt gratuite, celelalte unsprezece sunt achiziții unice. Fără reclame sau abonamente.
+
+FĂCUT SĂ SE SIMTĂ BINE
+Shadere GPU pentru bloom, scanlines și aberație cromatică, sfărâmare bazată pe fizică. Joacă cu atingere, tastatură sau controler.
+
+Două clasamente Game Center și realizări. Interfața este disponibilă în 45 de limbi.

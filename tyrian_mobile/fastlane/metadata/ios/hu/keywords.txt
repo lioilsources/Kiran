@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retro,űrhajó,koop,függőleges,scrolling,pixel

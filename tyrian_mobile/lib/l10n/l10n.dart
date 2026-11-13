@@ -17,6 +17,15 @@ abstract final class L10n {
       _current ?? lookupAppLocalizations(const Locale('en'));
 
   static set current(AppLocalizations value) => _current = value;
+
+  static const _rtlLanguages = {'ar', 'fa', 'he', 'ur'};
+
+  /// Base direction for text painted straight onto a canvas (no
+  /// [Directionality] above it) in the current language.
+  static TextDirection get textDirection =>
+      _rtlLanguages.contains(current.localeName.split('_').first)
+          ? TextDirection.rtl
+          : TextDirection.ltr;
 }
 
 extension L10nContext on BuildContext {
