@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retro,vesmírná loď,koop,vertikální,scrolling,pixel

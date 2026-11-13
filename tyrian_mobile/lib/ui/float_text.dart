@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/platform_config.dart' as platform;
+import '../l10n/l10n.dart';
 
 /// Ported from FloatText.cls — floating text that drifts upward and fades.
 /// Used for "Complete", "Game Over", weapon unlock messages, etc.
@@ -103,7 +104,7 @@ class FloatText extends PositionComponent {
           ],
         ),
       ),
-      textDirection: TextDirection.ltr,
+      textDirection: L10n.textDirection,
       textAlign: TextAlign.center,
     );
     textPainter.layout();

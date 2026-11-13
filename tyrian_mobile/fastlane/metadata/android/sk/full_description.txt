@@ -1,0 +1,23 @@
+Leť osamelým bojovým plavidlom nekonečnou chodbou nepriateľov, po jednom šesťdesiatsekundovom sektore.
+
+Kirian je vertikálna arkádová strieľačka postavená na roguelike slučke. Strata lode tvoj postup nekončí: zbrane, kredity aj body si necháš a vrátiš sa do sektora 1, aby si doletel ďalej. Postup je trvalý. Resetuje sa len trup.
+
+ŽIVELNÉ NIČENIE
+Nepriatelia umierajú podľa zbrane, ktorá ich zostrelila: vodné výbuchy, trieštiaci sa ľad, horiace plamene, blesky alebo purpurová plazmová nova. Každý zásah je čitateľný na prvý pohľad.
+
+POSTAV SI BOJOVÚ LOĎ
+Medzi sektormi v Com Centre vylepšuješ predné zbrane, bočné zbrane, generátory, trup a štíty cez dvadsaťpäť úrovní. Energia je obmedzená, takže každá výzbroj je kompromis. Skóre sa nikdy nenuluje a trvalo odomyká vyššie tiery zbraní.
+
+RUČNE ROBENÉ VLNY, POTOM NEKONEČNO
+Osemnásť ručne vytvorených sektorov v šiestich zónach, potom nekonečný generátor s bossom každú piatu úroveň.
+
+DVAJA HRÁČI, JEDNA MIESTNOSŤ
+Kooperácia cez lokálnu Wi-Fi s automatickým vyhľadávaním. Žiadne účty, žiadne servery, žiadny internet.
+
+ŠTRNÁSŤ VZHĽADOV
+Každý skin zmení štýl lodí, nepriateľov, pozadí, rozhrania aj zvuku. Tri sú zadarmo, ďalších jedenásť sú jednorazové nákupy. Žiadne reklamy, žiadne predplatné.
+
+POSTAVENÉ NA POCIT
+GPU shadery pre bloom, scanlines a chromatickú aberáciu, fyzikálne trieštenie. Hraj dotykom, klávesnicou alebo ovládačom.
+
+Dva rebríčky Game Center a úspechy. Rozhranie je v 45 jazykoch.

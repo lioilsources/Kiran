@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retro,arcade,astronave,cooperativa,scroll verticale,sparatutto,pixel art

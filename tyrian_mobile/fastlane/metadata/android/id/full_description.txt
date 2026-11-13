@@ -1,0 +1,23 @@
+Terbangkan satu kapal tempur melewati koridor tak berujung penuh musuh, satu sektor enam puluh detik setiap kalinya.
+
+Kirian adalah shooter arcade vertikal yang dibangun dengan siklus roguelike. Kehilangan kapal tidak mengakhiri permainan: kamu menyimpan setiap senjata, kredit, dan poin, lalu kembali ke Sektor 1 untuk melaju lebih jauh. Kemajuan bersifat permanen. Hanya lambung yang direset.
+
+KEHANCURAN ELEMENTAL
+Musuh mati sesuai senjata yang menghabisinya: ledakan air, es yang pecah, api yang menyala, petir, atau nova plasma magenta. Setiap kill terbaca sekilas.
+
+BANGUN KAPAL TEMPURMU
+Di antara sektor, Com Center memungkinkanmu meningkatkan senjata depan, senjata samping, generator, lambung, dan perisai di dua puluh lima level. Daya terbatas, jadi setiap perlengkapan adalah kompromi. Skor tidak pernah direset dan membuka tingkat senjata lebih tinggi secara permanen.
+
+GELOMBANG BUATAN TANGAN, LALU TANPA AKHIR
+Delapan belas sektor buatan tangan di enam zona, lalu generator tanpa akhir dengan bos di setiap level kelima.
+
+DUA PEMAIN, SATU RUANGAN
+Co-op lewat Wi-Fi lokal dengan penemuan otomatis. Tanpa akun, tanpa server, tanpa internet.
+
+EMPAT BELAS TAMPILAN
+Setiap skin mengubah gaya kapal, musuh, latar, antarmuka, dan suara. Tiga gratis, sebelas lainnya pembelian sekali bayar. Tanpa iklan, tanpa langganan.
+
+DIBUAT AGAR TERASA PAS
+Shader GPU untuk bloom, scanline, dan aberasi kromatik, pecahan berbasis fisika. Mainkan dengan sentuhan, keyboard, atau kontroler.
+
+Dua papan peringkat Game Center dan pencapaian. Antarmuka tersedia dalam 45 bahasa.

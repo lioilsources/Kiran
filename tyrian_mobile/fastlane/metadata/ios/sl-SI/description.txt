@@ -1,0 +1,23 @@
+Pilotiraj osamljeno bojno ladjo skozi neskončen hodnik sovražnikov, po en šestdesetsekundni sektor naenkrat.
+
+Kirian je navpični arkadni strelec, zgrajen na roguelike zanki. Izguba ladje ne konča igre: obdržiš vsako orožje, kredit in točko ter se vrneš v sektor 1, da prideš dlje. Napredek je trajen. Ponastavi se samo trup.
+
+ELEMENTARNO UNIČENJE
+Sovražniki umrejo glede na orožje: vodne eksplozije, razpokan led, plameni, strele ali škrlatna plazemska nova. Vsak zadetek je berljiv na prvi pogled.
+
+ZGRADI SVOJO BOJNO LADJO
+Med sektorji v Com Centru nadgrajuješ sprednje in stranske puške, generatorje, trup in ščite skozi petindvajset stopenj. Energija je omejena, zato je vsaka oprema kompromis. Rezultat se nikoli ne ponastavi in trajno odklene višje stopnje orožja.
+
+ROČNO IZDELANI VALOVI, POTEM NESKONČNO
+Osemnajst ročno izdelanih sektorjev v šestih conah, nato neskončen generator z bossom na vsaki peti stopnji.
+
+DVA IGRALCA, ENA SOBA
+Co-op prek lokalnega Wi-Fi z samodejnim iskanjem. Brez računov, strežnikov in interneta.
+
+ŠTIRINAJST VIDEZOV
+Vsak skin spremeni slog ladij, sovražnikov, ozadij, vmesnika in zvoka. Trije so brezplačni, preostalih enajst je enkratnih nakupov. Brez oglasov in naročnin.
+
+NAREJENO ZA DOBER OBČUTEK
+GPU senčniki za bloom, vrstice skeniranja in kromatično aberacijo, fizikalno razletavanje. Igraj na dotik, s tipkovnico ali krmilnikom.
+
+Dve lestvici Game Center in dosežki. Vmesnik je na voljo v 45 jezikih.

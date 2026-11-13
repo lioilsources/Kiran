@@ -1,0 +1,23 @@
+Pilote uma nave solitária por um corredor infinito de inimigos, um setor de sessenta segundos de cada vez.
+
+Kirian é um shooter arcade vertical construído sobre um loop roguelike. Perder sua nave não encerra a corrida — você mantém cada arma, cada crédito, cada ponto conquistado, e volta ao Setor 1 para avançar mais fundo do que da última vez. O progresso é permanente. Só o seu casco é reiniciado.
+
+DESTRUIÇÃO ELEMENTAL
+Os inimigos morrem de acordo com a arma que os matou. Armas de bolha os estouram em água. Canhões os despedaçam em gelo pesado e frio que cai. Armas estelares os deixam queimando, com chamas subindo e brasas à deriva. Lasers descarregam num lampejo de raio. Blasters os fazem implodir numa nova de plasma magenta. Cada abate se lê num relance.
+
+CONSTRUA SUA NAVE
+Entre os setores, o Centro de Comunicações é seu: armas frontais, armas laterais, geradores, casco e escudos, tudo pode ser aprimorado em vinte e cinco níveis. Energia é finita — uma arma mais pesada drena um gerador que não consegue acompanhar, então todo loadout é uma escolha de compromisso. A pontuação nunca é zerada, e ultrapassar seus limiares libera permanentemente os tiers de armas mais altos.
+
+ONDAS FEITAS À MÃO, DEPOIS PARA SEMPRE
+Dezoito setores desenhados à mão se espalham por seis zonas, cada um um roteiro compacto de sessenta segundos com suas próprias formações e ritmo. Depois deles, o gerador assume e nunca para, a dificuldade sobe sem teto, com chefes esperando a cada cinco níveis.
+
+DOIS JOGADORES, UMA SALA
+O cooperativo roda em Wi-Fi local com descoberta automática — sem contas, sem servidores, sem internet. Um aparelho hospeda, o outro entra, e vocês voam pelo mesmo setor juntos.
+
+QUATORZE VISUAIS
+Cada skin reestiliza o jogo inteiro: naves, inimigos, cenários, interface, som. Três naves vêm grátis com o app. As outras onze são compras únicas, cada uma permanente, sem anúncios, sem assinaturas e sem consumíveis em nenhum lugar do jogo.
+
+FEITO PARA SER SENTIDO
+Shaders de GPU comandam bloom, scanlines, vinheta e aberração cromática. Inimigos se despedaçam em fragmentos guiados por física, recortados de seus próprios sprites. Jogue por toque, teclado ou um controle conectado.
+
+Dois placares do Game Center te ranqueiam pela pontuação total e pelo nível mais profundo já alcançado, além de conquistas por abates, setores e corridas sem dano.

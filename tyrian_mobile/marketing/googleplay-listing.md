@@ -41,7 +41,7 @@ English. **Japanese – ja-JP** is added as a translation from
 | Free or paid | — | **Free** (with in-app products). Free can never become paid; IAPs are fine. |
 | Category | — | **Arcade** |
 | Tags | — | from Play's fixed list, max 5: Shoot 'em up, Arcade, Roguelike, Sci-fi, Offline (pick the closest offered) |
-| Contact email | — | `oldrich.vorechovsky.jr@gmail.com` |
+| Contact email | — | `business@olin.now` |
 | Website | — | `https://lioilsources.github.io/Kiran/` |
 | Privacy policy | — | `https://lioilsources.github.io/Kiran/privacy.html` |
 
@@ -269,7 +269,7 @@ Games sign-in is automatic and optional.
 
 ### Content rating (IARC questionnaire)
 
-Email `oldrich.vorechovsky.jr@gmail.com`, category **Game**.
+Email `business@olin.now`, category **Game**.
 
 | Question area | Answer | Why |
 |---|---|---|
