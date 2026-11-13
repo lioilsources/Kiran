@@ -1080,4 +1080,95 @@ class AppLocalizationsRo extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Scor $rating · record $best';
   }
+
+  @override
+  String get duelWarning => 'ATENȚIE';
+
+  @override
+  String get duelHintPad1 => 'Stickul drept țintește și trage';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Ține RT, LB sau RB: stickul drept desenează sigilii';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Ține LT, LB sau RB: stickul drept desenează sigilii';
+
+  @override
+  String get duelHintClassic =>
+      'Stickul stâng zboară · B, RB sau RT trag unde arată botul';
+
+  @override
+  String get duelHintKeys1 => 'Săgețile țintesc și trag · WASD zboară';
+
+  @override
+  String get duelHintKeys2 =>
+      'Space trage unde arată botul · tastatura numerică desenează sigilii';
+
+  @override
+  String get arenaDuelBinding => 'POZIȚIE DE DUEL';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'ÎNAINTE PE PAD';
+
+  @override
+  String get duelFrameNose => 'BOTUL';
+
+  @override
+  String get duelFrameUp => 'SUS';
+
+  @override
+  String get arenaDuelAimFires => 'ȚINTIREA TRAGE';
+
+  @override
+  String get duelCutInFirst => 'PRIM-PLAN BOSS: PRIMA DATĂ';
+
+  @override
+  String get duelCutInAlways => 'PRIM-PLAN BOSS: MEREU';
+
+  @override
+  String get duelCutInNever => 'PRIM-PLAN BOSS: NICIODATĂ';
+
+  @override
+  String get arenaDuelDrill => 'EXERCIȚIU DE DUEL';
+
+  @override
+  String get duelDrillOff => 'NICIUNUL';
+
+  @override
+  String get duelDrillAim => 'ȚINTEȘTE ȘI TRAGE';
+
+  @override
+  String get duelDrillAimHow =>
+      'Îndreaptă stickul drept spre boss și lovește-l';
+
+  @override
+  String get duelDrillHold => 'ȚINE BOTUL';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Ține un buton de poziție și zboară: botul rămâne fix';
+
+  @override
+  String get duelDrillDraw => 'DESENEAZĂ ÎNAINTE';
+
+  @override
+  String get duelDrillDrawHow => 'În poziție, desenează un sigiliu spre boss';
+
+  @override
+  String get duelDrillTurn => 'ÎNTOARCE-TE';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Bossul e sub tine: întoarce botul și lovește-l';
+
+  @override
+  String get duelDrillDone => 'GATA';
 }

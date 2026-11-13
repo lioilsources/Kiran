@@ -1072,4 +1072,94 @@ class AppLocalizationsHu extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Értékelés $rating · legjobb $best';
   }
+
+  @override
+  String get duelWarning => 'FIGYELEM';
+
+  @override
+  String get duelHintPad1 => 'A jobb kar céloz és tüzel';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Tartsd az RT-t, LB-t vagy RB-t: a jobb kar jeleket rajzol';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Tartsd az LT-t, LB-t vagy RB-t: a jobb kar jeleket rajzol';
+
+  @override
+  String get duelHintClassic =>
+      'Bal kar repül · B, RB vagy RT az orr irányába tüzel';
+
+  @override
+  String get duelHintKeys1 => 'Nyilak: célzás és tűz · WASD: repülés';
+
+  @override
+  String get duelHintKeys2 =>
+      'Szóköz az orr irányába tüzel · a numerikus billentyűzet jeleket rajzol';
+
+  @override
+  String get arenaDuelBinding => 'PÁRBAJ TARTÁS';
+
+  @override
+  String get duelBindingRt => 'RT + KAR';
+
+  @override
+  String get duelBindingLt => 'LT + KAR';
+
+  @override
+  String get arenaDuelFrame => 'PAD ELŐRE';
+
+  @override
+  String get duelFrameNose => 'AZ ORR';
+
+  @override
+  String get duelFrameUp => 'FEL';
+
+  @override
+  String get arenaDuelAimFires => 'CÉLZÁS TÜZEL';
+
+  @override
+  String get duelCutInFirst => 'BOSS KÖZELI: ELSŐ ALKALOM';
+
+  @override
+  String get duelCutInAlways => 'BOSS KÖZELI: MINDIG';
+
+  @override
+  String get duelCutInNever => 'BOSS KÖZELI: SOHA';
+
+  @override
+  String get arenaDuelDrill => 'PÁRBAJ GYAKORLÁS';
+
+  @override
+  String get duelDrillOff => 'NINCS';
+
+  @override
+  String get duelDrillAim => 'CÉLOZZ ÉS LŐJ';
+
+  @override
+  String get duelDrillAimHow => 'Fordítsd a jobb kart a bossra és találd el';
+
+  @override
+  String get duelDrillHold => 'TARTSD AZ ORRT';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Tarts egy tartásgombot és repülj: az orr helyben marad';
+
+  @override
+  String get duelDrillDraw => 'RAJZOLJ ELŐRE';
+
+  @override
+  String get duelDrillDrawHow => 'Tartásban rajzolj jelet a boss felé';
+
+  @override
+  String get duelDrillTurn => 'FORDULJ MEG';
+
+  @override
+  String get duelDrillTurnHow =>
+      'A boss alattad van: fordítsd az orrt és találd el';
+
+  @override
+  String get duelDrillDone => 'KÉSZ';
 }

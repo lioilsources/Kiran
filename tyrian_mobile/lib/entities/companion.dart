@@ -53,7 +53,7 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
   @override
   Future<void> onLoad() async {
     final v = caster.vessel;
-    position = v.position + _slot();
+    position = v.position + _slotWorld();
     if (role == CompanionRole.warden) return;
     final src = v.getDevice(WeaponSlot.leftGun) ?? v.getDevice(WeaponSlot.frontGun);
     var type = src == null ? DevType.smallBubble : DevType.byName(src.name);
@@ -66,7 +66,13 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
       ..parentVessel = v;
   }
 
-  /// Where this companion wants to be, relative to the ship.
+  /// [_slot] turned with the ship: in a duel the flanks are the nose's.
+  Vector2 _slotWorld() {
+    final s = _slot();
+    return caster.vessel.frame.toWorldV(s.x, s.y);
+  }
+
+  /// Where this companion wants to be, relative to the ship, ship space.
   Vector2 _slot() {
     final wide = caster.wideFormation;
     return switch (role) {
@@ -85,7 +91,7 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
     var bestD = double.infinity;
     for (final f in game.activeFleets) {
       for (final h in f.hostiles) {
-        if (h.isDead || h.y2 < 0) continue;
+        if (h.isDead || h.offField) continue;
         final d = h.hostCenter.distanceToSquared(position);
         if (d < bestD) {
           bestD = d;
@@ -93,7 +99,7 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
         }
       }
     }
-    _diveTo = best ?? position + Vector2(0, -300);
+    _diveTo = best ?? position + caster.vessel.frame.toWorldV(0, -300);
   }
 
   /// An enemy shot landed on it.
@@ -141,12 +147,18 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
       final a = _t * 2 * math.pi + i * math.pi;
       target = v.position + Vector2(math.cos(a), math.sin(a)) * 70;
     } else {
-      target = v.position + _slot();
+      target = v.position + _slotWorld();
       if (role == CompanionRole.hunter) {
         final h = _nearestAhead();
-        if (h != null) {
+        final f = v.frame;
+        if (h != null && f.isIdentity) {
           target.x = v.position.x +
               (h.x - v.position.x).clamp(-160.0, 160.0).toDouble();
+        } else if (h != null) {
+          // Sideways in the ship's frame, the way the flight hunts in x.
+          final (lx, _) = f.toShip(h.x - v.position.x, h.y - v.position.y);
+          final (_, ly) = f.toShip(target.x - v.position.x, target.y - v.position.y);
+          target = v.position + f.toWorldV(lx.clamp(-160.0, 160.0).toDouble(), ly);
         }
       }
     }
@@ -161,12 +173,14 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
   Vector2? _nearestAhead() {
     Vector2? best;
     var bestD = double.infinity;
+    final fr = caster.vessel.frame;
     for (final f in game.activeFleets) {
       for (final h in f.hostiles) {
-        if (h.isDead || h.y2 < 0) continue;
+        if (h.isDead || h.offField) continue;
         final c = h.hostCenter;
-        if (c.y > position.y) continue;
-        final d = (c.x - position.x).abs();
+        final (lx, ly) = fr.toShip(c.x - position.x, c.y - position.y);
+        if (ly > 0) continue;
+        final d = lx.abs();
         if (d < bestD) {
           bestD = d;
           best = c.clone();
@@ -183,15 +197,19 @@ class Companion extends PositionComponent with HasGameReference<TyrianGame> {
     final firing = v.fire || caster.pinging || role == CompanionRole.hunter;
     if (!firing) return;
     final plan = v.planFor(g);
-    final ux = caster.pinging ? caster.pingX : 0.0;
-    final uy = caster.pinging ? caster.pingY : -1.0;
-    g.spawnShot(position.x, position.y - size.y / 2,
+    final f = v.frame;
+    // PING's direction is already the world's; otherwise along the nose.
+    final ux = caster.pinging ? caster.pingX : f.fx;
+    final uy = caster.pinging ? caster.pingY : f.fy;
+    final (mx, my) = f.toWorld(0, -size.y / 2);
+    g.spawnShot(position.x + mx, position.y + my,
         vx: plan.speed * ux,
         speed: plan.speed * uy,
         damage: plan.damage.toDouble(),
         scale: 1.0,
         plan: plan,
-        world: game.world);
+        world: game.world,
+        centred: !f.isIdentity);
     g.cd = plan.cooldown;
   }
 

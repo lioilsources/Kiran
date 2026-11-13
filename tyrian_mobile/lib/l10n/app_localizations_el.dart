@@ -1079,4 +1079,94 @@ class AppLocalizationsEl extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Βαθμός $rating · καλύτερο $best';
   }
+
+  @override
+  String get duelWarning => 'ΠΡΟΣΟΧΗ';
+
+  @override
+  String get duelHintPad1 => 'Το δεξί stick σημαδεύει και πυροβολεί';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Κράτα RT, LB ή RB: το δεξί stick σχεδιάζει σφραγίδες';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Κράτα LT, LB ή RB: το δεξί stick σχεδιάζει σφραγίδες';
+
+  @override
+  String get duelHintClassic =>
+      'Αριστερό stick πετά · B, RB ή RT πυροβολούν όπου δείχνει η μύτη';
+
+  @override
+  String get duelHintKeys1 => 'Βέλη σημαδεύουν και πυροβολούν · WASD πετά';
+
+  @override
+  String get duelHintKeys2 =>
+      'Space πυροβολεί όπου δείχνει η μύτη · numpad σχεδιάζει';
+
+  @override
+  String get arenaDuelBinding => 'ΣΤΑΣΗ ΜΟΝΟΜΑΧΙΑΣ';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'ΕΜΠΡΟΣ ΤΟΥ PAD';
+
+  @override
+  String get duelFrameNose => 'Η ΜΥΤΗ';
+
+  @override
+  String get duelFrameUp => 'ΠΑΝΩ';
+
+  @override
+  String get arenaDuelAimFires => 'ΣΚΟΠΕΥΣΗ = ΒΟΛΗ';
+
+  @override
+  String get duelCutInFirst => 'ΚΟΝΤΙΝΟ BOSS: ΠΡΩΤΗ ΦΟΡΑ';
+
+  @override
+  String get duelCutInAlways => 'ΚΟΝΤΙΝΟ BOSS: ΠΑΝΤΑ';
+
+  @override
+  String get duelCutInNever => 'ΚΟΝΤΙΝΟ BOSS: ΠΟΤΕ';
+
+  @override
+  String get arenaDuelDrill => 'ΑΣΚΗΣΗ ΜΟΝΟΜΑΧΙΑΣ';
+
+  @override
+  String get duelDrillOff => 'ΚΑΜΙΑ';
+
+  @override
+  String get duelDrillAim => 'ΣΗΜΑΔΕΨΕ ΚΑΙ ΡΙΞΕ';
+
+  @override
+  String get duelDrillAimHow => 'Στρέψε το δεξί stick στο boss και χτύπα το';
+
+  @override
+  String get duelDrillHold => 'ΚΡΑΤΑ ΤΗ ΜΥΤΗ';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Κράτα κουμπί στάσης και πέτα: η μύτη μένει σταθερή';
+
+  @override
+  String get duelDrillDraw => 'ΣΧΕΔΙΑΣΕ ΜΠΡΟΣΤΑ';
+
+  @override
+  String get duelDrillDrawHow => 'Στη στάση, σχεδίασε σφραγίδα προς το boss';
+
+  @override
+  String get duelDrillTurn => 'ΓΥΡΝΑ';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Το boss είναι από κάτω: γύρνα τη μύτη και χτύπα το';
+
+  @override
+  String get duelDrillDone => 'ΤΕΛΟΣ';
 }

@@ -1072,4 +1072,93 @@ class AppLocalizationsFi extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Arvio $rating · paras $best';
   }
+
+  @override
+  String get duelWarning => 'VAROITUS';
+
+  @override
+  String get duelHintPad1 => 'Oikea tikku tähtää ja ampuu';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Pidä RT, LB tai RB: oikea tikku piirtää sigillejä';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Pidä LT, LB tai RB: oikea tikku piirtää sigillejä';
+
+  @override
+  String get duelHintClassic =>
+      'Vasen tikku lentää · B, RB tai RT ampuu keulan suuntaan';
+
+  @override
+  String get duelHintKeys1 => 'Nuolet tähtäävät ja ampuvat · WASD lentää';
+
+  @override
+  String get duelHintKeys2 =>
+      'Välilyönti ampuu keulan suuntaan · numeronäppäimet piirtävät';
+
+  @override
+  String get arenaDuelBinding => 'KAKSINTAISTELUASENTO';
+
+  @override
+  String get duelBindingRt => 'RT + TIKKU';
+
+  @override
+  String get duelBindingLt => 'LT + TIKKU';
+
+  @override
+  String get arenaDuelFrame => 'PADIN ETEENPÄIN';
+
+  @override
+  String get duelFrameNose => 'KEULA';
+
+  @override
+  String get duelFrameUp => 'YLÖS';
+
+  @override
+  String get arenaDuelAimFires => 'TÄHTÄYS AMPUU';
+
+  @override
+  String get duelCutInFirst => 'BOSSIN LÄHIKUVA: 1. KERTA';
+
+  @override
+  String get duelCutInAlways => 'BOSSIN LÄHIKUVA: AINA';
+
+  @override
+  String get duelCutInNever => 'BOSSIN LÄHIKUVA: EI KOSKAAN';
+
+  @override
+  String get arenaDuelDrill => 'TAISTELUHARJOITUS';
+
+  @override
+  String get duelDrillOff => 'EI MITÄÄN';
+
+  @override
+  String get duelDrillAim => 'TÄHTÄÄ JA AMMU';
+
+  @override
+  String get duelDrillAimHow => 'Osoita oikealla tikulla bossia ja osu';
+
+  @override
+  String get duelDrillHold => 'PIDÄ KEULA';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Pidä asentonäppäintä ja lennä: keula pysyy paikallaan';
+
+  @override
+  String get duelDrillDraw => 'PIIRRÄ ETEEN';
+
+  @override
+  String get duelDrillDrawHow => 'Asennossa piirrä sigilli bossia kohti';
+
+  @override
+  String get duelDrillTurn => 'KÄÄNNY';
+
+  @override
+  String get duelDrillTurnHow => 'Bossi on alapuolella: käännä keula ja osu';
+
+  @override
+  String get duelDrillDone => 'VALMIS';
 }

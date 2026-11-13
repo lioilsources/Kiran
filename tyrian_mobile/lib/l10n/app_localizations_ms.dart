@@ -1067,4 +1067,94 @@ class AppLocalizationsMs extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Penarafan $rating · terbaik $best';
   }
+
+  @override
+  String get duelWarning => 'AMARAN';
+
+  @override
+  String get duelHintPad1 => 'Batang kanan membidik dan menembak';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Tahan RT, LB atau RB: batang kanan melukis sigil';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Tahan LT, LB atau RB: batang kanan melukis sigil';
+
+  @override
+  String get duelHintClassic =>
+      'Batang kiri terbang · B, RB atau RT tembak ke arah muncung';
+
+  @override
+  String get duelHintKeys1 => 'Anak panah bidik dan tembak · WASD terbang';
+
+  @override
+  String get duelHintKeys2 =>
+      'Space tembak ke arah muncung · numpad melukis sigil';
+
+  @override
+  String get arenaDuelBinding => 'SIKAP DUEL';
+
+  @override
+  String get duelBindingRt => 'RT + BATANG';
+
+  @override
+  String get duelBindingLt => 'LT + BATANG';
+
+  @override
+  String get arenaDuelFrame => 'PAD KE DEPAN';
+
+  @override
+  String get duelFrameNose => 'MUNCUNG';
+
+  @override
+  String get duelFrameUp => 'ATAS';
+
+  @override
+  String get arenaDuelAimFires => 'BIDIK MENEMBAK';
+
+  @override
+  String get duelCutInFirst => 'DEKAT BOS: KALI PERTAMA';
+
+  @override
+  String get duelCutInAlways => 'DEKAT BOS: SENTIASA';
+
+  @override
+  String get duelCutInNever => 'DEKAT BOS: TIDAK PERNAH';
+
+  @override
+  String get arenaDuelDrill => 'LATIHAN DUEL';
+
+  @override
+  String get duelDrillOff => 'TIADA';
+
+  @override
+  String get duelDrillAim => 'BIDIK DAN TEMBAK';
+
+  @override
+  String get duelDrillAimHow => 'Halakan batang kanan ke bos dan kenakan';
+
+  @override
+  String get duelDrillHold => 'TAHAN MUNCUNG';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Tahan butang sikap dan terbang: muncung kekal';
+
+  @override
+  String get duelDrillDraw => 'LUKIS KE DEPAN';
+
+  @override
+  String get duelDrillDrawHow => 'Dalam sikap, lukis sigil ke arah bos';
+
+  @override
+  String get duelDrillTurn => 'PUSING';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Bos di bawah anda: pusing muncung dan kenakan';
+
+  @override
+  String get duelDrillDone => 'SELESAI';
 }

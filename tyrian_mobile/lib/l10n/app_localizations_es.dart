@@ -1078,4 +1078,95 @@ class AppLocalizationsEs extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Puntuación $rating · mejor $best';
   }
+
+  @override
+  String get duelWarning => 'PELIGRO';
+
+  @override
+  String get duelHintPad1 => 'El stick derecho apunta y dispara';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Mantén RT, LB o RB: el stick derecho dibuja sigilos';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Mantén LT, LB o RB: el stick derecho dibuja sigilos';
+
+  @override
+  String get duelHintClassic =>
+      'El stick izquierdo vuela · B, RB o RT disparan hacia donde apunta el morro';
+
+  @override
+  String get duelHintKeys1 => 'Las flechas apuntan y disparan · WASD vuela';
+
+  @override
+  String get duelHintKeys2 =>
+      'Espacio dispara hacia donde apunta el morro · el teclado numérico dibuja sigilos';
+
+  @override
+  String get arenaDuelBinding => 'POSTURA DE DUELO';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'ADELANTE EN EL MANDO';
+
+  @override
+  String get duelFrameNose => 'EL MORRO';
+
+  @override
+  String get duelFrameUp => 'ARRIBA';
+
+  @override
+  String get arenaDuelAimFires => 'APUNTAR DISPARA';
+
+  @override
+  String get duelCutInFirst => 'PRIMER PLANO DEL JEFE: LA PRIMERA VEZ';
+
+  @override
+  String get duelCutInAlways => 'PRIMER PLANO DEL JEFE: SIEMPRE';
+
+  @override
+  String get duelCutInNever => 'PRIMER PLANO DEL JEFE: NUNCA';
+
+  @override
+  String get arenaDuelDrill => 'EJERCICIO DE DUELO';
+
+  @override
+  String get duelDrillOff => 'NINGUNO';
+
+  @override
+  String get duelDrillAim => 'APUNTA Y DISPARA';
+
+  @override
+  String get duelDrillAimHow => 'Apunta el stick derecho al jefe y dale';
+
+  @override
+  String get duelDrillHold => 'MANTÉN EL MORRO';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Mantén un botón de postura y vuela: el morro no se mueve';
+
+  @override
+  String get duelDrillDraw => 'DIBUJA HACIA DELANTE';
+
+  @override
+  String get duelDrillDrawHow =>
+      'En la postura, dibuja un sigilo hacia el jefe';
+
+  @override
+  String get duelDrillTurn => 'DATE LA VUELTA';
+
+  @override
+  String get duelDrillTurnHow =>
+      'El jefe está debajo de ti: gira el morro y dale';
+
+  @override
+  String get duelDrillDone => 'HECHO';
 }

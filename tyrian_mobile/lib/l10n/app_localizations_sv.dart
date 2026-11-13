@@ -1073,4 +1073,92 @@ class AppLocalizationsSv extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Betyg $rating · bäst $best';
   }
+
+  @override
+  String get duelWarning => 'VARNING';
+
+  @override
+  String get duelHintPad1 => 'Höger spak siktar och skjuter';
+
+  @override
+  String get duelHintPad2Rt => 'Håll RT, LB eller RB: höger spak ritar sigill';
+
+  @override
+  String get duelHintPad2Lt => 'Håll LT, LB eller RB: höger spak ritar sigill';
+
+  @override
+  String get duelHintClassic =>
+      'Vänster spak flyger · B, RB eller RT skjuter dit nosen pekar';
+
+  @override
+  String get duelHintKeys1 => 'Pilarna siktar och skjuter · WASD flyger';
+
+  @override
+  String get duelHintKeys2 =>
+      'Mellanslag skjuter dit nosen pekar · numpaden ritar sigill';
+
+  @override
+  String get arenaDuelBinding => 'DUELLSTÄLLNING';
+
+  @override
+  String get duelBindingRt => 'RT + SPAK';
+
+  @override
+  String get duelBindingLt => 'LT + SPAK';
+
+  @override
+  String get arenaDuelFrame => 'PAD FRAMÅT';
+
+  @override
+  String get duelFrameNose => 'NOSEN';
+
+  @override
+  String get duelFrameUp => 'UPP';
+
+  @override
+  String get arenaDuelAimFires => 'SIKTE SKJUTER';
+
+  @override
+  String get duelCutInFirst => 'BOSSNÄRBILD: FÖRSTA GÅNGEN';
+
+  @override
+  String get duelCutInAlways => 'BOSSNÄRBILD: ALLTID';
+
+  @override
+  String get duelCutInNever => 'BOSSNÄRBILD: ALDRIG';
+
+  @override
+  String get arenaDuelDrill => 'DUELLÖVNING';
+
+  @override
+  String get duelDrillOff => 'INGEN';
+
+  @override
+  String get duelDrillAim => 'SIKTA OCH SKJUT';
+
+  @override
+  String get duelDrillAimHow => 'Rikta höger spak mot bossen och träffa den';
+
+  @override
+  String get duelDrillHold => 'HÅLL NOSEN';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Håll en ställningsknapp och flyg: nosen ligger still';
+
+  @override
+  String get duelDrillDraw => 'RITA FRAMÅT';
+
+  @override
+  String get duelDrillDrawHow => 'I ställningen, rita ett sigill mot bossen';
+
+  @override
+  String get duelDrillTurn => 'VÄND OM';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Bossen är under dig: vänd nosen och träffa den';
+
+  @override
+  String get duelDrillDone => 'KLART';
 }

@@ -1055,4 +1055,88 @@ class AppLocalizationsTh extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'คะแนน $rating · ดีสุด $best';
   }
+
+  @override
+  String get duelWarning => 'คำเตือน';
+
+  @override
+  String get duelHintPad1 => 'อนาล็อกขวาเล็งและยิง';
+
+  @override
+  String get duelHintPad2Rt => 'กด RT, LB หรือ RB ค้างไว้: อนาล็อกขวาวาดซิจิล';
+
+  @override
+  String get duelHintPad2Lt => 'กด LT, LB หรือ RB ค้างไว้: อนาล็อกขวาวาดซิจิล';
+
+  @override
+  String get duelHintClassic => 'อนาล็อกซ้ายบิน · B, RB หรือ RT ยิงไปทางหัวยาน';
+
+  @override
+  String get duelHintKeys1 => 'ลูกศรเล็งและยิง · WASD บิน';
+
+  @override
+  String get duelHintKeys2 => 'Space ยิงไปทางหัวยาน · แป้นตัวเลขวาดซิจิล';
+
+  @override
+  String get arenaDuelBinding => 'ท่าดวล';
+
+  @override
+  String get duelBindingRt => 'RT + อนาล็อก';
+
+  @override
+  String get duelBindingLt => 'LT + อนาล็อก';
+
+  @override
+  String get arenaDuelFrame => 'ด้านหน้าบนจอย';
+
+  @override
+  String get duelFrameNose => 'หัวยาน';
+
+  @override
+  String get duelFrameUp => 'ด้านบน';
+
+  @override
+  String get arenaDuelAimFires => 'เล็งแล้วยิง';
+
+  @override
+  String get duelCutInFirst => 'โคลสอัพบอส: ครั้งแรก';
+
+  @override
+  String get duelCutInAlways => 'โคลสอัพบอส: ทุกครั้ง';
+
+  @override
+  String get duelCutInNever => 'โคลสอัพบอส: ไม่แสดง';
+
+  @override
+  String get arenaDuelDrill => 'ฝึกดวล';
+
+  @override
+  String get duelDrillOff => 'ไม่มี';
+
+  @override
+  String get duelDrillAim => 'เล็งและยิง';
+
+  @override
+  String get duelDrillAimHow => 'หันอนาล็อกขวาไปที่บอสแล้วยิงให้โดน';
+
+  @override
+  String get duelDrillHold => 'ล็อกหัวยาน';
+
+  @override
+  String get duelDrillHoldHow => 'กดปุ่มท่าค้างไว้แล้วบิน: หัวยานจะไม่หมุน';
+
+  @override
+  String get duelDrillDraw => 'วาดไปข้างหน้า';
+
+  @override
+  String get duelDrillDrawHow => 'ในท่าดวล ให้วาดซิจิลไปทางบอส';
+
+  @override
+  String get duelDrillTurn => 'หันกลับ';
+
+  @override
+  String get duelDrillTurnHow => 'บอสอยู่ใต้คุณ: หมุนหัวยานแล้วยิงให้โดน';
+
+  @override
+  String get duelDrillDone => 'สำเร็จ';
 }

@@ -1079,4 +1079,90 @@ class AppLocalizationsAr extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'التقييم $rating · الأفضل $best';
   }
+
+  @override
+  String get duelWarning => 'تحذير';
+
+  @override
+  String get duelHintPad1 => 'العصا اليمنى تصوّب وتطلق';
+
+  @override
+  String get duelHintPad2Rt => 'اضغط RT أو LB أو RB: العصا اليمنى ترسم الرموز';
+
+  @override
+  String get duelHintPad2Lt => 'اضغط LT أو LB أو RB: العصا اليمنى ترسم الرموز';
+
+  @override
+  String get duelHintClassic =>
+      'العصا اليسرى للطيران · B أو RB أو RT تطلق باتجاه المقدمة';
+
+  @override
+  String get duelHintKeys1 => 'الأسهم تصوّب وتطلق · WASD للطيران';
+
+  @override
+  String get duelHintKeys2 =>
+      'المسافة تطلق باتجاه المقدمة · لوحة الأرقام ترسم الرموز';
+
+  @override
+  String get arenaDuelBinding => 'وضعية المبارزة';
+
+  @override
+  String get duelBindingRt => 'RT + العصا';
+
+  @override
+  String get duelBindingLt => 'LT + العصا';
+
+  @override
+  String get arenaDuelFrame => 'أمام اليد';
+
+  @override
+  String get duelFrameNose => 'المقدمة';
+
+  @override
+  String get duelFrameUp => 'أعلى';
+
+  @override
+  String get arenaDuelAimFires => 'التصويب يطلق';
+
+  @override
+  String get duelCutInFirst => 'لقطة الزعيم: أول مرة';
+
+  @override
+  String get duelCutInAlways => 'لقطة الزعيم: دائمًا';
+
+  @override
+  String get duelCutInNever => 'لقطة الزعيم: أبدًا';
+
+  @override
+  String get arenaDuelDrill => 'تمرين المبارزة';
+
+  @override
+  String get duelDrillOff => 'لا شيء';
+
+  @override
+  String get duelDrillAim => 'صوّب وأطلق';
+
+  @override
+  String get duelDrillAimHow => 'وجّه العصا اليمنى نحو الزعيم وأصبه';
+
+  @override
+  String get duelDrillHold => 'ثبّت المقدمة';
+
+  @override
+  String get duelDrillHoldHow => 'اضغط زر الوضعية وطِر: تبقى المقدمة ثابتة';
+
+  @override
+  String get duelDrillDraw => 'ارسم للأمام';
+
+  @override
+  String get duelDrillDrawHow => 'في الوضعية، ارسم رمزًا نحو الزعيم';
+
+  @override
+  String get duelDrillTurn => 'استدر';
+
+  @override
+  String get duelDrillTurnHow => 'الزعيم تحتك: أدر المقدمة وأصبه';
+
+  @override
+  String get duelDrillDone => 'تم';
 }

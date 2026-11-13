@@ -8,6 +8,7 @@ import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import 'dev_type.dart';
 import '../entities/projectile.dart';
+import '../entities/ship_frame.dart';
 import '../entities/vessel.dart';
 import '../entities/hostile.dart';
 import '../l10n/l10n.dart';
@@ -154,12 +155,18 @@ class Device {
   /// VB6 shot. [dmgBonus] stacks the pull-wide bonuses (SURGE, the DART's
   /// afterimage). [liveShots] is the field's current player-shot count, for
   /// the [ShotPlan.maxLiveShots] cap. Returns the shots spawned now.
+  ///
+  /// The volley is laid out as at heading 0 and then turned by [frame] about
+  /// ([ox], [oy]) — the ship's centre, or the drone's (Prompts/30 §4).
   int fire(double vesselX, double vesselY, double vesselXm, double vesselWidth,
       Component world,
       {double fireRateMult = 1.0,
       ShotPlan? plan,
       double dmgBonus = 1.0,
-      int liveShots = 0}) {
+      int liveShots = 0,
+      ShipFrame? frame,
+      double ox = 0,
+      double oy = 0}) {
     // The generator is not a gun. It sits in the same devices list as the
     // weapons (Vessel.equipWeapon) and Vessel.update fires that list without
     // looking at slots, so without this it went off every ten seconds: a
@@ -214,7 +221,8 @@ class Device {
     }
 
     SoundService.instance.play(SfxEvent.fireBullet);
-    var spawned = _emit(pl, dmg, vesselX, vesselY, vesselXm, vesselWidth, world);
+    var spawned = _emit(pl, dmg, vesselX, vesselY, vesselXm, vesselWidth, world,
+        frame: frame, ox: ox, oy: oy);
     if (pl.salvo > 1) {
       _salvoLeft = pl.salvo - 1;
       _salvoTimer = ShotPlan.salvoGap;
@@ -226,20 +234,23 @@ class Device {
 
   /// Fire the queued SALVO shots that are due, from where the ship is now.
   void updatePending(double dt, double vesselX, double vesselY,
-      double vesselXm, double vesselWidth, Component world) {
+      double vesselXm, double vesselWidth, Component world,
+      {ShipFrame? frame, double ox = 0, double oy = 0}) {
     if (_salvoLeft <= 0) return;
     _salvoTimer -= dt;
     if (_salvoTimer > 0) return;
     _salvoLeft--;
     _salvoTimer = ShotPlan.salvoGap;
     _emit(_salvoPlan!, _salvoDmg, vesselX, vesselY, vesselXm, vesselWidth,
-        world);
+        world, frame: frame, ox: ox, oy: oy);
   }
 
   /// One volley of [pl]: every stream × every fan shot, plus REARGUARD.
   int _emit(ShotPlan pl, double dmg, double vesselX, double vesselY,
-      double vesselXm, double vesselWidth, Component world) {
+      double vesselXm, double vesselWidth, Component world,
+      {ShipFrame? frame, double ox = 0, double oy = 0}) {
     _world = world;
+    final f = frame ?? ShipFrame.flight;
     // Calculate spawn position based on slot
     double px, py;
     switch (slot) {
@@ -295,24 +306,31 @@ class Device {
     for (var i = 0; i < pl.streams; i++) {
       for (var j = 0; j < pl.fan; j++) {
         final a = pl.fanAngleAt(j);
-        spawnShot(px + pl.streamOffset(i, gap), py,
-            vx: pl.speed * sin(a) + lean,
-            speed: -pl.speed * cos(a),
+        final (sx, sy) = f.about(ox, oy, px + pl.streamOffset(i, gap), py);
+        final (vx, vy) = f.toWorld(pl.speed * sin(a) + lean, -pl.speed * cos(a));
+        spawnShot(sx, sy,
+            vx: vx,
+            speed: vy,
             damage: dmg,
             scale: scale,
             plan: pl,
-            world: world);
+            world: world,
+            centred: !f.isIdentity);
         n++;
       }
     }
     if (pl.fx.rearguard &&
         (slot == WeaponSlot.leftGun || slot == WeaponSlot.rightGun)) {
-      spawnShot(px, py + 10,
-          speed: pl.speed,
+      final (sx, sy) = f.about(ox, oy, px, py + 10);
+      final (vx, vy) = f.toWorld(0, pl.speed);
+      spawnShot(sx, sy,
+          vx: vx,
+          speed: vy,
           damage: dmg * config.modRearguardDmg,
           scale: scale,
           plan: pl,
-          world: world);
+          world: world,
+          centred: !f.isIdentity);
       n++;
     }
     return n;
@@ -331,6 +349,10 @@ class Device {
   /// One player shot from this device's pool. Used by the gun itself and by
   /// the hit path for FORK, SPLIT and reflected shots, which is why it takes
   /// its numbers as arguments rather than reading the device.
+  ///
+  /// [centred] puts the shot's middle on (x, y) and lays its box along its
+  /// flight — a duel's shots fly every way. Otherwise (x, y) is the middle of
+  /// its top edge, as it always was.
   Projectile spawnShot(double x, double y,
       {double vx = 0,
       required double speed,
@@ -339,7 +361,8 @@ class Device {
       ShotPlan? plan,
       int depth = 0,
       String? img,
-      Component? world}) {
+      Component? world,
+      bool centred = false}) {
     var sprite = img ?? imgName;
     var dmg = damage;
     if (plan != null && plan.fx.gambler && img == null) {
@@ -350,7 +373,7 @@ class Device {
     if (_pool.isNotEmpty) {
       proj = _pool.removeLast();
       proj.imgName = sprite;
-      proj.activate(x, y, speed, dmg, scale);
+      proj.activate(x, y, speed, dmg, scale, vx: vx, centred: centred);
     } else {
       proj = Projectile(
         imgName: sprite,
@@ -359,6 +382,8 @@ class Device {
         damage: dmg,
         scale: scale,
         parentDevice: this,
+        vx: vx,
+        centred: centred,
       );
       (world ?? _world ?? parentVessel?.parent)?.add(proj);
     }

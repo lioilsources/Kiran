@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tyrian_mobile/entities/ship_frame.dart';
+import 'package:tyrian_mobile/game/duel_space.dart';
 import 'package:tyrian_mobile/input/keyboard_sigils.dart';
 import 'package:tyrian_mobile/systems/sigils/sigil_catalog.dart';
 import 'package:tyrian_mobile/systems/sigils/sigil_recognizer.dart';
@@ -19,6 +21,18 @@ void main() {
       expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad6, landscape: true), 7);
       expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad8, landscape: true), 5,
           reason: 'screen up is the ship\'s right');
+    });
+
+    test('a duel with the nose up: 8 is forward again (Prompts/30 §6.6)', () {
+      final up = ShipFrame(uprightAngle);
+      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad8, landscape: true, frame: up), 1);
+      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad6, landscape: true, frame: up), 5);
+      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad5, landscape: true, frame: up), 4);
+      // The flight's frame changes nothing.
+      expect(
+          KeyboardSigils.dotFor(LogicalKeyboardKey.numpad4,
+              landscape: true, frame: ShipFrame.flight),
+          1);
     });
 
     test('the letter block mirrors the numpad', () {

@@ -1080,4 +1080,93 @@ class AppLocalizationsPl extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Ocena $rating · najlepsza $best';
   }
+
+  @override
+  String get duelWarning => 'UWAGA';
+
+  @override
+  String get duelHintPad1 => 'Prawa gałka celuje i strzela';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Trzymaj RT, LB lub RB: prawa gałka rysuje sigile';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Trzymaj LT, LB lub RB: prawa gałka rysuje sigile';
+
+  @override
+  String get duelHintClassic =>
+      'Lewa gałka lot · B, RB lub RT strzelają w kierunku dzioba';
+
+  @override
+  String get duelHintKeys1 => 'Strzałki celują i strzelają · WASD lot';
+
+  @override
+  String get duelHintKeys2 =>
+      'Spacja strzela w kierunku dzioba · klawiatura numeryczna rysuje sigile';
+
+  @override
+  String get arenaDuelBinding => 'POSTAWA POJEDYNKU';
+
+  @override
+  String get duelBindingRt => 'RT + GAŁKA';
+
+  @override
+  String get duelBindingLt => 'LT + GAŁKA';
+
+  @override
+  String get arenaDuelFrame => 'PAD NAPRZÓD';
+
+  @override
+  String get duelFrameNose => 'DZIÓB';
+
+  @override
+  String get duelFrameUp => 'GÓRA';
+
+  @override
+  String get arenaDuelAimFires => 'CELOWANIE STRZELA';
+
+  @override
+  String get duelCutInFirst => 'ZBLIŻENIE BOSSA: PIERWSZY RAZ';
+
+  @override
+  String get duelCutInAlways => 'ZBLIŻENIE BOSSA: ZAWSZE';
+
+  @override
+  String get duelCutInNever => 'ZBLIŻENIE BOSSA: NIGDY';
+
+  @override
+  String get arenaDuelDrill => 'TRENING POJEDYNKU';
+
+  @override
+  String get duelDrillOff => 'BRAK';
+
+  @override
+  String get duelDrillAim => 'CELUJ I STRZELAJ';
+
+  @override
+  String get duelDrillAimHow => 'Skieruj prawą gałkę na bossa i traf go';
+
+  @override
+  String get duelDrillHold => 'TRZYMAJ DZIÓB';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Trzymaj przycisk postawy i leć: dziób zostaje w miejscu';
+
+  @override
+  String get duelDrillDraw => 'RYSUJ NAPRZÓD';
+
+  @override
+  String get duelDrillDrawHow => 'W postawie narysuj sigil w stronę bossa';
+
+  @override
+  String get duelDrillTurn => 'ZAWRÓĆ';
+
+  @override
+  String get duelDrillTurnHow => 'Boss jest pod tobą: obróć dziób i traf go';
+
+  @override
+  String get duelDrillDone => 'GOTOWE';
 }

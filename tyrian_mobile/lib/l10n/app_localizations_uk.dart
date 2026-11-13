@@ -1081,4 +1081,91 @@ class AppLocalizationsUk extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Рейтинг $rating · рекорд $best';
   }
+
+  @override
+  String get duelWarning => 'УВАГА';
+
+  @override
+  String get duelHintPad1 => 'Правий стік цілиться й стріляє';
+
+  @override
+  String get duelHintPad2Rt => 'Тримай RT, LB або RB: правий стік малює сигіли';
+
+  @override
+  String get duelHintPad2Lt => 'Тримай LT, LB або RB: правий стік малює сигіли';
+
+  @override
+  String get duelHintClassic =>
+      'Лівий стік — політ · B, RB або RT стріляють, куди дивиться ніс';
+
+  @override
+  String get duelHintKeys1 => 'Стрілки цілять і стріляють · WASD — політ';
+
+  @override
+  String get duelHintKeys2 =>
+      'Пробіл стріляє, куди дивиться ніс · цифрова клавіатура малює сигіли';
+
+  @override
+  String get arenaDuelBinding => 'ДУЕЛЬНА СТІЙКА';
+
+  @override
+  String get duelBindingRt => 'RT + СТІК';
+
+  @override
+  String get duelBindingLt => 'LT + СТІК';
+
+  @override
+  String get arenaDuelFrame => 'ВПЕРЕД НА ГЕЙМПАДІ';
+
+  @override
+  String get duelFrameNose => 'НІС';
+
+  @override
+  String get duelFrameUp => 'ВГОРУ';
+
+  @override
+  String get arenaDuelAimFires => 'ПРИЦІЛ СТРІЛЯЄ';
+
+  @override
+  String get duelCutInFirst => 'КРУПНИЙ ПЛАН БОСА: УПЕРШЕ';
+
+  @override
+  String get duelCutInAlways => 'КРУПНИЙ ПЛАН БОСА: ЗАВЖДИ';
+
+  @override
+  String get duelCutInNever => 'КРУПНИЙ ПЛАН БОСА: НІКОЛИ';
+
+  @override
+  String get arenaDuelDrill => 'ДУЕЛЬНЕ ТРЕНУВАННЯ';
+
+  @override
+  String get duelDrillOff => 'НЕМАЄ';
+
+  @override
+  String get duelDrillAim => 'ЦІЛЬСЯ Й СТРІЛЯЙ';
+
+  @override
+  String get duelDrillAimHow => 'Наведи правий стік на боса й влуч';
+
+  @override
+  String get duelDrillHold => 'ТРИМАЙ НІС';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Тримай кнопку стійки й лети: ніс не рухається';
+
+  @override
+  String get duelDrillDraw => 'МАЛЮЙ УПЕРЕД';
+
+  @override
+  String get duelDrillDrawHow => 'У стійці намалюй сигіл у бік боса';
+
+  @override
+  String get duelDrillTurn => 'РОЗВЕРНИСЬ';
+
+  @override
+  String get duelDrillTurnHow => 'Бос під тобою: розверни ніс і влуч';
+
+  @override
+  String get duelDrillDone => 'ГОТОВО';
 }

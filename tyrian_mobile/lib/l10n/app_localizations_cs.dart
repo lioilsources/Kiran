@@ -1072,4 +1072,90 @@ class AppLocalizationsCs extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Hodnocení $rating · nejlepší $best';
   }
+
+  @override
+  String get duelWarning => 'VAROVÁNÍ';
+
+  @override
+  String get duelHintPad1 => 'Pravá páčka míří a střílí';
+
+  @override
+  String get duelHintPad2Rt => 'Drž RT, LB nebo RB: pravá páčka kreslí sigily';
+
+  @override
+  String get duelHintPad2Lt => 'Drž LT, LB nebo RB: pravá páčka kreslí sigily';
+
+  @override
+  String get duelHintClassic =>
+      'Levá páčka letí · B, RB nebo RT střílí, kam míří čumák';
+
+  @override
+  String get duelHintKeys1 => 'Šipky míří a střílí · WASD letí';
+
+  @override
+  String get duelHintKeys2 =>
+      'Mezerník střílí, kam míří čumák · numerická klávesnice kreslí sigily';
+
+  @override
+  String get arenaDuelBinding => 'POSTOJ V DUELU';
+
+  @override
+  String get duelBindingRt => 'RT + PÁČKA';
+
+  @override
+  String get duelBindingLt => 'LT + PÁČKA';
+
+  @override
+  String get arenaDuelFrame => 'VPŘED NA PADU';
+
+  @override
+  String get duelFrameNose => 'ČUMÁK';
+
+  @override
+  String get duelFrameUp => 'NAHOŘE';
+
+  @override
+  String get arenaDuelAimFires => 'MÍŘENÍ STŘÍLÍ';
+
+  @override
+  String get duelCutInFirst => 'DETAIL BOSSE: POPRVÉ';
+
+  @override
+  String get duelCutInAlways => 'DETAIL BOSSE: VŽDY';
+
+  @override
+  String get duelCutInNever => 'DETAIL BOSSE: NIKDY';
+
+  @override
+  String get arenaDuelDrill => 'DRIL DUELU';
+
+  @override
+  String get duelDrillOff => 'ŽÁDNÝ';
+
+  @override
+  String get duelDrillAim => 'MIŘ A PAL';
+
+  @override
+  String get duelDrillAimHow => 'Namiř pravou páčku na bosse a zasahuj';
+
+  @override
+  String get duelDrillHold => 'DRŽ ČUMÁK';
+
+  @override
+  String get duelDrillHoldHow => 'Drž tlačítko postoje a leť: čumák zůstane';
+
+  @override
+  String get duelDrillDraw => 'KRESLI VPŘED';
+
+  @override
+  String get duelDrillDrawHow => 'V postoji nakresli sigil směrem k bossovi';
+
+  @override
+  String get duelDrillTurn => 'OTOČ SE';
+
+  @override
+  String get duelDrillTurnHow => 'Boss je pod tebou: otoč čumák a zasahuj';
+
+  @override
+  String get duelDrillDone => 'HOTOVO';
 }

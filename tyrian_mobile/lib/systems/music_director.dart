@@ -31,15 +31,15 @@ class MusicDirector {
     if (_tick < config.musicDirectorInterval) return;
     _tick = 0;
 
-    final desired = game.bossActive
-        ? config.musicTierCount
-        : _bucket(_computeThreat());
+    // A duel's music starts with its WARNING, before the boss exists.
+    final boss = game.bossActive || game.duel.active;
+    final desired = boss ? config.musicTierCount : _bucket(_computeThreat());
 
     if (desired == _tier) return;
 
     // Boss transitions are immediate; otherwise respect the min dwell time and
     // step a single tier toward the target for a gradual ramp.
-    if (!game.bossActive && _dwell < config.musicMinDwellSeconds) return;
+    if (!boss && _dwell < config.musicMinDwellSeconds) return;
 
     _tier += desired > _tier ? 1 : -1;
     _dwell = 0;

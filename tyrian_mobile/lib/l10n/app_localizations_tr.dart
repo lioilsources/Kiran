@@ -1064,4 +1064,93 @@ class AppLocalizationsTr extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Puan $rating · en iyi $best';
   }
+
+  @override
+  String get duelWarning => 'UYARI';
+
+  @override
+  String get duelHintPad1 => 'Sağ çubuk nişan alır ve ateş eder';
+
+  @override
+  String get duelHintPad2Rt =>
+      'RT, LB veya RB\'yi basılı tut: sağ çubuk sigil çizer';
+
+  @override
+  String get duelHintPad2Lt =>
+      'LT, LB veya RB\'yi basılı tut: sağ çubuk sigil çizer';
+
+  @override
+  String get duelHintClassic =>
+      'Sol çubuk uçar · B, RB veya RT burnun baktığı yöne ateş eder';
+
+  @override
+  String get duelHintKeys1 => 'Ok tuşları nişan alır ve ateş eder · WASD uçar';
+
+  @override
+  String get duelHintKeys2 =>
+      'Boşluk burnun baktığı yöne ateş eder · sayısal tuş takımı sigil çizer';
+
+  @override
+  String get arenaDuelBinding => 'DÜELLO DURUŞU';
+
+  @override
+  String get duelBindingRt => 'RT + ÇUBUK';
+
+  @override
+  String get duelBindingLt => 'LT + ÇUBUK';
+
+  @override
+  String get arenaDuelFrame => 'KUMANDADA İLERİ';
+
+  @override
+  String get duelFrameNose => 'BURUN';
+
+  @override
+  String get duelFrameUp => 'YUKARI';
+
+  @override
+  String get arenaDuelAimFires => 'NİŞAN ATEŞ EDER';
+
+  @override
+  String get duelCutInFirst => 'BOSS YAKIN ÇEKİM: İLK KEZ';
+
+  @override
+  String get duelCutInAlways => 'BOSS YAKIN ÇEKİM: HER ZAMAN';
+
+  @override
+  String get duelCutInNever => 'BOSS YAKIN ÇEKİM: ASLA';
+
+  @override
+  String get arenaDuelDrill => 'DÜELLO ALIŞTIRMASI';
+
+  @override
+  String get duelDrillOff => 'YOK';
+
+  @override
+  String get duelDrillAim => 'NİŞAN AL VE ATEŞ ET';
+
+  @override
+  String get duelDrillAimHow => 'Sağ çubuğu boss\'a çevir ve vur';
+
+  @override
+  String get duelDrillHold => 'BURNU SABİT TUT';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Bir duruş tuşunu basılı tut ve uç: burun yerinde kalır';
+
+  @override
+  String get duelDrillDraw => 'İLERİ ÇİZ';
+
+  @override
+  String get duelDrillDrawHow => 'Duruştayken boss\'a doğru bir sigil çiz';
+
+  @override
+  String get duelDrillTurn => 'ARKANI DÖN';
+
+  @override
+  String get duelDrillTurnHow => 'Boss altında: burnu çevir ve vur';
+
+  @override
+  String get duelDrillDone => 'TAMAM';
 }

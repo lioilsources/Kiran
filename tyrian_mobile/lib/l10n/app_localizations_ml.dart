@@ -1075,4 +1075,93 @@ class AppLocalizationsMl extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'റേറ്റിംഗ് $rating · മികച്ചത് $best';
   }
+
+  @override
+  String get duelWarning => 'മുന്നറിയിപ്പ്';
+
+  @override
+  String get duelHintPad1 => 'വലത് സ്റ്റിക്ക് ഉന്നം വച്ച് വെടിവയ്ക്കും';
+
+  @override
+  String get duelHintPad2Rt =>
+      'RT, LB അല്ലെങ്കിൽ RB പിടിക്കൂ: വലത് സ്റ്റിക്ക് സിജിൽ വരയ്ക്കും';
+
+  @override
+  String get duelHintPad2Lt =>
+      'LT, LB അല്ലെങ്കിൽ RB പിടിക്കൂ: വലത് സ്റ്റിക്ക് സിജിൽ വരയ്ക്കും';
+
+  @override
+  String get duelHintClassic =>
+      'ഇടത് സ്റ്റിക്ക് പറത്തും · B, RB അല്ലെങ്കിൽ RT മൂക്കിന്റെ ദിശയിൽ വെടി';
+
+  @override
+  String get duelHintKeys1 => 'അമ്പുകൾ ഉന്നവും വെടിയും · WASD പറത്തും';
+
+  @override
+  String get duelHintKeys2 =>
+      'സ്പേസ് മൂക്കിന്റെ ദിശയിൽ വെടി · നംപാഡ് സിജിൽ വരയ്ക്കും';
+
+  @override
+  String get arenaDuelBinding => 'ദ്വന്ദ്വ നില';
+
+  @override
+  String get duelBindingRt => 'RT + സ്റ്റിക്ക്';
+
+  @override
+  String get duelBindingLt => 'LT + സ്റ്റിക്ക്';
+
+  @override
+  String get arenaDuelFrame => 'പാഡ് മുന്നോട്ട്';
+
+  @override
+  String get duelFrameNose => 'മൂക്ക്';
+
+  @override
+  String get duelFrameUp => 'മുകളിൽ';
+
+  @override
+  String get arenaDuelAimFires => 'ഉന്നം വച്ചാൽ വെടി';
+
+  @override
+  String get duelCutInFirst => 'ബോസ് ക്ലോസ്-അപ്പ്: ആദ്യ തവണ';
+
+  @override
+  String get duelCutInAlways => 'ബോസ് ക്ലോസ്-അപ്പ്: എപ്പോഴും';
+
+  @override
+  String get duelCutInNever => 'ബോസ് ക്ലോസ്-അപ്പ്: ഒരിക്കലുമില്ല';
+
+  @override
+  String get arenaDuelDrill => 'ദ്വന്ദ്വ പരിശീലനം';
+
+  @override
+  String get duelDrillOff => 'ഒന്നുമില്ല';
+
+  @override
+  String get duelDrillAim => 'ഉന്നം വച്ച് വെടിവയ്ക്കൂ';
+
+  @override
+  String get duelDrillAimHow => 'വലത് സ്റ്റിക്ക് ബോസിന് നേരെ ചൂണ്ടി അടിക്കൂ';
+
+  @override
+  String get duelDrillHold => 'മൂക്ക് നിർത്തൂ';
+
+  @override
+  String get duelDrillHoldHow => 'നില ബട്ടൺ പിടിച്ച് പറക്കൂ: മൂക്ക് അനങ്ങില്ല';
+
+  @override
+  String get duelDrillDraw => 'മുന്നോട്ട് വരയ്ക്കൂ';
+
+  @override
+  String get duelDrillDrawHow => 'നിലയിൽ ബോസിന് നേരെ സിജിൽ വരയ്ക്കൂ';
+
+  @override
+  String get duelDrillTurn => 'തിരിയൂ';
+
+  @override
+  String get duelDrillTurnHow =>
+      'ബോസ് നിങ്ങളുടെ താഴെയാണ്: മൂക്ക് തിരിച്ച് അടിക്കൂ';
+
+  @override
+  String get duelDrillDone => 'പൂർത്തിയായി';
 }

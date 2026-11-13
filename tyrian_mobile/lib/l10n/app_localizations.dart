@@ -1933,6 +1933,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rating {rating} · best {best}'**
   String gauntletRating(int rating, int best);
+
+  /// No description provided for @duelWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'WARNING'**
+  String get duelWarning;
+
+  /// No description provided for @duelHintPad1.
+  ///
+  /// In en, this message translates to:
+  /// **'Right stick aims and fires'**
+  String get duelHintPad1;
+
+  /// No description provided for @duelHintPad2Rt.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold RT, LB or RB: the right stick draws sigils'**
+  String get duelHintPad2Rt;
+
+  /// No description provided for @duelHintPad2Lt.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold LT, LB or RB: the right stick draws sigils'**
+  String get duelHintPad2Lt;
+
+  /// No description provided for @duelHintClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Left stick flies · B, RB or RT fire where the nose points'**
+  String get duelHintClassic;
+
+  /// No description provided for @duelHintKeys1.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrows aim and fire · WASD flies'**
+  String get duelHintKeys1;
+
+  /// No description provided for @duelHintKeys2.
+  ///
+  /// In en, this message translates to:
+  /// **'Space fires where the nose points · the numpad draws sigils'**
+  String get duelHintKeys2;
+
+  /// No description provided for @arenaDuelBinding.
+  ///
+  /// In en, this message translates to:
+  /// **'DUEL STANCE'**
+  String get arenaDuelBinding;
+
+  /// No description provided for @duelBindingRt.
+  ///
+  /// In en, this message translates to:
+  /// **'RT + STICK'**
+  String get duelBindingRt;
+
+  /// No description provided for @duelBindingLt.
+  ///
+  /// In en, this message translates to:
+  /// **'LT + STICK'**
+  String get duelBindingLt;
+
+  /// No description provided for @arenaDuelFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'PAD FORWARD'**
+  String get arenaDuelFrame;
+
+  /// No description provided for @duelFrameNose.
+  ///
+  /// In en, this message translates to:
+  /// **'THE NOSE'**
+  String get duelFrameNose;
+
+  /// No description provided for @duelFrameUp.
+  ///
+  /// In en, this message translates to:
+  /// **'UP'**
+  String get duelFrameUp;
+
+  /// No description provided for @arenaDuelAimFires.
+  ///
+  /// In en, this message translates to:
+  /// **'AIMING FIRES'**
+  String get arenaDuelAimFires;
+
+  /// No description provided for @duelCutInFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'BOSS CLOSE-UP: FIRST TIME'**
+  String get duelCutInFirst;
+
+  /// No description provided for @duelCutInAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'BOSS CLOSE-UP: ALWAYS'**
+  String get duelCutInAlways;
+
+  /// No description provided for @duelCutInNever.
+  ///
+  /// In en, this message translates to:
+  /// **'BOSS CLOSE-UP: NEVER'**
+  String get duelCutInNever;
+
+  /// No description provided for @arenaDuelDrill.
+  ///
+  /// In en, this message translates to:
+  /// **'DUEL DRILL'**
+  String get arenaDuelDrill;
+
+  /// No description provided for @duelDrillOff.
+  ///
+  /// In en, this message translates to:
+  /// **'NONE'**
+  String get duelDrillOff;
+
+  /// No description provided for @duelDrillAim.
+  ///
+  /// In en, this message translates to:
+  /// **'AIM AND FIRE'**
+  String get duelDrillAim;
+
+  /// No description provided for @duelDrillAimHow.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the right stick at the boss and hit it'**
+  String get duelDrillAimHow;
+
+  /// No description provided for @duelDrillHold.
+  ///
+  /// In en, this message translates to:
+  /// **'HOLD THE NOSE'**
+  String get duelDrillHold;
+
+  /// No description provided for @duelDrillHoldHow.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold a stance button and fly: the nose stays put'**
+  String get duelDrillHoldHow;
+
+  /// No description provided for @duelDrillDraw.
+  ///
+  /// In en, this message translates to:
+  /// **'DRAW FORWARD'**
+  String get duelDrillDraw;
+
+  /// No description provided for @duelDrillDrawHow.
+  ///
+  /// In en, this message translates to:
+  /// **'In the stance, draw a sigil toward the boss'**
+  String get duelDrillDrawHow;
+
+  /// No description provided for @duelDrillTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'TURN ROUND'**
+  String get duelDrillTurn;
+
+  /// No description provided for @duelDrillTurnHow.
+  ///
+  /// In en, this message translates to:
+  /// **'The boss is below you: turn the nose and hit it'**
+  String get duelDrillTurnHow;
+
+  /// No description provided for @duelDrillDone.
+  ///
+  /// In en, this message translates to:
+  /// **'DONE'**
+  String get duelDrillDone;
 }
 
 class _AppLocalizationsDelegate

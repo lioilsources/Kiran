@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 import '../entities/sigil_caster.dart';
+import '../input/duel_stick.dart';
 import '../game/game_config.dart' as config;
 import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
@@ -90,8 +91,11 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
       _result(canvas, c, last, caster);
     }
 
+    // In a duel: where forward is on the pad, and what the stick is doing.
+    if (game.duel.controls) _duelMarks(canvas, c, hue);
+
     // The stick itself.
-    final (sx, sy) = platform.gameToScreen(rec.stickX, rec.stickY);
+    final (sx, sy) = _toScreen(rec.stickX, rec.stickY);
     final cur = c + Offset(sx, sy) * radius;
     canvas.drawCircle(cur, 6, Paint()..color = Colors.white.withValues(alpha: 0.9));
     canvas.drawCircle(
@@ -105,11 +109,51 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
     _sideInfo(canvas, c, caster);
   }
 
+  /// A ship-space point on the pad, as the thumb drew it: through the frame
+  /// the pad is read in (turned in a duel), then onto the screen.
+  (double, double) _toScreen(double x, double y) {
+    final (wx, wy) = game.vessel.caster.padFrame.toWorld(x, y);
+    return platform.gameToScreen(wx, wy);
+  }
+
+  /// The duel's marks on the pad (Prompts/30 §6.7): a small nose at forward;
+  /// the centre pulsing while the stick must come back to it first; the rim
+  /// lit while it draws; the raw stick while it aims.
+  void _duelMarks(Canvas canvas, Offset c, Color hue) {
+    final role = game.duelStick.role;
+    final (nx, ny) = _toScreen(0, -1);
+    final tip = c + Offset(nx, ny) * (radius + 18);
+    final base = c + Offset(nx, ny) * (radius + 6);
+    final side = Offset(-ny, nx) * 6;
+    canvas.drawPath(
+        Path()
+          ..moveTo(tip.dx, tip.dy)
+          ..lineTo(base.dx + side.dx, base.dy + side.dy)
+          ..lineTo(base.dx - side.dx, base.dy - side.dy)
+          ..close(),
+        Paint()..color = Colors.white.withValues(alpha: 0.85));
+    switch (role) {
+      case StickRole.latch || StickRole.settle:
+        final a = 0.4 + 0.4 * math.sin(_pulse * 12);
+        canvas.drawCircle(c, 9, Paint()..color = hue.withValues(alpha: a));
+      case StickRole.draw:
+        canvas.drawCircle(
+            c,
+            radius,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2.5
+              ..color = hue.withValues(alpha: 0.8));
+      case StickRole.aim || StickRole.mega:
+        break;
+    }
+  }
+
   /// A rim dot's place on screen: the grid is ship space, the pad screen.
   Offset _dot(Offset c, int dot) {
     if (dot == 4) return c;
     final a = SigilGrid.sectorAngle(SigilGrid.ring.indexOf(dot));
-    final (x, y) = platform.gameToScreen(math.sin(a), -math.cos(a));
+    final (x, y) = _toScreen(math.sin(a), -math.cos(a));
     return c + Offset(x, y) * radius;
   }
 
@@ -118,7 +162,7 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
     if (pts.length < 2) return;
     final path = Path();
     for (var i = 0; i < pts.length; i++) {
-      final (x, y) = platform.gameToScreen(pts[i].$1, pts[i].$2);
+      final (x, y) = _toScreen(pts[i].$1, pts[i].$2);
       final p = c + Offset(x, y) * radius;
       i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
     }

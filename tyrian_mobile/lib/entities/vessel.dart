@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
+import '../input/duel_stick.dart';
 import '../services/achievement_service.dart';
 import '../services/sound_service.dart';
 import '../services/pilot_name_generator.dart';
@@ -19,6 +20,7 @@ import '../systems/mods/shot_plan.dart';
 import 'boss.dart';
 import 'hostile.dart';
 import 'projectile.dart';
+import 'ship_frame.dart';
 import 'sigil_caster.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_spec.dart';
@@ -119,7 +121,7 @@ class Vessel extends PositionComponent
   /// Visual banking state (-1..1), driven by lateral movement. Purely
   /// cosmetic — read by TyrianGame for the opposite world shift.
   double bank = 0;
-  double _prevBankX = double.nan;
+  double _prevBankX = double.nan, _prevBankY = double.nan;
 
   /// Visual-only depth pulse (Feature 2 experiment). Applied as a canvas scale
   /// about the sprite centre in render(); never touches [size], so collisions
@@ -136,8 +138,52 @@ class Vessel extends PositionComponent
   /// The right stick's combat (Prompts/28). Idle unless the game enables it.
   late final SigilCaster caster = SigilCaster(this);
 
+  // ── Heading (Prompts/30 §4) ──
+
+  /// Where the nose points: 0 is game −y, the flight; positive turns
+  /// clockwise. Outside a duel it never leaves 0, which keeps every shot of
+  /// the flight exactly where it always was.
+  double heading = 0;
+
+  /// Where the nose is turning to, at [config.duelTurnRate].
+  double targetHeading = 0;
+
+  ShipFrame _frame = ShipFrame.flight;
+
+  /// The ship's own axes: forward is the nose.
+  ShipFrame get frame {
+    if (_frame.heading != heading) _frame = ShipFrame(heading);
+    return _frame;
+  }
+
+  /// Point the nose at once, with no turn.
+  void setHeading(double h) {
+    heading = h;
+    targetHeading = h;
+  }
+
   /// Where the front gun's muzzle is, world space.
-  Vector2 get nozzle => Vector2(position.x, position.y + _gunNozzleOffsetY);
+  Vector2 get nozzle {
+    final (x, y) = frame.about(position.x, position.y, position.x,
+        position.y + _gunNozzleOffsetY);
+    return Vector2(x, y);
+  }
+
+  /// Half the box enemy fire must hit. In a duel it is a square, so turning
+  /// the ship does not change what can hit it (Prompts/30 §4.3).
+  (double, double) hitHalf({bool scaled = true}) {
+    const cf = 0.7;
+    final m = scaled ? hitboxScale : 1.0;
+    if (game.duel.geometry) {
+      final h = min(size.x, size.y) / 2 * cf * m;
+      return (h, h);
+    }
+    // In this order: the flight's numbers, to the last bit.
+    return (size.x / 2 * cf * m, size.y / 2 * cf * m);
+  }
+
+  /// The duel's transition holds the ship out of harm's way.
+  bool get _sheltered => game.duel.shelters;
 
   /// The frame being drawn, for ECHO's ghost.
   Sprite? get currentSprite => _sprite;
@@ -228,6 +274,7 @@ class Vessel extends PositionComponent
     visible = true;
     bank = 0;
     _prevBankX = double.nan;
+    _prevBankY = double.nan;
     for (final d in devices) {
       d.clearProjectiles();
     }
@@ -546,10 +593,11 @@ class Vessel extends PositionComponent
       satellite == null ? devices : [...devices, satellite!];
 
   /// Where the drone flies, in world coordinates.
-  Vector2 get satellitePos => Vector2(
-        position.x + cos(_satT * 1.6) * size.x * 0.9,
-        position.y + size.y * 0.15,
-      );
+  Vector2 get satellitePos {
+    final (x, y) = frame.about(position.x, position.y,
+        position.x + cos(_satT * 1.6) * size.x * 0.9, position.y + size.y * 0.15);
+    return Vector2(x, y);
+  }
 
   /// After a kill landed by this ship: LEECH, SIPHON, a sigil's kill pay.
   void onKillFeedback(Hostile h) {
@@ -575,11 +623,14 @@ class Vessel extends PositionComponent
     }
     final gun = getDevice(WeaponSlot.frontGun);
     if (gun == null) return false;
+    final (rvx, rvs) = frame.toWorld(0, -config.modReflectSpeed);
     final shot = gun.spawnShot(p.position.x + p.size.x / 2, p.position.y,
-        speed: -config.modReflectSpeed,
+        vx: rvx,
+        speed: rvs,
         damage: p.damage * config.modReflectDmg,
         scale: 1.0,
-        img: 'bubble');
+        img: 'bubble',
+        centred: !frame.isIdentity);
     if (mods.reflectGuided) shot.guideOverride = config.modReflectGuide;
     return true;
   }
@@ -590,32 +641,45 @@ class Vessel extends PositionComponent
     final nx = tx.clamp(size.x / 2, config.gameWidth - size.x / 2);
     final ny = ty.clamp(size.y / 2, config.gameHeight - size.y / 2);
     position.setValues(nx, ny);
+    _updateBeams();
+  }
 
-    // Update beam coordinates for beam weapons
+  /// Beam coordinates for beam weapons: from the gun to the target.
+  void _updateBeams() {
+    final f = frame;
     for (final d in devices) {
       if (d.beamActive > 0) {
+        double bx, by;
         switch (d.slot) {
           case WeaponSlot.frontGun:
-            d.sx = position.x;
-            d.sy = position.y + _gunNozzleOffsetY - 5;
+            bx = position.x;
+            by = position.y + _gunNozzleOffsetY - 5;
           case WeaponSlot.leftGun:
-            d.sx = position.x - size.x / 2;
-            d.sy = position.y + 18;
+            bx = position.x - size.x / 2;
+            by = position.y + 18;
           case WeaponSlot.rightGun:
-            d.sx = position.x + size.x / 2;
-            d.sy = position.y + 18;
+            bx = position.x + size.x / 2;
+            by = position.y + 18;
           default:
-            d.sx = position.x;
-            d.sy = position.y;
+            bx = position.x;
+            by = position.y;
         }
+        final (sx, sy) = f.about(position.x, position.y, bx, by);
+        d.sx = sx;
+        d.sy = sy;
 
         if (closestEnemy != null && !closestEnemy!.isDead) {
           d.dx = closestEnemy!.hostCenter.x;
           d.dy = closestEnemy!.hostCenter.y;
-        } else {
+        } else if (f.isIdentity) {
           // Shoot straight up
           d.dx = d.sx;
           d.dy = 0;
+        } else {
+          // Straight ahead, off the field.
+          final reach = config.gameWidth + config.gameHeight;
+          d.dx = d.sx + f.fx * reach;
+          d.dy = d.sy + f.fy * reach;
         }
       }
     }
@@ -646,8 +710,12 @@ class Vessel extends PositionComponent
     // Visual bank from lateral movement (runs on both host and client —
     // client positions come from snapshots and still produce deltas)
     if (dt > 0) {
-      final dx = _prevBankX.isNaN ? 0.0 : position.x - _prevBankX;
+      var dx = _prevBankX.isNaN ? 0.0 : position.x - _prevBankX;
+      final dy = _prevBankY.isNaN ? 0.0 : position.y - _prevBankY;
       _prevBankX = position.x;
+      _prevBankY = position.y;
+      // Sideways in the ship's own frame: at heading 0 that is plain x.
+      if (!frame.isIdentity) dx = frame.toShip(dx, dy).$1;
       double target = 0;
       if (dx.abs() < config.bankTeleportPx) {
         target = ((dx / dt) / config.bankFullSpeed).clamp(-1.0, 1.0);
@@ -666,6 +734,12 @@ class Vessel extends PositionComponent
 
     // Client: positions set by snapshot, skip all game logic
     if (game.coopRole == CoopRole.client) return;
+
+    if (heading != targetHeading) {
+      heading = config.duelTurnRate <= 0
+          ? targetHeading
+          : ShipFrame.turn(heading, targetHeading, config.duelTurnRate * dt);
+    }
 
     final scaledDt = dt * config.originalFps;
 
@@ -716,6 +790,7 @@ class Vessel extends PositionComponent
 
     final gx = position.x - size.x / 2;
     final gy = position.y + _gunNozzleOffsetY; // gun nozzle Y (accounts for sprite padding)
+    final f = frame;
 
     // Update weapons
     for (final d in guns) {
@@ -724,6 +799,8 @@ class Vessel extends PositionComponent
       final sp = drone ? satellitePos : null;
       final x = sp?.x ?? gx, y = sp?.y ?? gy, xm = sp?.x ?? position.x;
       final w = drone ? 0.0 : size.x;
+      // Laid out as at heading 0 around this point, then turned with the ship.
+      final ox = sp?.x ?? position.x, oy = sp?.y ?? position.y;
 
       // Fire if firing
       if (fire) {
@@ -732,10 +809,13 @@ class Vessel extends PositionComponent
             fireRateMult: caster.storm ? 1.0 : fireRateMult,
             plan: caster.firePlan(d, planFor(d)),
             dmgBonus: bonus,
-            liveShots: live);
+            liveShots: live,
+            frame: f,
+            ox: ox,
+            oy: oy);
         if (d.cd > before) fired = true;
       }
-      d.updatePending(dt, x, y, xm, w, parent!);
+      d.updatePending(dt, x, y, xm, w, parent!, frame: f, ox: ox, oy: oy);
 
       // Update projectile positions and check collisions
       _updateProjectiles(d, dt);
@@ -747,6 +827,9 @@ class Vessel extends PositionComponent
       d.updateCooldown(dt);
       _updateProjectiles(d, dt);
     }
+
+    // A turning ship moves its beams without moving itself.
+    if (!f.isIdentity) _updateBeams();
 
     // Beam damage — outside projectile loop (beams have 0 projectiles)
     for (final d in guns) {
@@ -778,11 +861,15 @@ class Vessel extends PositionComponent
     // VB6: grat = maxGuide / maxSpeed — guidance angle ratio
     final grat = maxSpeed > 0 ? maxGuide / maxSpeed : 0.0;
 
+    final f = frame;
     for (final fleet in game.activeFleets) {
       for (final hostile in fleet.hostiles) {
         if (hostile.isDead) continue;
-        final dx = (position.x - hostile.hostCenter.x).abs();
-        final dy = position.y - hostile.hostCenter.y; // positive = enemy above
+        // Ship space: at heading 0 these are the VB6 numbers exactly.
+        final (lx, ly) = f.toShip(hostile.hostCenter.x - position.x,
+            hostile.hostCenter.y - position.y);
+        final dx = lx.abs();
+        final dy = -ly; // positive = enemy ahead
         if (dy <= 0) continue; // enemy below or at same Y — unreachable
         if (grat < dx / dy) continue; // outside guidance cone
         final dist = sqrt(dx * dx + dy * dy);
@@ -808,9 +895,13 @@ class Vessel extends PositionComponent
       // target, this only nudges x.
       final guide = p.guideOverride ?? (p.plan?.guide ?? d.guide).toDouble();
       if (guide > 0 && closestEnemy != null && !closestEnemy!.isDead) {
-        final dx = (p.position.x + p.size.x / 2) - closestEnemy!.hostCenter.x;
-        final adjustment = dx.abs() > guide ? guide * dx.sign : dx;
-        p.position.x -= adjustment * dt * config.originalFps;
+        if (frame.isIdentity) {
+          final dx = (p.position.x + p.size.x / 2) - closestEnemy!.hostCenter.x;
+          final adjustment = dx.abs() > guide ? guide * dx.sign : dx;
+          p.position.x -= adjustment * dt * config.originalFps;
+        } else {
+          _homeAcross(p, guide, dt);
+        }
       }
 
       // Check collision with enemies
@@ -826,6 +917,23 @@ class Vessel extends PositionComponent
         d.returnToPool(d.projectiles[idx]);
       }
     }
+  }
+
+  /// The flight's homing, generalised: the shot is nudged across its own line
+  /// of flight toward the target, by the same amount per frame.
+  void _homeAcross(Projectile p, double guide, double dt) {
+    final sp = sqrt(p.vx * p.vx + p.speed * p.speed);
+    if (sp <= 0) return;
+    // Right of the shot's flight: forward (vx, speed) turned a quarter.
+    final px = -p.speed / sp, py = p.vx / sp;
+    final c = closestEnemy!.hostCenter;
+    final across = (p.position.x + p.size.x / 2 - c.x) * px +
+        (p.position.y + p.size.y / 2 - c.y) * py;
+    final adj = (across.abs() > guide ? guide * across.sign : across) *
+        dt *
+        config.originalFps;
+    p.position.x -= px * adj;
+    p.position.y -= py * adj;
   }
 
   /// Damage of one hit of [p] on [h], with CRIT rolled. Returns the damage
@@ -856,11 +964,17 @@ class Vessel extends PositionComponent
     if (killed && fx.forkCount > 0 && p.forkDepth < fx.forkDepth) {
       game.addExplosion(cx, cy, 1); // the spray goes off with a pop
       final n = fx.forkCount;
+      // The flight sprays forward; a duel sprays along the shot's own line.
+      final base = frame.isIdentity ? 0.0 : atan2(p.vx, -p.speed);
+      final fsp = frame.isIdentity
+          ? p.speed.abs()
+          : sqrt(p.vx * p.vx + p.speed * p.speed);
       for (var i = 0; i < n; i++) {
-        final a = n == 1
-            ? 0.0
-            : -config.modForkSpread + 2 * config.modForkSpread * i / (n - 1);
-        final sp = p.speed.abs();
+        final a = base +
+            (n == 1
+                ? 0.0
+                : -config.modForkSpread + 2 * config.modForkSpread * i / (n - 1));
+        final sp = fsp;
         final shot = d.spawnShot(cx, cy,
             vx: sp * sin(a),
             speed: -sp * cos(a),
@@ -868,21 +982,29 @@ class Vessel extends PositionComponent
             scale: p.projScale,
             plan: plan,
             depth: p.forkDepth + 1,
-            img: p.imgName);
+            img: p.imgName,
+            centred: !frame.isIdentity);
         shot.pierced.add(h);
         shot.canSplit = false;
       }
     } else if (!killed && p.canSplit) {
       game.addExplosion(cx, cy, 1);
+      final ssp = sqrt(p.vx * p.vx + p.speed * p.speed);
       for (final dir in const [-1.0, 1.0]) {
+        // Kicked sideways off the shot's line; in the flight that is x.
+        final (kx, ky) = frame.isIdentity || ssp <= 0
+            ? (dir * config.modSplitVx, 0.0)
+            : (-p.speed / ssp * dir * config.modSplitVx,
+                p.vx / ssp * dir * config.modSplitVx);
         final shard = d.spawnShot(cx, cy,
-            vx: dir * config.modSplitVx,
-            speed: p.speed,
+            vx: frame.isIdentity ? kx : p.vx + kx,
+            speed: p.speed + ky,
             damage: p.damage * config.modSplitDmg,
             scale: p.projScale * config.modSplitScale,
             plan: plan,
             depth: p.forkDepth + 1,
-            img: p.imgName);
+            img: p.imgName,
+            centred: !frame.isIdentity);
         shard.pierced.add(h);
         shard.canSplit = false;
         shard.hitsLeft = 0;
@@ -937,6 +1059,7 @@ class Vessel extends PositionComponent
           h.lastHitY = projectile.position.y + projectile.size.y / 2;
           final (dmg, crit) = _rollHit(d, projectile, h);
           h.takeDamage(dmg, game, attacker: this, source: d);
+          if (h is Boss || h is BossPart) game.onBossHit(this);
           if (crit) _floatCrit(h);
           final killed = h.isDead;
           if (killed) {
@@ -984,6 +1107,7 @@ class Vessel extends PositionComponent
             .round();
       }
       h.takeDamage(hit, game, attacker: this, source: d);
+      if (h is Boss || h is BossPart) game.onBossHit(this);
       if (h.isDead) {
         h.parentFleet?.onHostileKilled(h, game, attacker: this);
       }
@@ -997,7 +1121,12 @@ class Vessel extends PositionComponent
       for (final h in f.hostiles) {
         if (h.isDead || identical(h, skip)) continue;
         final c = h.hostCenter;
-        if (c.y >= position.y || c.y < 0) continue;
+        if (frame.isIdentity) {
+          if (c.y >= position.y || c.y < 0) continue;
+        } else if (frame.toShip(c.x - position.x, c.y - position.y).$2 >= 0 ||
+            !h.entered) {
+          continue;
+        }
         final dx = c.x - position.x, dy = c.y - position.y;
         all.add((dx * dx + dy * dy, h));
       }
@@ -1033,7 +1162,7 @@ class Vessel extends PositionComponent
     final dmg = genMax.round();
     for (final f in [...game.activeFleets]) {
       for (final h in [...f.hostiles]) {
-        if (h.isDead || h.y2 < 0) continue;
+        if (h.isDead || h.offField) continue;
         final boss = h is Boss || h is BossPart;
         h.takeDamage(boss ? (dmg * config.modNovaBossShare).round() : dmg, game,
             attacker: this);
@@ -1053,7 +1182,7 @@ class Vessel extends PositionComponent
   /// Take damage (from hostile collision or projectile)
   void takeDamage(int amount) {
     // GHOST: a hull hit buys a moment untouchable; so does a sigil's phase.
-    if (_ghostTimer > 0 || caster.untouchable) return;
+    if (_ghostTimer > 0 || caster.untouchable || _sheltered) return;
     final hadShield = shield > 0;
     // Shield absorbs first
     if (shield > 0) {
@@ -1102,7 +1231,7 @@ class Vessel extends PositionComponent
   /// [_asteroidComboWindow] seconds ramp up: 1st drops shields, 2nd costs half
   /// of max HP, 3rd is fatal. The combo resets once the window lapses.
   void hitByAsteroid() {
-    if (caster.untouchable) return;
+    if (caster.untouchable || _sheltered) return;
     if (_asteroidComboTimer <= 0) _asteroidComboStage = 0;
     _asteroidComboStage++;
     _asteroidComboTimer = _asteroidComboWindow;
@@ -1324,18 +1453,20 @@ class Vessel extends PositionComponent
     // buffer, so transforming inside it would clip the corners. `size` is
     // never touched, so hitboxes/beams/nozzles stay exact.
     final banked = bank.abs() > 0.001;
+    final turned = heading != 0;
     final lift = caster.poseScale;
     final pulse = (config.depthPulseEnabled ? visualScale : 1.0) * lift;
     final scaled = (pulse - 1.0).abs() > 0.0001;
     // A barrel roll seen from above: the ship narrows, flips, widens back.
     final roll = caster.poseRoll;
     final rolling = roll.abs() > 0.001;
-    final transformed = banked || scaled || rolling;
+    final transformed = banked || scaled || rolling || turned;
     if (lift > 1.01 && _sprite != null) _renderLiftShadow(canvas, lift);
     if (transformed) {
       canvas.save();
       final cx = size.x / 2, cy = size.y / 2;
       canvas.translate(cx, cy);
+      if (turned) canvas.rotate(heading);
       if (banked) {
         canvas.rotate(bank * config.bankMaxRoll);
         canvas.scale(1.0 - bank.abs() * config.bankSquashX, 1.0);
@@ -1377,6 +1508,34 @@ class Vessel extends PositionComponent
     if (transformed) canvas.restore();
     if (satellite != null) _renderSatellite(canvas);
     if (caster.showsFx) _renderSigilFx(canvas);
+    if (playerIndex == 0 && game.duel.controls) _renderAimLine(canvas);
+  }
+
+  /// The duel's aiming line (Prompts/30 §6.7): thin while the stick aims,
+  /// solid and bright while a stance holds the nose.
+  void _renderAimLine(Canvas canvas) {
+    final f = frame;
+    final n = nozzle;
+    final o = Offset(n.x - position.x + size.x / 2, n.y - position.y + size.y / 2);
+    final e = o + Offset(f.fx, f.fy) * config.duelAimLine;
+    final held = game.duelStick.role != StickRole.aim;
+    final col = const Color(0xFF5CF2E8).withValues(alpha: held ? 0.8 : 0.32);
+    canvas.drawLine(
+        o,
+        e,
+        Paint()
+          ..strokeWidth = held ? 2.5 : 1.5
+          ..strokeCap = StrokeCap.round
+          ..color = col);
+    final side = Offset(-f.fy, f.fx) * 5;
+    final back = e - Offset(f.fx, f.fy) * 9;
+    canvas.drawPath(
+        Path()
+          ..moveTo(e.dx, e.dy)
+          ..lineTo(back.dx + side.dx, back.dy + side.dy)
+          ..lineTo(back.dx - side.dx, back.dy - side.dy)
+          ..close(),
+        Paint()..color = col);
   }
 
   /// LOOP and CORKSCREW lift the ship toward the camera; its shadow stays
@@ -1416,7 +1575,7 @@ class Vessel extends PositionComponent
             ..color = const Color(0xCC7CF0FF));
     }
     if (caster.focus) {
-      final hx = size.x / 2 * 0.7 * hitboxScale, hy = size.y / 2 * 0.7 * hitboxScale;
+      final (hx, hy) = hitHalf();
       canvas.drawRect(Rect.fromCenter(center: c, width: hx * 2, height: hy * 2),
           Paint()..color = const Color(0xAAFFFFFF));
       canvas.drawCircle(

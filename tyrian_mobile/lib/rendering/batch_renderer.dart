@@ -1,4 +1,4 @@
-import 'dart:math' show atan2, pi;
+import 'dart:math' show atan2;
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -159,12 +159,16 @@ class HostileBatchRenderer extends Component
       // Visual depth pulse: scales about the sprite centre, so the hitbox
       // (h.size / h.position) is unaffected.
       h.size.x / sprite.srcSize.x * h.visualScale,
-      pi,
+      h.drawAngle,
       h.hit > 0
           ? _hitColor
           : (h.frostTimer > 0 ? _frostColor : _normalColor),
     );
   }
+
+  static Color _hpColor(double r) => r > 0.5
+      ? const Color(0xFF00FF00)
+      : (r > 0.25 ? const Color(0xFFFFFF00) : const Color(0xFFFF0000));
 
   void _renderHpBars(Canvas canvas, List<Fleet> fleets) {
     for (final fleet in fleets) {
@@ -180,6 +184,17 @@ class HostileBatchRenderer extends Component
     const barOffset = 4.0;
     final barWidth = h.size.x;
     final hpRatio = h.hp / h.hpMax;
+
+    if (game.duel.geometry) {
+      // A duel stands things upright: the bar runs left to right on screen,
+      // above the hostile — along game y, past its +x edge.
+      final x = h.x2 + barOffset;
+      canvas.drawRect(Rect.fromLTWH(x, h.position.y, barHeight, h.size.y), _hpBgPaint);
+      canvas.drawRect(
+          Rect.fromLTWH(x, h.position.y, barHeight, h.size.y * hpRatio),
+          Paint()..color = _hpColor(hpRatio));
+      return;
+    }
 
     final left = h.position.x;
     final top = h.position.y - barOffset - barHeight;
@@ -261,11 +276,15 @@ class ProjectileBatchRenderer extends Component
     final player = p.parentDevice != null;
     // A player shot that does not fly straight up — a fan shot, a fork, a
     // REARGUARD or PINBALL shot on its way down — is turned to face where it
-    // is going, so a fan reads as a fan and not as a smear.
-    if (player && (p.vx != 0 || p.speed > 0)) {
+    // is going, so a fan reads as a fan and not as a smear. In a duel every
+    // shot is, the enemy's too (Prompts/30 §5).
+    if ((player && (p.vx != 0 || p.speed > 0)) || (p.centred && !player)) {
       final cx = p.position.x + p.size.x / 2;
       final cy = p.position.y + p.size.y / 2;
-      final scale = p.size.x * k / sprite.srcSize.x;
+      // From the shot's scale, not its box: a sideways box is laid along x.
+      final scale = p.centred
+          ? p.projScale * config.spriteScale * k
+          : p.size.x * k / sprite.srcSize.x;
       final rot = atan2(p.vx, -p.speed);
       // PIERCE/LANCE: two fading copies behind the shot.
       if (p.plan != null && p.plan!.fx.pierce != 0) {

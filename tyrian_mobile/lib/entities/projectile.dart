@@ -1,4 +1,4 @@
-import 'dart:math' show cos, pi;
+import 'dart:math' show cos, pi, sqrt;
 
 import 'package:flame/components.dart';
 import '../game/game_config.dart' as config;
@@ -22,6 +22,14 @@ class Projectile extends PositionComponent with HasGameReference {
 
   /// Set on a co-op client's mirrored player shots, which have no device.
   double? drawScaleOverride;
+
+  /// Born centred on its spawn point, with its box laid along its flight: a
+  /// duel's shot, which may fly any way (Prompts/30 §5). A flight shot is
+  /// spawned by the middle of its top edge and stands upright, as always.
+  bool centred;
+
+  /// The box is laid along x: a centred shot flying more sideways than not.
+  bool _sideways = false;
 
   /// Enemy shots run on the enemies' clock, which TIMEWARP slows.
   bool isEnemy = false;
@@ -100,7 +108,9 @@ class Projectile extends PositionComponent with HasGameReference {
     this.vx = 0,
     double scale = 1.0,
     this.parentDevice,
+    this.centred = false,
   })  : projScale = scale,
+        _sideways = centred && vx.abs() > speed.abs(),
         super(position: position);
 
   Sprite? _sprite;
@@ -111,6 +121,7 @@ class Projectile extends PositionComponent with HasGameReference {
     _loadSprite();
     // Center horizontally on spawn position (once)
     position.x -= size.x / 2;
+    if (centred) position.y -= size.y / 2;
   }
 
   /// Load sprite and update size — no side effects on position or hitbox.
@@ -121,6 +132,7 @@ class Projectile extends PositionComponent with HasGameReference {
     } else {
       size = Vector2(6, 12) * projScale * config.spriteScale;
     }
+    if (_sideways) size = Vector2(size.y, size.x);
   }
 
   /// Public API for skin changes — reloads sprite/size only.
@@ -144,9 +156,17 @@ class Projectile extends PositionComponent with HasGameReference {
       // so the weave rides on top of any fan or bounce.
       _orbitT += dt;
       const w = 2 * pi / config.modOrbitPeriod;
-      position.x += orbitAmp * w * cos(w * _orbitT) * dt;
+      final d = orbitAmp * w * cos(w * _orbitT) * dt;
+      final sp = sqrt(vx * vx + speed * speed);
+      if (centred && sp > 0) {
+        // Across the shot's own line.
+        position.x += -speed / sp * d;
+        position.y += vx / sp * d;
+      } else {
+        position.x += d;
+      }
     }
-    if (bounces > 0) _bounce();
+    if (bounces > 0) centred ? _bounceAnyWall() : _bounce();
 
     // Remove if off screen
     if (position.y < -size.y ||
@@ -171,18 +191,37 @@ class Projectile extends PositionComponent with HasGameReference {
     }
   }
 
+  /// A duel's BOUNCE: off a wall the shot meets at a glance, as the flight's
+  /// side walls are met; PINBALL off any wall it meets.
+  void _bounceAnyWall() {
+    final hitX = (position.x < 0 && vx < 0) ||
+        (position.x + size.x > config.gameWidth && vx > 0);
+    final hitY = (position.y < 0 && speed < 0) ||
+        (position.y + size.y > config.gameHeight && speed > 0);
+    if (hitX && (bounceTop || vx.abs() <= speed.abs())) {
+      vx = -vx;
+      bounces--;
+    } else if (hitY && (bounceTop || speed.abs() <= vx.abs())) {
+      speed = -speed;
+      bounces--;
+    }
+  }
+
   // Rendering is handled by ProjectileBatchRenderer — this is intentionally empty.
   @override
   void render(canvas) {}
 
-  void activate(double x, double y, double spd, double dmg, double scale) {
+  void activate(double x, double y, double spd, double dmg, double scale,
+      {double vx = 0, bool centred = false}) {
     speed = spd;
-    vx = 0;
+    this.vx = vx;
     damage = dmg;
     projScale = scale;
     active = true;
+    this.centred = centred;
+    _sideways = centred && vx.abs() > spd.abs();
     _loadSprite();
-    position.setValues(x - size.x / 2, y);
+    position.setValues(x - size.x / 2, centred ? y - size.y / 2 : y);
   }
 
   void deactivate() {

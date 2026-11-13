@@ -1084,4 +1084,95 @@ class AppLocalizationsFr extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Note $rating · record $best';
   }
+
+  @override
+  String get duelWarning => 'ALERTE';
+
+  @override
+  String get duelHintPad1 => 'Le stick droit vise et tire';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Maintiens RT, LB ou RB : le stick droit trace des sigils';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Maintiens LT, LB ou RB : le stick droit trace des sigils';
+
+  @override
+  String get duelHintClassic =>
+      'Le stick gauche pilote · B, RB ou RT tirent là où pointe le nez';
+
+  @override
+  String get duelHintKeys1 => 'Les flèches visent et tirent · ZQSD pilote';
+
+  @override
+  String get duelHintKeys2 =>
+      'Espace tire là où pointe le nez · le pavé numérique trace des sigils';
+
+  @override
+  String get arenaDuelBinding => 'POSTURE DE DUEL';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'AVANT DU PAD';
+
+  @override
+  String get duelFrameNose => 'LE NEZ';
+
+  @override
+  String get duelFrameUp => 'EN HAUT';
+
+  @override
+  String get arenaDuelAimFires => 'VISER TIRE';
+
+  @override
+  String get duelCutInFirst => 'GROS PLAN DU BOSS : LA PREMIÈRE FOIS';
+
+  @override
+  String get duelCutInAlways => 'GROS PLAN DU BOSS : TOUJOURS';
+
+  @override
+  String get duelCutInNever => 'GROS PLAN DU BOSS : JAMAIS';
+
+  @override
+  String get arenaDuelDrill => 'EXERCICE DE DUEL';
+
+  @override
+  String get duelDrillOff => 'AUCUN';
+
+  @override
+  String get duelDrillAim => 'VISE ET TIRE';
+
+  @override
+  String get duelDrillAimHow =>
+      'Pointe le stick droit vers le boss et touche-le';
+
+  @override
+  String get duelDrillHold => 'GARDE LE NEZ';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Maintiens un bouton de posture et vole : le nez reste en place';
+
+  @override
+  String get duelDrillDraw => 'TRACE VERS L\'AVANT';
+
+  @override
+  String get duelDrillDrawHow => 'En posture, trace un sigil vers le boss';
+
+  @override
+  String get duelDrillTurn => 'DEMI-TOUR';
+
+  @override
+  String get duelDrillTurnHow =>
+      'Le boss est sous toi : tourne le nez et touche-le';
+
+  @override
+  String get duelDrillDone => 'RÉUSSI';
 }

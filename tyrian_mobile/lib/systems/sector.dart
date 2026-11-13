@@ -76,9 +76,12 @@ class Sector extends Component with HasGameReference<TyrianGame> {
   void update(double dt) {
     elapsed += dt;
 
-    // Activate fleets based on enter time
+    // Activate fleets based on enter time. A boss waits for the duel's doors
+    // (Prompts/30 §8): the director starts it when the field is ready.
     for (final fleet in fleets) {
-      if (!fleet.started && elapsed >= fleet.enterTime) {
+      if (!fleet.started &&
+          elapsed >= fleet.enterTime &&
+          !game.duel.holds(fleet)) {
         fleet.active = true;
         fleet.started = true;
         game.activeFleets.add(fleet);
@@ -100,9 +103,9 @@ class Sector extends Component with HasGameReference<TyrianGame> {
       }
     }
 
-    // Activate structures based on enter time
+    // Activate structures based on enter time — none once a duel is coming.
     for (final s in structures) {
-      if (!s.activated && elapsed >= s.enterTime) {
+      if (!s.activated && elapsed >= s.enterTime && !game.duel.active) {
         s.activated = true;
         if (s.trace?.current != null) {
           s.position.setValues(s.trace!.current!.x, s.trace!.current!.y);
@@ -114,7 +117,7 @@ class Sector extends Component with HasGameReference<TyrianGame> {
 
     // Check for sector completion (all fleets started and depleted)
     if (!complete && fleets.isNotEmpty && fleets.every((f) => f.started)) {
-      if (fleets.every((f) => !f.active)) {
+      if (fleets.every((f) => !f.active) && !game.duel.holdsCompletion) {
         completeTime += dt;
         if (completeTime >= config.delayOnComplete) {
           complete = true;

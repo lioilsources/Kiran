@@ -55,7 +55,8 @@ class Starfield extends Component with HasGameReference<TyrianGame> {
   /// Port of MoveStars (Module.bas line 1092)
   @override
   void update(double dt) {
-    final scaledDt = dt * config.originalFps; // Convert to frame-equivalent
+    // A duel's arena drifts slowly; the flight streams (Prompts/30 §8.3).
+    final scaledDt = dt * config.originalFps * game.duel.bgSpeed;
 
     for (final star in _stars) {
       star.y += star.speed * scaledDt;
@@ -81,6 +82,8 @@ class Starfield extends Component with HasGameReference<TyrianGame> {
 
   @override
   void render(Canvas canvas) {
+    final angle = game.duel.frameAngle;
+    if (angle != 0) return _renderTurned(canvas, angle);
     final paint = Paint();
     // Banking world shift: faster (nearer) stars shift more — render-only.
     final shiftBase = game.worldShiftX / config.bankWorldShift;
@@ -99,6 +102,27 @@ class Starfield extends Component with HasGameReference<TyrianGame> {
         paint,
       );
     }
+  }
+
+  /// The duel's frame: the field turned about its centre with the ship, the
+  /// stars repeated across so the turned field is covered edge to edge.
+  void _renderTurned(Canvas canvas, double angle) {
+    final w = config.gameWidth, h = config.gameHeight;
+    canvas.save();
+    canvas.translate(w / 2, h / 2);
+    canvas.rotate(angle);
+    canvas.translate(-w / 2, -h / 2);
+    final paint = Paint();
+    for (final star in _stars) {
+      if (star.y < 0 || star.y > h) continue;
+      final b = (star.brightness * 255).round().clamp(0, 255);
+      paint.color = Color.fromARGB(255, b, b, b);
+      for (final k in const [-1.0, 0.0, 1.0]) {
+        canvas.drawRect(
+            Rect.fromLTWH(star.x + k * w, star.y, star.size, star.size), paint);
+      }
+    }
+    canvas.restore();
   }
 }
 

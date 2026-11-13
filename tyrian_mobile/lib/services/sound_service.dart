@@ -230,8 +230,13 @@ class SoundService {
   static const _minRetrigger = Duration(milliseconds: 70);
   final Map<SfxEvent, int> _lastPlayMs = {};
 
+  /// Told of every effect asked for, muted or not: a filmed lesson writes
+  /// them down so the video can be given its sound afterwards.
+  static void Function(SfxEvent event)? onPlay;
+
   /// Play a sound effect (fire-and-forget).
   void play(SfxEvent event) {
+    onPlay?.call(event);
     if (_muted || !_ready || _disabled) return;
     final path = _paths[event];
     if (path == null || _failedPaths.contains(path)) return;

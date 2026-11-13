@@ -1067,4 +1067,94 @@ class AppLocalizationsEn extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Rating $rating · best $best';
   }
+
+  @override
+  String get duelWarning => 'WARNING';
+
+  @override
+  String get duelHintPad1 => 'Right stick aims and fires';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Hold RT, LB or RB: the right stick draws sigils';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Hold LT, LB or RB: the right stick draws sigils';
+
+  @override
+  String get duelHintClassic =>
+      'Left stick flies · B, RB or RT fire where the nose points';
+
+  @override
+  String get duelHintKeys1 => 'Arrows aim and fire · WASD flies';
+
+  @override
+  String get duelHintKeys2 =>
+      'Space fires where the nose points · the numpad draws sigils';
+
+  @override
+  String get arenaDuelBinding => 'DUEL STANCE';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'PAD FORWARD';
+
+  @override
+  String get duelFrameNose => 'THE NOSE';
+
+  @override
+  String get duelFrameUp => 'UP';
+
+  @override
+  String get arenaDuelAimFires => 'AIMING FIRES';
+
+  @override
+  String get duelCutInFirst => 'BOSS CLOSE-UP: FIRST TIME';
+
+  @override
+  String get duelCutInAlways => 'BOSS CLOSE-UP: ALWAYS';
+
+  @override
+  String get duelCutInNever => 'BOSS CLOSE-UP: NEVER';
+
+  @override
+  String get arenaDuelDrill => 'DUEL DRILL';
+
+  @override
+  String get duelDrillOff => 'NONE';
+
+  @override
+  String get duelDrillAim => 'AIM AND FIRE';
+
+  @override
+  String get duelDrillAimHow => 'Point the right stick at the boss and hit it';
+
+  @override
+  String get duelDrillHold => 'HOLD THE NOSE';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Hold a stance button and fly: the nose stays put';
+
+  @override
+  String get duelDrillDraw => 'DRAW FORWARD';
+
+  @override
+  String get duelDrillDrawHow => 'In the stance, draw a sigil toward the boss';
+
+  @override
+  String get duelDrillTurn => 'TURN ROUND';
+
+  @override
+  String get duelDrillTurnHow =>
+      'The boss is below you: turn the nose and hit it';
+
+  @override
+  String get duelDrillDone => 'DONE';
 }

@@ -1,5 +1,5 @@
 import 'dart:async' show unawaited;
-import 'dart:math' show exp, min;
+import 'dart:math' show cos, exp, min, pi, sqrt;
 import 'dart:typed_data';
 import 'package:cute_kid_fonts/cute_kid_fonts.dart' show KidPalette;
 import 'package:flame/camera.dart';
@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'challenge.dart';
 import 'capture_director.dart';
+import 'duel_space.dart';
 import 'frame_capture.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
@@ -19,12 +20,15 @@ import '../input/keyboard_input.dart';
 import '../input/gamepad_input.dart';
 import '../input/pad_scheme.dart';
 import '../input/keyboard_sigils.dart';
+import '../input/duel_stick.dart';
+import '../rendering/duel_hud.dart';
 import '../rendering/sigil_hud.dart';
 import '../systems/sigils/sigil_catalog.dart';
 import '../systems/sigils/sigil_recognizer.dart';
 import '../systems/sigils/sigil_hints.dart';
 import '../systems/sigils/sigil_spec.dart';
 import '../systems/training/arena.dart';
+import '../systems/training/duel_drill.dart';
 import '../systems/training/arena_ghost.dart';
 import '../systems/training/lesson.dart';
 import '../systems/training/kata.dart';
@@ -34,6 +38,7 @@ import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
 import '../rendering/bg_zones.dart';
 import '../entities/vessel.dart';
+import '../entities/ship_frame.dart';
 import '../entities/sigil_fx.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
@@ -42,6 +47,7 @@ import '../entities/collectable.dart';
 import '../entities/structure.dart';
 import '../entities/hostile.dart';
 import '../systems/sector.dart';
+import '../systems/duel_director.dart';
 import '../systems/campaign.dart';
 import '../systems/campaign_tracker.dart';
 import '../systems/fleet.dart';
@@ -81,7 +87,7 @@ enum CoopRole { none, host, client }
 enum GameMode { endless, campaign, training }
 
 class TyrianGame extends FlameGame
-    with DragCallbacks, TapCallbacks, KeyboardEvents {
+    with DragCallbacks, TapCallbacks, KeyboardEvents, MouseMovementDetector {
   TyrianGame();
 
   final KeyboardInput keyboardInput = KeyboardInput();
@@ -105,7 +111,8 @@ class TyrianGame extends FlameGame
       coopRole == CoopRole.client ? (vessel2 ?? vessel) : vessel;
 
   void _updateWorldShift(double dt) {
-    final target = state == GameState.playing
+    // A duel has no flight to lean into: the world stays put.
+    final target = state == GameState.playing && !duel.geometry
         ? -_bankVessel.bank * config.bankWorldShift
         : 0.0;
     // Slower easing than the vessel roll — the world visibly trails the ship
@@ -256,6 +263,49 @@ class TyrianGame extends FlameGame
   /// The drilled sigil's lesson (Prompts/29 §4), or null in free play.
   Lesson? lesson;
 
+  /// The duel drill under way (Prompts/30 §9), or null.
+  DuelDrill? duelDrillRun;
+  bool _duelDrillPaid = false;
+  final Vector2 _drillLast = Vector2.zero();
+
+  /// A shot or a beam of [v]'s landed on the boss or a piece of it.
+  void onBossHit(Vessel v) {
+    final d = duelDrillRun;
+    if (d == null || !identical(v, vessel)) return;
+    d.onBossHit(
+        aiming: duelStick.role == StickRole.aim,
+        noseDown: vessel.frame.fx * duelDown.x + vessel.frame.fy * duelDown.y > 0.5);
+  }
+
+  /// The boss is within [deg] of the nose.
+  bool _noseOnBoss(double deg) {
+    final b = activeBoss?.hostCenter;
+    if (b == null) return false;
+    final dx = b.x - vessel.position.x, dy = b.y - vessel.position.y;
+    final l = sqrt(dx * dx + dy * dy);
+    if (l < 1) return true;
+    final f = vessel.frame;
+    return (dx * f.fx + dy * f.fy) / l >= cos(deg * pi / 180);
+  }
+
+  void _tickDuelDrill(double dt) {
+    final d = duelDrillRun;
+    if (d == null) return;
+    final moved = vessel.position.distanceTo(_drillLast) > 0.5;
+    _drillLast.setFrom(vessel.position);
+    final role = duelStick.role;
+    d.tick(dt,
+        stance: role == StickRole.latch ||
+            role == StickRole.draw ||
+            role == StickRole.settle,
+        moving: moved);
+    if (d.done && !_duelDrillPaid) {
+      _duelDrillPaid = true;
+      showMessage(L10n.current.duelDrillDone);
+      SoundService.instance.play(SfxEvent.weaponUnlock);
+    }
+  }
+
   /// The kata in progress (Prompts/29 §5.4), and how the last one went.
   KataRun? kataRun;
   String lastKataGrade = '';
@@ -306,6 +356,13 @@ class TyrianGame extends FlameGame
       lastKataGrade = '';
     }
     vessel.caster.onHullHitHook = kataRun == null ? null : () => kataRun?.onHullHit();
+    final dd = arena.duelDrill;
+    if (dd == null) {
+      duelDrillRun = null;
+    } else if (duelDrillRun?.kind != dd) {
+      duelDrillRun = DuelDrill(dd);
+      _duelDrillPaid = false;
+    }
     final d = arena.drill;
     if (d == null) {
       lesson = null;
@@ -343,6 +400,7 @@ class TyrianGame extends FlameGame
   void _onArenaReading(SigilReading r) {
     if (ghost != null && !sigilDemo) return; // the ghost's own drawing
     arenaStats.onReading(r);
+    if (r.cast) duelDrillRun?.onCast(towardBoss: _noseOnBoss(35));
     final kr = kataRun;
     if (kr != null && !kr.done) {
       kr.onReading(r);
@@ -432,13 +490,20 @@ class TyrianGame extends FlameGame
     _startArenaRound();
   }
 
-  void _startArenaRound() {
+  void _startArenaRound({bool next = false}) {
     if (arena.gauntlet && capture == null) {
       gauntlet ??= Gauntlet(startParts: arena.bossParts);
     } else {
       gauntlet = null;
     }
     loadSector(0);
+    // The arena is always a duel (Prompts/30 §9): no doors, the boss comes
+    // straight down.
+    duel.startArena(place: !next);
+    // TURN ROUND starts the ship high, with the boss coming in below it.
+    if (!next && arena.duelDrill == DuelDrillKind.turn) {
+      vessel.position.setFrom(duelToGame(0.5, 0.2));
+    }
     vessel.caster.meter.infinite = arena.infiniteCharge;
     vessel.caster.grantCompanions(arena.companions);
     _setupDrill();
@@ -450,7 +515,7 @@ class TyrianGame extends FlameGame
     gauntlet?.bossDown(vessel.caster.meter.flow);
     showMessage('${arenaStats.bosses}×');
     vessel.shield = vessel.shieldMax;
-    _startArenaRound();
+    _startArenaRound(next: true);
   }
 
   /// The ship would have died. The arena patches it up and counts it.
@@ -471,6 +536,7 @@ class TyrianGame extends FlameGame
   /// Back to the endless ship, exactly as it went in.
   void leaveArena() {
     if (mode != GameMode.training) return;
+    duel.reset();
     _leaveMission();
     vessel.caster.onReading = _onFieldReading;
     vessel.caster.meter.infinite = false;
@@ -662,6 +728,10 @@ class TyrianGame extends FlameGame
   /// immediately, hence iOS-only. We only overwrite `gameHeight` when the size
   /// is valid; [onGameResize] re-runs this once a real size arrives.
   void _applyViewportLayout() {
+    // The widget's size. FlameGame.size is the viewport's virtual size once
+    // the first fixed viewport is set, so reading it here kept the first
+    // window's aspect through every later resize.
+    final size = canvasSize;
     final valid = size.x > 0 && size.y > 0;
     if (platform.isLandscape) {
       // Desktop landscape: game height scales with screen WIDTH (fills after -90° rotation)
@@ -709,6 +779,7 @@ class TyrianGame extends FlameGame
     // the edge markers silently disappeared.
     camera.viewport.add(OffscreenEnemyMarkers());
     camera.viewport.add(SigilHud());
+    camera.viewport.add(DuelHud());
   }
 
   /// Sigils exist on this machine with this pad scheme — the arena is offered.
@@ -722,6 +793,23 @@ class TyrianGame extends FlameGame
       platform.isDesktop &&
       PadSettings.scheme == PadScheme.sigil &&
       coopRole != CoopRole.client;
+
+  // ── Boss duel (Prompts/30) ──
+
+  /// The doors into a duel and the phase it is in.
+  late final DuelDirector duel = DuelDirector(this);
+
+  /// The one gate of the duel: a desktop game nobody else is watching over
+  /// the network. A co-op client may be a phone held upright or an older
+  /// build, and the snapshot carries no heading, so co-op keeps the flight's
+  /// boss. Both pad schemes and the keyboard duel.
+  bool get duelEnabled =>
+      platform.isDesktop && coopRole != CoopRole.client && !isCoop;
+
+  final DuelStick duelStick = DuelStick();
+
+  /// The frame the sigil pad reads strokes in, frozen when a stance opens.
+  ShipFrame _stanceFrame = ShipFrame.flight;
 
   @override
   void onGameResize(Vector2 size) {
@@ -819,6 +907,8 @@ class TyrianGame extends FlameGame
 
   void loadSector(int index) {
     _sectorCompleteFired = false;
+    // A new sector begins in flight; the arena turns itself back into a duel.
+    if (mode != GameMode.training) duel.reset();
     // Clean up previous sector
     _clearActiveObjects();
     currentSector?.removeFromParent();
@@ -921,7 +1011,12 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
-    _capture?.tick(dt);
+    final film = _capture;
+    if (film != null && FrameCapture.fixedStep) {
+      if (film.busy) return;
+      if (!film.done) dt = film.every;
+    }
+    film?.tick(dt);
     // Filming runs off the wall clock: one fixed step per frame on disk.
     final cap = capture;
     if (cap != null) {
@@ -944,6 +1039,7 @@ class TyrianGame extends FlameGame
       if (state == GameState.playing) {
         arenaStats.tick(dt);
         kataRun?.tick(dt);
+        _tickDuelDrill(dt);
         if (_kataRestart > 0) {
           _kataRestart -= dt;
           if (_kataRestart <= 0 && arena.kata != null) {
@@ -980,6 +1076,10 @@ class TyrianGame extends FlameGame
       parallaxBg.update(dt);
       return;
     }
+
+    // The duel's doors run on the step's clock; the close-up stops the world.
+    duel.update(dt);
+    if (duel.frozen) dt = 0;
 
     if (_timewarpLeft > 0) {
       _timewarpLeft -= dt;
@@ -1180,6 +1280,30 @@ class TyrianGame extends FlameGame
   /// Easter-egg sector jump from the ComCenter. Rebuilds the target sector so
   /// the next "start mission" plays it. Indices beyond the defined sectors
   /// generate random sectors (handled by Sector.create).
+  /// A run straight to a boss's doors (`DUEL_PREVIEW`, Prompts/30): the
+  /// sector keeps its first waves and the boss comes six seconds in, so a
+  /// film shows the field emptying, the close-up and the turn.
+  void previewBoss() {
+    final s = currentSector;
+    if (s == null) return;
+    final boss = s.fleets.where((f) => f.bossSpec != null).firstOrNull;
+    if (boss == null) return;
+    s.fleets.removeWhere((f) => f.bossSpec == null && f.enterTime > 3);
+    boss.enterTime = 6;
+    if (sigilDemo) {
+      ghost = ArenaGhost([
+        for (final k in const [
+          SigilKind.strike,
+          SigilKind.sidestep,
+          SigilKind.loop,
+          SigilKind.volley,
+          SigilKind.retreat,
+        ])
+          SigilCatalog.of(k),
+      ], rest: 2.2, lead: 1.5);
+    }
+  }
+
   void jumpToSector(int index) {
     if (index < 0) return;
     if (mode == GameMode.campaign && index >= Campaign.nodeCount) return;
@@ -1220,6 +1344,7 @@ class TyrianGame extends FlameGame
     // static read on the hot path.
     await Challenge.init();
     await PadSettings.init();
+    await DuelDirector.load();
     await SigilMastery.instance.load();
     await SigilHints.instance.load();
     await _loadKataBest();
@@ -1443,10 +1568,29 @@ class TyrianGame extends FlameGame
   double _clientTargetY = config.gameHeight * 0.75;
   bool _clientFire = false;
 
+  // ── The mouse in a duel (Prompts/30 §6.6): it aims, its button fires ──
+
+  Vector2? _mouseWorld;
+  double _mouseAge = 99;
+  bool _mouseFire = false;
+
+  @override
+  void onMouseMove(PointerHoverInfo info) {
+    _mouseWorld = camera.globalToLocal(info.eventPosition.widget);
+    _mouseAge = 0;
+  }
+
   @override
   void onDragStart(DragStartEvent event) {
     super.onDragStart(event);
     if (state != GameState.playing) return;
+    if (duel.controls && coopRole != CoopRole.client) {
+      // A duel's mouse does not drag the ship about: it aims and fires.
+      _mouseWorld = camera.globalToLocal(event.canvasPosition);
+      _mouseAge = 0;
+      _mouseFire = true;
+      return;
+    }
     _prevDragPos = event.canvasPosition.clone();
 
     if (coopRole == CoopRole.client) {
@@ -1459,6 +1603,11 @@ class TyrianGame extends FlameGame
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
+    if (_mouseFire) {
+      _mouseWorld = camera.globalToLocal(event.canvasEndPosition);
+      _mouseAge = 0;
+      return;
+    }
     if (state != GameState.playing || _prevDragPos == null) return;
     final pos = event.canvasEndPosition;
     final delta = pos - _prevDragPos!;
@@ -1487,6 +1636,10 @@ class TyrianGame extends FlameGame
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
+    if (_mouseFire) {
+      _mouseFire = false;
+      return;
+    }
     if (state != GameState.playing) return;
     _prevDragPos = null;
 
@@ -1582,6 +1735,20 @@ class TyrianGame extends FlameGame
     final gp = gamepadInput.primary;
     final sigils = sigilsEnabled;
     vessel.caster.enabled = sigils;
+
+    // ── Boss duel (Prompts/30 §6) ──
+    if (duel.inputLocked) {
+      vessel.fire = false;
+      _skipCutIn(gp);
+      return;
+    }
+    _prevSkip = true;
+    if (duel.controls) {
+      _processDuelInput(gp, dt, sigils);
+      return;
+    }
+    vessel.caster.padFrame = ShipFrame.flight;
+
     final gpDx = GamepadInput.deadzone(gp.leftStickX);
     final gpDy = GamepadInput.deadzone(gp.leftStickY);
     final gpActive = gpDx != 0 || gpDy != 0 || gp.fire;
@@ -1616,11 +1783,180 @@ class TyrianGame extends FlameGame
 
   final KeyboardSigils _keySigils = KeyboardSigils();
 
+  bool _prevSkip = true;
+
+  /// Any fresh press during the boss close-up skips it.
+  void _skipCutIn(GamepadState gp) {
+    final now = gp.buttonA ||
+        gp.buttonB ||
+        gp.buttonX ||
+        gp.buttonY ||
+        gp.rightTrigger > 0.5 ||
+        keyboardInput.anyKey;
+    if (now && !_prevSkip) duel.skip();
+    _prevSkip = now;
+  }
+
+  /// The pad and the keyboard in a duel (Prompts/30 §6): the left stick or
+  /// WASD flies, the right stick or the arrows aim, and with the sigil
+  /// scheme anything held turns the right stick into the sigil pad.
+  void _processDuelInput(GamepadState gp, double dt, bool sigils) {
+    final caster = vessel.caster;
+    final kb = keyboardInput;
+    // The demo ghost may fly a real duel too (DUEL_PREVIEW + SIGIL_DEMO).
+    final g = mode == GameMode.training || sigilDemo ? ghost : null;
+    if (g != null) {
+      g
+        ..duel = true
+        ..binding = PadSettings.duelBinding
+        ..aimAt = _ghostAim
+        ..strokeFrame = (() => caster.padFrame);
+    }
+    final f = g != null
+        ? g.frame(dt)
+        : (gamepadInput.isConnected
+            ? PadFrame.read(gp, southpaw: PadSettings.southpaw)
+            : PadFrame.idle);
+    final running = caster.run != null && caster.control == SigilControl.none;
+
+    double? aimX, aimY;
+    var aimFire = false;
+    if (sigils) {
+      duelStick
+        ..binding = PadSettings.duelBinding
+        ..aimFires = PadSettings.duelAimFires;
+      final both = f.merge(_keySigils.frame(kb));
+      // RT's depth only while it is pressed: an idle frame (no pad, the
+      // ghost at rest) carries the digital default of 1.
+      final out = duelStick.step(f.drawX, f.drawY,
+          rt: f.fire ? f.fireRate : 0,
+          lt: f.stream,
+          arms: both.arms,
+          wing: both.wing);
+      if (out.stanceOpened) {
+        // The nose holds where it is; strokes read in its frame from here.
+        vessel.targetHeading = vessel.heading;
+        _stanceFrame = _snapped(vessel.heading);
+      }
+      final pf = _padFrame(out.role);
+      caster.padFrame = pf;
+      final (gx, gy) = platform.screenToGame(f.drawX, f.drawY);
+      final (sx, sy) = out.feed ? pf.toShip(gx, gy) : (0.0, 0.0);
+      caster.input(both, sx, sy, dt);
+      final typed = _keySigils.update(kb, dt, frame: pf);
+      if (typed != null) caster.inputDots(typed.$1, typed.$2, typed.$3);
+      aimX = out.aimX;
+      aimY = out.aimY;
+      aimFire = out.aimFire;
+    } else {
+      // The classic pad: the right stick aims and fires, nothing draws.
+      final m = f.drawX * f.drawX + f.drawY * f.drawY;
+      if (m > config.duelAimDeadzone * config.duelAimDeadzone) {
+        final l = m <= 0 ? 1.0 : _sqrt(m);
+        aimX = f.drawX / l;
+        aimY = f.drawY / l;
+        aimFire = PadSettings.duelAimFires && l > config.duelAimFireZone;
+      }
+    }
+
+    // The arrows aim too, eight ways; the nose holds when they let go.
+    final ax = kb.arrowX, ay = kb.arrowY;
+    if (aimX == null && (ax != 0 || ay != 0)) {
+      final l = _sqrt(ax * ax + ay * ay);
+      aimX = ax / l;
+      aimY = ay / l;
+      aimFire = aimFire || PadSettings.duelAimFires;
+    }
+    // And the mouse, while it is being moved: the nose follows the cursor.
+    _mouseAge += dt;
+    final m = _mouseWorld;
+    if (aimX == null && m != null && (_mouseAge < 2.0 || _mouseFire)) {
+      final (sx, sy) = platform.gameToScreen(
+          m.x - vessel.position.x, m.y - vessel.position.y);
+      final l = _sqrt(sx * sx + sy * sy);
+      if (l > 12) {
+        aimX = sx / l;
+        aimY = sy / l;
+      }
+    }
+
+    if (running) {
+      // A sigil flies the ship: the nose follows the boss, slowly.
+      final t = activeBoss?.hostCenter;
+      if (t != null) {
+        final want = ShipFrame.headingOf(
+            t.x - vessel.position.x, t.y - vessel.position.y);
+        vessel.targetHeading = ShipFrame.turn(
+            vessel.heading, want, config.duelRunTrackRate * dt);
+      }
+      aimFire = false;
+    } else if (aimX != null) {
+      final (wx, wy) = platform.screenToGame(aimX, aimY!);
+      vessel.targetHeading = ShipFrame.headingOf(wx, wy);
+    }
+
+    // Moving: the left stick, else WASD (the arrows aim here).
+    final padMoves = f.moveX != 0 || f.moveY != 0;
+    final mx = padMoves ? f.moveX : kb.wasdX;
+    final my = padMoves ? f.moveY : kb.wasdY;
+    final speed = _kbSpeed * (caster.focus ? config.focusSpeed : 1.0);
+    switch (caster.control) {
+      case SigilControl.none:
+        break;
+      case SigilControl.verticalOnly:
+        // Along the nose only.
+        final fr = vessel.frame;
+        final (gx, gy) = platform.screenToGame(mx, my);
+        final along = (gx * fr.fx + gy * fr.fy) * speed * vessel.agility * dt;
+        vessel.adjustPosition(vessel.position.x + fr.fx * along,
+            vessel.position.y + fr.fy * along);
+      case SigilControl.full:
+        if (mx != 0 || my != 0) _applyMovement(vessel, mx, my, speed, dt);
+    }
+
+    final trigger = sigils ? f.fire : gp.fire;
+    vessel.fire = trigger || aimFire || kb.fire || _mouseFire;
+    vessel.fireRateMult = trigger ? (sigils ? f.fireRate : gp.fireRate) : 1.0;
+  }
+
+  static double _sqrt(double v) => v <= 0 ? 0 : sqrt(v);
+
+  /// The arena ghost aims at the boss, as a thumb would: screen space.
+  (double, double)? _ghostAim() {
+    final b = activeBoss?.hostCenter;
+    if (b == null) return null;
+    final (sx, sy) = platform.gameToScreen(
+        b.x - vessel.position.x, b.y - vessel.position.y);
+    final l = _sqrt(sx * sx + sy * sy);
+    return l < 1 ? null : (sx / l, sy / l);
+  }
+
+  /// The stance frame, snapped to [config.duelPadSnap] when that is on.
+  ShipFrame _snapped(double heading) {
+    const s = config.duelPadSnap;
+    if (s <= 0) return ShipFrame(heading);
+    return ShipFrame((heading / s).round() * s);
+  }
+
+  /// The frame the stick is read in this frame (Prompts/30 §6.4).
+  ShipFrame _padFrame(StickRole role) {
+    if (PadSettings.duelPadFrame == DuelPadFrame.screenUp) {
+      return ShipFrame(uprightAngle);
+    }
+    return switch (role) {
+      StickRole.latch || StickRole.draw || StickRole.settle => _stanceFrame,
+      // Aiming, the pad turns with the nose, so "forward" is seen in advance;
+      // MEGA BLAST aims where the stick points now.
+      StickRole.aim || StickRole.mega => vessel.frame,
+    };
+  }
+
   /// The pad in the sigil scheme (Prompts/28 §3): the left stick or the
   /// keyboard flies, as far as a running sigil leaves the stick free; the
   /// right stick draws; RT fires with its analog cadence.
   void _processSigilPad(GamepadState gp, double dt) {
     final g = mode == GameMode.training ? ghost : null;
+    g?.duel = false;
     final f = g != null
         ? g.frame(dt)
         : (gamepadInput.isConnected
@@ -1662,9 +1998,8 @@ class TyrianGame extends FlameGame
   }
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {
-    const cf = 0.7; // collision fraction — shrink vessel hitbox for fairness
-    final vhx = v.size.x / 2 * cf * v.hitboxScale;
-    final vhy = v.size.y / 2 * cf * v.hitboxScale;
+    // 70 % of the ship (fairness), and a square in a duel.
+    final (vhx, vhy) = v.hitHalf();
     return v.visible &&
         p.position.x < v.position.x + vhx &&
         p.position.x + p.size.x > v.position.x - vhx &&
@@ -1679,8 +2014,11 @@ class TyrianGame extends FlameGame
         enemyProjectiles.removeAt(i);
         continue;
       }
-      // Off-screen check
-      if (p.position.y > config.gameHeight + 50 || p.position.y < -50) {
+      // Off-screen check; a duel's shots leave by any side.
+      if (p.position.y > config.gameHeight + 50 ||
+          p.position.y < -50 ||
+          (p.centred &&
+              (p.position.x < -50 || p.position.x > config.gameWidth + 50))) {
         p.removeFromParent();
         enemyProjectiles.removeAt(i);
         continue;
@@ -1770,6 +2108,7 @@ class TyrianGame extends FlameGame
       // parts — which is what makes this the one place challenge scales damage.
       damage: dmg * challenge.damage,
       scale: scale,
+      centred: duel.geometry,
     )..isEnemy = true;
     enemyProjectiles.add(proj);
     world.add(proj);

@@ -124,14 +124,15 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
     }
 
     // Fleet weapon firing (centralized — prevents multi-fire bug from parallel hostile updates)
-    if (weapCharge > 0 && hostiles.isNotEmpty) {
+    // Stragglers leaving for a boss duel hold their fire.
+    if (weapCharge > 0 && hostiles.isNotEmpty && !game.duel.silences(this)) {
       final frames = dt * config.originalFps;
       weapCD += frames;
       final cadence = weapCharge *
           game.challenge.cadence *
           (pattern == FirePattern.volley ? FirePattern.volleyCadence : 1.0);
       if (weapCD >= cadence) {
-        final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
+        final alive = hostiles.where((h) => !h.isDead && h.entered).toList();
         if (alive.isNotEmpty) {
           if (pattern == FirePattern.volley) {
             for (final h in alive) {
@@ -152,7 +153,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
       if (_burstLeft > 0) {
         _burstCD -= frames;
         if (_burstCD <= 0) {
-          final alive = hostiles.where((h) => !h.isDead && h.y2 > 0).toList();
+          final alive = hostiles.where((h) => !h.isDead && h.entered).toList();
           if (alive.isNotEmpty) {
             _shootFrom(alive[Random().nextInt(alive.length)], FirePattern.straight);
           }

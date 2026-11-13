@@ -1077,4 +1077,94 @@ class AppLocalizationsCa extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Nota $rating · millor $best';
   }
+
+  @override
+  String get duelWarning => 'ALERTA';
+
+  @override
+  String get duelHintPad1 => 'L\'estic dret apunta i dispara';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Mantén RT, LB o RB: l\'estic dret dibuixa sigils';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Mantén LT, LB o RB: l\'estic dret dibuixa sigils';
+
+  @override
+  String get duelHintClassic =>
+      'L\'estic esquerre vola · B, RB o RT disparen cap al morro';
+
+  @override
+  String get duelHintKeys1 => 'Fletxes apunten i disparen · WASD vola';
+
+  @override
+  String get duelHintKeys2 =>
+      'Espai dispara cap al morro · el teclat numèric dibuixa sigils';
+
+  @override
+  String get arenaDuelBinding => 'POSTURA DE DUEL';
+
+  @override
+  String get duelBindingRt => 'RT + ESTIC';
+
+  @override
+  String get duelBindingLt => 'LT + ESTIC';
+
+  @override
+  String get arenaDuelFrame => 'ENDAVANT DEL PAD';
+
+  @override
+  String get duelFrameNose => 'EL MORRO';
+
+  @override
+  String get duelFrameUp => 'AMUNT';
+
+  @override
+  String get arenaDuelAimFires => 'APUNTAR DISPARA';
+
+  @override
+  String get duelCutInFirst => 'PRIMER PLA DEL BOSS: 1A VEGADA';
+
+  @override
+  String get duelCutInAlways => 'PRIMER PLA DEL BOSS: SEMPRE';
+
+  @override
+  String get duelCutInNever => 'PRIMER PLA DEL BOSS: MAI';
+
+  @override
+  String get arenaDuelDrill => 'EXERCICI DE DUEL';
+
+  @override
+  String get duelDrillOff => 'CAP';
+
+  @override
+  String get duelDrillAim => 'APUNTA I DISPARA';
+
+  @override
+  String get duelDrillAimHow => 'Apunta l\'estic dret al boss i encerta\'l';
+
+  @override
+  String get duelDrillHold => 'MANTÉN EL MORRO';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Mantén un botó de postura i vola: el morro no es mou';
+
+  @override
+  String get duelDrillDraw => 'DIBUIXA ENDAVANT';
+
+  @override
+  String get duelDrillDrawHow => 'En postura, dibuixa un sigil cap al boss';
+
+  @override
+  String get duelDrillTurn => 'GIRA\'T';
+
+  @override
+  String get duelDrillTurnHow =>
+      'El boss és a sota: gira el morro i encerta\'l';
+
+  @override
+  String get duelDrillDone => 'FET';
 }

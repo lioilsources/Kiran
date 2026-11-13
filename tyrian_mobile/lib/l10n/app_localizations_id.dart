@@ -1071,4 +1071,93 @@ class AppLocalizationsId extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Nilai $rating · terbaik $best';
   }
+
+  @override
+  String get duelWarning => 'PERINGATAN';
+
+  @override
+  String get duelHintPad1 => 'Stik kanan membidik dan menembak';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Tahan RT, LB, atau RB: stik kanan menggambar sigil';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Tahan LT, LB, atau RB: stik kanan menggambar sigil';
+
+  @override
+  String get duelHintClassic =>
+      'Stik kiri terbang · B, RB, atau RT menembak ke arah moncong';
+
+  @override
+  String get duelHintKeys1 => 'Panah membidik dan menembak · WASD terbang';
+
+  @override
+  String get duelHintKeys2 =>
+      'Spasi menembak ke arah moncong · numpad menggambar sigil';
+
+  @override
+  String get arenaDuelBinding => 'KUDA-KUDA DUEL';
+
+  @override
+  String get duelBindingRt => 'RT + STIK';
+
+  @override
+  String get duelBindingLt => 'LT + STIK';
+
+  @override
+  String get arenaDuelFrame => 'DEPAN DI PAD';
+
+  @override
+  String get duelFrameNose => 'MONCONG';
+
+  @override
+  String get duelFrameUp => 'ATAS';
+
+  @override
+  String get arenaDuelAimFires => 'MEMBIDIK MENEMBAK';
+
+  @override
+  String get duelCutInFirst => 'CLOSE-UP BOS: PERTAMA KALI';
+
+  @override
+  String get duelCutInAlways => 'CLOSE-UP BOS: SELALU';
+
+  @override
+  String get duelCutInNever => 'CLOSE-UP BOS: TIDAK PERNAH';
+
+  @override
+  String get arenaDuelDrill => 'LATIHAN DUEL';
+
+  @override
+  String get duelDrillOff => 'TIDAK ADA';
+
+  @override
+  String get duelDrillAim => 'BIDIK DAN TEMBAK';
+
+  @override
+  String get duelDrillAimHow => 'Arahkan stik kanan ke bos dan kenai';
+
+  @override
+  String get duelDrillHold => 'TAHAN MONCONG';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Tahan tombol kuda-kuda dan terbang: moncong tetap diam';
+
+  @override
+  String get duelDrillDraw => 'GAMBAR KE DEPAN';
+
+  @override
+  String get duelDrillDrawHow => 'Dalam kuda-kuda, gambar sigil ke arah bos';
+
+  @override
+  String get duelDrillTurn => 'BERBALIK';
+
+  @override
+  String get duelDrillTurnHow => 'Bos ada di bawahmu: putar moncong dan kenai';
+
+  @override
+  String get duelDrillDone => 'SELESAI';
 }

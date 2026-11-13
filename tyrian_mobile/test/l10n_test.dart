@@ -43,6 +43,30 @@ void main() {
     }
   });
 
+  test('every locale has the boss duel\'s strings (Prompts/30 §12)', () {
+    for (final locale in AppLocalizations.supportedLocales) {
+      final l = lookupAppLocalizations(locale);
+      final all = [
+        l.duelWarning, l.duelHintPad1, l.duelHintPad2Rt, l.duelHintPad2Lt,
+        l.duelHintClassic, l.duelHintKeys1, l.duelHintKeys2, l.arenaDuelBinding,
+        l.duelBindingRt, l.duelBindingLt, l.arenaDuelFrame, l.duelFrameNose,
+        l.duelFrameUp, l.arenaDuelAimFires, l.duelCutInFirst, l.duelCutInAlways,
+        l.duelCutInNever, l.arenaDuelDrill, l.duelDrillOff, l.duelDrillAim,
+        l.duelDrillAimHow, l.duelDrillHold, l.duelDrillHoldHow, l.duelDrillDraw,
+        l.duelDrillDrawHow, l.duelDrillTurn, l.duelDrillTurnHow, l.duelDrillDone,
+      ];
+      expect(all, everyElement(isNotEmpty), reason: '$locale');
+      if (locale.languageCode != 'en') {
+        // Translated, not the English fallback.
+        expect(l.duelDrillAimHow, isNot(lookupAppLocalizations(const Locale('en')).duelDrillAimHow),
+            reason: '$locale');
+      }
+      // The button names stay the pad's own.
+      expect(l.duelHintPad2Rt, contains('RT'), reason: '$locale');
+      expect(l.duelHintPad2Lt, contains('LT'), reason: '$locale');
+    }
+  });
+
   test('Traditional Chinese resolves by script code', () {
     final l = lookupAppLocalizations(
         const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'));

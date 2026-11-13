@@ -8,6 +8,7 @@ import '../game/tyrian_game.dart';
 import '../services/asset_library.dart';
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
+import 'ship_frame.dart';
 import 'sigil_caster.dart';
 
 /// The MEGA BLAST beam, drawn for a moment after it fired. The damage was
@@ -110,7 +111,7 @@ class Caltrop extends PositionComponent with HasGameReference<TyrianGame> {
 
 /// The ship's last seconds of flight, for ECHO to replay.
 class EchoTrail {
-  final List<(double t, double x, double y, bool fire)> _s = [];
+  final List<(double t, double x, double y, bool fire, double heading)> _s = [];
   double _now = 0;
   static const keep = 2.5;
 
@@ -119,9 +120,9 @@ class EchoTrail {
     _now = 0;
   }
 
-  void record(double x, double y, bool fire, double dt) {
+  void record(double x, double y, bool fire, double dt, {double heading = 0}) {
     _now += dt;
-    _s.add((_now, x, y, fire));
+    _s.add((_now, x, y, fire, heading));
     while (_s.isNotEmpty && _s.first.$1 < _now - keep) {
       _s.removeAt(0);
     }
@@ -130,13 +131,19 @@ class EchoTrail {
   /// Where the ship was [ago] seconds back (the oldest sample if the trail
   /// is shorter), or null before anything was recorded.
   (double x, double y, bool fire)? at(double ago) {
+    final s = sample(ago);
+    return s == null ? null : (s.$1, s.$2, s.$3);
+  }
+
+  /// Where the ship was [ago] seconds back, and where its nose pointed.
+  (double x, double y, bool fire, double heading)? sample(double ago) {
     if (_s.isEmpty) return null;
     final want = _now - ago;
     for (final s in _s) {
-      if (s.$1 >= want) return (s.$2, s.$3, s.$4);
+      if (s.$1 >= want) return (s.$2, s.$3, s.$4, s.$5);
     }
     final l = _s.last;
-    return (l.$2, l.$3, l.$4);
+    return (l.$2, l.$3, l.$4, l.$5);
   }
 }
 
@@ -163,18 +170,20 @@ class EchoGhost extends PositionComponent with HasGameReference<TyrianGame> {
   static const delay = 2.0;
   final SigilCaster caster;
   Device? gun;
+  double _heading = 0;
 
   @override
   void update(double dt) {
-    final s = caster.echoTrail.at(delay);
+    final s = caster.echoTrail.sample(delay);
     if (s == null) return;
     position.setValues(s.$1, s.$2);
+    _heading = s.$4;
     final g = gun;
     if (g != null && s.$3 && g.cd <= 0) {
       final plan = caster.vessel.planFor(g);
       g.fire(position.x - size.x / 2, position.y - size.y / 2, position.x,
           size.x, game.world,
-          plan: plan);
+          plan: plan, frame: ShipFrame(_heading), ox: position.x, oy: position.y);
     }
   }
 
@@ -182,6 +191,11 @@ class EchoGhost extends PositionComponent with HasGameReference<TyrianGame> {
   void render(Canvas canvas) {
     final sprite = caster.vessel.currentSprite;
     if (sprite == null) return;
+    if (_heading != 0) {
+      canvas.translate(size.x / 2, size.y / 2);
+      canvas.rotate(_heading);
+      canvas.translate(-size.x / 2, -size.y / 2);
+    }
     sprite.render(canvas,
         size: size,
         overridePaint: Paint()
