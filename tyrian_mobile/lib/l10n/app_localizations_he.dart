@@ -814,4 +814,252 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get vaultAll => 'הכול';
+
+  @override
+  String get sigilMissUnknown => 'צורה לא מוכרת';
+
+  @override
+  String get sigilMissTooSlow => 'איטי מדי';
+
+  @override
+  String get sigilMissSkippedDot => 'דילגת על נקודה';
+
+  @override
+  String get sigilMissLeftRimEarly => 'שחררת מוקדם מדי';
+
+  @override
+  String get sigilMissWrongDirection => 'צויר הפוך';
+
+  @override
+  String get sigilMissWrongLayer => 'כפתור כתף שגוי';
+
+  @override
+  String get sigilDry => 'אין מספיק טעינה';
+
+  @override
+  String get sigilBusy => 'הקודם עדיין פועל';
+
+  @override
+  String get arena => 'זירה';
+
+  @override
+  String get arenaBossParts => 'חלקי הבוס';
+
+  @override
+  String get arenaBareCore => 'ליבה חשופה';
+
+  @override
+  String get arenaCompanions => 'מלווים';
+
+  @override
+  String get arenaCharge => 'טעינה';
+
+  @override
+  String get arenaChargeNormal => 'רגילה';
+
+  @override
+  String get arenaSpeed => 'מהירות העולם';
+
+  @override
+  String get arenaDrill => 'תרגול';
+
+  @override
+  String get arenaFreePlay => 'משחק חופשי';
+
+  @override
+  String get arenaFight => 'קרב';
+
+  @override
+  String get arenaNewBoss => 'בוס חדש';
+
+  @override
+  String get arenaLeave => 'צא מהזירה';
+
+  @override
+  String get arenaHint => 'הבוס חוזר ברגע שהוא מת. דבר כאן לא נשמר.';
+
+  @override
+  String get arenaColCast => 'הטלות';
+
+  @override
+  String get arenaColMiss => 'החטאות';
+
+  @override
+  String get arenaColAvg => 'ממוצע';
+
+  @override
+  String get arenaColBest => 'שיא';
+
+  @override
+  String get arenaColTime => 'המהיר';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'בוסים $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'שלט: סמלים';
+
+  @override
+  String get padSchemeClassic => 'שלט: קלאסי';
+
+  @override
+  String get padSouthpawOn => 'שמאלי: פעיל';
+
+  @override
+  String get padSouthpawOff => 'שמאלי: כבוי';
+
+  @override
+  String get sigilDescHop => 'קפיצה מהירה לכיוון ההנפה';
+
+  @override
+  String get sigilDescSidestep => 'צעד צד ארוך לרוחב השדה';
+
+  @override
+  String get sigilDescStrike => 'הסתערות עם שלוש יריות כבדות וחזרה';
+
+  @override
+  String get sigilDescRetreat => 'נסיגה בזמן שאש חיפוי יוצאת קדימה';
+
+  @override
+  String get sigilDescDash => 'זינוק אלכסוני דרך האש, בלתי פגיע באמצע';
+
+  @override
+  String get sigilDescRoll => 'גלגול חבית הצידה, בלתי פגיע';
+
+  @override
+  String get sigilDescShadow => 'ננעל מתחת לאויב הקרוב וממשיך לירות';
+
+  @override
+  String get sigilDescEcho => 'צל משחזר את שתי השניות האחרונות בחצי נזק';
+
+  @override
+  String get sigilDescLoop => 'לולאה מלמעלה: היריות עוברות מתחתיך';
+
+  @override
+  String get sigilDescSlalom => 'עיקול S לרוחב השדה עם אש במניפה';
+
+  @override
+  String get sigilDescCorkscrew => 'חולץ פקקים קדימה עם אש לכל עבר, בלתי פגיע';
+
+  @override
+  String get sigilDescSnapshot => 'ירייה כבדה אחת לכיוון ההנפה';
+
+  @override
+  String get sigilDescBroadside => 'מטח משני האגפים';
+
+  @override
+  String get sigilDescVolley => 'חמש קרניים טעונות קדימה';
+
+  @override
+  String get sigilDescCaltrop => 'הטל מוקש שבולע יריות ומתפוצץ';
+
+  @override
+  String get sigilDescFrenzy => 'הנשקים יורים מהר יותר לכמה שניות';
+
+  @override
+  String get sigilDescStasis => 'אויבים ויריותיהם מאטים לחצי מהירות';
+
+  @override
+  String get sigilDescHalo => 'המגן נטען פי ארבעה מהר ושום דבר לא חודר';
+
+  @override
+  String get sigilDescRadial => 'טבעת של שש עשרה יריות';
+
+  @override
+  String get sigilDescStorm => 'כל הנשקים במלוא העוצמה, בחינם';
+
+  @override
+  String get sigilDescPing => 'המלווים מרכזים אש לכיוון ההנפה';
+
+  @override
+  String get sigilDescWingman => 'זמן מלווה כנף לאגף שציירת אליו';
+
+  @override
+  String get sigilDescHunter => 'זמן צייד שטס קדימה ובוחר מטרות';
+
+  @override
+  String get sigilDescWarden => 'זמן שומר שסופג את היריות במקומך';
+
+  @override
+  String get sigilDescFormation => 'המלווים מתחלפים בין מבנה רחב לחץ';
+
+  @override
+  String get sigilDescWhirl => 'המלווים מקיפים אותך ובולעים יריות';
+
+  @override
+  String get sigilDescSacrifice => 'המלווים צוללים ומתפוצצים ומחזירים טעינה';
+
+  @override
+  String get grimoire => 'ספר הסמלים';
+
+  @override
+  String get grimoireHint =>
+      'צייר עם הסטיק הימני. החזק LB לנשק, RB לכנף, שניהם ל-MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'עלות $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'בלתי פגיע';
+
+  @override
+  String get lessonWatch => 'צפה';
+
+  @override
+  String get lessonTrace => 'עקוב';
+
+  @override
+  String get lessonSlow => 'לאט';
+
+  @override
+  String get lessonLive => 'מהירות מלאה';
+
+  @override
+  String get lessonStreak => 'חמש ברצף';
+
+  @override
+  String get lessonLearned => 'נלמד';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'קצב $pct %';
+  }
+
+  @override
+  String get hintHop => 'הנף את הסטיק הימני';
+
+  @override
+  String get hintLoop => 'צייר עיגול: אתה טס מעל היריות';
+
+  @override
+  String get hintStream => 'לחץ LT: שניים או שלושה זרמים';
+
+  @override
+  String get arenaKata => 'קאטה';
+
+  @override
+  String get arenaKataOff => 'ללא';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'הבא $sigil בעוד $secs ש׳';
+  }
+
+  @override
+  String get arenaGauntlet => 'מסלול מכשולים';
+
+  @override
+  String get arenaOn => 'פעיל';
+
+  @override
+  String get arenaOff => 'כבוי';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'דירוג $rating · שיא $best';
+  }
 }

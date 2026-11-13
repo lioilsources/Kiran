@@ -812,4 +812,264 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get vaultAll => 'KAIKKI';
+
+  @override
+  String get sigilMissUnknown => 'tuntematon muoto';
+
+  @override
+  String get sigilMissTooSlow => 'liian hidas';
+
+  @override
+  String get sigilMissSkippedDot => 'piste jäi väliin';
+
+  @override
+  String get sigilMissLeftRimEarly => 'päästit liian aikaisin';
+
+  @override
+  String get sigilMissWrongDirection => 'piirretty takaperin';
+
+  @override
+  String get sigilMissWrongLayer => 'väärä olkanäppäin';
+
+  @override
+  String get sigilDry => 'ei tarpeeksi latausta';
+
+  @override
+  String get sigilBusy => 'edellinen on yhä käynnissä';
+
+  @override
+  String get arena => 'AREENA';
+
+  @override
+  String get arenaBossParts => 'BOSSIN OSAT';
+
+  @override
+  String get arenaBareCore => 'paljas ydin';
+
+  @override
+  String get arenaCompanions => 'KUMPPANIT';
+
+  @override
+  String get arenaCharge => 'LATAUS';
+
+  @override
+  String get arenaChargeNormal => 'NORMAALI';
+
+  @override
+  String get arenaSpeed => 'MAAILMAN NOPEUS';
+
+  @override
+  String get arenaDrill => 'HARJOITUS';
+
+  @override
+  String get arenaFreePlay => 'VAPAA PELI';
+
+  @override
+  String get arenaFight => 'TAISTELE';
+
+  @override
+  String get arenaNewBoss => 'UUSI BOSSI';
+
+  @override
+  String get arenaLeave => 'POISTU AREENALTA';
+
+  @override
+  String get arenaHint => 'Bossi palaa heti kuoltuaan. Mitään ei tallenneta.';
+
+  @override
+  String get arenaColCast => 'LOITSUT';
+
+  @override
+  String get arenaColMiss => 'OHI';
+
+  @override
+  String get arenaColAvg => 'KA';
+
+  @override
+  String get arenaColBest => 'PARAS';
+
+  @override
+  String get arenaColTime => 'NOPEIN';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossit $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILLIT';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSINEN';
+
+  @override
+  String get padSouthpawOn => 'VASENKÄTINEN: PÄÄLLÄ';
+
+  @override
+  String get padSouthpawOff => 'VASENKÄTINEN: POIS';
+
+  @override
+  String get sigilDescHop => 'Nopea hyppy pyyhkäisyn suuntaan';
+
+  @override
+  String get sigilDescSidestep => 'Pitkä sivuaskel kentän poikki';
+
+  @override
+  String get sigilDescStrike =>
+      'Syöksy eteen kolmella raskaalla laukauksella ja takaisin';
+
+  @override
+  String get sigilDescRetreat => 'Vetäydy, kun suojatuli menee eteen';
+
+  @override
+  String get sigilDescDash => 'Vino syöksy tulen läpi, koskematon puolivälissä';
+
+  @override
+  String get sigilDescRoll => 'Tynnyripyörähdys sivulle, koskematon';
+
+  @override
+  String get sigilDescShadow =>
+      'Lukitu lähimmän vihollisen alle ja ammu jatkuvasti';
+
+  @override
+  String get sigilDescEcho =>
+      'Varjo toistaa kaksi viime sekuntiasi puolella vahingolla';
+
+  @override
+  String get sigilDescLoop => 'Silmukka yläkautta: laukaukset menevät alitse';
+
+  @override
+  String get sigilDescSlalom => 'S-kaarre kentän poikki viuhkatulella';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Korkkiruuvi eteen ampuen joka suuntaan, koskematon';
+
+  @override
+  String get sigilDescSnapshot => 'Yksi raskas laukaus pyyhkäisyn suuntaan';
+
+  @override
+  String get sigilDescBroadside => 'Yhteislaukaus molemmilta kyljiltä';
+
+  @override
+  String get sigilDescVolley => 'Viisi ladattua sädettä eteen';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Pudota miina, joka nielee laukauksia ja räjähtää';
+
+  @override
+  String get sigilDescFrenzy => 'Aseet ampuvat nopeammin muutaman sekunnin';
+
+  @override
+  String get sigilDescStasis =>
+      'Viholliset ja niiden laukaukset hidastuvat puoleen';
+
+  @override
+  String get sigilDescHalo =>
+      'Kilpi latautuu neljä kertaa nopeammin, eikä mikään läpäise';
+
+  @override
+  String get sigilDescRadial => 'Kuudentoista laukauksen rengas';
+
+  @override
+  String get sigilDescStorm => 'Kaikki aseet täysillä, ilmaiseksi';
+
+  @override
+  String get sigilDescPing => 'Kumppanit keskittävät tulen pyyhkäisyn suuntaan';
+
+  @override
+  String get sigilDescWingman => 'Kutsu siipimies kyljelle, jota kohti piirsit';
+
+  @override
+  String get sigilDescHunter =>
+      'Kutsu metsästäjä, joka lentää edellä ja valitsee kohteet';
+
+  @override
+  String get sigilDescWarden =>
+      'Kutsu vartija, joka ottaa sinulle tarkoitetut laukaukset';
+
+  @override
+  String get sigilDescFormation =>
+      'Kumppanit vaihtavat leveän ja kiilan välillä';
+
+  @override
+  String get sigilDescWhirl =>
+      'Kumppanit kiertävät sinua ja nielevät laukauksia';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Kumppanit syöksyvät ja räjähtävät, palauttaen latausta';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Piirrä oikealla tikulla. Pidä LB = ASEET, RB = SIIPI, molemmat = MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'hinta $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'koskematon';
+
+  @override
+  String get lessonWatch => 'KATSO';
+
+  @override
+  String get lessonTrace => 'JÄLJITÄ';
+
+  @override
+  String get lessonSlow => 'HITAASTI';
+
+  @override
+  String get lessonLive => 'TÄYSI VAUHTI';
+
+  @override
+  String get lessonStreak => 'VIISI PERÄKKÄIN';
+
+  @override
+  String get lessonLearned => 'OPITTU';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Pyyhkäise oikeaa tikkua';
+
+  @override
+  String get hintLoop => 'Piirrä ympyrä: lennät laukausten yli';
+
+  @override
+  String get hintStream => 'Purista LT: kaksi tai kolme suihkua';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'EI MITÄÄN';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'seuraava $sigil $secs s päästä';
+  }
+
+  @override
+  String get arenaGauntlet => 'KUJANJUOKSU';
+
+  @override
+  String get arenaOn => 'PÄÄLLÄ';
+
+  @override
+  String get arenaOff => 'POIS';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Arvio $rating · paras $best';
+  }
 }

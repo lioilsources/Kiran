@@ -830,4 +830,253 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get vaultAll => 'الكل';
+
+  @override
+  String get sigilMissUnknown => 'شكل غير معروف';
+
+  @override
+  String get sigilMissTooSlow => 'بطيء جدًا';
+
+  @override
+  String get sigilMissSkippedDot => 'تخطّيت نقطة';
+
+  @override
+  String get sigilMissLeftRimEarly => 'أفلتَّ مبكرًا';
+
+  @override
+  String get sigilMissWrongDirection => 'مرسوم بالعكس';
+
+  @override
+  String get sigilMissWrongLayer => 'زر كتف خاطئ';
+
+  @override
+  String get sigilDry => 'الشحنة غير كافية';
+
+  @override
+  String get sigilBusy => 'السابق ما زال يعمل';
+
+  @override
+  String get arena => 'الحلبة';
+
+  @override
+  String get arenaBossParts => 'أجزاء الزعيم';
+
+  @override
+  String get arenaBareCore => 'النواة مكشوفة';
+
+  @override
+  String get arenaCompanions => 'المرافقون';
+
+  @override
+  String get arenaCharge => 'الشحنة';
+
+  @override
+  String get arenaChargeNormal => 'عادية';
+
+  @override
+  String get arenaSpeed => 'سرعة العالم';
+
+  @override
+  String get arenaDrill => 'تمرين';
+
+  @override
+  String get arenaFreePlay => 'لعب حر';
+
+  @override
+  String get arenaFight => 'قتال';
+
+  @override
+  String get arenaNewBoss => 'زعيم جديد';
+
+  @override
+  String get arenaLeave => 'مغادرة الحلبة';
+
+  @override
+  String get arenaHint => 'يعود الزعيم لحظة موته. لا يُحفظ شيء هنا.';
+
+  @override
+  String get arenaColCast => 'رسم';
+
+  @override
+  String get arenaColMiss => 'خطأ';
+
+  @override
+  String get arenaColAvg => 'متوسط';
+
+  @override
+  String get arenaColBest => 'الأفضل';
+
+  @override
+  String get arenaColTime => 'الأسرع';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'الزعماء $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'اليد: الرموز';
+
+  @override
+  String get padSchemeClassic => 'اليد: كلاسيكي';
+
+  @override
+  String get padSouthpawOn => 'أعسر: تشغيل';
+
+  @override
+  String get padSouthpawOff => 'أعسر: إيقاف';
+
+  @override
+  String get sigilDescHop => 'قفزة سريعة باتجاه التحريك';
+
+  @override
+  String get sigilDescSidestep => 'خطوة جانبية طويلة عبر الساحة';
+
+  @override
+  String get sigilDescStrike => 'اندفاع بثلاث طلقات ثقيلة ثم عودة';
+
+  @override
+  String get sigilDescRetreat => 'تراجع مع نيران تغطية إلى الأمام';
+
+  @override
+  String get sigilDescDash => 'اندفاع قطري عبر النيران، منيع في منتصفه';
+
+  @override
+  String get sigilDescRoll => 'دحرجة جانبية، منيع';
+
+  @override
+  String get sigilDescShadow => 'اثبت تحت أقرب عدو وواصل الإطلاق';
+
+  @override
+  String get sigilDescEcho => 'ظل يعيد آخر ثانيتين بنصف الضرر';
+
+  @override
+  String get sigilDescLoop => 'حلقة من الأعلى: تمر الطلقات من تحتك';
+
+  @override
+  String get sigilDescSlalom => 'منعطف S عبر الساحة بنيران مروحية';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'دوران لولبي للأمام بنيران في كل اتجاه، منيع';
+
+  @override
+  String get sigilDescSnapshot => 'طلقة ثقيلة واحدة باتجاه التحريك';
+
+  @override
+  String get sigilDescBroadside => 'رشقة من الجانبين';
+
+  @override
+  String get sigilDescVolley => 'خمسة أشعة مشحونة للأمام';
+
+  @override
+  String get sigilDescCaltrop => 'ألقِ لغمًا يبتلع الطلقات وينفجر';
+
+  @override
+  String get sigilDescFrenzy => 'تطلق الأسلحة أسرع لبضع ثوانٍ';
+
+  @override
+  String get sigilDescStasis => 'يبطؤ الأعداء وطلقاتهم إلى النصف';
+
+  @override
+  String get sigilDescHalo => 'يُشحن الدرع أسرع بأربع مرات ولا يخترقه شيء';
+
+  @override
+  String get sigilDescRadial => 'حلقة من ست عشرة طلقة';
+
+  @override
+  String get sigilDescStorm => 'كل الأسلحة بأقصى طاقة، مجانًا';
+
+  @override
+  String get sigilDescPing => 'يركّز المرافقون النيران حيث تحرّك';
+
+  @override
+  String get sigilDescWingman => 'استدعِ مرافق جناح إلى الجهة التي رسمت نحوها';
+
+  @override
+  String get sigilDescHunter => 'استدعِ صيادًا يطير أمامك ويختار الأهداف';
+
+  @override
+  String get sigilDescWarden => 'استدعِ حارسًا يتلقى الطلقات عنك';
+
+  @override
+  String get sigilDescFormation => 'يتبدّل المرافقون بين تشكيل عريض وإسفين';
+
+  @override
+  String get sigilDescWhirl => 'يدور المرافقون حولك ويبتلعون الطلقات';
+
+  @override
+  String get sigilDescSacrifice => 'ينقضّ المرافقون وينفجرون ويعيدون الشحنة';
+
+  @override
+  String get grimoire => 'كتاب الرموز';
+
+  @override
+  String get grimoireHint =>
+      'ارسم بالعصا اليمنى. اضغط LB للأسلحة، RB للجناح، كليهما لـ MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'التكلفة $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'منيع';
+
+  @override
+  String get lessonWatch => 'شاهد';
+
+  @override
+  String get lessonTrace => 'تتبّعه';
+
+  @override
+  String get lessonSlow => 'ببطء';
+
+  @override
+  String get lessonLive => 'سرعة كاملة';
+
+  @override
+  String get lessonStreak => 'خمسة متتالية';
+
+  @override
+  String get lessonLearned => 'تم التعلّم';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'الإيقاع $pct %';
+  }
+
+  @override
+  String get hintHop => 'حرّك العصا اليمنى بسرعة';
+
+  @override
+  String get hintLoop => 'ارسم دائرة: تطير فوق الطلقات';
+
+  @override
+  String get hintStream => 'اضغط LT: تياران أو ثلاثة';
+
+  @override
+  String get arenaKata => 'كاتا';
+
+  @override
+  String get arenaKataOff => 'لا شيء';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'التالي $sigil بعد $secs ث';
+  }
+
+  @override
+  String get arenaGauntlet => 'التحدي';
+
+  @override
+  String get arenaOn => 'تشغيل';
+
+  @override
+  String get arenaOff => 'إيقاف';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'التقييم $rating · الأفضل $best';
+  }
 }

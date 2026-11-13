@@ -811,4 +811,261 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get vaultAll => 'ALLE';
+
+  @override
+  String get sigilMissUnknown => 'ukjent form';
+
+  @override
+  String get sigilMissTooSlow => 'for sakte';
+
+  @override
+  String get sigilMissSkippedDot => 'hoppet over et punkt';
+
+  @override
+  String get sigilMissLeftRimEarly => 'sluppet for tidlig';
+
+  @override
+  String get sigilMissWrongDirection => 'tegnet baklengs';
+
+  @override
+  String get sigilMissWrongLayer => 'feil skulderknapp';
+
+  @override
+  String get sigilDry => 'ikke nok ladning';
+
+  @override
+  String get sigilBusy => 'forrige kjører fortsatt';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BOSSDELER';
+
+  @override
+  String get arenaBareCore => 'naken kjerne';
+
+  @override
+  String get arenaCompanions => 'LEDSAGERE';
+
+  @override
+  String get arenaCharge => 'LADNING';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VERDENSFART';
+
+  @override
+  String get arenaDrill => 'ØVELSE';
+
+  @override
+  String get arenaFreePlay => 'FRI SPILL';
+
+  @override
+  String get arenaFight => 'KJEMP';
+
+  @override
+  String get arenaNewBoss => 'NY BOSS';
+
+  @override
+  String get arenaLeave => 'FORLAT ARENA';
+
+  @override
+  String get arenaHint =>
+      'Bossen kommer tilbake i det den dør. Ingenting lagres her.';
+
+  @override
+  String get arenaColCast => 'KAST';
+
+  @override
+  String get arenaColMiss => 'BOM';
+
+  @override
+  String get arenaColAvg => 'SNITT';
+
+  @override
+  String get arenaColBest => 'BESTE';
+
+  @override
+  String get arenaColTime => 'RASKEST';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bosser $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILER';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSISK';
+
+  @override
+  String get padSouthpawOn => 'VENSTREHENDT: PÅ';
+
+  @override
+  String get padSouthpawOff => 'VENSTREHENDT: AV';
+
+  @override
+  String get sigilDescHop => 'Et raskt hopp dit du sveiper';
+
+  @override
+  String get sigilDescSidestep => 'Et langt sidesteg over feltet';
+
+  @override
+  String get sigilDescStrike =>
+      'Utfall fremover med tre tunge skudd, så tilbake';
+
+  @override
+  String get sigilDescRetreat =>
+      'Trekk deg tilbake mens dekningsild går fremover';
+
+  @override
+  String get sigilDescDash => 'Et diagonalt rush gjennom ild, urørlig midtveis';
+
+  @override
+  String get sigilDescRoll => 'En tønnerull til siden, urørlig';
+
+  @override
+  String get sigilDescShadow =>
+      'Lås deg under nærmeste fiende og fortsett å skyte';
+
+  @override
+  String get sigilDescEcho =>
+      'En skygge gjentar dine siste to sekunder med halv skade';
+
+  @override
+  String get sigilDescLoop => 'Loop over toppen: skudd passerer under deg';
+
+  @override
+  String get sigilDescSlalom => 'En S-kurve over feltet med vifteild';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Korketrekker fremover med ild rundt, urørlig';
+
+  @override
+  String get sigilDescSnapshot => 'Ett tungt skudd dit du sveiper';
+
+  @override
+  String get sigilDescBroadside => 'En salve fra begge flanker';
+
+  @override
+  String get sigilDescVolley => 'Fem ladde stråler fremover';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Slipp en mine som sluker skudd og eksploderer';
+
+  @override
+  String get sigilDescFrenzy => 'Våpnene skyter raskere i noen sekunder';
+
+  @override
+  String get sigilDescStasis => 'Fiender og skuddene deres går i halv fart';
+
+  @override
+  String get sigilDescHalo =>
+      'Skjoldet lades fire ganger raskere og ingenting slipper gjennom';
+
+  @override
+  String get sigilDescRadial => 'En ring av seksten skudd';
+
+  @override
+  String get sigilDescStorm => 'Alle våpen skyter for fullt, gratis';
+
+  @override
+  String get sigilDescPing => 'Ledsagerne samler ilden dit du sveiper';
+
+  @override
+  String get sigilDescWingman => 'Kall en vingmann til flanken du tegnet mot';
+
+  @override
+  String get sigilDescHunter => 'Kall en jeger som flyr foran og velger mål';
+
+  @override
+  String get sigilDescWarden => 'Kall en vokter som tar skuddene ment for deg';
+
+  @override
+  String get sigilDescFormation => 'Ledsagerne bytter mellom bred og kile';
+
+  @override
+  String get sigilDescWhirl => 'Ledsagerne sirkler rundt deg og sluker skudd';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Ledsagerne stuper og eksploderer, gir ladning tilbake';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Tegn med høyre stikke. Hold LB for ARMS, RB for WING, begge for MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'pris $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'urørlig';
+
+  @override
+  String get lessonWatch => 'SE';
+
+  @override
+  String get lessonTrace => 'TEGN ETTER';
+
+  @override
+  String get lessonSlow => 'SAKTE';
+
+  @override
+  String get lessonLive => 'FULL FART';
+
+  @override
+  String get lessonStreak => 'FEM PÅ RAD';
+
+  @override
+  String get lessonLearned => 'LÆRT';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Sveip høyre stikke';
+
+  @override
+  String get hintLoop => 'Tegn en sirkel: du flyr over skuddene';
+
+  @override
+  String get hintStream => 'Klem LT: to eller tre stråler';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'INGEN';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'neste $sigil om $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'GAUNTLET';
+
+  @override
+  String get arenaOn => 'PÅ';
+
+  @override
+  String get arenaOff => 'AV';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Vurdering $rating · beste $best';
+  }
 }

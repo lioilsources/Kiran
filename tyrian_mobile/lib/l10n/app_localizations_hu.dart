@@ -814,4 +814,262 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get vaultAll => 'MIND';
+
+  @override
+  String get sigilMissUnknown => 'ismeretlen alakzat';
+
+  @override
+  String get sigilMissTooSlow => 'túl lassú';
+
+  @override
+  String get sigilMissSkippedDot => 'kihagyott egy pontot';
+
+  @override
+  String get sigilMissLeftRimEarly => 'túl korán elengedted';
+
+  @override
+  String get sigilMissWrongDirection => 'fordítva rajzolva';
+
+  @override
+  String get sigilMissWrongLayer => 'rossz vállgomb';
+
+  @override
+  String get sigilDry => 'nincs elég töltés';
+
+  @override
+  String get sigilBusy => 'az előző még fut';
+
+  @override
+  String get arena => 'ARÉNA';
+
+  @override
+  String get arenaBossParts => 'BOSS RÉSZEK';
+
+  @override
+  String get arenaBareCore => 'csupasz mag';
+
+  @override
+  String get arenaCompanions => 'KÍSÉRŐK';
+
+  @override
+  String get arenaCharge => 'TÖLTÉS';
+
+  @override
+  String get arenaChargeNormal => 'NORMÁL';
+
+  @override
+  String get arenaSpeed => 'VILÁG SEBESSÉGE';
+
+  @override
+  String get arenaDrill => 'GYAKORLÁS';
+
+  @override
+  String get arenaFreePlay => 'SZABAD JÁTÉK';
+
+  @override
+  String get arenaFight => 'HARC';
+
+  @override
+  String get arenaNewBoss => 'ÚJ BOSS';
+
+  @override
+  String get arenaLeave => 'ARÉNA ELHAGYÁSA';
+
+  @override
+  String get arenaHint =>
+      'A boss halála pillanatában visszatér. Itt semmi sem mentődik.';
+
+  @override
+  String get arenaColCast => 'VARÁZS';
+
+  @override
+  String get arenaColMiss => 'HIBA';
+
+  @override
+  String get arenaColAvg => 'ÁTL';
+
+  @override
+  String get arenaColBest => 'LEGJOBB';
+
+  @override
+  String get arenaColTime => 'LEGGYORSABB';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossok $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: JELEK';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSZIKUS';
+
+  @override
+  String get padSouthpawOn => 'BALKEZES: BE';
+
+  @override
+  String get padSouthpawOff => 'BALKEZES: KI';
+
+  @override
+  String get sigilDescHop => 'Gyors szökkenés a pöccintés irányába';
+
+  @override
+  String get sigilDescSidestep => 'Hosszú oldallépés a pályán át';
+
+  @override
+  String get sigilDescStrike => 'Előrerontás három erős lövéssel, majd vissza';
+
+  @override
+  String get sigilDescRetreat => 'Hátrálás, miközben a fedezőtűz előre megy';
+
+  @override
+  String get sigilDescDash => 'Átlós kitörés a tűzön át, közben sérthetetlen';
+
+  @override
+  String get sigilDescRoll => 'Orsózás oldalra, sérthetetlen';
+
+  @override
+  String get sigilDescShadow => 'Rátapad a legközelebbi ellenség alá és tüzel';
+
+  @override
+  String get sigilDescEcho =>
+      'Egy árny félsebzéssel ismétli az utolsó két másodperced';
+
+  @override
+  String get sigilDescLoop => 'Bukfenc felül: a lövések alattad mennek el';
+
+  @override
+  String get sigilDescSlalom => 'S-kanyar a pályán át legyezőtűzzel';
+
+  @override
+  String get sigilDescCorkscrew => 'Dugóhúzó előre, körkörös tűz, sérthetetlen';
+
+  @override
+  String get sigilDescSnapshot => 'Egy erős lövés a pöccintés irányába';
+
+  @override
+  String get sigilDescBroadside => 'Sortűz mindkét oldalról';
+
+  @override
+  String get sigilDescVolley => 'Öt feltöltött sugár előre';
+
+  @override
+  String get sigilDescCaltrop => 'Akna, ami elnyeli a lövéseket és felrobban';
+
+  @override
+  String get sigilDescFrenzy =>
+      'Pár másodpercig gyorsabban tüzelnek a fegyverek';
+
+  @override
+  String get sigilDescStasis =>
+      'Az ellenség és lövései fél sebességre lassulnak';
+
+  @override
+  String get sigilDescHalo =>
+      'A pajzs négyszer gyorsabban töltődik, és semmi sem jut át';
+
+  @override
+  String get sigilDescRadial => 'Tizenhat lövésből álló gyűrű';
+
+  @override
+  String get sigilDescStorm => 'Minden fegyver teljes erővel tüzel, ingyen';
+
+  @override
+  String get sigilDescPing => 'A kísérők oda tüzelnek, ahová pöccintesz';
+
+  @override
+  String get sigilDescWingman => 'Szárnysegéd hívása a rajzolt oldalra';
+
+  @override
+  String get sigilDescHunter =>
+      'Vadász hívása, ami előre repül és célt választ';
+
+  @override
+  String get sigilDescWarden =>
+      'Őrző hívása, ami felfogja a neked szánt lövéseket';
+
+  @override
+  String get sigilDescFormation =>
+      'A kísérők széles és ék alakzat között váltanak';
+
+  @override
+  String get sigilDescWhirl =>
+      'A kísérők körülötted keringenek és elnyelik a lövéseket';
+
+  @override
+  String get sigilDescSacrifice =>
+      'A kísérők lecsapnak és felrobbannak, töltést visszaadva';
+
+  @override
+  String get grimoire => 'GRIMOÁR';
+
+  @override
+  String get grimoireHint =>
+      'Rajzolj a jobb karral. LB: ARMS, RB: WING, mindkettő: MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'ár $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'sérthetetlen';
+
+  @override
+  String get lessonWatch => 'NÉZD';
+
+  @override
+  String get lessonTrace => 'RAJZOLD UTÁNA';
+
+  @override
+  String get lessonSlow => 'LASSÚ';
+
+  @override
+  String get lessonLive => 'TELJES SEBESSÉG';
+
+  @override
+  String get lessonStreak => 'ÖTÖT EGYMÁS UTÁN';
+
+  @override
+  String get lessonLearned => 'MEGTANULVA';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPÓ $pct %';
+  }
+
+  @override
+  String get hintHop => 'Pöccintsd a jobb kart';
+
+  @override
+  String get hintLoop => 'Rajzolj kört: átrepülsz a lövések felett';
+
+  @override
+  String get hintStream => 'Nyomd az LT-t: két-három sugár';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NINCS';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'következő $sigil $secs mp múlva';
+  }
+
+  @override
+  String get arenaGauntlet => 'KESZTYŰ';
+
+  @override
+  String get arenaOn => 'BE';
+
+  @override
+  String get arenaOff => 'KI';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Értékelés $rating · legjobb $best';
+  }
 }

@@ -1,0 +1,10 @@
+{
+  "loop.name": "ループ。",
+  "loop.shape": "右スティックで円を一周描く。どこから始めても、逆回りでもいい。",
+  "loop.phase": "頂点では被弾しない。弾は機体の下をすり抜ける。",
+  "loop.use": "弾幕の壁を抜けるのに使おう。消費チャージは50。",
+  "outro": "Kirian。PCとSteam Deckで、コントローラーで遊べる。",
+  "callout.phase": "無敵",
+  "callout.cost": "コスト 50",
+  "card.platform": "PC · STEAM DECK · コントローラー"
+}

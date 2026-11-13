@@ -823,4 +823,265 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get vaultAll => 'VSE';
+
+  @override
+  String get sigilMissUnknown => 'neznana oblika';
+
+  @override
+  String get sigilMissTooSlow => 'prepočasi';
+
+  @override
+  String get sigilMissSkippedDot => 'izpuščena točka';
+
+  @override
+  String get sigilMissLeftRimEarly => 'prezgodaj spuščeno';
+
+  @override
+  String get sigilMissWrongDirection => 'narisano nazaj';
+
+  @override
+  String get sigilMissWrongLayer => 'napačen ramenski gumb';
+
+  @override
+  String get sigilDry => 'premalo naboja';
+
+  @override
+  String get sigilBusy => 'prejšnji še teče';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'DELI BOSSA';
+
+  @override
+  String get arenaBareCore => 'golo jedro';
+
+  @override
+  String get arenaCompanions => 'SPREMLJEVALCI';
+
+  @override
+  String get arenaCharge => 'NABOJ';
+
+  @override
+  String get arenaChargeNormal => 'NORMALNO';
+
+  @override
+  String get arenaSpeed => 'HITROST SVETA';
+
+  @override
+  String get arenaDrill => 'VAJA';
+
+  @override
+  String get arenaFreePlay => 'PROSTA IGRA';
+
+  @override
+  String get arenaFight => 'BOJ';
+
+  @override
+  String get arenaNewBoss => 'NOV BOSS';
+
+  @override
+  String get arenaLeave => 'ZAPUSTI ARENO';
+
+  @override
+  String get arenaHint =>
+      'Boss se vrne takoj, ko umre. Nič tukaj se ne shrani.';
+
+  @override
+  String get arenaColCast => 'UPORABE';
+
+  @override
+  String get arenaColMiss => 'ZGREŠENI';
+
+  @override
+  String get arenaColAvg => 'POVPR.';
+
+  @override
+  String get arenaColBest => 'NAJBOLJŠE';
+
+  @override
+  String get arenaColTime => 'NAJHITREJE';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossi $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'KRMILNIK: SIGILI';
+
+  @override
+  String get padSchemeClassic => 'KRMILNIK: KLASIČNO';
+
+  @override
+  String get padSouthpawOn => 'LEVIČAR: VKLOP';
+
+  @override
+  String get padSouthpawOff => 'LEVIČAR: IZKLOP';
+
+  @override
+  String get sigilDescHop => 'Hiter skok v smeri zamaha';
+
+  @override
+  String get sigilDescSidestep => 'Dolg korak vstran čez polje';
+
+  @override
+  String get sigilDescStrike =>
+      'Izpad naprej s tremi težkimi streli, nato nazaj';
+
+  @override
+  String get sigilDescRetreat => 'Umik, medtem ko kritni ogenj leti naprej';
+
+  @override
+  String get sigilDescDash =>
+      'Diagonalni preboj skozi ogenj, na sredini nedotakljiv';
+
+  @override
+  String get sigilDescRoll => 'Sodček vstran, nedotakljiv';
+
+  @override
+  String get sigilDescShadow =>
+      'Prilepi se pod najbližjega sovražnika in streljaj';
+
+  @override
+  String get sigilDescEcho =>
+      'Senca ponovi tvoji zadnji dve sekundi s pol škode';
+
+  @override
+  String get sigilDescLoop => 'Looping čez vrh: streli gredo pod teboj';
+
+  @override
+  String get sigilDescSlalom => 'Krivulja S čez polje s pahljačastim ognjem';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Vijak naprej s streljanjem naokoli, nedotakljiv';
+
+  @override
+  String get sigilDescSnapshot => 'En težek strel v smeri zamaha';
+
+  @override
+  String get sigilDescBroadside => 'Salva z obeh bokov';
+
+  @override
+  String get sigilDescVolley => 'Pet nabitih žarkov naprej';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Odvrzi mino, ki pogoltne strele in eksplodira';
+
+  @override
+  String get sigilDescFrenzy => 'Orožja nekaj sekund streljajo hitreje';
+
+  @override
+  String get sigilDescStasis =>
+      'Sovražniki in njihovi streli upočasnijo na pol';
+
+  @override
+  String get sigilDescHalo =>
+      'Ščit se polni štirikrat hitreje in nič ne pride skozi';
+
+  @override
+  String get sigilDescRadial => 'Obroč šestnajstih strelov';
+
+  @override
+  String get sigilDescStorm => 'Vsa orožja na polno, zastonj';
+
+  @override
+  String get sigilDescPing => 'Spremljevalci zberejo ogenj v smeri zamaha';
+
+  @override
+  String get sigilDescWingman =>
+      'Pokliči krilnega pilota na bok, kamor si risal';
+
+  @override
+  String get sigilDescHunter => 'Pokliči lovca, ki leti naprej in izbira tarče';
+
+  @override
+  String get sigilDescWarden => 'Pokliči varuha, ki prestreže strele zate';
+
+  @override
+  String get sigilDescFormation =>
+      'Spremljevalci preklapljajo med široko in klinom';
+
+  @override
+  String get sigilDescWhirl =>
+      'Spremljevalci krožijo okoli tebe in požirajo strele';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Spremljevalci se zaletijo in eksplodirajo, vrnejo naboj';
+
+  @override
+  String get grimoire => 'GRIMOAR';
+
+  @override
+  String get grimoireHint =>
+      'Riši z desno palico. LB za OROŽJA, RB za KRILO, oba za MEGA UDAR.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'cena $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'nedotakljiv';
+
+  @override
+  String get lessonWatch => 'GLEJ';
+
+  @override
+  String get lessonTrace => 'OBRIŠI';
+
+  @override
+  String get lessonSlow => 'POČASI';
+
+  @override
+  String get lessonLive => 'POLNA HITROST';
+
+  @override
+  String get lessonStreak => 'PET ZAPORED';
+
+  @override
+  String get lessonLearned => 'NAUČENO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Zamahni z desno palico';
+
+  @override
+  String get hintLoop => 'Nariši krog: preletiš strele';
+
+  @override
+  String get hintStream => 'Stisni LT: dva ali trije curki';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'BREZ';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'naslednji $sigil čez $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'PREIZKUŠNJA';
+
+  @override
+  String get arenaOn => 'VKLOP';
+
+  @override
+  String get arenaOff => 'IZKLOP';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Ocena $rating · najboljše $best';
+  }
 }

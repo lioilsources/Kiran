@@ -802,4 +802,251 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get vaultAll => 'すべて';
+
+  @override
+  String get sigilMissUnknown => '不明な形';
+
+  @override
+  String get sigilMissTooSlow => '遅すぎる';
+
+  @override
+  String get sigilMissSkippedDot => '点を飛ばした';
+
+  @override
+  String get sigilMissLeftRimEarly => '離すのが早すぎた';
+
+  @override
+  String get sigilMissWrongDirection => '逆向きに描いた';
+
+  @override
+  String get sigilMissWrongLayer => 'ショルダーボタンが違う';
+
+  @override
+  String get sigilDry => 'チャージ不足';
+
+  @override
+  String get sigilBusy => '前の技が実行中';
+
+  @override
+  String get arena => 'アリーナ';
+
+  @override
+  String get arenaBossParts => 'ボスのパーツ';
+
+  @override
+  String get arenaBareCore => 'コアのみ';
+
+  @override
+  String get arenaCompanions => '僚機';
+
+  @override
+  String get arenaCharge => 'チャージ';
+
+  @override
+  String get arenaChargeNormal => '通常';
+
+  @override
+  String get arenaSpeed => '世界の速さ';
+
+  @override
+  String get arenaDrill => '練習';
+
+  @override
+  String get arenaFreePlay => 'フリー';
+
+  @override
+  String get arenaFight => '戦う';
+
+  @override
+  String get arenaNewBoss => 'ボスを出し直す';
+
+  @override
+  String get arenaLeave => 'アリーナを出る';
+
+  @override
+  String get arenaHint => 'ボスは倒すとすぐ復活します。ここでは何も保存されません。';
+
+  @override
+  String get arenaColCast => '成功';
+
+  @override
+  String get arenaColMiss => '失敗';
+
+  @override
+  String get arenaColAvg => '平均';
+
+  @override
+  String get arenaColBest => '最高';
+
+  @override
+  String get arenaColTime => '最速';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'ボス $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'パッド: シジル';
+
+  @override
+  String get padSchemeClassic => 'パッド: クラシック';
+
+  @override
+  String get padSouthpawOn => '左利き: オン';
+
+  @override
+  String get padSouthpawOff => '左利き: オフ';
+
+  @override
+  String get sigilDescHop => '弾いた方向へ素早く跳ぶ';
+
+  @override
+  String get sigilDescSidestep => 'フィールドを横切る長い横移動';
+
+  @override
+  String get sigilDescStrike => '重いショット3発で前へ突進し、戻る';
+
+  @override
+  String get sigilDescRetreat => '援護射撃を前に撃ちつつ後退';
+
+  @override
+  String get sigilDescDash => '弾幕を斜めに突っ切るダッシュ、途中は無敵';
+
+  @override
+  String get sigilDescRoll => '横へバレルロール、無敵';
+
+  @override
+  String get sigilDescShadow => '最寄りの敵の真下に張り付き撃ち続ける';
+
+  @override
+  String get sigilDescEcho => '影が直前2秒の動きを半分の威力で再現';
+
+  @override
+  String get sigilDescLoop => '上へ宙返り: 弾は下を通り抜ける';
+
+  @override
+  String get sigilDescSlalom => '扇状に撃ちながらフィールドをS字に横切る';
+
+  @override
+  String get sigilDescCorkscrew => '全方位に撃ちつつきりもみで前進、無敵';
+
+  @override
+  String get sigilDescSnapshot => '弾いた方向へ重い一発';
+
+  @override
+  String get sigilDescBroadside => '両側面から一斉射撃';
+
+  @override
+  String get sigilDescVolley => 'チャージした光線を前方に5本';
+
+  @override
+  String get sigilDescCaltrop => '弾を吸い込んで爆発する機雷を置く';
+
+  @override
+  String get sigilDescFrenzy => '数秒間、武器の連射が速くなる';
+
+  @override
+  String get sigilDescStasis => '敵とその弾が半分の速さになる';
+
+  @override
+  String get sigilDescHalo => 'シールド回復が4倍速になり、何も通さない';
+
+  @override
+  String get sigilDescRadial => '16発のリング状ショット';
+
+  @override
+  String get sigilDescStorm => '全武器がノーコストで全開射撃';
+
+  @override
+  String get sigilDescPing => '僚機が弾いた方向へ集中砲火';
+
+  @override
+  String get sigilDescWingman => '描いた側の側面にウイングマンを呼ぶ';
+
+  @override
+  String get sigilDescHunter => '先行して標的を選ぶハンターを呼ぶ';
+
+  @override
+  String get sigilDescWarden => '自分を狙う弾を受け止めるガーディアンを呼ぶ';
+
+  @override
+  String get sigilDescFormation => '僚機が横広と楔形の隊形を切り替える';
+
+  @override
+  String get sigilDescWhirl => '僚機が周囲を回り弾を吸収する';
+
+  @override
+  String get sigilDescSacrifice => '僚機が突撃して自爆し、チャージを返す';
+
+  @override
+  String get grimoire => 'グリモア';
+
+  @override
+  String get grimoireHint => '右スティックで描く。LB長押しでARMS、RBでWING、両方でMEGA BLAST。';
+
+  @override
+  String sigilCost(int cost) {
+    return 'コスト $cost';
+  }
+
+  @override
+  String get sigilUntouchable => '無敵';
+
+  @override
+  String get lessonWatch => '見て覚える';
+
+  @override
+  String get lessonTrace => 'なぞる';
+
+  @override
+  String get lessonSlow => 'ゆっくり';
+
+  @override
+  String get lessonLive => '本番';
+
+  @override
+  String get lessonStreak => '5回連続';
+
+  @override
+  String get lessonLearned => '習得';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'テンポ $pct %';
+  }
+
+  @override
+  String get hintHop => '右スティックをはじく';
+
+  @override
+  String get hintLoop => '円を描くと弾の上を飛び越える';
+
+  @override
+  String get hintStream => 'LTを握る: 弾が2本か3本に';
+
+  @override
+  String get arenaKata => '型';
+
+  @override
+  String get arenaKataOff => 'なし';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '次は $sigil　あと $secs 秒';
+  }
+
+  @override
+  String get arenaGauntlet => '連戦';
+
+  @override
+  String get arenaOn => 'オン';
+
+  @override
+  String get arenaOff => 'オフ';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return '評価 $rating · 最高 $best';
+  }
 }

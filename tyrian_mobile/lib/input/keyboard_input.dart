@@ -4,14 +4,30 @@ import 'package:flutter/services.dart';
 class KeyboardInput {
   final Set<LogicalKeyboardKey> _pressed = {};
 
+  /// Fresh presses (no repeats) since the last [takePresses], in order —
+  /// the keyboard's sigil dots are typed, not held.
+  final List<LogicalKeyboardKey> _presses = [];
+
   /// Call from KeyboardHandler.onKeyEvent
   bool handleKeyEvent(KeyEvent event) {
     if (event is KeyDownEvent || event is KeyRepeatEvent) {
       _pressed.add(event.logicalKey);
+      if (event is KeyDownEvent) _presses.add(event.logicalKey);
     } else if (event is KeyUpEvent) {
       _pressed.remove(event.logicalKey);
     }
     return false; // don't consume — let Flutter handle too
+  }
+
+  bool isPressed(LogicalKeyboardKey k) => _pressed.contains(k);
+
+  /// Any of [keys] is down.
+  bool anyPressed(Iterable<LogicalKeyboardKey> keys) => keys.any(_pressed.contains);
+
+  List<LogicalKeyboardKey> takePresses() {
+    final out = List.of(_presses);
+    _presses.clear();
+    return out;
   }
 
   /// Horizontal axis: -1 (left/A) to +1 (right/D)

@@ -1,0 +1,10 @@
+{
+  "loop.name": "Loop.",
+  "loop.shape": "Draw a full circle with the right stick. Start anywhere, either way round.",
+  "loop.phase": "At the top nothing can hit you. Shots pass beneath the ship.",
+  "loop.use": "Fly it through a wall of fire. It costs fifty charge.",
+  "outro": "Kirian. On PC and Steam Deck, with a controller.",
+  "callout.phase": "UNTOUCHABLE",
+  "callout.cost": "COST 50",
+  "card.platform": "PC · STEAM DECK · CONTROLLER"
+}

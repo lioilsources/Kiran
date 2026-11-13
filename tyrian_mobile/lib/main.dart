@@ -13,6 +13,11 @@ import 'l10n/l10n.dart';
 
 import 'game/platform_config.dart' as platform;
 import 'game/tyrian_game.dart';
+import 'ui/arena_panel.dart';
+import 'game/capture_director.dart';
+import 'systems/sigils/sigil_catalog.dart';
+import 'ui/grimoire.dart';
+import 'input/pad_scheme.dart';
 import 'input/gamepad_input.dart';
 import 'systems/campaign.dart';
 import 'ui/campaign_map.dart';
@@ -112,7 +117,14 @@ void main() async {
     // Fullscreen by default, but honour a windowed preference saved by the
     // F11/Alt+Enter toggle — before this there was no way out of fullscreen.
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('fullscreen') ?? true) {
+    // WINDOWED: capture runs (Prompts/29) must not take over the screen.
+    const windowed = bool.fromEnvironment('WINDOWED');
+    // A filmed lesson needs a known frame: 1280×960 turns into the 3:4
+    // portrait field of a vertical video.
+    if (CaptureDirector.requested) {
+      await windowManager.setSize(const Size(1280, 960));
+    }
+    if (!windowed && (prefs.getBool('fullscreen') ?? true)) {
       await windowManager.setFullScreen(true);
     }
   } else {
@@ -223,6 +235,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   // Client waiting overlay (P2 waiting for host to start)
   bool _clientWaiting = false;
 
+  /// The arena's dials, opened from the main menu.
+  bool _showArenaSetup = false;
+
   @override
   void initState() {
     super.initState();
@@ -255,6 +270,19 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       }
       _runInProgress = resumed;
       if (mounted) setState(() {});
+      // ARENA_AUTOSTART: straight into the arena (demo and video capture).
+      if (const bool.fromEnvironment('ARENA_AUTOSTART') && _game.sigilsAvailable) {
+        await _enterArena();
+      }
+      // LESSON_CAPTURE=<sigil>: film it for the tutorial videos and quit.
+      final kind = SigilCatalog.byId(CaptureDirector.sigilId)?.kind;
+      if (kind != null) {
+        _game.arena
+          ..bossParts = 1
+          ..infiniteCharge = true;
+        if (_game.mode != GameMode.training) await _enterArena();
+        _game.capture = CaptureDirector.standard(_game, kind)..start();
+      }
     };
 
     _game.onShowComCenter = () {
@@ -262,6 +290,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
 
     _game.onPauseToggle = () {
+      if (mounted) setState(() {});
+    };
+
+    _game.onGrimoireRequested = () {
       if (mounted) setState(() {});
     };
 
@@ -651,6 +683,38 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// ARENA from the main menu: the dials first.
+  void _openArena() => setState(() => _showArenaSetup = true);
+
+  /// FIGHT on the dials: the endless ship goes in, borrowed.
+  Future<void> _enterArena() async {
+    // The arena borrows the endless ship; coming from the campaign, load it.
+    if (_game.mode == GameMode.campaign) {
+      _runInProgress = await _game.enterEndless();
+    }
+    if (!_runInProgress) _game.resetForNewGame();
+    _runInProgress = true;
+    _game.refreshSprites();
+    await AssetLibrary.instance.loadZoneBackgrounds(_game.zoneForIndex(0));
+    if (!mounted) return;
+    _game.suppressStartEdge();
+    _game.enterArena();
+    setState(() {
+      _showArenaSetup = false;
+      _screen = _ScreenState.game;
+      _showComCenter = false;
+    });
+  }
+
+  /// LEAVE ARENA: the endless ship as it went in, back at the main menu.
+  void _leaveArena() {
+    _game.leaveArena();
+    setState(() {
+      _screen = _ScreenState.mainMenu;
+      _showComCenter = false;
+    });
+  }
+
   /// CAMPAIGN from the main menu: the campaign's own vessel and save, then
   /// the node map.
   Future<void> _startCampaign() async {
@@ -767,19 +831,48 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           GameWidget(game: _game),
 
           // Main menu with skin selector
-          if (_game.isLoaded && _screen == _ScreenState.mainMenu)
+          if (_game.isLoaded &&
+              _screen == _ScreenState.mainMenu &&
+              !_showArenaSetup)
             SkinSelector(
                 showQuit: true,
                 onPlay: () {
                   _game.refreshSprites();
                   _startAsAutoHost();
                 },
-                onCampaign: _startCampaign),
+                onCampaign: _startCampaign,
+                onArena: _game.sigilsAvailable ? _openArena : null),
 
           // Game screen overlays
           if (_game.isLoaded && _screen == _ScreenState.game) ...[
+            // The grimoire, over a paused game (View button).
+            if (_game.grimoireOpen && _game.state == GameState.paused)
+              GrimoireOverlay(onClose: () {
+                _game.closeGrimoire();
+                setState(() {});
+              }),
+
+            // The arena's own pause: its dials and scoreboard.
+            if (_game.mode == GameMode.training &&
+                _game.state == GameState.paused &&
+                !_game.grimoireOpen &&
+                !_showPauseSkinSelector)
+              ArenaPanel(
+                game: _game,
+                inArena: true,
+                onFight: () {},
+                onResume: () {
+                  if (_game.state == GameState.paused) _game.togglePause();
+                  setState(() {});
+                },
+                onLeave: _leaveArena,
+              ),
+
             // Dimming overlay when paused
-            if (_game.state == GameState.paused && !_showPauseSkinSelector)
+            if (_game.mode != GameMode.training &&
+                _game.state == GameState.paused &&
+                !_game.grimoireOpen &&
+                !_showPauseSkinSelector)
               _PauseMenu(
                 onResume: () {
                   if (_game.state == GameState.paused) _game.togglePause();
@@ -797,6 +890,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                       }
                     : null,
               ),
+
+            if (_game.mode == GameMode.training &&
+                _game.state == GameState.playing)
+              ArenaStrip(game: _game),
 
             // Boss HP bar (visible while a phased boss is on the field)
             if (!_showComCenter && !_showCampaignMap && !_showCampaignResult &&
@@ -887,6 +984,16 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                     : (_game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector),
               ),
           ],
+
+          // The arena's dials before the first fight, over the main menu.
+          if (_game.isLoaded && _showArenaSetup)
+            ArenaPanel(
+              game: _game,
+              inArena: false,
+              onFight: _enterArena,
+              onResume: () {},
+              onLeave: () => setState(() => _showArenaSetup = false),
+            ),
 
           // FPS overlay (visible during gameplay)
           if (showFpsOverlay &&
@@ -1187,6 +1294,23 @@ class _PauseMenuState extends State<_PauseMenu> {
             () => setState(SoundService.instance.toggleMute)),
         (MusicService.instance.muted ? context.l10n.musicOff : context.l10n.musicOn,
             () => setState(MusicService.instance.toggleMute)),
+        if (platform.isDesktop)
+          (
+            PadSettings.scheme == PadScheme.sigil
+                ? context.l10n.padSchemeSigil
+                : context.l10n.padSchemeClassic,
+            () => setState(() => PadSettings.setScheme(
+                PadSettings.scheme == PadScheme.sigil
+                    ? PadScheme.classic
+                    : PadScheme.sigil)),
+          ),
+        if (platform.isDesktop && PadSettings.scheme == PadScheme.sigil)
+          (
+            PadSettings.southpaw
+                ? context.l10n.padSouthpawOn
+                : context.l10n.padSouthpawOff,
+            () => setState(() => PadSettings.setSouthpaw(!PadSettings.southpaw)),
+          ),
         if (widget.onMainMenu != null) (context.l10n.mainMenu, () => widget.onMainMenu!()),
         if (widget.onQuit != null) (context.l10n.quitToDesktop, () => widget.onQuit!()),
       ];

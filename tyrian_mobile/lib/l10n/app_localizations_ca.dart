@@ -816,4 +816,265 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get vaultAll => 'TOT';
+
+  @override
+  String get sigilMissUnknown => 'forma desconeguda';
+
+  @override
+  String get sigilMissTooSlow => 'massa lent';
+
+  @override
+  String get sigilMissSkippedDot => 't\'has saltat un punt';
+
+  @override
+  String get sigilMissLeftRimEarly => 'has deixat anar massa aviat';
+
+  @override
+  String get sigilMissWrongDirection => 'dibuixat al revés';
+
+  @override
+  String get sigilMissWrongLayer => 'botó d\'espatlla incorrecte';
+
+  @override
+  String get sigilDry => 'no hi ha prou càrrega';
+
+  @override
+  String get sigilBusy => 'l\'anterior encara és activa';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'PARTS DEL BOSS';
+
+  @override
+  String get arenaBareCore => 'nucli nu';
+
+  @override
+  String get arenaCompanions => 'COMPANYS';
+
+  @override
+  String get arenaCharge => 'CÀRREGA';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VELOCITAT DEL MÓN';
+
+  @override
+  String get arenaDrill => 'EXERCICI';
+
+  @override
+  String get arenaFreePlay => 'JOC LLIURE';
+
+  @override
+  String get arenaFight => 'LLUITA';
+
+  @override
+  String get arenaNewBoss => 'NOU BOSS';
+
+  @override
+  String get arenaLeave => 'SURT DE L\'ARENA';
+
+  @override
+  String get arenaHint =>
+      'El boss torna en el moment que mor. Aquí no es desa res.';
+
+  @override
+  String get arenaColCast => 'LLANÇ.';
+
+  @override
+  String get arenaColMiss => 'ERRADA';
+
+  @override
+  String get arenaColAvg => 'MITJ.';
+
+  @override
+  String get arenaColBest => 'MILLOR';
+
+  @override
+  String get arenaColTime => 'MÉS RÀPID';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bosses $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILS';
+
+  @override
+  String get padSchemeClassic => 'PAD: CLÀSSIC';
+
+  @override
+  String get padSouthpawOn => 'ESQUERRÀ: SÍ';
+
+  @override
+  String get padSouthpawOff => 'ESQUERRÀ: NO';
+
+  @override
+  String get sigilDescHop => 'Un salt ràpid cap on llisques';
+
+  @override
+  String get sigilDescSidestep => 'Un llarg pas lateral pel camp';
+
+  @override
+  String get sigilDescStrike => 'Envestida amb tres trets pesants i tornada';
+
+  @override
+  String get sigilDescRetreat =>
+      'Retirada mentre el foc de cobertura va endavant';
+
+  @override
+  String get sigilDescDash =>
+      'Una esbatussada en diagonal pel foc, intocable a mig camí';
+
+  @override
+  String get sigilDescRoll => 'Un tonell cap al costat, intocable';
+
+  @override
+  String get sigilDescShadow =>
+      'Fixa\'t sota l\'enemic més proper i continua disparant';
+
+  @override
+  String get sigilDescEcho =>
+      'Una ombra repeteix els teus últims dos segons a mig dany';
+
+  @override
+  String get sigilDescLoop => 'Un looping per dalt: els trets passen per sota';
+
+  @override
+  String get sigilDescSlalom => 'Una corba en S pel camp amb foc en ventall';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Tirabuixó endavant disparant arreu, intocable';
+
+  @override
+  String get sigilDescSnapshot => 'Un tret pesant cap on llisques';
+
+  @override
+  String get sigilDescBroadside => 'Una salva pels dos flancs';
+
+  @override
+  String get sigilDescVolley => 'Cinc raigs carregats endavant';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Deixa una mina que s\'empassa trets i esclata';
+
+  @override
+  String get sigilDescFrenzy => 'Les armes disparen més ràpid uns segons';
+
+  @override
+  String get sigilDescStasis =>
+      'Els enemics i els seus trets van a mitja velocitat';
+
+  @override
+  String get sigilDescHalo =>
+      'L\'escut es recarrega quatre cops més ràpid i res no passa';
+
+  @override
+  String get sigilDescRadial => 'Un anell de setze trets';
+
+  @override
+  String get sigilDescStorm => 'Totes les armes a ple rendiment, de franc';
+
+  @override
+  String get sigilDescPing => 'Els companys concentren el foc cap on llisques';
+
+  @override
+  String get sigilDescWingman =>
+      'Crida un escorta al flanc cap on has dibuixat';
+
+  @override
+  String get sigilDescHunter =>
+      'Crida un caçador que vola al davant i tria objectius';
+
+  @override
+  String get sigilDescWarden => 'Crida un guardià que rep els trets per tu';
+
+  @override
+  String get sigilDescFormation => 'Els companys alternen entre oberta i falca';
+
+  @override
+  String get sigilDescWhirl =>
+      'Els companys giren al teu voltant i s\'empassen trets';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Els companys es llancen i esclaten, i retornen càrrega';
+
+  @override
+  String get grimoire => 'GRIMORI';
+
+  @override
+  String get grimoireHint =>
+      'Dibuixa amb l\'estic dret. Mantén LB per ARMES, RB per ALA, tots dos per MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'cost $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'intocable';
+
+  @override
+  String get lessonWatch => 'MIRA';
+
+  @override
+  String get lessonTrace => 'RESSEGUEIX';
+
+  @override
+  String get lessonSlow => 'LENT';
+
+  @override
+  String get lessonLive => 'VELOCITAT PLENA';
+
+  @override
+  String get lessonStreak => 'CINC SEGUITS';
+
+  @override
+  String get lessonLearned => 'APRÈS';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Llisca l\'estic dret';
+
+  @override
+  String get hintLoop => 'Dibuixa un cercle: voles per sobre dels trets';
+
+  @override
+  String get hintStream => 'Prem LT: dos o tres raigs';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'CAP';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'següent $sigil en $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'DESAFIAMENT';
+
+  @override
+  String get arenaOn => 'SÍ';
+
+  @override
+  String get arenaOff => 'NO';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Nota $rating · millor $best';
+  }
 }

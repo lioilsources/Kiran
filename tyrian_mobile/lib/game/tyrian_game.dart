@@ -8,17 +8,33 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'challenge.dart';
+import 'capture_director.dart';
+import 'frame_capture.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
 import '../input/keyboard_input.dart';
 import '../input/gamepad_input.dart';
+import '../input/pad_scheme.dart';
+import '../input/keyboard_sigils.dart';
+import '../rendering/sigil_hud.dart';
+import '../systems/sigils/sigil_catalog.dart';
+import '../systems/sigils/sigil_recognizer.dart';
+import '../systems/sigils/sigil_hints.dart';
+import '../systems/sigils/sigil_spec.dart';
+import '../systems/training/arena.dart';
+import '../systems/training/arena_ghost.dart';
+import '../systems/training/lesson.dart';
+import '../systems/training/kata.dart';
+import '../systems/training/gauntlet.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
 import '../rendering/offscreen_markers.dart';
 import '../rendering/bg_zones.dart';
 import '../entities/vessel.dart';
+import '../entities/sigil_fx.dart';
 import '../entities/boss.dart';
 import '../entities/explosion.dart';
 import '../entities/death_effect.dart';
@@ -58,9 +74,11 @@ enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
 
 /// Endless is the roguelike run; campaign is the node map with its own vessel
-/// and save. Everything keyed on a sector index — level, art zone, which
-/// content loads, where progress is written — dispatches on this.
-enum GameMode { endless, campaign }
+/// and save; training is the sigil arena (Prompts/29), which borrows the
+/// endless ship and writes nothing back. Everything keyed on a sector index —
+/// level, art zone, which content loads, where progress is written —
+/// dispatches on this.
+enum GameMode { endless, campaign, training }
 
 class TyrianGame extends FlameGame
     with DragCallbacks, TapCallbacks, KeyboardEvents {
@@ -197,7 +215,303 @@ class TyrianGame extends FlameGame
       ? Campaign.levelForNode(index)
       : Sector.levelForIndex(index);
 
-  int zoneForIndex(int index) => BgZones.forLevel(levelForIndex(index));
+  int zoneForIndex(int index) => mode == GameMode.training
+      ? BgZones.forLevel(arena.level)
+      : BgZones.forLevel(levelForIndex(index));
+
+  // ── Training arena (Prompts/29 §3) ──
+
+  final ArenaSettings arena = ArenaSettings();
+  final ArenaStats arenaStats = ArenaStats();
+
+  /// The endless ship as it was before the arena, put back on the way out.
+  Map<String, dynamic>? _arenaReturn;
+
+  /// Fired when the arena wants its panel (pause, or after leaving).
+  VoidCallback? onArenaChanged;
+
+  /// The View button asked for the grimoire; main.dart shows it.
+  VoidCallback? onGrimoireRequested;
+  bool grimoireOpen = false;
+
+  void openGrimoire() {
+    // Co-op would pause the other player too; the grimoire is a solo stop.
+    if (state != GameState.playing || grimoireOpen || isCoop) return;
+    grimoireOpen = true;
+    togglePause();
+    onGrimoireRequested?.call();
+  }
+
+  void closeGrimoire() {
+    if (!grimoireOpen) return;
+    grimoireOpen = false;
+    suppressStartEdge();
+    if (state == GameState.paused) togglePause();
+  }
+
+  /// A pad that plays itself in the arena (demo and video capture).
+  static const bool sigilDemo = bool.fromEnvironment('SIGIL_DEMO');
+  ArenaGhost? ghost;
+
+  /// The drilled sigil's lesson (Prompts/29 §4), or null in free play.
+  Lesson? lesson;
+
+  /// The kata in progress (Prompts/29 §5.4), and how the last one went.
+  KataRun? kataRun;
+  String lastKataGrade = '';
+  double _kataRestart = 0;
+
+  /// Best grade per kata, kept across sessions.
+  static const _kataKey = 'kata_best';
+  final Map<String, String> kataBest = {};
+
+  static const _gradeOrder = ['', 'D', 'C', 'B', 'A', 'S'];
+
+  Future<void> _loadKataBest() async {
+    final prefs = await SharedPreferences.getInstance();
+    for (final e in prefs.getStringList(_kataKey) ?? const <String>[]) {
+      final i = e.indexOf('=');
+      if (i > 0) kataBest[e.substring(0, i)] = e.substring(i + 1);
+    }
+  }
+
+  void _kataFinished(KataRun run) {
+    lastKataGrade = run.grade;
+    showMessage('${run.kata.id.toUpperCase()} ${run.grade}');
+    final id = run.kata.id;
+    if (_gradeOrder.indexOf(run.grade) > _gradeOrder.indexOf(kataBest[id] ?? '')) {
+      kataBest[id] = run.grade;
+      SharedPreferences.getInstance().then((p) => p.setStringList(
+          _kataKey, [for (final e in kataBest.entries) '${e.key}=${e.value}']));
+    }
+    _kataRestart = 2.0;
+  }
+
+  /// World speed the arena runs at now: a filmed take's, the lesson's
+  /// step, or the dial.
+  double get arenaSpeed =>
+      capture?.speed ?? lesson?.worldSpeed ?? arena.speed;
+
+  /// Filming a lesson for the tutorial videos (Prompts/29 §6.3).
+  CaptureDirector? capture;
+
+  /// Set up the drill's lesson and the ghost that goes with it.
+  void _setupDrill() {
+    if (capture != null) return; // the director drives the ghost
+    final k = arena.kata;
+    if (k == null) {
+      kataRun = null;
+    } else if (kataRun?.kata != k) {
+      kataRun = KataRun(k, tempo: 1.0);
+      lastKataGrade = '';
+    }
+    vessel.caster.onHullHitHook = kataRun == null ? null : () => kataRun?.onHullHit();
+    final d = arena.drill;
+    if (d == null) {
+      lesson = null;
+      ghost = sigilDemo ? ArenaGhost.catalogue() : null;
+    } else {
+      final m = SigilMastery.instance.of(d);
+      if (lesson?.spec.kind != d) {
+        lesson = Lesson(SigilCatalog.of(d), learned: m.learned);
+      }
+      _syncGhost();
+    }
+    vessel.caster.countOnly = lesson?.countOnly ?? false;
+  }
+
+  /// The ghost plays while the lesson says watch (and always in demo mode).
+  void _syncGhost() {
+    final l = lesson;
+    if (l == null) return;
+    if (l.ghostPlays || sigilDemo) {
+      if (ghost?.sigils.singleOrNull?.kind != l.spec.kind) {
+        ghost = ArenaGhost([l.spec])..onDrawn = _onGhostDrawn;
+      }
+    } else {
+      ghost = null;
+    }
+  }
+
+  void _onGhostDrawn() {
+    lesson?.onDemo();
+    _syncGhost();
+    vessel.caster.countOnly = lesson?.countOnly ?? false;
+  }
+
+  /// Every gesture in the arena: the scoreboard, the lesson, the records.
+  void _onArenaReading(SigilReading r) {
+    if (ghost != null && !sigilDemo) return; // the ghost's own drawing
+    arenaStats.onReading(r);
+    final kr = kataRun;
+    if (kr != null && !kr.done) {
+      kr.onReading(r);
+      if (kr.done) _kataFinished(kr);
+    }
+    final l = lesson;
+    if (l != null) {
+      final was = l.phase;
+      l.onReading(r);
+      if (l.phase != was) {
+        _syncGhost();
+        vessel.caster.countOnly = l.countOnly;
+        if (l.learned) {
+          SigilMastery.instance.of(l.spec.kind).learned = true;
+          SigilMastery.instance.save();
+        }
+      }
+      final m = SigilMastery.instance.of(l.spec.kind);
+      if (l.bestTempo > m.bestTempo) m.bestTempo = l.bestTempo;
+    }
+    if (r.spec != null) SigilMastery.instance.of(r.spec!.kind).record(r, field: false);
+  }
+
+  /// Every gesture in real play: what the mastery ranks count.
+  void _onFieldReading(SigilReading r) {
+    final s = r.spec;
+    if (s != null) SigilMastery.instance.of(s.kind).record(r, field: true);
+    final h = SigilHints.instance.active;
+    if ((h == SigilHint.hop && s?.kind == SigilKind.hop) ||
+        (h == SigilHint.loop && s?.kind == SigilKind.loop)) {
+      SigilHints.instance.dismiss();
+    }
+  }
+
+  double _streamHintT = 0;
+
+  /// Real play only: offer each one-time hint when its moment comes
+  /// (Prompts/29 §5b). Returns the world speed factor (the first one slows
+  /// time so the player can read it).
+  double _sigilHints(double realDt) {
+    final hints = SigilHints.instance;
+    if (mode == GameMode.training || !sigilsEnabled || state != GameState.playing) {
+      return 1;
+    }
+    final c = vessel.caster;
+    if (c.meter.charge >= config.chargeMax) hints.offer(SigilHint.hop);
+    var ahead = 0;
+    for (final p in enemyProjectiles) {
+      final dx = p.position.x - vessel.position.x;
+      final dy = vessel.position.y - p.position.y;
+      if (dx.abs() < 120 && dy > 0 && dy < 260) ahead++;
+    }
+    if (ahead >= 8) hints.offer(SigilHint.loop);
+    final full = vessel.fire && vessel.genValue >= vessel.genMax * 0.999;
+    _streamHintT = full && c.gear == 1 ? _streamHintT + realDt : 0;
+    if (_streamHintT > 1.5) hints.offer(SigilHint.stream);
+    if (hints.active == SigilHint.stream && c.gear > 1) hints.dismiss();
+    final slow = hints.tick(realDt);
+    // In co-op the world is shared: the hint shows, time does not slow.
+    return isCoop ? 1 : slow;
+  }
+
+  /// Into the arena with the endless ship. Nothing it does is saved.
+  void enterArena() {
+    if (mode == GameMode.campaign) return;
+    _arenaReturn = vessel.toSaveMap();
+    mode = GameMode.training;
+    arenaStats.reset();
+    vessel.caster.onReading = _onArenaReading;
+    state = GameState.playing;
+    vessel.visible = true;
+    vessel.resetVessel();
+    vessel.resetPosition();
+    vessel.caster.meter.reset();
+    lesson = null;
+    // The demo shows every sigil, so it must be able to pay for every one.
+    if (sigilDemo) arena.infiniteCharge = true;
+    _startArenaRound();
+    _startSectorMusic();
+  }
+
+  /// Apply changed dials: a fresh boss, the ship patched up.
+  void restartArenaRound() {
+    if (mode != GameMode.training) return;
+    vessel.resetVessel();
+    vessel.resetPosition();
+    _startArenaRound();
+  }
+
+  void _startArenaRound() {
+    if (arena.gauntlet && capture == null) {
+      gauntlet ??= Gauntlet(startParts: arena.bossParts);
+    } else {
+      gauntlet = null;
+    }
+    loadSector(0);
+    vessel.caster.meter.infinite = arena.infiniteCharge;
+    vessel.caster.grantCompanions(arena.companions);
+    _setupDrill();
+  }
+
+  /// The boss beaten: the next one, straight away.
+  void _arenaBossDown() {
+    arenaStats.bossDown();
+    gauntlet?.bossDown(vessel.caster.meter.flow);
+    showMessage('${arenaStats.bosses}×');
+    vessel.shield = vessel.shieldMax;
+    _startArenaRound();
+  }
+
+  /// The ship would have died. The arena patches it up and counts it.
+  bool arenaKnockout(Vessel v) {
+    if (mode != GameMode.training) return false;
+    arenaStats.knockouts++;
+    if (gauntlet != null) {
+      _gauntletOver();
+      return true;
+    }
+    v.hp = v.hpMax;
+    v.shield = v.shieldMax;
+    v.dmgTaken = 4;
+    showMessage('K.O. ${arenaStats.knockouts}');
+    return true;
+  }
+
+  /// Back to the endless ship, exactly as it went in.
+  void leaveArena() {
+    if (mode != GameMode.training) return;
+    _leaveMission();
+    vessel.caster.onReading = _onFieldReading;
+    vessel.caster.meter.infinite = false;
+    vessel.caster.countOnly = false;
+    ghost = null;
+    lesson = null;
+    SigilMastery.instance.save();
+    final back = _arenaReturn;
+    if (back != null) vessel.loadFromSave(back);
+    _arenaReturn = null;
+    mode = GameMode.endless;
+    MusicService.instance.setPaused(false);
+    MusicService.instance.stop();
+    state = GameState.comCenter;
+  }
+
+  Sector _arenaSector() {
+    final g = gauntlet;
+    return g == null
+        ? arena.sector(Campaign.poweredDps(vessel))
+        : arena.sector(Campaign.poweredDps(vessel), parts: g.parts, hpMul: g.hpMul);
+  }
+
+  /// The endless boss run, when the dial is on.
+  Gauntlet? gauntlet;
+  int gauntletBest = 0;
+  static const _gauntletKey = 'gauntlet_best';
+
+  void _gauntletOver() {
+    final g = gauntlet!;
+    g.knockout();
+    if (g.rating > gauntletBest) {
+      gauntletBest = g.rating;
+      SharedPreferences.getInstance().then((p) => p.setInt(_gauntletKey, gauntletBest));
+    }
+    showMessage('GAUNTLET ${g.rating}');
+    gauntlet = Gauntlet(startParts: arena.bossParts);
+    vessel.resetVessel();
+    vessel.resetPosition();
+    _startArenaRound();
+  }
 
   /// Sector.complete is a one-way latch and the ComCenter only opens two
   /// seconds later, so without this the whole end-of-sector block ran on every
@@ -253,7 +567,7 @@ class TyrianGame extends FlameGame
   int get projectileCount {
     int count = enemyProjectiles.length;
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      for (final d in v.allGuns) {
         count += d.projectiles.length;
       }
     }
@@ -307,6 +621,8 @@ class TyrianGame extends FlameGame
     vessel = Vessel();
     await vessel.init();
     world.add(vessel);
+    vessel.caster.onGrimoire = openGrimoire;
+    vessel.caster.onReading = _onFieldReading;
 
     // Debug: screen/viewport info
     print('[LAYOUT] FlameGame.size: ${size.x} x ${size.y}');
@@ -392,7 +708,20 @@ class TyrianGame extends FlameGame
     // start always lands here a second time (see the 0x0 guard), which is how
     // the edge markers silently disappeared.
     camera.viewport.add(OffscreenEnemyMarkers());
+    camera.viewport.add(SigilHud());
   }
+
+  /// Sigils exist on this machine with this pad scheme — the arena is offered.
+  bool get sigilsAvailable =>
+      platform.isDesktop && PadSettings.scheme == PadScheme.sigil;
+
+  /// Right-stick combat is on (Prompts/28): desktop, the sigil scheme, and
+  /// this machine runs the game — solo or co-op host. The host's sigils
+  /// travel to the client as looks only (SigilSnap); a client draws none.
+  bool get sigilsEnabled =>
+      platform.isDesktop &&
+      PadSettings.scheme == PadScheme.sigil &&
+      coopRole != CoopRole.client;
 
   @override
   void onGameResize(Vector2 size) {
@@ -428,7 +757,7 @@ class TyrianGame extends FlameGame
       s.refreshSprite();
     }
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      for (final d in v.allGuns) {
         for (final p in d.projectiles) {
           p.refreshSprite();
         }
@@ -494,9 +823,11 @@ class TyrianGame extends FlameGame
     _clearActiveObjects();
     currentSector?.removeFromParent();
 
-    currentSector = mode == GameMode.campaign
-        ? Campaign.buildNode(index, this)
-        : Sector.create(index, this);
+    currentSector = switch (mode) {
+      GameMode.campaign => Campaign.buildNode(index, this),
+      GameMode.training => _arenaSector(),
+      GameMode.endless => Sector.create(index, this),
+    };
     if (currentSector != null) {
       world.add(currentSector!);
     }
@@ -553,7 +884,8 @@ class TyrianGame extends FlameGame
     enemyProjectiles.clear();
     // Clear player projectiles (world children via devices)
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      v.caster.reset();
+      for (final d in v.allGuns) {
         for (final p in [...d.projectiles]) {
           p.removeFromParent();
         }
@@ -583,9 +915,43 @@ class TyrianGame extends FlameGame
     }
   }
 
+  late final FrameCapture? _capture =
+      FrameCapture.enabled ? FrameCapture(this) : null;
+
   @override
   void update(double dt) {
     frameCount++;
+    _capture?.tick(dt);
+    // Filming runs off the wall clock: one fixed step per frame on disk.
+    final cap = capture;
+    if (cap != null) {
+      if (cap.busy || cap.finished) return;
+      dt = CaptureDirector.step;
+    }
+    // The pad is polled on the wall clock; the arena's world runs at its own.
+    _pollPad(dt);
+    var inputDt = dt;
+    final hintSlow = _sigilHints(dt);
+    if (hintSlow != 1) {
+      dt *= hintSlow;
+      inputDt = dt;
+    }
+    if (mode == GameMode.training) {
+      final s = arenaSpeed;
+      dt *= s;
+      // A standing world still reads the stick, at the wall clock.
+      inputDt = s > 0 ? dt : inputDt;
+      if (state == GameState.playing) {
+        arenaStats.tick(dt);
+        kataRun?.tick(dt);
+        if (_kataRestart > 0) {
+          _kataRestart -= dt;
+          if (_kataRestart <= 0 && arena.kata != null) {
+            kataRun = KataRun(arena.kata!);
+          }
+        }
+      }
+    }
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
       final snap = coopClient?.latestSnapshot;
@@ -602,7 +968,7 @@ class TyrianGame extends FlameGame
     }
 
     // Desktop keyboard + gamepad input (handles pause toggle even when paused)
-    _processDesktopInput(dt);
+    _processDesktopInput(inputDt);
 
     // Only the `playing` state runs the full simulation. paused, comCenter AND
     // gameOver keep just the visual backdrop alive — previously gameOver was
@@ -621,7 +987,7 @@ class TyrianGame extends FlameGame
     }
     super.update(dt);
     elapsed += dt;
-    AchievementService.instance.addPlayTime(dt);
+    if (mode != GameMode.training) AchievementService.instance.addPlayTime(dt);
     shardPool.update(dt);
     _updateWorldShift(dt);
 
@@ -675,6 +1041,8 @@ class TyrianGame extends FlameGame
         coopHost!.sendSnapshot(extractSnapshot());
       } catch (_) {}
     }
+
+    capture?.afterStep();
   }
 
   /// Immersive experiment (Feature 1): dead-zone camera follow.
@@ -726,6 +1094,7 @@ class TyrianGame extends FlameGame
   }
 
   void _onSectorComplete() {
+    if (mode == GameMode.training) return _arenaBossDown();
     SoundService.instance.play(SfxEvent.sectorComplete);
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
 
@@ -825,6 +1194,7 @@ class TyrianGame extends FlameGame
   /// vessel over the endless run's save.
   Future<void> saveProgress() async {
     if (coopRole == CoopRole.client) return; // client mirrors host, never owns state
+    if (mode == GameMode.training) return; // the arena borrows; it never writes
     if (mode == GameMode.campaign) return _saveCampaignProgress();
     final m = vessel.toSaveMap();
     await SaveService.saveGameState(
@@ -849,6 +1219,12 @@ class TyrianGame extends FlameGame
     // Awaited once at startup; from here on Challenge.selected is a plain
     // static read on the hot path.
     await Challenge.init();
+    await PadSettings.init();
+    await SigilMastery.instance.load();
+    await SigilHints.instance.load();
+    await _loadKataBest();
+    gauntletBest =
+        (await SharedPreferences.getInstance()).getInt(_gauntletKey) ?? 0;
     // Before any ship loads: a ship's racks take their mods out of the vault.
     await ModsState.instance.load();
     final state = await SaveService.loadGameState();
@@ -1166,16 +1542,20 @@ class TyrianGame extends FlameGame
     );
   }
 
-  /// Process keyboard + gamepad input — called at the start of update().
-  void _processDesktopInput(double dt) {
+  /// Poll the gamepad (~60Hz to avoid MethodChannel overhead).
+  void _pollPad(double realDt) {
     if (!platform.isDesktop) return;
-
-    // Poll gamepad (~60Hz to avoid MethodChannel overhead)
-    _gamepadPollTimer += dt;
+    _gamepadPollTimer += realDt;
     if (_gamepadPollTimer >= 1 / 60) {
       _gamepadPollTimer = 0;
       gamepadInput.poll(); // fire-and-forget async
     }
+  }
+
+  /// Process keyboard + gamepad input — called at the start of update().
+  void _processDesktopInput(double dt) {
+    if (!platform.isDesktop) return;
+
 
     // ── Keyboard pause (Escape) ──
     final pauseKb = keyboardInput.pause;
@@ -1200,11 +1580,15 @@ class TyrianGame extends FlameGame
 
     // ── Gamepad P1 (takes priority over keyboard) ──
     final gp = gamepadInput.primary;
+    final sigils = sigilsEnabled;
+    vessel.caster.enabled = sigils;
     final gpDx = GamepadInput.deadzone(gp.leftStickX);
     final gpDy = GamepadInput.deadzone(gp.leftStickY);
     final gpActive = gpDx != 0 || gpDy != 0 || gp.fire;
 
-    if (gpActive) {
+    if (sigils) {
+      _processSigilPad(gp, dt);
+    } else if (gpActive) {
       _applyMovement(vessel, gpDx, gpDy, _kbSpeed, dt);
       vessel.fire = gp.fire;
       vessel.fireRateMult = gp.fireRate;
@@ -1228,6 +1612,43 @@ class TyrianGame extends FlameGame
       vessel2!.fire = gp2.fire;
       vessel2!.fireRateMult = gp2.fireRate;
     }
+  }
+
+  final KeyboardSigils _keySigils = KeyboardSigils();
+
+  /// The pad in the sigil scheme (Prompts/28 §3): the left stick or the
+  /// keyboard flies, as far as a running sigil leaves the stick free; the
+  /// right stick draws; RT fires with its analog cadence.
+  void _processSigilPad(GamepadState gp, double dt) {
+    final g = mode == GameMode.training ? ghost : null;
+    final f = g != null
+        ? g.frame(dt)
+        : (gamepadInput.isConnected
+            ? PadFrame.read(gp, southpaw: PadSettings.southpaw)
+            : PadFrame.idle);
+    final caster = vessel.caster;
+    final typed = _keySigils.update(keyboardInput, dt);
+    final both = f.merge(_keySigils.frame(keyboardInput));
+    final (sx, sy) = platform.screenToGame(both.drawX, both.drawY);
+    caster.input(both, sx, sy, dt);
+    if (typed != null) caster.inputDots(typed.$1, typed.$2, typed.$3);
+
+    final padMoves = f.moveX != 0 || f.moveY != 0;
+    final mx = padMoves ? f.moveX : keyboardInput.dx;
+    final my = padMoves ? f.moveY : keyboardInput.dy;
+    final speed = _kbSpeed * (caster.focus ? config.focusSpeed : 1.0);
+    switch (caster.control) {
+      case SigilControl.none:
+        break;
+      case SigilControl.verticalOnly:
+        final (_, gy) = platform.screenToGame(mx, my);
+        vessel.adjustPosition(vessel.position.x,
+            vessel.position.y + gy * speed * vessel.agility * dt);
+      case SigilControl.full:
+        if (mx != 0 || my != 0) _applyMovement(vessel, mx, my, speed, dt);
+    }
+    vessel.fire = f.fire || keyboardInput.fire;
+    vessel.fireRateMult = f.fire ? f.fireRate : 1.0;
   }
 
   void showMessage(String msg) {
@@ -1264,13 +1685,27 @@ class TyrianGame extends FlameGame
         enemyProjectiles.removeAt(i);
         continue;
       }
+      // Companions that shield the ship take the shot first.
+      bool hit = _companionAbsorbs(p);
       // AABB collision with all vessels
-      bool hit = false;
       for (final v in allVessels) {
+        if (hit) break;
         if (_projectileHitsVessel(p, v)) {
+          // A sigil's phase: the shot flies on under the ship, and pays.
+          if (v.caster.untouchable) {
+            if (!p.grazed) {
+              p.grazed = true;
+              v.caster.onGraze(phase: true);
+            }
+            continue;
+          }
           if (!v.tryReflect(p)) v.takeDamage(p.damage.toInt());
           hit = true;
           break;
+        }
+        if (!p.grazed && v.caster.enabled && v.visible && _grazes(p, v)) {
+          p.grazed = true;
+          v.caster.onGraze(phase: false);
         }
       }
       if (hit) {
@@ -1278,6 +1713,31 @@ class TyrianGame extends FlameGame
         enemyProjectiles.removeAt(i);
       }
     }
+  }
+
+  /// A miss close enough to count as a graze (Prompts/28 §6.1).
+  bool _grazes(Projectile p, Vessel v) {
+    final dx = p.position.x + p.size.x / 2 - v.position.x;
+    final dy = p.position.y + p.size.y / 2 - v.position.y;
+    final r = v.grazeRadius;
+    return dx * dx + dy * dy <= r * r;
+  }
+
+  bool _companionAbsorbs(Projectile p) {
+    for (final v in allVessels) {
+      for (final c in v.caster.companions) {
+        if (!c.absorbs || c.gone) continue;
+        final hx = c.size.x * 0.6, hy = c.size.y * 0.6;
+        if (p.position.x < c.position.x + hx &&
+            p.position.x + p.size.x > c.position.x - hx &&
+            p.position.y < c.position.y + hy &&
+            p.position.y + p.size.y > c.position.y - hy) {
+          c.takeHit();
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   void _checkCollectablePickup() {
@@ -1552,10 +2012,10 @@ class TyrianGame extends FlameGame
       ));
     }
 
-    // Player projectiles (from both vessels)
+    // Player projectiles (from both vessels, companions and echo included)
     final pProjSnaps = <ProjSnap>[];
     for (final v in allVessels) {
-      for (final d in v.guns) {
+      for (final d in v.allGuns) {
         for (final p in d.projectiles) {
           if (!p.active) continue;
           final img = projSnapImgs.indexOf(p.imgName);
@@ -1630,6 +2090,7 @@ class TyrianGame extends FlameGame
       collectables: collSnaps,
       beams: beamSnaps,
       structures: structSnaps,
+      sigils: [vessel.caster.snap, vessel2?.caster.snap ?? SigilSnap.none],
     );
   }
 
@@ -1638,8 +2099,10 @@ class TyrianGame extends FlameGame
   void applySnapshot(GameSnapshot snap) {
     // Update vessel stats from snapshot
     _applyVesselSnap(vessel, snap.vessel1);
+    _mirrorSigils(vessel, snap.sigils1);
     if (vessel2 != null) {
       _applyVesselSnap(vessel2!, snap.vessel2);
+      _mirrorSigils(vessel2!, snap.sigils2);
     }
 
     // Update game state (don't let snapshot downgrade playing→comCenter on client —
@@ -1753,6 +2216,18 @@ class TyrianGame extends FlameGame
     }
 
     onOsdUpdate?.call();
+  }
+
+  final Map<Vessel, SigilMirrorView> _mirrorViews = {};
+
+  /// Client: draw what the host says this ship's sigils look like.
+  void _mirrorSigils(Vessel v, SigilSnap s) {
+    v.caster.applyMirror(s);
+    if (s.enabled && !_mirrorViews.containsKey(v)) {
+      final view = SigilMirrorView(v.caster);
+      _mirrorViews[v] = view;
+      world.add(view);
+    }
   }
 
   void _applyVesselSnap(Vessel v, VesselSnap snap) {

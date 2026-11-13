@@ -810,4 +810,261 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vaultAll => 'ALL';
+
+  @override
+  String get sigilMissUnknown => 'unknown shape';
+
+  @override
+  String get sigilMissTooSlow => 'too slow';
+
+  @override
+  String get sigilMissSkippedDot => 'skipped a dot';
+
+  @override
+  String get sigilMissLeftRimEarly => 'let go too early';
+
+  @override
+  String get sigilMissWrongDirection => 'drawn backwards';
+
+  @override
+  String get sigilMissWrongLayer => 'wrong shoulder button';
+
+  @override
+  String get sigilDry => 'not enough charge';
+
+  @override
+  String get sigilBusy => 'previous one still running';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BOSS PARTS';
+
+  @override
+  String get arenaBareCore => 'bare core';
+
+  @override
+  String get arenaCompanions => 'COMPANIONS';
+
+  @override
+  String get arenaCharge => 'CHARGE';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'WORLD SPEED';
+
+  @override
+  String get arenaDrill => 'DRILL';
+
+  @override
+  String get arenaFreePlay => 'FREE PLAY';
+
+  @override
+  String get arenaFight => 'FIGHT';
+
+  @override
+  String get arenaNewBoss => 'NEW BOSS';
+
+  @override
+  String get arenaLeave => 'LEAVE ARENA';
+
+  @override
+  String get arenaHint =>
+      'The boss comes back the moment it dies. Nothing here is saved.';
+
+  @override
+  String get arenaColCast => 'CAST';
+
+  @override
+  String get arenaColMiss => 'MISS';
+
+  @override
+  String get arenaColAvg => 'AVG';
+
+  @override
+  String get arenaColBest => 'BEST';
+
+  @override
+  String get arenaColTime => 'FASTEST';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bosses $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILS';
+
+  @override
+  String get padSchemeClassic => 'PAD: CLASSIC';
+
+  @override
+  String get padSouthpawOn => 'LEFT-HANDED: ON';
+
+  @override
+  String get padSouthpawOff => 'LEFT-HANDED: OFF';
+
+  @override
+  String get sigilDescHop => 'A quick hop the way you flick';
+
+  @override
+  String get sigilDescSidestep => 'A long sidestep across the field';
+
+  @override
+  String get sigilDescStrike =>
+      'Lunge forward with three heavy shots, then back';
+
+  @override
+  String get sigilDescRetreat => 'Fall back while covering fire goes forward';
+
+  @override
+  String get sigilDescDash =>
+      'A diagonal dash through fire, untouchable midway';
+
+  @override
+  String get sigilDescRoll => 'A barrel roll to the side, untouchable';
+
+  @override
+  String get sigilDescShadow => 'Lock under the nearest enemy and keep firing';
+
+  @override
+  String get sigilDescEcho =>
+      'A shadow replays your last two seconds at half damage';
+
+  @override
+  String get sigilDescLoop => 'Loop over the top: shots pass beneath you';
+
+  @override
+  String get sigilDescSlalom => 'An S-curve across the field with fanned fire';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Corkscrew forward firing all around, untouchable';
+
+  @override
+  String get sigilDescSnapshot => 'One heavy shot the way you flick';
+
+  @override
+  String get sigilDescBroadside => 'A salvo out of both flanks';
+
+  @override
+  String get sigilDescVolley => 'Five charged rays forward';
+
+  @override
+  String get sigilDescCaltrop => 'Drop a mine that swallows shots and blows up';
+
+  @override
+  String get sigilDescFrenzy => 'Guns fire faster for a few seconds';
+
+  @override
+  String get sigilDescStasis => 'Enemies and their shots slow to half speed';
+
+  @override
+  String get sigilDescHalo =>
+      'Shield recharges four times faster and nothing gets through';
+
+  @override
+  String get sigilDescRadial => 'A ring of sixteen shots';
+
+  @override
+  String get sigilDescStorm => 'Every gun fires flat out, for free';
+
+  @override
+  String get sigilDescPing => 'Companions focus fire where you flick';
+
+  @override
+  String get sigilDescWingman => 'Call a wingman to the flank you drew toward';
+
+  @override
+  String get sigilDescHunter =>
+      'Call a hunter that flies ahead and picks targets';
+
+  @override
+  String get sigilDescWarden =>
+      'Call a warden that takes the shots meant for you';
+
+  @override
+  String get sigilDescFormation => 'Companions switch between wide and wedge';
+
+  @override
+  String get sigilDescWhirl => 'Companions circle you and eat shots';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Companions dive and explode, paying charge back';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Draw with the right stick. Hold LB for ARMS, RB for WING, both for MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'cost $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'untouchable';
+
+  @override
+  String get lessonWatch => 'WATCH';
+
+  @override
+  String get lessonTrace => 'TRACE IT';
+
+  @override
+  String get lessonSlow => 'SLOW';
+
+  @override
+  String get lessonLive => 'FULL SPEED';
+
+  @override
+  String get lessonStreak => 'FIVE IN A ROW';
+
+  @override
+  String get lessonLearned => 'LEARNED';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Flick the right stick';
+
+  @override
+  String get hintLoop => 'Draw a circle: you fly over the shots';
+
+  @override
+  String get hintStream => 'Squeeze LT: two or three streams';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NONE';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'next $sigil in $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'GAUNTLET';
+
+  @override
+  String get arenaOn => 'ON';
+
+  @override
+  String get arenaOff => 'OFF';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Rating $rating · best $best';
+  }
 }

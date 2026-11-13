@@ -816,4 +816,262 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get vaultAll => 'SVE';
+
+  @override
+  String get sigilMissUnknown => 'nepoznat oblik';
+
+  @override
+  String get sigilMissTooSlow => 'presporo';
+
+  @override
+  String get sigilMissSkippedDot => 'preskočena točka';
+
+  @override
+  String get sigilMissLeftRimEarly => 'pušteno prerano';
+
+  @override
+  String get sigilMissWrongDirection => 'nacrtano unatrag';
+
+  @override
+  String get sigilMissWrongLayer => 'pogrešna rame-tipka';
+
+  @override
+  String get sigilDry => 'nedovoljno naboja';
+
+  @override
+  String get sigilBusy => 'prethodni još traje';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'DIJELOVI BOSSA';
+
+  @override
+  String get arenaBareCore => 'golo jezgro';
+
+  @override
+  String get arenaCompanions => 'PRATITELJI';
+
+  @override
+  String get arenaCharge => 'NABOJ';
+
+  @override
+  String get arenaChargeNormal => 'NORMALNO';
+
+  @override
+  String get arenaSpeed => 'BRZINA SVIJETA';
+
+  @override
+  String get arenaDrill => 'VJEŽBA';
+
+  @override
+  String get arenaFreePlay => 'SLOBODNA IGRA';
+
+  @override
+  String get arenaFight => 'BORBA';
+
+  @override
+  String get arenaNewBoss => 'NOVI BOSS';
+
+  @override
+  String get arenaLeave => 'NAPUSTI ARENU';
+
+  @override
+  String get arenaHint => 'Boss se vraća čim pogine. Ovdje se ništa ne sprema.';
+
+  @override
+  String get arenaColCast => 'BAČENO';
+
+  @override
+  String get arenaColMiss => 'PROMAŠAJ';
+
+  @override
+  String get arenaColAvg => 'PROS.';
+
+  @override
+  String get arenaColBest => 'NAJBOLJE';
+
+  @override
+  String get arenaColTime => 'NAJBRŽE';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossovi $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILI';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASIČNO';
+
+  @override
+  String get padSouthpawOn => 'LJEVORUKI: UKLJ.';
+
+  @override
+  String get padSouthpawOff => 'LJEVORUKI: ISKLJ.';
+
+  @override
+  String get sigilDescHop => 'Brzi skok u smjeru zamaha';
+
+  @override
+  String get sigilDescSidestep => 'Dugi bočni korak preko polja';
+
+  @override
+  String get sigilDescStrike => 'Iskorak s tri teška hica, pa natrag';
+
+  @override
+  String get sigilDescRetreat => 'Povlačenje dok zaštitna vatra ide naprijed';
+
+  @override
+  String get sigilDescDash =>
+      'Dijagonalni proboj kroz vatru, nedodirljiv na pola puta';
+
+  @override
+  String get sigilDescRoll => 'Bačvasti okret u stranu, nedodirljiv';
+
+  @override
+  String get sigilDescShadow =>
+      'Zaključaj se ispod najbližeg neprijatelja i pucaj';
+
+  @override
+  String get sigilDescEcho =>
+      'Sjena ponavlja tvoje zadnje dvije sekunde uz pola štete';
+
+  @override
+  String get sigilDescLoop => 'Petlja preko vrha: hici prolaze ispod tebe';
+
+  @override
+  String get sigilDescSlalom => 'S-zavoj preko polja s lepezastom vatrom';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Vadičep naprijed uz vatru na sve strane, nedodirljiv';
+
+  @override
+  String get sigilDescSnapshot => 'Jedan teški hitac u smjeru zamaha';
+
+  @override
+  String get sigilDescBroadside => 'Salva s oba boka';
+
+  @override
+  String get sigilDescVolley => 'Pet nabijenih zraka naprijed';
+
+  @override
+  String get sigilDescCaltrop => 'Ispusti minu koja guta hice i eksplodira';
+
+  @override
+  String get sigilDescFrenzy => 'Oružja nekoliko sekundi pucaju brže';
+
+  @override
+  String get sigilDescStasis =>
+      'Neprijatelji i njihovi hici usporavaju na pola';
+
+  @override
+  String get sigilDescHalo =>
+      'Štit se puni četiri puta brže i ništa ne prolazi';
+
+  @override
+  String get sigilDescRadial => 'Prsten od šesnaest hitaca';
+
+  @override
+  String get sigilDescStorm => 'Sva oružja pucaju punom snagom, besplatno';
+
+  @override
+  String get sigilDescPing => 'Pratitelji usmjeravaju vatru kamo zamahneš';
+
+  @override
+  String get sigilDescWingman =>
+      'Pozovi krilnog pratitelja na bok prema kojem si crtao';
+
+  @override
+  String get sigilDescHunter => 'Pozovi lovca koji leti naprijed i bira mete';
+
+  @override
+  String get sigilDescWarden =>
+      'Pozovi čuvara koji prima hice namijenjene tebi';
+
+  @override
+  String get sigilDescFormation =>
+      'Pratitelji mijenjaju široku i klinastu formaciju';
+
+  @override
+  String get sigilDescWhirl => 'Pratitelji kruže oko tebe i gutaju hice';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Pratitelji se obrušavaju i eksplodiraju, vraćajući naboj';
+
+  @override
+  String get grimoire => 'GRIMOAR';
+
+  @override
+  String get grimoireHint =>
+      'Crtaj desnom palicom. Drži LB za ORUŽJA, RB za KRILO, oba za MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'cijena $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'nedodirljiv';
+
+  @override
+  String get lessonWatch => 'GLEDAJ';
+
+  @override
+  String get lessonTrace => 'PRATI';
+
+  @override
+  String get lessonSlow => 'SPORO';
+
+  @override
+  String get lessonLive => 'PUNA BRZINA';
+
+  @override
+  String get lessonStreak => 'PET ZA REDOM';
+
+  @override
+  String get lessonLearned => 'NAUČENO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Zamahni desnom palicom';
+
+  @override
+  String get hintLoop => 'Nacrtaj krug: letiš iznad hitaca';
+
+  @override
+  String get hintStream => 'Stisni LT: dva ili tri mlaza';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NIŠTA';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'sljedeći $sigil za $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'IZAZOV';
+
+  @override
+  String get arenaOn => 'UKLJ.';
+
+  @override
+  String get arenaOff => 'ISKLJ.';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Ocjena $rating · najbolje $best';
+  }
 }

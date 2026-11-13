@@ -27,6 +27,10 @@ class SkinSelector extends StatefulWidget {
   /// selector.
   final VoidCallback? onCampaign;
 
+  /// Adds an ARENA entry: the sigil training arena (Prompts/29). The main
+  /// menu passes it only where sigils exist (desktop, sigil scheme).
+  final VoidCallback? onArena;
+
   /// Show a QUIT entry under the grid. Only the desktop main menu sets this:
   /// phones have a home button, and the pause-time selector must not offer a
   /// second, confusing exit.
@@ -37,6 +41,7 @@ class SkinSelector extends StatefulWidget {
       required this.onPlay,
       this.onDiscard,
       this.onCampaign,
+      this.onArena,
       this.showQuit = false});
 
   @override
@@ -131,17 +136,21 @@ class _SkinSelectorState extends State<SkinSelector> {
 
   bool get _hasQuit => widget.showQuit && platform.isDesktop;
   bool get _hasCampaign => widget.onCampaign != null;
+  bool get _hasArena => widget.onArena != null;
 
   /// Pseudo focus indices for the entries under the grid: DIFFICULTY first,
   /// then CAMPAIGN, then QUIT, each one past the last.
   int get _challengeIndex => kSkins.length;
   int get _campaignIndex => kSkins.length + 1;
-  int get _quitIndex => kSkins.length + 1 + (_hasCampaign ? 1 : 0);
+  int get _arenaIndex => kSkins.length + 1 + (_hasCampaign ? 1 : 0);
+  int get _quitIndex =>
+      kSkins.length + 1 + (_hasCampaign ? 1 : 0) + (_hasArena ? 1 : 0);
 
   /// The entries below the grid, top to bottom.
   List<int> get _footer => [
         _challengeIndex,
         if (_hasCampaign) _campaignIndex,
+        if (_hasArena) _arenaIndex,
         if (_hasQuit) _quitIndex,
       ];
 
@@ -177,6 +186,8 @@ class _SkinSelectorState extends State<SkinSelector> {
       _quit();
     } else if (_hasCampaign && _focusIndex == _campaignIndex) {
       widget.onCampaign!();
+    } else if (_hasArena && _focusIndex == _arenaIndex) {
+      widget.onArena!();
     } else {
       _selectAndPlay(kSkins[_focusIndex].id);
     }
@@ -413,6 +424,37 @@ class _SkinSelectorState extends State<SkinSelector> {
                           color: _focusIndex == _campaignIndex
                               ? Colors.cyanAccent
                               : Colors.cyanAccent.withAlpha(200),
+                          fontSize: 14,
+                          letterSpacing: 4,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              if (_hasArena)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: InkWell(
+                    onTap: () => widget.onArena!(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _focusIndex == _arenaIndex
+                              ? const Color(0xFFFFB84D)
+                              : const Color(0xFFFFB84D).withAlpha(110),
+                          width: _focusIndex == _arenaIndex ? 2 : 1,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        context.l10n.arena,
+                        style: TextStyle(
+                          color: _focusIndex == _arenaIndex
+                              ? const Color(0xFFFFB84D)
+                              : const Color(0xFFFFB84D).withAlpha(200),
                           fontSize: 14,
                           letterSpacing: 4,
                           fontWeight: FontWeight.bold,

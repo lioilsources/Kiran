@@ -816,4 +816,260 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get vaultAll => 'VŠE';
+
+  @override
+  String get sigilMissUnknown => 'neznámý tvar';
+
+  @override
+  String get sigilMissTooSlow => 'moc pomalu';
+
+  @override
+  String get sigilMissSkippedDot => 'vynechaný bod';
+
+  @override
+  String get sigilMissLeftRimEarly => 'pustil jsi moc brzy';
+
+  @override
+  String get sigilMissWrongDirection => 'nakresleno pozpátku';
+
+  @override
+  String get sigilMissWrongLayer => 'špatné ramenní tlačítko';
+
+  @override
+  String get sigilDry => 'málo náboje';
+
+  @override
+  String get sigilBusy => 'předchozí ještě běží';
+
+  @override
+  String get arena => 'ARÉNA';
+
+  @override
+  String get arenaBossParts => 'ČÁSTI BOSSE';
+
+  @override
+  String get arenaBareCore => 'holé jádro';
+
+  @override
+  String get arenaCompanions => 'COMPANIONI';
+
+  @override
+  String get arenaCharge => 'NÁBOJ';
+
+  @override
+  String get arenaChargeNormal => 'NORMÁLNÍ';
+
+  @override
+  String get arenaSpeed => 'RYCHLOST SVĚTA';
+
+  @override
+  String get arenaDrill => 'DRIL';
+
+  @override
+  String get arenaFreePlay => 'VOLNÁ HRA';
+
+  @override
+  String get arenaFight => 'DO BOJE';
+
+  @override
+  String get arenaNewBoss => 'NOVÝ BOSS';
+
+  @override
+  String get arenaLeave => 'OPUSTIT ARÉNU';
+
+  @override
+  String get arenaHint => 'Boss se vrátí hned, jak padne. Nic se tu neukládá.';
+
+  @override
+  String get arenaColCast => 'SESLÁNO';
+
+  @override
+  String get arenaColMiss => 'MIMO';
+
+  @override
+  String get arenaColAvg => 'PRŮMĚR';
+
+  @override
+  String get arenaColBest => 'NEJLEPŠÍ';
+
+  @override
+  String get arenaColTime => 'NEJRYCHLEJI';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossů $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILY';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASICKY';
+
+  @override
+  String get padSouthpawOn => 'LEVÁK: ZAP';
+
+  @override
+  String get padSouthpawOff => 'LEVÁK: VYP';
+
+  @override
+  String get sigilDescHop => 'Rychlý odskok tam, kam švihneš';
+
+  @override
+  String get sigilDescSidestep => 'Dlouhý úkrok napříč polem';
+
+  @override
+  String get sigilDescStrike => 'Výpad vpřed se třemi těžkými střelami a zpět';
+
+  @override
+  String get sigilDescRetreat => 'Ústup, zatímco krycí palba letí vpřed';
+
+  @override
+  String get sigilDescDash => 'Šikmý průlet palbou, v půli nezranitelný';
+
+  @override
+  String get sigilDescRoll => 'Výkrut do strany, nezranitelný';
+
+  @override
+  String get sigilDescShadow => 'Přilep se pod nejbližšího nepřítele a pal dál';
+
+  @override
+  String get sigilDescEcho =>
+      'Stín zopakuje tvé poslední dvě sekundy s polovičním poškozením';
+
+  @override
+  String get sigilDescLoop => 'Přemet přes vrch: střely proletí pod tebou';
+
+  @override
+  String get sigilDescSlalom => 'Esíčko přes pole s vějířovou palbou';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Vývrtka vpřed s palbou do všech stran, nezranitelný';
+
+  @override
+  String get sigilDescSnapshot => 'Jedna těžká střela tam, kam švihneš';
+
+  @override
+  String get sigilDescBroadside => 'Dávka z obou boků';
+
+  @override
+  String get sigilDescVolley => 'Pět nabitých paprsků vpřed';
+
+  @override
+  String get sigilDescCaltrop => 'Polož minu, která pohltí střely a vybuchne';
+
+  @override
+  String get sigilDescFrenzy => 'Zbraně pár sekund střílí rychleji';
+
+  @override
+  String get sigilDescStasis => 'Nepřátelé i jejich střely zpomalí na polovinu';
+
+  @override
+  String get sigilDescHalo =>
+      'Štít se dobíjí čtyřikrát rychleji a nic neprojde';
+
+  @override
+  String get sigilDescRadial => 'Kruh šestnácti střel';
+
+  @override
+  String get sigilDescStorm => 'Všechny zbraně pálí naplno, zdarma';
+
+  @override
+  String get sigilDescPing => 'Companioni soustředí palbu tam, kam švihneš';
+
+  @override
+  String get sigilDescWingman =>
+      'Přivolej křídelníka na bok, ke kterému jsi kreslil';
+
+  @override
+  String get sigilDescHunter =>
+      'Přivolej lovce, který letí napřed a vybírá cíle';
+
+  @override
+  String get sigilDescWarden =>
+      'Přivolej strážce, který chytá střely mířené na tebe';
+
+  @override
+  String get sigilDescFormation =>
+      'Companioni přepínají mezi rozestupem a klínem';
+
+  @override
+  String get sigilDescWhirl => 'Companioni krouží kolem tebe a polykají střely';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Companioni se vrhnou a vybuchnou, vrátí ti náboj';
+
+  @override
+  String get grimoire => 'GRIMOÁR';
+
+  @override
+  String get grimoireHint =>
+      'Kresli pravou páčkou. Drž LB pro ARMS, RB pro WING, obě pro MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'cena $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'nezranitelný';
+
+  @override
+  String get lessonWatch => 'DÍVEJ SE';
+
+  @override
+  String get lessonTrace => 'OBKRESLI';
+
+  @override
+  String get lessonSlow => 'POMALU';
+
+  @override
+  String get lessonLive => 'NAOSTRO';
+
+  @override
+  String get lessonStreak => 'PĚTKRÁT PO SOBĚ';
+
+  @override
+  String get lessonLearned => 'NAUČENO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Švihni pravou páčkou';
+
+  @override
+  String get hintLoop => 'Nakresli kruh: přeletíš nad střelami';
+
+  @override
+  String get hintStream => 'Stiskni LT: dva nebo tři proudy';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'ŽÁDNÁ';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'další $sigil za $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'GAUNTLET';
+
+  @override
+  String get arenaOn => 'ZAP';
+
+  @override
+  String get arenaOff => 'VYP';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Hodnocení $rating · nejlepší $best';
+  }
 }

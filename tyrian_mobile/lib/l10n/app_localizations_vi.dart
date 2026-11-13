@@ -805,4 +805,258 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get vaultAll => 'TẤT CẢ';
+
+  @override
+  String get sigilMissUnknown => 'hình không xác định';
+
+  @override
+  String get sigilMissTooSlow => 'quá chậm';
+
+  @override
+  String get sigilMissSkippedDot => 'bỏ sót một điểm';
+
+  @override
+  String get sigilMissLeftRimEarly => 'thả ra quá sớm';
+
+  @override
+  String get sigilMissWrongDirection => 'vẽ ngược chiều';
+
+  @override
+  String get sigilMissWrongLayer => 'sai nút vai';
+
+  @override
+  String get sigilDry => 'không đủ năng lượng';
+
+  @override
+  String get sigilBusy => 'chiêu trước vẫn đang chạy';
+
+  @override
+  String get arena => 'ĐẤU TRƯỜNG';
+
+  @override
+  String get arenaBossParts => 'BỘ PHẬN TRÙM';
+
+  @override
+  String get arenaBareCore => 'chỉ có lõi';
+
+  @override
+  String get arenaCompanions => 'BẠN ĐỒNG HÀNH';
+
+  @override
+  String get arenaCharge => 'NĂNG LƯỢNG';
+
+  @override
+  String get arenaChargeNormal => 'BÌNH THƯỜNG';
+
+  @override
+  String get arenaSpeed => 'TỐC ĐỘ THẾ GIỚI';
+
+  @override
+  String get arenaDrill => 'LUYỆN TẬP';
+
+  @override
+  String get arenaFreePlay => 'TỰ DO';
+
+  @override
+  String get arenaFight => 'CHIẾN ĐẤU';
+
+  @override
+  String get arenaNewBoss => 'TRÙM MỚI';
+
+  @override
+  String get arenaLeave => 'RỜI ĐẤU TRƯỜNG';
+
+  @override
+  String get arenaHint =>
+      'Trùm quay lại ngay khi gục ngã. Ở đây không lưu gì cả.';
+
+  @override
+  String get arenaColCast => 'THÀNH';
+
+  @override
+  String get arenaColMiss => 'TRƯỢT';
+
+  @override
+  String get arenaColAvg => 'TB';
+
+  @override
+  String get arenaColBest => 'TỐT NHẤT';
+
+  @override
+  String get arenaColTime => 'NHANH NHẤT';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Trùm $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'TAY CẦM: ẤN CHÚ';
+
+  @override
+  String get padSchemeClassic => 'TAY CẦM: CỔ ĐIỂN';
+
+  @override
+  String get padSouthpawOn => 'TAY TRÁI: BẬT';
+
+  @override
+  String get padSouthpawOff => 'TAY TRÁI: TẮT';
+
+  @override
+  String get sigilDescHop => 'Nhảy nhanh theo hướng gạt cần';
+
+  @override
+  String get sigilDescSidestep => 'Bước ngang dài băng qua chiến trường';
+
+  @override
+  String get sigilDescStrike => 'Lao lên với ba phát đạn nặng rồi lùi lại';
+
+  @override
+  String get sigilDescRetreat =>
+      'Lùi lại trong khi hỏa lực yểm trợ bắn lên trước';
+
+  @override
+  String get sigilDescDash => 'Lướt chéo xuyên làn đạn, bất tử giữa chừng';
+
+  @override
+  String get sigilDescRoll => 'Cuộn thân sang bên, bất tử';
+
+  @override
+  String get sigilDescShadow => 'Bám dưới địch gần nhất và tiếp tục bắn';
+
+  @override
+  String get sigilDescEcho =>
+      'Một bóng mờ lặp lại hai giây cuối của bạn với nửa sát thương';
+
+  @override
+  String get sigilDescLoop => 'Nhào lộn qua phía trên: đạn bay bên dưới bạn';
+
+  @override
+  String get sigilDescSlalom =>
+      'Đường cong chữ S băng qua chiến trường với đạn hình quạt';
+
+  @override
+  String get sigilDescCorkscrew => 'Xoắn ốc lên trước, bắn tứ phía, bất tử';
+
+  @override
+  String get sigilDescSnapshot => 'Một phát đạn nặng theo hướng gạt cần';
+
+  @override
+  String get sigilDescBroadside => 'Một loạt đạn từ hai bên sườn';
+
+  @override
+  String get sigilDescVolley => 'Năm tia tích năng lượng bắn lên trước';
+
+  @override
+  String get sigilDescCaltrop => 'Thả mìn nuốt đạn rồi phát nổ';
+
+  @override
+  String get sigilDescFrenzy => 'Súng bắn nhanh hơn trong vài giây';
+
+  @override
+  String get sigilDescStasis => 'Địch và đạn của chúng chậm còn một nửa';
+
+  @override
+  String get sigilDescHalo => 'Khiên hồi nhanh gấp bốn và không gì xuyên qua';
+
+  @override
+  String get sigilDescRadial => 'Một vòng mười sáu viên đạn';
+
+  @override
+  String get sigilDescStorm => 'Mọi súng bắn hết cỡ, miễn phí';
+
+  @override
+  String get sigilDescPing => 'Bạn đồng hành dồn hỏa lực theo hướng gạt cần';
+
+  @override
+  String get sigilDescWingman => 'Gọi máy bay hộ tống tới bên sườn bạn đã vẽ';
+
+  @override
+  String get sigilDescHunter => 'Gọi thợ săn bay lên trước và chọn mục tiêu';
+
+  @override
+  String get sigilDescWarden => 'Gọi hộ vệ đỡ đạn thay bạn';
+
+  @override
+  String get sigilDescFormation =>
+      'Bạn đồng hành đổi giữa đội hình rộng và hình nêm';
+
+  @override
+  String get sigilDescWhirl => 'Bạn đồng hành bay vòng quanh bạn và nuốt đạn';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Bạn đồng hành lao xuống và phát nổ, hoàn lại năng lượng';
+
+  @override
+  String get grimoire => 'SÁCH PHÉP';
+
+  @override
+  String get grimoireHint =>
+      'Vẽ bằng cần phải. Giữ LB cho ARMS, RB cho WING, cả hai cho MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'giá $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'bất tử';
+
+  @override
+  String get lessonWatch => 'XEM';
+
+  @override
+  String get lessonTrace => 'VẼ THEO';
+
+  @override
+  String get lessonSlow => 'CHẬM';
+
+  @override
+  String get lessonLive => 'TỐC ĐỘ THẬT';
+
+  @override
+  String get lessonStreak => 'NĂM LẦN LIÊN TIẾP';
+
+  @override
+  String get lessonLearned => 'ĐÃ THUỘC';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'NHỊP $pct %';
+  }
+
+  @override
+  String get hintHop => 'Gạt nhanh cần phải';
+
+  @override
+  String get hintLoop => 'Vẽ một vòng tròn: bay qua làn đạn';
+
+  @override
+  String get hintStream => 'Bóp LT: hai hoặc ba luồng đạn';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'KHÔNG';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'tiếp theo $sigil sau $secs giây';
+  }
+
+  @override
+  String get arenaGauntlet => 'THỬ THÁCH';
+
+  @override
+  String get arenaOn => 'BẬT';
+
+  @override
+  String get arenaOff => 'TẮT';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Điểm $rating · cao nhất $best';
+  }
 }

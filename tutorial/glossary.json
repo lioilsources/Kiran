@@ -1,0 +1,13 @@
+{
+  "_doc": "Spoken forms for the voice only; subtitles keep the written text. Sigil names are proper nouns and stay in capitals on screen in every language.",
+  "spoken": {
+    "cs": {"Lúp.": "Lúp."},
+    "en": {},
+    "ja": {}
+  },
+  "subtitle": {
+    "cs": {"Lúp.": "LOOP"},
+    "en": {"Loop.": "LOOP"},
+    "ja": {"ループ。": "LOOP"}
+  }
+}

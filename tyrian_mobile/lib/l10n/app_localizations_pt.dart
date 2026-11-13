@@ -814,6 +814,269 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get vaultAll => 'TODOS';
+
+  @override
+  String get sigilMissUnknown => 'forma desconhecida';
+
+  @override
+  String get sigilMissTooSlow => 'lento demais';
+
+  @override
+  String get sigilMissSkippedDot => 'ponto pulado';
+
+  @override
+  String get sigilMissLeftRimEarly => 'soltou cedo demais';
+
+  @override
+  String get sigilMissWrongDirection => 'desenhado ao contrário';
+
+  @override
+  String get sigilMissWrongLayer => 'botão de ombro errado';
+
+  @override
+  String get sigilDry => 'carga insuficiente';
+
+  @override
+  String get sigilBusy => 'o anterior ainda está ativo';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'PARTES DO CHEFE';
+
+  @override
+  String get arenaBareCore => 'só o núcleo';
+
+  @override
+  String get arenaCompanions => 'COMPANHEIROS';
+
+  @override
+  String get arenaCharge => 'CARGA';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VELOCIDADE';
+
+  @override
+  String get arenaDrill => 'TREINO';
+
+  @override
+  String get arenaFreePlay => 'LIVRE';
+
+  @override
+  String get arenaFight => 'LUTAR';
+
+  @override
+  String get arenaNewBoss => 'NOVO CHEFE';
+
+  @override
+  String get arenaLeave => 'SAIR DA ARENA';
+
+  @override
+  String get arenaHint => 'O chefe volta assim que cai. Nada aqui é salvo.';
+
+  @override
+  String get arenaColCast => 'LANÇADOS';
+
+  @override
+  String get arenaColMiss => 'FALHAS';
+
+  @override
+  String get arenaColAvg => 'MÉDIA';
+
+  @override
+  String get arenaColBest => 'MELHOR';
+
+  @override
+  String get arenaColTime => 'MAIS RÁPIDO';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Chefes $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'CONTROLE: SIGILOS';
+
+  @override
+  String get padSchemeClassic => 'CONTROLE: CLÁSSICO';
+
+  @override
+  String get padSouthpawOn => 'CANHOTO: SIM';
+
+  @override
+  String get padSouthpawOff => 'CANHOTO: NÃO';
+
+  @override
+  String get sigilDescHop => 'Um salto rápido na direção do analógico';
+
+  @override
+  String get sigilDescSidestep => 'Um longo passo lateral pelo campo';
+
+  @override
+  String get sigilDescStrike =>
+      'Investida à frente com três tiros pesados, e volta';
+
+  @override
+  String get sigilDescRetreat =>
+      'Recue enquanto o fogo de cobertura vai à frente';
+
+  @override
+  String get sigilDescDash =>
+      'Arrancada diagonal pelo fogo, invulnerável no meio';
+
+  @override
+  String get sigilDescRoll => 'Um tonneau para o lado, invulnerável';
+
+  @override
+  String get sigilDescShadow =>
+      'Grude sob o inimigo mais próximo e continue atirando';
+
+  @override
+  String get sigilDescEcho =>
+      'Uma sombra repete seus últimos dois segundos com metade do dano';
+
+  @override
+  String get sigilDescLoop =>
+      'Um looping por cima: os tiros passam por baixo de você';
+
+  @override
+  String get sigilDescSlalom => 'Uma curva em S pelo campo com tiros em leque';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Saca-rolhas à frente atirando para todo lado, invulnerável';
+
+  @override
+  String get sigilDescSnapshot => 'Um tiro pesado na direção do analógico';
+
+  @override
+  String get sigilDescBroadside => 'Uma rajada pelos dois flancos';
+
+  @override
+  String get sigilDescVolley => 'Cinco raios carregados à frente';
+
+  @override
+  String get sigilDescCaltrop => 'Solte uma mina que engole tiros e explode';
+
+  @override
+  String get sigilDescFrenzy =>
+      'As armas atiram mais rápido por alguns segundos';
+
+  @override
+  String get sigilDescStasis =>
+      'Inimigos e seus tiros caem para metade da velocidade';
+
+  @override
+  String get sigilDescHalo =>
+      'O escudo recarrega quatro vezes mais rápido e nada passa';
+
+  @override
+  String get sigilDescRadial => 'Um anel de dezesseis tiros';
+
+  @override
+  String get sigilDescStorm => 'Todas as armas atiram no máximo, de graça';
+
+  @override
+  String get sigilDescPing =>
+      'Os companheiros concentram fogo na direção do analógico';
+
+  @override
+  String get sigilDescWingman => 'Chame um ala para o flanco que você desenhou';
+
+  @override
+  String get sigilDescHunter =>
+      'Chame um caçador que voa à frente e escolhe alvos';
+
+  @override
+  String get sigilDescWarden =>
+      'Chame um guardião que leva os tiros mirados em você';
+
+  @override
+  String get sigilDescFormation =>
+      'Os companheiros alternam formação aberta e em cunha';
+
+  @override
+  String get sigilDescWhirl => 'Os companheiros circulam você e absorvem tiros';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Os companheiros mergulham e explodem, devolvendo carga';
+
+  @override
+  String get grimoire => 'GRIMÓRIO';
+
+  @override
+  String get grimoireHint =>
+      'Desenhe com o analógico direito. Segure LB para ARMS, RB para WING, ambos para MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'custo $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'invulnerável';
+
+  @override
+  String get lessonWatch => 'OBSERVE';
+
+  @override
+  String get lessonTrace => 'DECALQUE';
+
+  @override
+  String get lessonSlow => 'DEVAGAR';
+
+  @override
+  String get lessonLive => 'VELOCIDADE TOTAL';
+
+  @override
+  String get lessonStreak => 'CINCO SEGUIDAS';
+
+  @override
+  String get lessonLearned => 'APRENDIDO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Dê um toque no analógico direito';
+
+  @override
+  String get hintLoop => 'Desenhe um círculo: você passa por cima dos tiros';
+
+  @override
+  String get hintStream => 'Aperte LT: duas ou três rajadas';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NENHUMA';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'próximo $sigil em $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'DESAFIO';
+
+  @override
+  String get arenaOn => 'SIM';
+
+  @override
+  String get arenaOff => 'NÃO';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Nota $rating · melhor $best';
+  }
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -1627,4 +1890,263 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get vaultAll => 'TODOS';
+
+  @override
+  String get sigilMissUnknown => 'forma desconhecida';
+
+  @override
+  String get sigilMissTooSlow => 'demasiado lento';
+
+  @override
+  String get sigilMissSkippedDot => 'saltou um ponto';
+
+  @override
+  String get sigilMissLeftRimEarly => 'largou cedo demais';
+
+  @override
+  String get sigilMissWrongDirection => 'desenhado ao contrário';
+
+  @override
+  String get sigilMissWrongLayer => 'botão de ombro errado';
+
+  @override
+  String get sigilDry => 'carga insuficiente';
+
+  @override
+  String get sigilBusy => 'o anterior ainda está ativo';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'PARTES DO CHEFE';
+
+  @override
+  String get arenaBareCore => 'núcleo exposto';
+
+  @override
+  String get arenaCompanions => 'COMPANHEIROS';
+
+  @override
+  String get arenaCharge => 'CARGA';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VELOCIDADE DO MUNDO';
+
+  @override
+  String get arenaDrill => 'TREINO';
+
+  @override
+  String get arenaFreePlay => 'JOGO LIVRE';
+
+  @override
+  String get arenaFight => 'COMBATER';
+
+  @override
+  String get arenaNewBoss => 'NOVO CHEFE';
+
+  @override
+  String get arenaLeave => 'SAIR DA ARENA';
+
+  @override
+  String get arenaHint =>
+      'O chefe volta assim que morre. Nada aqui é guardado.';
+
+  @override
+  String get arenaColCast => 'USOS';
+
+  @override
+  String get arenaColMiss => 'FALHAS';
+
+  @override
+  String get arenaColAvg => 'MÉDIA';
+
+  @override
+  String get arenaColBest => 'MELHOR';
+
+  @override
+  String get arenaColTime => 'MAIS RÁPIDO';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Chefes $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'COMANDO: SIGILOS';
+
+  @override
+  String get padSchemeClassic => 'COMANDO: CLÁSSICO';
+
+  @override
+  String get padSouthpawOn => 'CANHOTO: SIM';
+
+  @override
+  String get padSouthpawOff => 'CANHOTO: NÃO';
+
+  @override
+  String get sigilDescHop => 'Um salto rápido na direção do gesto';
+
+  @override
+  String get sigilDescSidestep => 'Um longo passo lateral pelo campo';
+
+  @override
+  String get sigilDescStrike => 'Investida com três tiros pesados e regresso';
+
+  @override
+  String get sigilDescRetreat => 'Recua enquanto o fogo de cobertura avança';
+
+  @override
+  String get sigilDescDash => 'Arranque diagonal pelo fogo, intocável a meio';
+
+  @override
+  String get sigilDescRoll => 'Um tonneau para o lado, intocável';
+
+  @override
+  String get sigilDescShadow => 'Fixa-se sob o inimigo mais próximo e dispara';
+
+  @override
+  String get sigilDescEcho =>
+      'Uma sombra repete os teus últimos dois segundos com metade do dano';
+
+  @override
+  String get sigilDescLoop => 'Looping por cima: os tiros passam por baixo';
+
+  @override
+  String get sigilDescSlalom => 'Uma curva em S pelo campo com fogo em leque';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Saca-rolhas em frente a disparar em redor, intocável';
+
+  @override
+  String get sigilDescSnapshot => 'Um tiro pesado na direção do gesto';
+
+  @override
+  String get sigilDescBroadside => 'Uma salva pelos dois flancos';
+
+  @override
+  String get sigilDescVolley => 'Cinco raios carregados em frente';
+
+  @override
+  String get sigilDescCaltrop => 'Larga uma mina que engole tiros e explode';
+
+  @override
+  String get sigilDescFrenzy =>
+      'As armas disparam mais depressa por uns segundos';
+
+  @override
+  String get sigilDescStasis =>
+      'Inimigos e os seus tiros a metade da velocidade';
+
+  @override
+  String get sigilDescHalo =>
+      'O escudo recarrega quatro vezes mais rápido e nada passa';
+
+  @override
+  String get sigilDescRadial => 'Um anel de dezasseis tiros';
+
+  @override
+  String get sigilDescStorm => 'Todas as armas a fundo, de graça';
+
+  @override
+  String get sigilDescPing =>
+      'Os companheiros concentram fogo na direção do gesto';
+
+  @override
+  String get sigilDescWingman => 'Chama um ala para o flanco desenhado';
+
+  @override
+  String get sigilDescHunter =>
+      'Chama um caçador que voa à frente e escolhe alvos';
+
+  @override
+  String get sigilDescWarden => 'Chama um guardião que leva os tiros por ti';
+
+  @override
+  String get sigilDescFormation =>
+      'Os companheiros alternam entre aberta e cunha';
+
+  @override
+  String get sigilDescWhirl =>
+      'Os companheiros giram à tua volta e absorvem tiros';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Os companheiros mergulham e explodem, devolvendo carga';
+
+  @override
+  String get grimoire => 'GRIMÓRIO';
+
+  @override
+  String get grimoireHint =>
+      'Desenha com o stick direito. LB para ARMAS, RB para ALAS, ambos para MEGA RAJADA.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'custo $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'intocável';
+
+  @override
+  String get lessonWatch => 'OBSERVA';
+
+  @override
+  String get lessonTrace => 'DESENHA';
+
+  @override
+  String get lessonSlow => 'LENTO';
+
+  @override
+  String get lessonLive => 'VELOCIDADE TOTAL';
+
+  @override
+  String get lessonStreak => 'CINCO SEGUIDOS';
+
+  @override
+  String get lessonLearned => 'APRENDIDO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'RITMO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Move rápido o stick direito';
+
+  @override
+  String get hintLoop => 'Desenha um círculo: voas por cima dos tiros';
+
+  @override
+  String get hintStream => 'Prime LT: dois ou três feixes';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NENHUM';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'próximo $sigil em $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'DESAFIO';
+
+  @override
+  String get arenaOn => 'SIM';
+
+  @override
+  String get arenaOff => 'NÃO';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Nota $rating · melhor $best';
+  }
 }

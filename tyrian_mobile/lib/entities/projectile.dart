@@ -26,6 +26,9 @@ class Projectile extends PositionComponent with HasGameReference {
   /// Enemy shots run on the enemies' clock, which TIMEWARP slows.
   bool isEnemy = false;
 
+  /// An enemy shot that already paid a graze (Prompts/28 §6.1) — once each.
+  bool grazed = false;
+
   // ── Mod state, reset on every activation ──
   /// The plan that fired this shot; null for enemy shots.
   ShotPlan? plan;

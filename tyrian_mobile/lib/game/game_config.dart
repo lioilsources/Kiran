@@ -208,3 +208,87 @@ const Color hostileGlowL3      = Color(0xFFFF8800); // orange (collision dmg 7�
 const Color hostileGlowL4      = Color(0xFFFF2200); // red    (collision dmg 13–18)
 const Color hostileGlowBoss    = Color(0xFFFF00CC); // magenta (collision dmg 19+)
 const Color structureGlowColor = Color(0xCCAAAAAA); // light gray
+
+// --- Sigils: right-stick combat (Prompts/28) --------------------------------
+// The catalogue's own numbers (cost, duration, phase windows, paths) live in
+// systems/sigils/sigil_catalog.dart; these are the knobs of the systems.
+
+// Stick zones, as stick magnitude 0..1, with hysteresis (§4.2).
+const double sigilCenterEnter = 0.30;
+const double sigilCenterLeave = 0.42;
+const double sigilRimEnter = 0.70;
+const double sigilRimLeave = 0.62;
+const double sigilSectorHysteresis = 6 * pi / 180; // rad either side of a border
+const double sigilNeutralDwell = 0.09;  // s at rest that ends a gesture
+const double sigilMaxTime = 1.2;        // s, longest gesture
+const double sigilMaxTimeLong = 2.0;    // s, while the drawing is a circle
+const double sigilFizzleLock = 0.15;    // s after a shape nobody knows
+const double sigilBufferFrom = 0.7;     // progress past which the next sigil queues
+
+// CHARGE, the sigils' own meter (§6.1).
+const double chargeMax = 100;
+const double chargeStart = 50;
+const double chargePerGen = 0.075;      // per unit of generator surplus: 160/s → 12/s
+const double chargeGraze = 2;
+const double chargePhaseGraze = 6;
+const double chargeKill = 5;
+const double chargeKillWindow = 0.5;    // s after a sigil ends that kills still count
+const double grazeRadiusMul = 2.2;      // × hitbox half-size
+const double grazeRadiusFocusMul = 2.9;
+const double sigilBreakCost = 10;
+
+// FLOW (§6.2).
+const int flowMax = 9;
+const double flowWindow = 2.5;          // s from one sigil's end to the next start
+const double flowDecay = 1.0;           // steps per second once the window lapses
+const double flowScorePerStep = 0.1;
+const double flowChargePerStep = 0.05;
+
+// Untouchable phases (§9).
+const double phaseGap = 0.4;            // s between two phase windows, always
+const double phaseScale = 1.35;         // drawn size at the height of a LOOP
+
+// OVERSTREAM on LT (§7).
+const double overstreamGear2 = 0.25;
+const double overstreamGear3 = 0.85;
+const double overstreamHysteresis = 0.05;
+const List<double> overstreamCost = [1.0, 2.1, 3.3]; // per shot, by gear
+
+// MEGA BLAST on LB+RB (§8).
+const double megaArm = 0.25;            // s both held before it starts charging
+const double megaChargeTime = 1.2;      // s to drain a full shield + generator
+const double megaMinShield = 0.25;      // share of shieldMax needed to start
+const double megaBase = 400;
+const double megaShieldDmg = 30;        // per point of shield drained
+const double megaGenDmg = 12;           // per point of generator drained
+const double megaBossShare = 0.4;
+const double megaGenLock = 1.5;         // s the generator stays dead after
+const double megaWidthMin = 40;         // px, beam width at the least charge
+const double megaWidthMax = 140;
+const double megaFlash = 0.35;          // s the beam stays drawn
+
+// FOCUS on A (§9).
+const double focusSpeed = 0.45;
+
+// Weapon swap on Y (§9).
+const double swapDelay = 0.5;
+const double swapHoldSides = 0.3;       // s held = swap the side pair instead
+
+// Companions (§5.3).
+const int companionMax = 2;
+const double companionLife = 20;        // s
+const int companionHits = 3;
+const int wardenHits = 6;
+const double companionDmg = 0.5;        // of the gun they borrow
+const double companionSize = 26;        // px
+const double sacrificeRefund = 15;
+const double sacrificeDmg = 1200;
+const double sacrificeRadius = 110;     // px
+
+// ARMS effects (§5.2).
+const double frenzyCooldown = 0.6;
+const double stasisScale = 0.5;
+const double haloRegenMul = 4;
+const double caltropLife = 4;           // s
+const double caltropRadius = 90;        // px
+const double caltropDmg = 900;

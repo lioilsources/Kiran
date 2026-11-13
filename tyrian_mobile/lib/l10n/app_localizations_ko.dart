@@ -802,4 +802,252 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get vaultAll => '전체';
+
+  @override
+  String get sigilMissUnknown => '알 수 없는 모양';
+
+  @override
+  String get sigilMissTooSlow => '너무 느림';
+
+  @override
+  String get sigilMissSkippedDot => '점을 건너뜀';
+
+  @override
+  String get sigilMissLeftRimEarly => '너무 일찍 놓음';
+
+  @override
+  String get sigilMissWrongDirection => '거꾸로 그림';
+
+  @override
+  String get sigilMissWrongLayer => '숄더 버튼이 다름';
+
+  @override
+  String get sigilDry => '충전 부족';
+
+  @override
+  String get sigilBusy => '이전 기술 진행 중';
+
+  @override
+  String get arena => '아레나';
+
+  @override
+  String get arenaBossParts => '보스 부품';
+
+  @override
+  String get arenaBareCore => '코어만';
+
+  @override
+  String get arenaCompanions => '동료기';
+
+  @override
+  String get arenaCharge => '충전';
+
+  @override
+  String get arenaChargeNormal => '보통';
+
+  @override
+  String get arenaSpeed => '세계 속도';
+
+  @override
+  String get arenaDrill => '연습';
+
+  @override
+  String get arenaFreePlay => '자유';
+
+  @override
+  String get arenaFight => '전투 시작';
+
+  @override
+  String get arenaNewBoss => '새 보스';
+
+  @override
+  String get arenaLeave => '아레나 나가기';
+
+  @override
+  String get arenaHint => '보스는 쓰러지는 즉시 돌아옵니다. 여기서는 아무것도 저장되지 않습니다.';
+
+  @override
+  String get arenaColCast => '성공';
+
+  @override
+  String get arenaColMiss => '실패';
+
+  @override
+  String get arenaColAvg => '평균';
+
+  @override
+  String get arenaColBest => '최고';
+
+  @override
+  String get arenaColTime => '최속';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return '보스 $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => '패드: 시길';
+
+  @override
+  String get padSchemeClassic => '패드: 클래식';
+
+  @override
+  String get padSouthpawOn => '왼손잡이: 켬';
+
+  @override
+  String get padSouthpawOff => '왼손잡이: 끔';
+
+  @override
+  String get sigilDescHop => '튕긴 방향으로 빠르게 도약';
+
+  @override
+  String get sigilDescSidestep => '필드를 가로지르는 긴 측면 이동';
+
+  @override
+  String get sigilDescStrike => '무거운 탄 세 발과 함께 돌진 후 복귀';
+
+  @override
+  String get sigilDescRetreat => '엄호 사격을 앞으로 쏘며 후퇴';
+
+  @override
+  String get sigilDescDash => '탄막을 뚫는 대각선 대시, 도중엔 무적';
+
+  @override
+  String get sigilDescRoll => '옆으로 배럴 롤, 무적';
+
+  @override
+  String get sigilDescShadow => '가장 가까운 적 아래에 붙어 계속 사격';
+
+  @override
+  String get sigilDescEcho => '그림자가 마지막 2초를 절반 피해로 재현';
+
+  @override
+  String get sigilDescLoop => '위로 공중제비: 탄이 아래로 지나감';
+
+  @override
+  String get sigilDescSlalom => '부채꼴 사격을 하며 필드를 S자로 가로지름';
+
+  @override
+  String get sigilDescCorkscrew => '사방으로 쏘며 나선형 전진, 무적';
+
+  @override
+  String get sigilDescSnapshot => '튕긴 방향으로 무거운 한 발';
+
+  @override
+  String get sigilDescBroadside => '양 측면에서 일제 사격';
+
+  @override
+  String get sigilDescVolley => '충전된 광선 다섯 줄기를 전방으로';
+
+  @override
+  String get sigilDescCaltrop => '탄을 삼키고 폭발하는 기뢰 설치';
+
+  @override
+  String get sigilDescFrenzy => '몇 초간 무기 연사가 빨라짐';
+
+  @override
+  String get sigilDescStasis => '적과 적의 탄이 절반 속도로 느려짐';
+
+  @override
+  String get sigilDescHalo => '실드가 4배 빠르게 재생되고 아무것도 뚫지 못함';
+
+  @override
+  String get sigilDescRadial => '16발의 원형 탄막';
+
+  @override
+  String get sigilDescStorm => '모든 무기가 무료로 최대 사격';
+
+  @override
+  String get sigilDescPing => '동료기가 튕긴 방향으로 집중 사격';
+
+  @override
+  String get sigilDescWingman => '그린 쪽 측면에 윙맨 호출';
+
+  @override
+  String get sigilDescHunter => '앞서 날며 목표를 고르는 헌터 호출';
+
+  @override
+  String get sigilDescWarden => '나를 노린 탄을 대신 맞는 가디언 호출';
+
+  @override
+  String get sigilDescFormation => '동료기가 넓은 대형과 쐐기 대형을 전환';
+
+  @override
+  String get sigilDescWhirl => '동료기가 주위를 돌며 탄을 막음';
+
+  @override
+  String get sigilDescSacrifice => '동료기가 돌진해 폭발하고 충전을 돌려줌';
+
+  @override
+  String get grimoire => '마법서';
+
+  @override
+  String get grimoireHint =>
+      '오른쪽 스틱으로 그리세요. LB를 누르고 있으면 ARMS, RB는 WING, 둘 다 누르면 MEGA BLAST입니다.';
+
+  @override
+  String sigilCost(int cost) {
+    return '비용 $cost';
+  }
+
+  @override
+  String get sigilUntouchable => '무적';
+
+  @override
+  String get lessonWatch => '보기';
+
+  @override
+  String get lessonTrace => '따라 그리기';
+
+  @override
+  String get lessonSlow => '천천히';
+
+  @override
+  String get lessonLive => '실전';
+
+  @override
+  String get lessonStreak => '5회 연속';
+
+  @override
+  String get lessonLearned => '습득';
+
+  @override
+  String lessonTempo(int pct) {
+    return '템포 $pct %';
+  }
+
+  @override
+  String get hintHop => '오른쪽 스틱을 튕기세요';
+
+  @override
+  String get hintLoop => '원을 그리면 탄환 위로 넘어갑니다';
+
+  @override
+  String get hintStream => 'LT를 당기세요: 탄이 두세 줄로';
+
+  @override
+  String get arenaKata => '카타';
+
+  @override
+  String get arenaKataOff => '없음';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '다음 $sigil $secs초 후';
+  }
+
+  @override
+  String get arenaGauntlet => '연속 도전';
+
+  @override
+  String get arenaOn => '켬';
+
+  @override
+  String get arenaOff => '끔';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return '평가 $rating · 최고 $best';
+  }
 }
