@@ -10,6 +10,13 @@
 # the game runs mute (see main.dart's _bundledLibmpv / the guarded init).
 #
 # What gets copied: libmpv plus everything `ldd` reports, minus EXCLUDE below.
+# Every copied library gets RUNPATH=$ORIGIN (patchelf), because main.dart
+# dlopens libmpv by absolute path and nothing puts bundle/lib/ on the search
+# path: without it libmpv's own DT_NEEDED (libavcodec.so.60, …) resolve against
+# the host, and on a distro with a different FFmpeg the load fails and the game
+# runs mute. LD_LIBRARY_PATH is no fix — it would also push the bundled copies
+# of host-ish libraries (libmount, libselinux, …) in front of the host's own
+# GTK/GIO, which then fails symbol versioning before the first frame.
 # The exclusions are the libraries that MUST come from the host — the C/C++
 # runtime, the graphics stack, and the audio daemons' client libraries. Bundling
 # any of those either clashes with the host copy at symbol-resolution time or
@@ -19,6 +26,7 @@ set -euo pipefail
 BUNDLE="${1:?usage: bundle_linux_libmpv.sh <bundle-dir>}"
 DEST="$BUNDLE/lib"
 [ -d "$DEST" ] || { echo "not a Flutter Linux bundle: $BUNDLE" >&2; exit 1; }
+command -v patchelf >/dev/null || { echo "patchelf not found — apt-get install patchelf" >&2; exit 1; }
 
 # Host-owned. Matched as a prefix against the soname.
 #
@@ -27,30 +35,55 @@ DEST="$BUNDLE/lib"
 # itself, so a machine that cannot run GTK cannot run the game either way.
 EXCLUDE='^(ld-linux|libc\.|libm\.|libdl\.|libpthread\.|librt\.|libresolv\.|libnsl\.|libutil\.|libcrypt\.|libgcc_s\.|libstdc\+\+\.|libGL|libEGL|libOpenGL|libGLX|libGLdispatch|libdrm|libgbm|libX|libxcb|libwayland|libasound|libpulse|libjack|libpipewire|libsystemd|libdbus|libudev|libgtk-3|libgdk-3|libglib-2|libgobject-2|libgio-2|libgmodule-2|libcairo|libgdk_pixbuf|libpango|libatk|libfontconfig|libfreetype|libharfbuzz|libfribidi|libz\.)'
 
-SRC="$(ldconfig -p | awk '/libmpv\.so\.[0-9]+/ {print $NF; exit}')"
+# No early exit in awk: under pipefail, ldconfig would die of SIGPIPE and take
+# the script with it.
+SRC="$(ldconfig -p | awk '/libmpv\.so\.[0-9]+/ && !f {print $NF; f = 1}')"
 [ -n "$SRC" ] || { echo "libmpv not found — apt-get install libmpv2 (or libmpv1)" >&2; exit 1; }
 echo "libmpv: $SRC"
 
 # ldd resolves the whole transitive graph in one shot, so no recursion needed.
-copied=0
+bundled=()
 while read -r soname path; do
   [ -n "$path" ] && [ -f "$path" ] || continue
   if [[ "$soname" =~ $EXCLUDE ]]; then continue; fi
   # -L dereferences the symlink chain so the depot gets a real file, named by
   # the soname the loader will actually ask for.
   cp -Lf "$path" "$DEST/$soname"
-  copied=$((copied + 1))
+  bundled+=("$soname")
 done < <(ldd "$SRC" | awk '/=> \//{print $1, $3}'; echo "$(basename "$SRC") $SRC")
 
-echo "bundled $copied libraries into $DEST"
+echo "bundled ${#bundled[@]} libraries into $DEST"
+
+# Each copy looks for its siblings beside itself first. RUNPATH applies only to
+# an object's own DT_NEEDED, so it has to be on every copy, not just libmpv.
+for lib in "${bundled[@]}"; do
+  patchelf --set-rpath '$ORIGIN' "$DEST/$lib"
+done
 
 # A depot that ships a libmpv the loader then cannot satisfy is worse than no
 # bundling at all — it fails at runtime on the player's machine instead of here.
+# Checked the way the game loads it: no LD_LIBRARY_PATH, so only RUNPATH can
+# find the bundle. Not found is a failure, and so is one of libmpv's own
+# dependencies resolving to the host copy instead of the bundled one — the
+# build host has all of them, the player's machine will not (that is how
+# 3.9.x shipped a libmpv that wanted libavcodec.so.60 from nowhere). Deeper
+# libraries reached through host-owned ones (GLib → libpcre2, …) do come from
+# the host, by design, so only libmpv's direct DT_NEEDED are held to this.
 MPV_SO="$(basename "$SRC")"
-missing="$(LD_LIBRARY_PATH="$DEST" ldd "$DEST/$MPV_SO" | grep 'not found' || true)"
-if [ -n "$missing" ]; then
-  echo "unresolved after bundling:" >&2
-  echo "$missing" >&2
+deps="$(env -u LD_LIBRARY_PATH ldd "$DEST/$MPV_SO")"
+missing="$(grep 'not found' <<<"$deps" || true)"
+leaked=""
+dest_real="$(readlink -f "$DEST")"
+for lib in $(readelf -d "$DEST/$MPV_SO" | sed -n 's/.*(NEEDED).*\[\(.*\)\]/\1/p'); do
+  [ -f "$DEST/$lib" ] || continue
+  hit="$(awk -v s="$lib" '$1 == s {print $3}' <<<"$deps")"
+  [ "$(dirname "$(readlink -f "$hit")")" = "$dest_real" ] \
+    || leaked+="  $lib => $hit"$'\n'
+done
+if [ -n "$missing$leaked" ]; then
+  echo "libmpv does not resolve against the bundle:" >&2
+  [ -n "$missing" ] && echo "$missing" >&2
+  [ -n "$leaked" ] && printf '%s' "$leaked" >&2
   exit 1
 fi
-echo "OK: $MPV_SO resolves against the bundle"
+echo "OK: $MPV_SO resolves against the bundle (RUNPATH, no LD_LIBRARY_PATH)"

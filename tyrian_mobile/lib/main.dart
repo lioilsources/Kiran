@@ -44,27 +44,39 @@ import 'net/coop_client.dart';
 import 'net/discovery.dart';
 import 'net/protocol.dart';
 
-/// Absolute path to the libmpv we ship next to the Linux executable, or null
-/// to let media_kit search the system loader path.
+/// libmpv files to try on Linux, best first; empty elsewhere (media_kit's own
+/// lookup is right on Windows: media_kit_libs_windows_audio drops its DLLs
+/// beside the .exe, where the loader finds them without help).
 ///
 /// Nothing on Linux bundles libmpv for us: `media_kit_libs_linux` only wires up
 /// mimalloc, so a plain `flutter build linux` produces a bundle that needs a
 /// distro-provided libmpv. The Steam depot and the AppImage therefore carry
-/// their own copy in `lib/` (see tool/bundle_linux_libmpv.sh), and we hand
-/// media_kit the exact path rather than trusting dlopen to pick it up from the
-/// runner's RPATH — that resolution depends on which ELF object happens to
-/// call dlopen, which is not something to bet a store build on.
+/// their own copy in `lib/` (see tool/bundle_linux_libmpv.sh), but it is the
+/// fallback, not the first choice: it comes with the build host's FFmpeg,
+/// ncurses & co., and once the process already holds the host's copy of one of
+/// those sonames the loader reuses it and the bundled libmpv fails on symbol
+/// versions (seen on openSUSE: Ubuntu's libcaca vs the host's libtinfo). A
+/// distro libmpv was built against the libraries the process already has.
 ///
-/// Windows needs none of this: media_kit_libs_windows_audio drops its DLLs
-/// beside the .exe, where the loader finds them without help.
-String? _bundledLibmpv() {
-  if (!Platform.isLinux) return null;
-  final beside = File(Platform.resolvedExecutable).parent.path;
-  for (final name in const ['libmpv.so.2', 'libmpv.so.1', 'libmpv.so']) {
-    final f = File('$beside/lib/$name');
-    if (f.existsSync()) return f.path;
-  }
-  return null;
+/// Every candidate is an absolute path. A bare 'libmpv.so.2' would not mean the
+/// system copy: dlopen searches the RUNPATH of the object that calls it, and the
+/// Dart VM lives in libflutter_linux_gtk.so, whose RUNPATH is the bundle's lib/.
+List<String> _libmpvCandidates() {
+  if (!Platform.isLinux) return const [];
+  const names = ['libmpv.so.2', 'libmpv.so.1'];
+  const systemDirs = [
+    '/usr/lib/x86_64-linux-gnu', '/usr/lib/aarch64-linux-gnu', // Debian family
+    '/usr/lib64', '/lib64', '/usr/lib', '/usr/local/lib', // the rest
+  ];
+  final bundled = '${File(Platform.resolvedExecutable).parent.path}/lib';
+  final seen = <String>{};
+  return [
+    for (final dir in [...systemDirs, bundled])
+      for (final name in names)
+        if (File('$dir/$name').existsSync() &&
+            seen.add(File('$dir/$name').resolveSymbolicLinksSync()))
+          '$dir/$name',
+  ];
 }
 
 /// True on iOS releases older than 18.4 — the first version whose CoreAudio
@@ -96,15 +108,32 @@ void main() async {
     // Deck runtime is not ours to control). Unguarded, that exception lands
     // before runApp and the game never draws a frame — a store build that dies
     // on launch is far worse than one that runs silent.
-    final libmpv = _bundledLibmpv();
+    String? libmpv;
     try {
-      JustAudioMediaKit.ensureInitialized(
-          linux: true, windows: true, libmpv: libmpv);
+      // media_kit marks itself initialised only on success, so a failed
+      // candidate leaves it free to try the next one.
+      final candidates = _libmpvCandidates();
+      for (final (i, path) in candidates.indexed) {
+        try {
+          JustAudioMediaKit.ensureInitialized(
+              linux: true, windows: true, libmpv: path);
+          libmpv = path;
+          break;
+        } catch (e) {
+          if (i == candidates.length - 1) rethrow;
+          audioLog('libmpv $path failed (${e.runtimeType}: $e), trying next');
+        }
+      }
+      // No candidate (Windows, or Linux without libmpv anywhere we look):
+      // media_kit's own lookup, which throws on Linux if it finds nothing.
+      if (candidates.isEmpty) {
+        JustAudioMediaKit.ensureInitialized(linux: true, windows: true);
+      }
       MusicService.manualLoop = true; // libmpv has no working loop — see field
       SoundService.leanPools = true; // one audio device per player on this one
       audioLog('${Platform.operatingSystem} '
           '${Platform.operatingSystemVersion} — backend: media_kit (libmpv'
-          '${libmpv == null ? ', system' : ': $libmpv'})');
+          '${libmpv == null ? ', default lookup' : ': $libmpv'})');
     } catch (e) {
       // Linux has no second backend to fall back to, so this is silence, not
       // recovery. Windows keeps just_audio_windows in pubspec as a manual
