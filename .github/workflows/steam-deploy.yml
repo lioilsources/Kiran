@@ -11,10 +11,10 @@
 #
 # Depot layout (Steamworks defaults): <APPID+1> = windows, <APPID+2> = linux.
 #
-# A tag push uploads the build and sets it live on the `default` branch. While
-# the game is unreleased that reaches nobody but the developer account, so
-# promotion by hand only cost a click per release. Once the game ships, change
-# the tag case below to a testing branch and promote `default` by hand again.
+# A tag push uploads the build without promoting it. Setting it live on
+# `default` from here fails: v3.9.3 uploaded both depots and then died on
+# "Failed to commit build" twice, while the same tag run upload-only went
+# through. Promote `default` by hand (below).
 #
 # A branch can only be named once it exists, and Steam creates none before
 # `default` has a build: a workflow naming a branch on a fresh app fails with
@@ -178,6 +178,6 @@ jobs:
           rootPath: steam-build
           depot1Path: windows
           depot2Path: linux
-          # Tag push: `default`. Manual run: whatever was typed, empty = upload only.
-          # See the header.
-          releaseBranch: ${{ github.event_name == 'push' && 'default' || inputs.releaseBranch }}
+          # Tag push: no inputs, so upload only. Manual run: whatever was typed,
+          # empty = upload only. See the header.
+          releaseBranch: ${{ inputs.releaseBranch }}
