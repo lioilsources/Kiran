@@ -1062,4 +1062,90 @@ class AppLocalizationsHe extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'דירוג $rating · שיא $best';
   }
+
+  @override
+  String get duelWarning => 'אזהרה';
+
+  @override
+  String get duelHintPad1 => 'הסטיק הימני מכוון ויורה';
+
+  @override
+  String get duelHintPad2Rt => 'החזק RT, LB או RB: הסטיק הימני מצייר סמלים';
+
+  @override
+  String get duelHintPad2Lt => 'החזק LT, LB או RB: הסטיק הימני מצייר סמלים';
+
+  @override
+  String get duelHintClassic =>
+      'הסטיק השמאלי מטיס · B, RB או RT יורים לכיוון החרטום';
+
+  @override
+  String get duelHintKeys1 => 'החצים מכוונים ויורים · WASD מטיס';
+
+  @override
+  String get duelHintKeys2 =>
+      'רווח יורה לכיוון החרטום · המקלדת הנומרית מציירת סמלים';
+
+  @override
+  String get arenaDuelBinding => 'עמדת דו-קרב';
+
+  @override
+  String get duelBindingRt => 'RT + סטיק';
+
+  @override
+  String get duelBindingLt => 'LT + סטיק';
+
+  @override
+  String get arenaDuelFrame => 'קדימה בשלט';
+
+  @override
+  String get duelFrameNose => 'החרטום';
+
+  @override
+  String get duelFrameUp => 'למעלה';
+
+  @override
+  String get arenaDuelAimFires => 'כיוון יורה';
+
+  @override
+  String get duelCutInFirst => 'תקריב בוס: פעם ראשונה';
+
+  @override
+  String get duelCutInAlways => 'תקריב בוס: תמיד';
+
+  @override
+  String get duelCutInNever => 'תקריב בוס: אף פעם';
+
+  @override
+  String get arenaDuelDrill => 'תרגול דו-קרב';
+
+  @override
+  String get duelDrillOff => 'ללא';
+
+  @override
+  String get duelDrillAim => 'כוון וירה';
+
+  @override
+  String get duelDrillAimHow => 'כוון את הסטיק הימני לבוס ופגע בו';
+
+  @override
+  String get duelDrillHold => 'החזק את החרטום';
+
+  @override
+  String get duelDrillHoldHow => 'החזק כפתור עמדה וטוס: החרטום נשאר במקום';
+
+  @override
+  String get duelDrillDraw => 'צייר קדימה';
+
+  @override
+  String get duelDrillDrawHow => 'בעמדה, צייר סמל לכיוון הבוס';
+
+  @override
+  String get duelDrillTurn => 'הסתובב';
+
+  @override
+  String get duelDrillTurnHow => 'הבוס מתחתיך: סובב את החרטום ופגע בו';
+
+  @override
+  String get duelDrillDone => 'הושלם';
 }

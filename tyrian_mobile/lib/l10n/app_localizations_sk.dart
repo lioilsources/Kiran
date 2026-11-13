@@ -1079,4 +1079,91 @@ class AppLocalizationsSk extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Hodnotenie $rating · najlepšie $best';
   }
+
+  @override
+  String get duelWarning => 'POZOR';
+
+  @override
+  String get duelHintPad1 => 'Pravá páčka mieri a strieľa';
+
+  @override
+  String get duelHintPad2Rt => 'Drž RT, LB alebo RB: pravá páčka kreslí sigily';
+
+  @override
+  String get duelHintPad2Lt => 'Drž LT, LB alebo RB: pravá páčka kreslí sigily';
+
+  @override
+  String get duelHintClassic =>
+      'Ľavá páčka letí · B, RB alebo RT strieľajú, kam mieri nos';
+
+  @override
+  String get duelHintKeys1 => 'Šípky mieria a strieľajú · WASD letí';
+
+  @override
+  String get duelHintKeys2 =>
+      'Medzerník strieľa, kam mieri nos · numerická klávesnica kreslí sigily';
+
+  @override
+  String get arenaDuelBinding => 'DUELOVÝ POSTOJ';
+
+  @override
+  String get duelBindingRt => 'RT + PÁČKA';
+
+  @override
+  String get duelBindingLt => 'LT + PÁČKA';
+
+  @override
+  String get arenaDuelFrame => 'VPRED NA OVLÁDAČI';
+
+  @override
+  String get duelFrameNose => 'NOS';
+
+  @override
+  String get duelFrameUp => 'HORE';
+
+  @override
+  String get arenaDuelAimFires => 'MIERENIE STRIEĽA';
+
+  @override
+  String get duelCutInFirst => 'ZÁBER NA BOSSA: PRVÝKRÁT';
+
+  @override
+  String get duelCutInAlways => 'ZÁBER NA BOSSA: VŽDY';
+
+  @override
+  String get duelCutInNever => 'ZÁBER NA BOSSA: NIKDY';
+
+  @override
+  String get arenaDuelDrill => 'DUELOVÝ VÝCVIK';
+
+  @override
+  String get duelDrillOff => 'ŽIADNY';
+
+  @override
+  String get duelDrillAim => 'MIER A STREĽ';
+
+  @override
+  String get duelDrillAimHow => 'Namier pravú páčku na bossa a zasiahni ho';
+
+  @override
+  String get duelDrillHold => 'DRŽ NOS';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Drž tlačidlo postoja a leť: nos zostane na mieste';
+
+  @override
+  String get duelDrillDraw => 'KRESLI VPRED';
+
+  @override
+  String get duelDrillDrawHow => 'V postoji nakresli sigil smerom k bossovi';
+
+  @override
+  String get duelDrillTurn => 'OTOČ SA';
+
+  @override
+  String get duelDrillTurnHow => 'Boss je pod tebou: otoč nos a zasiahni ho';
+
+  @override
+  String get duelDrillDone => 'HOTOVO';
 }

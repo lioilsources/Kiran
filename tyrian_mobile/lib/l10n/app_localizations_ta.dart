@@ -1077,4 +1077,95 @@ class AppLocalizationsTa extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'மதிப்பீடு $rating · சிறந்தது $best';
   }
+
+  @override
+  String get duelWarning => 'எச்சரிக்கை';
+
+  @override
+  String get duelHintPad1 => 'வலது ஸ்டிக் குறிவைத்துச் சுடும்';
+
+  @override
+  String get duelHintPad2Rt =>
+      'RT, LB அல்லது RB-ஐப் பிடிக்கவும்: வலது ஸ்டிக் சின்னங்களை வரையும்';
+
+  @override
+  String get duelHintPad2Lt =>
+      'LT, LB அல்லது RB-ஐப் பிடிக்கவும்: வலது ஸ்டிக் சின்னங்களை வரையும்';
+
+  @override
+  String get duelHintClassic =>
+      'இடது ஸ்டிக் பறக்கும் · B, RB அல்லது RT மூக்கு காட்டும் திசையில் சுடும்';
+
+  @override
+  String get duelHintKeys1 => 'அம்புகள் குறிவைத்துச் சுடும் · WASD பறக்கும்';
+
+  @override
+  String get duelHintKeys2 =>
+      'Space மூக்கு காட்டும் திசையில் சுடும் · நம்பேட் சின்னங்களை வரையும்';
+
+  @override
+  String get arenaDuelBinding => 'மோதல் நிலை';
+
+  @override
+  String get duelBindingRt => 'RT + ஸ்டிக்';
+
+  @override
+  String get duelBindingLt => 'LT + ஸ்டிக்';
+
+  @override
+  String get arenaDuelFrame => 'பேட் முன்னோக்கு';
+
+  @override
+  String get duelFrameNose => 'மூக்கு';
+
+  @override
+  String get duelFrameUp => 'மேலே';
+
+  @override
+  String get arenaDuelAimFires => 'குறிவைத்தால் சுடும்';
+
+  @override
+  String get duelCutInFirst => 'தலைவன் நெருக்கக் காட்சி: முதல் முறை';
+
+  @override
+  String get duelCutInAlways => 'தலைவன் நெருக்கக் காட்சி: எப்போதும்';
+
+  @override
+  String get duelCutInNever => 'தலைவன் நெருக்கக் காட்சி: ஒருபோதும் இல்லை';
+
+  @override
+  String get arenaDuelDrill => 'மோதல் பயிற்சி';
+
+  @override
+  String get duelDrillOff => 'இல்லை';
+
+  @override
+  String get duelDrillAim => 'குறிவைத்துச் சுடு';
+
+  @override
+  String get duelDrillAimHow =>
+      'வலது ஸ்டிக்கைத் தலைவனை நோக்கி வைத்து அடியுங்கள்';
+
+  @override
+  String get duelDrillHold => 'மூக்கைப் பிடி';
+
+  @override
+  String get duelDrillHoldHow =>
+      'நிலைப் பொத்தானைப் பிடித்துப் பறக்கவும்: மூக்கு அசையாது';
+
+  @override
+  String get duelDrillDraw => 'முன்னோக்கி வரை';
+
+  @override
+  String get duelDrillDrawHow => 'நிலையில், தலைவனை நோக்கி ஒரு சின்னம் வரையவும்';
+
+  @override
+  String get duelDrillTurn => 'திரும்பு';
+
+  @override
+  String get duelDrillTurnHow =>
+      'தலைவன் உங்களுக்குக் கீழே: மூக்கைத் திருப்பி அடியுங்கள்';
+
+  @override
+  String get duelDrillDone => 'முடிந்தது';
 }

@@ -1072,4 +1072,95 @@ class AppLocalizationsNl extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Score $rating · beste $best';
   }
+
+  @override
+  String get duelWarning => 'WAARSCHUWING';
+
+  @override
+  String get duelHintPad1 => 'Rechterstick richt en vuurt';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Houd RT, LB of RB: de rechterstick tekent sigils';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Houd LT, LB of RB: de rechterstick tekent sigils';
+
+  @override
+  String get duelHintClassic =>
+      'Linkerstick vliegt · B, RB of RT vuren waar de neus wijst';
+
+  @override
+  String get duelHintKeys1 => 'Pijltjes richten en vuren · WASD vliegt';
+
+  @override
+  String get duelHintKeys2 =>
+      'Spatie vuurt waar de neus wijst · numpad tekent sigils';
+
+  @override
+  String get arenaDuelBinding => 'DUELHOUDING';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'PAD VOORUIT';
+
+  @override
+  String get duelFrameNose => 'DE NEUS';
+
+  @override
+  String get duelFrameUp => 'OMHOOG';
+
+  @override
+  String get arenaDuelAimFires => 'RICHTEN VUURT';
+
+  @override
+  String get duelCutInFirst => 'BAAS CLOSE-UP: EERSTE KEER';
+
+  @override
+  String get duelCutInAlways => 'BAAS CLOSE-UP: ALTIJD';
+
+  @override
+  String get duelCutInNever => 'BAAS CLOSE-UP: NOOIT';
+
+  @override
+  String get arenaDuelDrill => 'DUELOEFENING';
+
+  @override
+  String get duelDrillOff => 'GEEN';
+
+  @override
+  String get duelDrillAim => 'RICHT EN VUUR';
+
+  @override
+  String get duelDrillAimHow => 'Richt de rechterstick op de baas en raak hem';
+
+  @override
+  String get duelDrillHold => 'HOUD DE NEUS';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Houd een houdingsknop en vlieg: de neus blijft staan';
+
+  @override
+  String get duelDrillDraw => 'TEKEN VOORUIT';
+
+  @override
+  String get duelDrillDrawHow =>
+      'Teken in de houding een sigil richting de baas';
+
+  @override
+  String get duelDrillTurn => 'OMKEREN';
+
+  @override
+  String get duelDrillTurnHow =>
+      'De baas is onder je: draai de neus en raak hem';
+
+  @override
+  String get duelDrillDone => 'KLAAR';
 }

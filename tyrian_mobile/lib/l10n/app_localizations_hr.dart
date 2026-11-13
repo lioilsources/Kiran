@@ -1074,4 +1074,91 @@ class AppLocalizationsHr extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Ocjena $rating · najbolje $best';
   }
+
+  @override
+  String get duelWarning => 'UPOZORENJE';
+
+  @override
+  String get duelHintPad1 => 'Desna palica nišani i puca';
+
+  @override
+  String get duelHintPad2Rt => 'Drži RT, LB ili RB: desna palica crta sigile';
+
+  @override
+  String get duelHintPad2Lt => 'Drži LT, LB ili RB: desna palica crta sigile';
+
+  @override
+  String get duelHintClassic =>
+      'Lijeva palica leti · B, RB ili RT pucaju kamo gleda nos';
+
+  @override
+  String get duelHintKeys1 => 'Strelice nišane i pucaju · WASD leti';
+
+  @override
+  String get duelHintKeys2 =>
+      'Razmak puca kamo gleda nos · numerička tipkovnica crta sigile';
+
+  @override
+  String get arenaDuelBinding => 'STAV ZA DVOBOJ';
+
+  @override
+  String get duelBindingRt => 'RT + PALICA';
+
+  @override
+  String get duelBindingLt => 'LT + PALICA';
+
+  @override
+  String get arenaDuelFrame => 'PAD NAPRIJED';
+
+  @override
+  String get duelFrameNose => 'NOS';
+
+  @override
+  String get duelFrameUp => 'GORE';
+
+  @override
+  String get arenaDuelAimFires => 'NIŠANJENJE PUCA';
+
+  @override
+  String get duelCutInFirst => 'KRUPNI PLAN BOSSA: PRVI PUT';
+
+  @override
+  String get duelCutInAlways => 'KRUPNI PLAN BOSSA: UVIJEK';
+
+  @override
+  String get duelCutInNever => 'KRUPNI PLAN BOSSA: NIKAD';
+
+  @override
+  String get arenaDuelDrill => 'VJEŽBA DVOBOJA';
+
+  @override
+  String get duelDrillOff => 'NIŠTA';
+
+  @override
+  String get duelDrillAim => 'NIŠANI I PUCAJ';
+
+  @override
+  String get duelDrillAimHow => 'Usmjeri desnu palicu na bossa i pogodi ga';
+
+  @override
+  String get duelDrillHold => 'DRŽI NOS';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Drži tipku stava i leti: nos ostaje na mjestu';
+
+  @override
+  String get duelDrillDraw => 'CRTAJ NAPRIJED';
+
+  @override
+  String get duelDrillDrawHow => 'U stavu nacrtaj sigil prema bossu';
+
+  @override
+  String get duelDrillTurn => 'OKRENI SE';
+
+  @override
+  String get duelDrillTurnHow => 'Boss je ispod tebe: okreni nos i pogodi ga';
+
+  @override
+  String get duelDrillDone => 'GOTOVO';
 }

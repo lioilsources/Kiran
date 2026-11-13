@@ -1068,4 +1068,93 @@ class AppLocalizationsNb extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Vurdering $rating · beste $best';
   }
+
+  @override
+  String get duelWarning => 'ADVARSEL';
+
+  @override
+  String get duelHintPad1 => 'Høyre stikke sikter og skyter';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Hold RT, LB eller RB: høyre stikke tegner sigiler';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Hold LT, LB eller RB: høyre stikke tegner sigiler';
+
+  @override
+  String get duelHintClassic =>
+      'Venstre stikke flyr · B, RB eller RT skyter dit nesen peker';
+
+  @override
+  String get duelHintKeys1 => 'Piltaster sikter og skyter · WASD flyr';
+
+  @override
+  String get duelHintKeys2 =>
+      'Mellomrom skyter dit nesen peker · talltastaturet tegner sigiler';
+
+  @override
+  String get arenaDuelBinding => 'DUELLSTILLING';
+
+  @override
+  String get duelBindingRt => 'RT + STIKKE';
+
+  @override
+  String get duelBindingLt => 'LT + STIKKE';
+
+  @override
+  String get arenaDuelFrame => 'PAD FREMOVER';
+
+  @override
+  String get duelFrameNose => 'NESEN';
+
+  @override
+  String get duelFrameUp => 'OPP';
+
+  @override
+  String get arenaDuelAimFires => 'SIKTING SKYTER';
+
+  @override
+  String get duelCutInFirst => 'BOSS NÆRBILDE: FØRSTE GANG';
+
+  @override
+  String get duelCutInAlways => 'BOSS NÆRBILDE: ALLTID';
+
+  @override
+  String get duelCutInNever => 'BOSS NÆRBILDE: ALDRI';
+
+  @override
+  String get arenaDuelDrill => 'DUELLØVELSE';
+
+  @override
+  String get duelDrillOff => 'INGEN';
+
+  @override
+  String get duelDrillAim => 'SIKT OG SKYT';
+
+  @override
+  String get duelDrillAimHow => 'Pek høyre stikke mot bossen og treff den';
+
+  @override
+  String get duelDrillHold => 'HOLD NESEN';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Hold en stillingsknapp og fly: nesen står stille';
+
+  @override
+  String get duelDrillDraw => 'TEGN FREMOVER';
+
+  @override
+  String get duelDrillDrawHow => 'I stillingen, tegn en sigil mot bossen';
+
+  @override
+  String get duelDrillTurn => 'SNU';
+
+  @override
+  String get duelDrillTurnHow => 'Bossen er under deg: snu nesen og treff den';
+
+  @override
+  String get duelDrillDone => 'FERDIG';
 }

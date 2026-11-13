@@ -1059,4 +1059,88 @@ class AppLocalizationsOr extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'ରେଟିଂ $rating · ସର୍ବୋତ୍ତମ $best';
   }
+
+  @override
+  String get duelWarning => 'ସତର୍କ';
+
+  @override
+  String get duelHintPad1 => 'ଡାହାଣ ଷ୍ଟିକ ଲକ୍ଷ୍ୟ କରି ଗୁଳି କରେ';
+
+  @override
+  String get duelHintPad2Rt => 'RT, LB ବା RB ଧରନ୍ତୁ: ଡାହାଣ ଷ୍ଟିକ ସିଜିଲ ଆଙ୍କେ';
+
+  @override
+  String get duelHintPad2Lt => 'LT, LB ବା RB ଧରନ୍ତୁ: ଡାହାଣ ଷ୍ଟିକ ସିଜିଲ ଆଙ୍କେ';
+
+  @override
+  String get duelHintClassic => 'ବାମ ଷ୍ଟିକ ଉଡାଏ · B, RB ବା RT ନାକ ଦିଗରେ ଗୁଳି';
+
+  @override
+  String get duelHintKeys1 => 'ତୀର ଲକ୍ଷ୍ୟ ଓ ଗୁଳି · WASD ଉଡାଏ';
+
+  @override
+  String get duelHintKeys2 => 'ସ୍ପେସ ନାକ ଦିଗରେ ଗୁଳି · ନମପ୍ୟାଡ ସିଜିଲ ଆଙ୍କେ';
+
+  @override
+  String get arenaDuelBinding => 'ଦ୍ୱନ୍ଦ୍ୱ ମୁଦ୍ରା';
+
+  @override
+  String get duelBindingRt => 'RT + ଷ୍ଟିକ';
+
+  @override
+  String get duelBindingLt => 'LT + ଷ୍ଟିକ';
+
+  @override
+  String get arenaDuelFrame => 'ପ୍ୟାଡ ଆଗକୁ';
+
+  @override
+  String get duelFrameNose => 'ନାକ';
+
+  @override
+  String get duelFrameUp => 'ଉପର';
+
+  @override
+  String get arenaDuelAimFires => 'ଲକ୍ଷ୍ୟ କଲେ ଗୁଳି';
+
+  @override
+  String get duelCutInFirst => 'ବସ କ୍ଲୋଜ-ଅପ: ପ୍ରଥମ ଥର';
+
+  @override
+  String get duelCutInAlways => 'ବସ କ୍ଲୋଜ-ଅପ: ସର୍ବଦା';
+
+  @override
+  String get duelCutInNever => 'ବସ କ୍ଲୋଜ-ଅପ: କେବେ ନୁହେଁ';
+
+  @override
+  String get arenaDuelDrill => 'ଦ୍ୱନ୍ଦ୍ୱ ଅଭ୍ୟାସ';
+
+  @override
+  String get duelDrillOff => 'କିଛି ନାହିଁ';
+
+  @override
+  String get duelDrillAim => 'ଲକ୍ଷ୍ୟ କରି ଗୁଳି';
+
+  @override
+  String get duelDrillAimHow => 'ଡାହାଣ ଷ୍ଟିକ ବସ ଆଡକୁ କରି ମାରନ୍ତୁ';
+
+  @override
+  String get duelDrillHold => 'ନାକ ସ୍ଥିର ରଖନ୍ତୁ';
+
+  @override
+  String get duelDrillHoldHow => 'ମୁଦ୍ରା ବଟନ ଧରି ଉଡନ୍ତୁ: ନାକ ସ୍ଥିର ରହେ';
+
+  @override
+  String get duelDrillDraw => 'ଆଗକୁ ଆଙ୍କନ୍ତୁ';
+
+  @override
+  String get duelDrillDrawHow => 'ମୁଦ୍ରାରେ ବସ ଆଡକୁ ସିଜିଲ ଆଙ୍କନ୍ତୁ';
+
+  @override
+  String get duelDrillTurn => 'ପଛକୁ ବୁଲନ୍ତୁ';
+
+  @override
+  String get duelDrillTurnHow => 'ବସ ଆପଣଙ୍କ ତଳେ: ନାକ ବୁଲାଇ ମାରନ୍ତୁ';
+
+  @override
+  String get duelDrillDone => 'ସମାପ୍ତ';
 }

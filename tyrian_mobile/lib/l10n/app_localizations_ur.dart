@@ -1063,4 +1063,93 @@ class AppLocalizationsUr extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'درجہ $rating · بہترین $best';
   }
+
+  @override
+  String get duelWarning => 'انتباہ';
+
+  @override
+  String get duelHintPad1 => 'دائیں اسٹک نشانہ لے کر فائر کرتی ہے';
+
+  @override
+  String get duelHintPad2Rt =>
+      'RT، LB یا RB دبائے رکھیں: دائیں اسٹک سگل بناتی ہے';
+
+  @override
+  String get duelHintPad2Lt =>
+      'LT، LB یا RB دبائے رکھیں: دائیں اسٹک سگل بناتی ہے';
+
+  @override
+  String get duelHintClassic =>
+      'بائیں اسٹک اڑاتی ہے · B، RB یا RT ناک کی سمت فائر کرتے ہیں';
+
+  @override
+  String get duelHintKeys1 => 'تیر نشانہ لے کر فائر کرتے ہیں · WASD اڑاتا ہے';
+
+  @override
+  String get duelHintKeys2 =>
+      'Space ناک کی سمت فائر کرتا ہے · نمپیڈ سگل بناتا ہے';
+
+  @override
+  String get arenaDuelBinding => 'ڈوئل انداز';
+
+  @override
+  String get duelBindingRt => 'RT + اسٹک';
+
+  @override
+  String get duelBindingLt => 'LT + اسٹک';
+
+  @override
+  String get arenaDuelFrame => 'پیڈ کا آگے';
+
+  @override
+  String get duelFrameNose => 'ناک';
+
+  @override
+  String get duelFrameUp => 'اوپر';
+
+  @override
+  String get arenaDuelAimFires => 'نشانہ فائر کرتا ہے';
+
+  @override
+  String get duelCutInFirst => 'باس کلوز اپ: پہلی بار';
+
+  @override
+  String get duelCutInAlways => 'باس کلوز اپ: ہمیشہ';
+
+  @override
+  String get duelCutInNever => 'باس کلوز اپ: کبھی نہیں';
+
+  @override
+  String get arenaDuelDrill => 'ڈوئل مشق';
+
+  @override
+  String get duelDrillOff => 'کوئی نہیں';
+
+  @override
+  String get duelDrillAim => 'نشانہ لو اور فائر کرو';
+
+  @override
+  String get duelDrillAimHow => 'دائیں اسٹک باس کی طرف کر کے اسے ماریں';
+
+  @override
+  String get duelDrillHold => 'ناک تھامو';
+
+  @override
+  String get duelDrillHoldHow =>
+      'انداز کا بٹن دبائے رکھ کر اڑیں: ناک اپنی جگہ رہتی ہے';
+
+  @override
+  String get duelDrillDraw => 'آگے بناؤ';
+
+  @override
+  String get duelDrillDrawHow => 'انداز میں باس کی طرف ایک سگل بنائیں';
+
+  @override
+  String get duelDrillTurn => 'مڑو';
+
+  @override
+  String get duelDrillTurnHow => 'باس آپ کے نیچے ہے: ناک موڑ کر اسے ماریں';
+
+  @override
+  String get duelDrillDone => 'مکمل';
 }

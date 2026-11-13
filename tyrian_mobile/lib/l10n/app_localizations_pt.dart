@@ -2241,4 +2241,95 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String gauntletRating(int rating, int best) {
     return 'Nota $rating · melhor $best';
   }
+
+  @override
+  String get duelWarning => 'AVISO';
+
+  @override
+  String get duelHintPad1 => 'O stick direito aponta e dispara';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Mantém RT, LB ou RB: o stick direito desenha sigilos';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Mantém LT, LB ou RB: o stick direito desenha sigilos';
+
+  @override
+  String get duelHintClassic =>
+      'Stick esquerdo voa · B, RB ou RT disparam para onde aponta o nariz';
+
+  @override
+  String get duelHintKeys1 => 'Setas apontam e disparam · WASD voa';
+
+  @override
+  String get duelHintKeys2 =>
+      'Espaço dispara para onde aponta o nariz · o teclado numérico desenha sigilos';
+
+  @override
+  String get arenaDuelBinding => 'POSTURA DE DUELO';
+
+  @override
+  String get duelBindingRt => 'RT + STICK';
+
+  @override
+  String get duelBindingLt => 'LT + STICK';
+
+  @override
+  String get arenaDuelFrame => 'FRENTE DO COMANDO';
+
+  @override
+  String get duelFrameNose => 'O NARIZ';
+
+  @override
+  String get duelFrameUp => 'CIMA';
+
+  @override
+  String get arenaDuelAimFires => 'APONTAR DISPARA';
+
+  @override
+  String get duelCutInFirst => 'CLOSE-UP DO CHEFE: 1.ª VEZ';
+
+  @override
+  String get duelCutInAlways => 'CLOSE-UP DO CHEFE: SEMPRE';
+
+  @override
+  String get duelCutInNever => 'CLOSE-UP DO CHEFE: NUNCA';
+
+  @override
+  String get arenaDuelDrill => 'TREINO DE DUELO';
+
+  @override
+  String get duelDrillOff => 'NENHUM';
+
+  @override
+  String get duelDrillAim => 'APONTAR E DISPARAR';
+
+  @override
+  String get duelDrillAimHow => 'Aponta o stick direito ao chefe e acerta-lhe';
+
+  @override
+  String get duelDrillHold => 'MANTER O NARIZ';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Mantém um botão de postura e voa: o nariz não se move';
+
+  @override
+  String get duelDrillDraw => 'DESENHAR EM FRENTE';
+
+  @override
+  String get duelDrillDrawHow =>
+      'Na postura, desenha um sigilo em direção ao chefe';
+
+  @override
+  String get duelDrillTurn => 'DAR A VOLTA';
+
+  @override
+  String get duelDrillTurnHow =>
+      'O chefe está abaixo de ti: vira o nariz e acerta-lhe';
+
+  @override
+  String get duelDrillDone => 'FEITO';
 }

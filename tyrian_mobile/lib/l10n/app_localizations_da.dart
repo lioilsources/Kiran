@@ -1069,4 +1069,93 @@ class AppLocalizationsDa extends AppLocalizations {
   String gauntletRating(int rating, int best) {
     return 'Rating $rating · bedst $best';
   }
+
+  @override
+  String get duelWarning => 'ADVARSEL';
+
+  @override
+  String get duelHintPad1 => 'Højre stik sigter og skyder';
+
+  @override
+  String get duelHintPad2Rt =>
+      'Hold RT, LB eller RB: højre stik tegner sigiller';
+
+  @override
+  String get duelHintPad2Lt =>
+      'Hold LT, LB eller RB: højre stik tegner sigiller';
+
+  @override
+  String get duelHintClassic =>
+      'Venstre stik flyver · B, RB eller RT skyder, hvor næsen peger';
+
+  @override
+  String get duelHintKeys1 => 'Pile sigter og skyder · WASD flyver';
+
+  @override
+  String get duelHintKeys2 =>
+      'Mellemrum skyder, hvor næsen peger · numpad tegner sigiller';
+
+  @override
+  String get arenaDuelBinding => 'DUELSTILLING';
+
+  @override
+  String get duelBindingRt => 'RT + STIK';
+
+  @override
+  String get duelBindingLt => 'LT + STIK';
+
+  @override
+  String get arenaDuelFrame => 'PAD FREMAD';
+
+  @override
+  String get duelFrameNose => 'NÆSEN';
+
+  @override
+  String get duelFrameUp => 'OP';
+
+  @override
+  String get arenaDuelAimFires => 'SIGTE SKYDER';
+
+  @override
+  String get duelCutInFirst => 'BOSS-NÆRBILLEDE: FØRSTE GANG';
+
+  @override
+  String get duelCutInAlways => 'BOSS-NÆRBILLEDE: ALTID';
+
+  @override
+  String get duelCutInNever => 'BOSS-NÆRBILLEDE: ALDRIG';
+
+  @override
+  String get arenaDuelDrill => 'DUELØVELSE';
+
+  @override
+  String get duelDrillOff => 'INGEN';
+
+  @override
+  String get duelDrillAim => 'SIGT OG SKYD';
+
+  @override
+  String get duelDrillAimHow => 'Peg højre stik mod bossen og ram den';
+
+  @override
+  String get duelDrillHold => 'HOLD NÆSEN';
+
+  @override
+  String get duelDrillHoldHow =>
+      'Hold en stillingsknap og flyv: næsen bliver, hvor den er';
+
+  @override
+  String get duelDrillDraw => 'TEGN FREMAD';
+
+  @override
+  String get duelDrillDrawHow => 'I stillingen, tegn en sigil mod bossen';
+
+  @override
+  String get duelDrillTurn => 'VEND OM';
+
+  @override
+  String get duelDrillTurnHow => 'Bossen er under dig: drej næsen og ram den';
+
+  @override
+  String get duelDrillDone => 'FÆRDIG';
 }
