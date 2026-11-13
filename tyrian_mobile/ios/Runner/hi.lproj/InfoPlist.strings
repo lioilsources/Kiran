@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "जब आप एक ही Wi-Fi पर न हों, तब लोकल को-ऑप के लिए पास का खिलाड़ी खोजने हेतु Kirian ब्लूटूथ का उपयोग करता है।";
+"NSBluetoothPeripheralUsageDescription" = "जब आप एक ही Wi-Fi पर न हों, तब लोकल को-ऑप के लिए पास का खिलाड़ी खोजने हेतु Kirian ब्लूटूथ का उपयोग करता है।";
+"NSLocalNetworkUsageDescription" = "Kirian आपके Wi-Fi या पास के उपकरणों पर होस्ट किए गए को-ऑप गेम खोजता है और अन्य खिलाड़ियों को आपका गेम खोजने देता है।";
+"NSMicrophoneUsageDescription" = "Kirian माइक्रोफ़ोन का उपयोग नहीं करता। ऑडियो फ़्रेमवर्क को यह अनुमति चाहिए।";

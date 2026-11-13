@@ -1,0 +1,23 @@
+Terbangkan sebuah kapal tempur bersendirian melalui koridor musuh yang tiada penghujung, satu sektor enam puluh saat pada satu masa.
+
+Kirian ialah penembak arked menegak yang dibina atas gelung roguelike. Kehilangan kapal tidak menamatkan larian: anda menyimpan setiap senjata, kredit dan mata, lalu kembali ke Sektor 1 untuk pergi lebih jauh. Kemajuan kekal. Hanya badan kapal yang diset semula.
+
+PEMUSNAHAN UNSUR
+Musuh mati mengikut senjata yang menumpaskan mereka: letupan air, ais pecah, api menyala, kilat atau nova plasma magenta. Setiap pembunuhan jelas dalam sekali pandang.
+
+BINA KAPAL TEMPUR ANDA
+Antara sektor, Com Center membolehkan anda menaik taraf senjata hadapan, senjata sisi, penjana, badan kapal dan perisai merentasi dua puluh lima tahap. Kuasa terhad, jadi setiap konfigurasi ialah pertukaran. Skor tidak pernah diset semula dan membuka tahap senjata lebih tinggi secara kekal.
+
+GELOMBANG BUATAN TANGAN, KEMUDIAN TANPA HENTI
+Lapan belas sektor buatan tangan merentasi enam zon, kemudian penjana tanpa henti dengan bos pada setiap tahap kelima.
+
+DUA PEMAIN, SATU BILIK
+Koop melalui Wi-Fi tempatan dengan penemuan automatik. Tiada akaun, tiada pelayan, tiada internet.
+
+EMPAT BELAS RUPA
+Setiap skin menggayakan semula kapal, musuh, latar, antara muka dan bunyi. Tiga percuma, sebelas lagi ialah pembelian sekali sahaja. Tiada iklan, tiada langganan.
+
+DIBINA UNTUK TERASA BETUL
+Shader GPU untuk bloom, scanline dan aberasi kromatik, serpihan berasaskan fizik. Main dengan sentuhan, papan kekunci atau pengawal.
+
+Dua papan pendahulu Game Center dan pencapaian. Antara muka tersedia dalam 45 bahasa.

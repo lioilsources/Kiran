@@ -1,0 +1,23 @@
+Fly et ensomt kampskip gjennom en endeløs korridor full av fiender, én sektor på seksti sekunder om gangen.
+
+Kirian er en vertikal arkadeskytter bygget på en roguelike-løkke. Å miste skipet er ikke slutten på runden: du beholder alle våpen, kreditter og poeng og starter på nytt i sektor 1 for å komme dypere. Fremgangen er permanent. Bare skroget nullstilles.
+
+ELEMENTÆR ØDELEGGELSE
+Fiender dør etter våpenet som drepte dem: vannkuler, knusende is, brennende flammer, lyn eller en magentafarget plasmanova. Hvert drap leses med én gang.
+
+BYGG KAMPSKIPET DITT
+Mellom sektorene oppgraderer du i Com Center frontvåpen, sidevåpen, generatorer, skrog og skjold over tjuefem nivåer. Energien er begrenset, så hver utrustning er en avveining. Poengsummen nullstilles aldri og låser permanent opp høyere våpentrinn.
+
+HÅNDLAGDE BØLGER, DERETTER ENDELØST
+Atten håndlagde sektorer i seks soner, deretter en endeløs generator med en boss hvert femte nivå.
+
+TO SPILLERE, ÉTT ROM
+Koop over lokalt Wi-Fi med automatisk oppdaging. Ingen kontoer, ingen servere, ingen internett.
+
+FJORTEN UTSEENDER
+Hver skin gir skip, fiender, bakgrunner, grensesnitt og lyd en ny stil. Tre er gratis, de andre elleve er engangskjøp. Ingen reklame, ingen abonnement.
+
+BYGGET FOR Å FØLES RIKTIG
+GPU-shadere for bloom, scanlines og kromatisk aberrasjon, fysikkdrevet splintring. Spill med touch, tastatur eller kontroller.
+
+To Game Center-toppliste og prestasjoner. Grensesnittet er tilgjengelig på 45 språk.

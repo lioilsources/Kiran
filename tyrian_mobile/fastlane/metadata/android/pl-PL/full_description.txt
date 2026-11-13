@@ -1,0 +1,23 @@
+Pilotuj samotny okręt przez nieskończony korytarz wrogów, sektor po sektorze, po sześćdziesiąt sekund każdy.
+
+Kirian to pionowa strzelanka arcade zbudowana na pętli roguelike. Utrata okrętu nie kończy rozgrywki: zachowujesz każdą broń, kredyt i punkt i wracasz do sektora 1, by dotrzeć dalej. Postęp jest trwały. Resetuje się tylko kadłub.
+
+ŻYWIOŁOWA ZAGŁADA
+Wrogowie giną zależnie od broni: wybuchy wody, pękający lód, płonący ogień, błyskawice lub magentowa nowa plazmowa. Każde zabójstwo widać na pierwszy rzut oka.
+
+ZBUDUJ SWÓJ OKRĘT
+Między sektorami w Com Center ulepszasz działa przednie, boczne, generatory, kadłub i tarcze na dwudziestu pięciu poziomach. Energia jest ograniczona, więc każdy zestaw to kompromis. Wynik nigdy się nie zeruje i na stałe odblokowuje wyższe poziomy broni.
+
+RĘCZNIE ZROBIONE FALE, POTEM BEZ KOŃCA
+Osiemnaście ręcznie zaprojektowanych sektorów w sześciu strefach, potem nieskończony generator z bossem co piąty poziom.
+
+DWÓCH GRACZY, JEDEN POKÓJ
+Co-op przez lokalne Wi-Fi z automatycznym wykrywaniem. Bez kont, bez serwerów, bez internetu.
+
+CZTERNAŚCIE WYGLĄDÓW
+Każdy skin zmienia styl okrętów, wrogów, teł, interfejsu i dźwięku. Trzy są darmowe, pozostałe jedenaście to jednorazowe zakupy. Bez reklam i subskrypcji.
+
+ZROBIONE, BY DOBRZE SIĘ GRAŁO
+Shadery GPU dla bloom, scanlines i aberracji chromatycznej, fizyczne rozpadanie się wrogów. Graj dotykiem, klawiaturą lub kontrolerem.
+
+Dwie tablice wyników Game Center i osiągnięcia. Interfejs jest dostępny w 45 językach.

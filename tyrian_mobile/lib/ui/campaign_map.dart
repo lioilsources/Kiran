@@ -393,7 +393,7 @@ class _RoutePainter extends CustomPainter {
             fontWeight: FontWeight.bold,
           ),
         ),
-        textDirection: TextDirection.ltr,
+        textDirection: L10n.textDirection,
       )..layout();
       label.paint(canvas, Offset(10, top + 6));
       start = i;
@@ -497,7 +497,7 @@ class _RoutePainter extends CustomPainter {
         style: TextStyle(
             color: color, fontSize: size, fontWeight: FontWeight.bold),
       ),
-      textDirection: TextDirection.ltr,
+      textDirection: L10n.textDirection,
     )..layout();
     tp.paint(canvas, center - Offset(tp.width / 2, tp.height / 2));
   }

@@ -1,0 +1,23 @@
+Flyg ett ensamt stridsskepp genom en ändlös korridor full av fiender, en sektor på sextio sekunder i taget.
+
+Kirian är en vertikal arkadskjutare byggd på en roguelike-loop. Att förlora skeppet är inte slutet på rundan: du behåller varje vapen, kredit och poäng och börjar om i sektor 1 för att nå längre. Framstegen är permanenta. Bara skrovet återställs.
+
+ELEMENTÄR FÖRSTÖRELSE
+Fiender dör efter vapnet: vattenexplosioner, krossande is, brinnande lågor, blixtar eller en magentafärgad plasmanova. Varje dödande syns direkt.
+
+BYGG DITT STRIDSSKEPP
+Mellan sektorerna uppgraderar du i Com Center framvapen, sidovapen, generatorer, skrov och sköldar över tjugofem nivåer. Energin är begränsad, så varje utrustning är en kompromiss. Poängen nollställs aldrig och låser upp högre vapennivåer för alltid.
+
+HANDBYGGDA VÅGOR, SEDAN OÄNDLIGT
+Arton handgjorda sektorer i sex zoner, därefter en ändlös generator med en boss var femte nivå.
+
+TVÅ SPELARE, ETT RUM
+Koop över lokalt Wi-Fi med automatisk upptäckt. Inga konton, inga servrar, inget internet.
+
+FJORTON UTSEENDEN
+Varje skin ger skepp, fiender, bakgrunder, gränssnitt och ljud en ny stil. Tre är gratis, de andra elva är engångsköp. Inga annonser, inga prenumerationer.
+
+BYGGT FÖR RÄTT KÄNSLA
+GPU-shaders för bloom, scanlines och kromatisk aberration, fysikdriven splittring. Spela med touch, tangentbord eller handkontroll.
+
+Två Game Center-topplistor och prestationer. Gränssnittet finns på 45 språk.

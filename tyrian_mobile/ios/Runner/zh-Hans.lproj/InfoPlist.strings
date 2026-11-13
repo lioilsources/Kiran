@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "当你们不在同一 Wi-Fi 下时，Kirian 使用蓝牙查找附近的玩家以进行本地合作。";
+"NSBluetoothPeripheralUsageDescription" = "当你们不在同一 Wi-Fi 下时，Kirian 使用蓝牙查找附近的玩家以进行本地合作。";
+"NSLocalNetworkUsageDescription" = "Kirian 会查找在你的 Wi-Fi 或附近设备上开设的合作游戏，也让其他玩家能找到你的游戏。";
+"NSMicrophoneUsageDescription" = "Kirian 不使用麦克风。音频框架要求此权限。";

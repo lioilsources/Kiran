@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "A Kirian Bluetoothot használ, hogy közeli játékost találjon a helyi kooperatív játékhoz, ha nem ugyanazon a Wi-Fi-n vagytok.";
+"NSBluetoothPeripheralUsageDescription" = "A Kirian Bluetoothot használ, hogy közeli játékost találjon a helyi kooperatív játékhoz, ha nem ugyanazon a Wi-Fi-n vagytok.";
+"NSLocalNetworkUsageDescription" = "A Kirian kooperatív játékokat keres a Wi-Fi-d hálózatán vagy közeli eszközökön, és lehetővé teszi, hogy mások megtalálják a tiédet.";
+"NSMicrophoneUsageDescription" = "A Kirian nem használja a mikrofont. Ezt az engedélyt a hangkeretrendszer kéri.";

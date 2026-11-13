@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.description      = 'Nearby discovery and a reliable byte channel over peer-to-peer Wi-Fi and Bluetooth for two-player local co-op.'
   s.homepage         = 'https://github.com/lioilsources/Kiran'
   s.license          = { :type => 'MIT', :file => '../LICENSE' }
-  s.author           = { 'Kirian' => 'oldrich.vorechovsky.jr@gmail.com' }
+  s.author           = { 'Kirian' => 'business@olin.now' }
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.frameworks       = 'MultipeerConnectivity'

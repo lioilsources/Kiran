@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "Kirian koristi Bluetooth za pronalaženje obližnjeg igrača za lokalni co-op kad niste na istom Wi-Fi-ju.";
+"NSBluetoothPeripheralUsageDescription" = "Kirian koristi Bluetooth za pronalaženje obližnjeg igrača za lokalni co-op kad niste na istom Wi-Fi-ju.";
+"NSLocalNetworkUsageDescription" = "Kirian traži co-op igre na tvom Wi-Fi-ju ili obližnjim uređajima i omogućuje drugim igračima da pronađu tvoju.";
+"NSMicrophoneUsageDescription" = "Kirian ne koristi mikrofon. Ovo dopuštenje zahtijeva audio okvir.";

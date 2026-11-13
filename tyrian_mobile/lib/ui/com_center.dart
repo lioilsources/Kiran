@@ -737,7 +737,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                       // Which challenge this mission flies at. Campaign: fixed for the
                       // run. Endless: whatever the main menu says right now.
                       Padding(
-                        padding: const EdgeInsets.only(left: 10, bottom: 2),
+                        padding: const EdgeInsetsDirectional.only(start: 10, bottom: 2),
                         child: Text(
                           game.challenge.localizedLabel(_l),
                           style: TextStyle(
@@ -760,7 +760,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           ),
           if (game.isCoop && game.vessel2 != null)
             Align(
-              alignment: Alignment.centerRight,
+              alignment: AlignmentDirectional.centerEnd,
               child: Text(
                 'P2: ${game.vessel2!.pilotName}',
                 style: const TextStyle(color: Color(0xFF00FF80), fontSize: 12),
@@ -772,7 +772,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               Flexible(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -819,7 +819,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               Flexible(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: Text(
                     _l.scoreValue(fmtNum(vessel.score)),
                     style: _theme.styled(
@@ -851,7 +851,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   Widget _buildPilotName() {
     return TextField(
       controller: _pilotController,
-      textAlign: TextAlign.right,
+      textAlign: TextAlign.end,
       style: const TextStyle(color: Colors.white, fontSize: 15),
       decoration: InputDecoration(
         hintText: _l.pilot,
@@ -993,7 +993,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           width: 44,
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: Text(_l.power, style: _labelStyle(color)),
           ),
         ),
@@ -1006,7 +1006,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                 children: [
                   Container(color: Colors.black45),
                   FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     widthFactor: (load / 100).clamp(0.0, 1.0),
                     child: Container(color: color),
                   ),
@@ -1019,7 +1019,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         Flexible(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerRight,
+            alignment: AlignmentDirectional.centerEnd,
             child: Text(
               overload
                   ? '${load.round()}%  ${_l.overload}'
@@ -1061,7 +1061,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           Expanded(
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -1088,7 +1088,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           Flexible(
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              alignment: Alignment.centerRight,
+              alignment: AlignmentDirectional.centerEnd,
               child: Text(
                 _l.pointsValue(fmtNum(threshold - vessel.score)),
                 style: _theme.styled(
@@ -1165,7 +1165,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     // one-character-per-line ladder in narrow columns.
     child: FittedBox(
       fit: BoxFit.scaleDown,
-      alignment: Alignment.centerLeft,
+      alignment: AlignmentDirectional.centerStart,
       child: Text(
         label.toUpperCase(),
         maxLines: 1,
@@ -1193,7 +1193,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           for (var i = 0; i < cat.length; i++)
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(right: 3),
+                padding: const EdgeInsetsDirectional.only(end: 3),
                 child: _buildChip(
                   slot: slot,
                   index: i,
@@ -1346,7 +1346,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         width: _buttonWidth,
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        margin: const EdgeInsets.only(left: 3),
+        margin: const EdgeInsetsDirectional.only(start: 3),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: color.withAlpha(enabled ? 45 : 15),
@@ -1434,7 +1434,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
             child: Container(
               constraints: const BoxConstraints(minHeight: 48),
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               decoration: BoxDecoration(
                 color: _theme.upgrade.withAlpha(30),
                 border: Border.all(color: _theme.upgrade.withAlpha(140)),
@@ -1755,7 +1755,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ],
               if (game.coopRole == CoopRole.host && game.vessel2 == null) ...[
                 Padding(
-                  padding: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsetsDirectional.only(end: 12),
                   child: Text(
                     _l.hostingAs(game.vessel.pilotName),
                     style: _theme.styled(

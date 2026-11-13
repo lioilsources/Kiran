@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "Kirian gebruikt Bluetooth om een speler in de buurt te vinden voor lokale coöp als jullie niet op hetzelfde wifi zitten.";
+"NSBluetoothPeripheralUsageDescription" = "Kirian gebruikt Bluetooth om een speler in de buurt te vinden voor lokale coöp als jullie niet op hetzelfde wifi zitten.";
+"NSLocalNetworkUsageDescription" = "Kirian zoekt naar coöpspellen op je wifi of op apparaten in de buurt en laat andere spelers jouw spel vinden.";
+"NSMicrophoneUsageDescription" = "Kirian gebruikt de microfoon niet. Het audioframework vereist deze toestemming.";
