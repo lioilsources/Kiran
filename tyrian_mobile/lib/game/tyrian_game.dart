@@ -1,5 +1,5 @@
 import 'dart:async' show unawaited;
-import 'dart:math' show pi, exp, min;
+import 'dart:math' show exp, min;
 import 'dart:typed_data';
 import 'package:cute_kid_fonts/cute_kid_fonts.dart' show KidPalette;
 import 'package:flame/camera.dart';
@@ -357,7 +357,8 @@ class TyrianGame extends FlameGame
       camera.viewfinder.anchor = Anchor.center;
       camera.viewfinder.position =
           Vector2(config.gameWidth / 2, config.gameHeight / 2);
-      camera.viewfinder.angle = -pi / 2; // CCW: game UP → screen RIGHT
+      // Game UP → screen LEFT: the ship flies right to left.
+      camera.viewfinder.angle = platform.landscapeCameraAngle;
     } else {
       // Mobile portrait: width=600, height scaled to device aspect ratio
       if (valid) {
@@ -1158,19 +1159,11 @@ class TyrianGame extends FlameGame
   /// Apply screen-space input to vessel (handles landscape inverse rotation).
   void _applyMovement(Vessel v, double screenDx, double screenDy, double speed, double dt) {
     speed *= v.agility;
-    if (platform.isLandscape) {
-      // Inverse rotation: screen → game space
-      // Screen RIGHT = game UP (−Y), Screen DOWN = game RIGHT (+X)
-      v.adjustPosition(
-        v.position.x + screenDy * speed * dt,
-        v.position.y - screenDx * speed * dt,
-      );
-    } else {
-      v.adjustPosition(
-        v.position.x + screenDx * speed * dt,
-        v.position.y + screenDy * speed * dt,
-      );
-    }
+    final (gx, gy) = platform.screenToGame(screenDx, screenDy);
+    v.adjustPosition(
+      v.position.x + gx * speed * dt,
+      v.position.y + gy * speed * dt,
+    );
   }
 
   /// Process keyboard + gamepad input — called at the start of update().

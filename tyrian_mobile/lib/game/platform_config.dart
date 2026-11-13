@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'dart:math' show pi;
-import 'dart:ui' show Canvas;
-import 'package:flame/components.dart' show Vector2;
 
 /// Platform detection — resolved once at startup.
 final bool isDesktop =
@@ -10,14 +8,18 @@ final bool isDesktop =
 /// Desktop always runs landscape; mobile always portrait.
 final bool isLandscape = isDesktop;
 
-/// Sprite rotation to compensate camera -90° in landscape.
-final double spriteRotation = isLandscape ? pi / 2 : 0.0;
+/// Camera angle in landscape. The camera shows the portrait field turned a
+/// quarter counter-clockwise, so game UP (the way the ship flies) renders as
+/// screen LEFT: the ship sits on the right and flies right to left, enemies
+/// come in from the left edge. Components drawing upright text or icons in
+/// the world rotate their canvas by this angle to cancel it.
+const double landscapeCameraAngle = pi / 2;
 
-/// Apply +90° canvas rotation in landscape so sprites face the right way.
-/// Call inside render() between canvas.save() and canvas.restore().
-void landscapeRotate(Canvas canvas, Vector2 size) {
-  if (!isLandscape) return;
-  canvas.translate(size.x / 2, size.y / 2);
-  canvas.rotate(pi / 2);
-  canvas.translate(-size.y / 2, -size.x / 2);
+/// A screen-space direction (x right, y down — stick, keys) in game space,
+/// for a camera turned [landscape]. The camera renders the world turned by
+/// -[landscapeCameraAngle], so screen LEFT is game UP and screen DOWN is game
+/// LEFT: a stick pushed left flies the ship forward.
+(double, double) screenToGame(double sx, double sy, {bool? landscape}) {
+  if (!(landscape ?? isLandscape)) return (sx, sy);
+  return (-sy, sx);
 }
