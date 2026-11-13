@@ -1,0 +1,23 @@
+Pilota uma nave de combate solitária por um corredor infinito de inimigos, um setor de sessenta segundos de cada vez.
+
+O Kirian é um shooter arcade vertical construído sobre um ciclo roguelike. Perder a nave não acaba a corrida: guardas cada arma, crédito e ponto e voltas ao Setor 1 para ir mais fundo. O progresso é permanente. Só o casco é reposto.
+
+DESTRUIÇÃO ELEMENTAL
+Os inimigos morrem consoante a arma: explosões de água, gelo que se estilhaça, chamas, relâmpagos ou uma nova de plasma magenta. Cada abate lê-se de relance.
+
+CONSTRÓI A TUA NAVE
+Entre setores, no Com Center melhoras armas dianteiras e laterais, geradores, casco e escudos ao longo de vinte e cinco níveis. A energia é limitada, por isso cada equipamento é um compromisso. A pontuação nunca é reposta e desbloqueia de forma permanente níveis de arma mais altos.
+
+ONDAS FEITAS À MÃO, DEPOIS INFINITO
+Dezoito setores feitos à mão em seis zonas e depois um gerador infinito com um chefe a cada quinto nível.
+
+DOIS JOGADORES, UMA SALA
+Coop por Wi-Fi local com deteção automática. Sem contas, sem servidores, sem internet.
+
+CATORZE ASPETOS
+Cada skin altera o estilo de naves, inimigos, fundos, interface e som. Três são gratuitos e os outros onze são compras únicas. Sem anúncios nem subscrições.
+
+FEITO PARA SABER BEM
+Shaders de GPU para bloom, scanlines e aberração cromática, estilhaçamento com física. Joga com toque, teclado ou comando.
+
+Dois rankings do Game Center e conquistas. A interface está disponível em 45 idiomas.

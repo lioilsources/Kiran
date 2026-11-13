@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "O Kirian usa o Bluetooth para encontrar um jogador próximo para o cooperativo local quando não estão na mesma rede Wi-Fi.";
+"NSBluetoothPeripheralUsageDescription" = "O Kirian usa o Bluetooth para encontrar um jogador próximo para o cooperativo local quando não estão na mesma rede Wi-Fi.";
+"NSLocalNetworkUsageDescription" = "O Kirian procura jogos cooperativos alojados na tua rede Wi-Fi ou em dispositivos próximos e deixa outros jogadores encontrar o teu.";
+"NSMicrophoneUsageDescription" = "O Kirian não usa o microfone. Esta permissão é exigida pela framework de áudio.";

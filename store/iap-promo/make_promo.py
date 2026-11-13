@@ -7,7 +7,7 @@ originals of what shipped, so they can't stand in for the real skin art.
 import re, pathlib
 from PIL import Image, ImageFilter
 
-ROOT = pathlib.Path('/Users/ol1n/Dev/GitHub/Kiran')
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / 'store/iap-promo'
 
 src = (ROOT / 'tyrian_mobile/lib/services/skin_registry.dart').read_text()

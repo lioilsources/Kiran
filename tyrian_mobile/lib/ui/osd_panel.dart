@@ -47,7 +47,7 @@ class OsdPanel extends StatelessWidget {
     double indent = 0,
   }) {
     return Padding(
-      padding: EdgeInsets.only(left: indent),
+      padding: EdgeInsetsDirectional.only(start: indent),
       child: SizedBox(
         width: _sc(130),
         child: HealthBar(
@@ -190,7 +190,7 @@ class OsdPanel extends StatelessWidget {
                           onTap: onSkinSelect,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            margin: const EdgeInsets.only(right: 6),
+                            margin: const EdgeInsetsDirectional.only(end: 6),
                             decoration: BoxDecoration(
                               color: Colors.orangeAccent.withAlpha(40),
                               borderRadius: BorderRadius.circular(4),

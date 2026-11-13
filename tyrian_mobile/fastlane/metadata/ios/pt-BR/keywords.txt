@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retrô,fliperama,nave,cooperativo,rolagem vertical,tiro,pixel art

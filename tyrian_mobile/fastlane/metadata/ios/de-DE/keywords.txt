@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retro,arcade,raumschiff,koop,vertikal,scrollen,pixel

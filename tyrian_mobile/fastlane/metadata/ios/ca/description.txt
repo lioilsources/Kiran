@@ -1,0 +1,23 @@
+Pilota una nau de combat solitària per un corredor infinit d’enemics, un sector de seixanta segons cada cop.
+
+Kirian és un shooter d’arcade vertical basat en un bucle roguelike. Perdre la nau no acaba la partida: conserves cada arma, crèdit i punt i tornes al sector 1 per arribar més lluny. El progrés és permanent. Només es reinicia el buc.
+
+DESTRUCCIÓ ELEMENTAL
+Els enemics moren segons l’arma que els mata: esclats d’aigua, gel que es trenca, flames, llamps o una nova de plasma magenta. Cada mort es llegeix d’un cop d’ull.
+
+CONSTRUEIX LA TEVA NAU
+Entre sectors, al Com Center millores armes davanteres, laterals, generadors, buc i escuts al llarg de vint-i-cinc nivells. L’energia és limitada, així que cada equipament és un compromís. La puntuació no es reinicia mai i desbloqueja de manera permanent nivells d’arma més alts.
+
+ONADES FETES A MÀ, DESPRÉS INFINIT
+Divuit sectors dissenyats a mà en sis zones i, després, un generador infinit amb un cap cada cinc nivells.
+
+DOS JUGADORS, UNA SALA
+Coop amb Wi-Fi local i detecció automàtica. Sense comptes, sense servidors, sense internet.
+
+CATORZE ASPECTES
+Cada skin canvia l’estil de naus, enemics, fons, interfície i so. Tres són gratuïts; els altres onze són compres úniques. Sense anuncis ni subscripcions.
+
+FET PER SENTIR-SE BÉ
+Shaders de GPU per a bloom, scanlines i aberració cromàtica, trencament amb físiques. Juga amb tàctil, teclat o comandament.
+
+Dues taules de classificació de Game Center i assoliments. La interfície està disponible en 45 idiomes.

@@ -45,7 +45,7 @@ hlavička+STATS+LOADOUT, vpravo SKINS; spodní lišta přes celou šířku.
 │ COMMAND CENTER  [HARD]          Pilot: Ace_  │  ← řádek 1: nadpis (long-press = cheats),
 │                                  P2: Bob     │     challenge label (jen main), jméno pilota vpravo
 │ Credits: 12,500 (+800 cr)      Score: 98,400 │  ← řádek 2: Credits vlevo (CreditsWave + delta), Score vpravo
-│ IP: 192.168.1.7                              │  ← jen host co-op, malé
+│ IP: 192.168.x.x                              │  ← jen host co-op, malé
 ├──────────────────────────────────────────────┤
 │ ▌STATS                                       │
 │  [ship]  HP   ████████░░  125/125            │

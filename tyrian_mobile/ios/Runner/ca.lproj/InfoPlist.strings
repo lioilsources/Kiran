@@ -1,0 +1,4 @@
+"NSBluetoothAlwaysUsageDescription" = "Kirian fa servir el Bluetooth per trobar un jugador proper per al cooperatiu local quan no sou a la mateixa xarxa Wi-Fi.";
+"NSBluetoothPeripheralUsageDescription" = "Kirian fa servir el Bluetooth per trobar un jugador proper per al cooperatiu local quan no sou a la mateixa xarxa Wi-Fi.";
+"NSLocalNetworkUsageDescription" = "Kirian cerca partides cooperatives allotjades a la teva xarxa Wi-Fi o en dispositius propers, i permet que altres jugadors trobin la teva.";
+"NSMicrophoneUsageDescription" = "Kirian no fa servir el micròfon. El marc d’àudio requereix aquest permís.";

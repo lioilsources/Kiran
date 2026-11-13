@@ -1,0 +1,23 @@
+Pilota una nave solitaria por un corredor interminable de enemigos, un sector de sesenta segundos a la vez.
+
+Kirian es un shooter arcade vertical construido sobre un bucle roguelike. Perder tu nave no acaba la partida — conservas cada arma, cada crédito, cada punto ganado, y vuelves al Sector 1 para llegar más lejos que la última vez. El progreso es permanente. Solo tu casco se reinicia.
+
+DESTRUCCIÓN ELEMENTAL
+Los enemigos mueren según el arma que los mató. Las armas de burbujas los revientan en agua. Los cañones los hacen añicos en hielo pesado y frío que cae. Las armas estelares los dejan ardiendo, con llamas que suben y brasas a la deriva. Los láseres se descargan en un destello de rayo. Los blásters los implosionan en una nova de plasma magenta. Cada muerte se lee de un vistazo.
+
+MONTA TU NAVE
+Entre sectores, el Centro de Mando es tuyo: cañones frontales, cañones laterales, generadores, casco y escudos, todo mejorable a lo largo de veinticinco niveles. La energía es limitada — un arma más pesada drena un generador que no da abasto, así que cada configuración implica un compromiso. La puntuación nunca se reinicia, y superar sus umbrales desbloquea permanentemente los niveles de arma más altos.
+
+OLEADAS HECHAS A MANO, LUEGO PARA SIEMPRE
+Dieciocho sectores hechos a mano se extienden por seis zonas, cada uno un guion ajustado de sesenta segundos con sus propias formaciones y ritmo. Más allá de ellos, el generador toma el control y no se detiene, la dificultad sube sin techo, con jefes esperando cada cinco niveles.
+
+DOS JUGADORES, UNA SALA
+El cooperativo funciona por Wi-Fi local con descubrimiento automático — sin cuentas, sin servidores, sin internet. Un dispositivo aloja, el otro se une, y voláis juntos por el mismo sector.
+
+CATORCE ESTILOS
+Cada skin transforma el juego entero: naves, enemigos, fondos, interfaz, sonido. Tres naves vienen gratis con la app. Las otras once son compras únicas, cada una permanente, sin anuncios, sin suscripciones y sin consumibles en ningún punto del juego.
+
+PENSADO PARA SENTIRSE BIEN
+Los shaders de GPU impulsan el bloom, las scanlines, el viñeteado y la aberración cromática. Los enemigos se hacen añicos en fragmentos guiados por física, recortados de sus propios sprites. Juega con la pantalla táctil, el teclado o un mando conectado.
+
+Dos tablas de clasificación de Game Center te posicionan por puntuación total y por el nivel más profundo que hayas alcanzado, junto con logros por bajas, sectores y partidas sin recibir daño.

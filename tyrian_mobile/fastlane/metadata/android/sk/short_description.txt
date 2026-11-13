@@ -1,0 +1,1 @@
+Roguelike arkádová strieľačka. Zomri, nechaj si všetko, leť ďalej. Lokálny koop.

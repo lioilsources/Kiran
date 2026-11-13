@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,retro,nau,coop,vertical,scroll,pixel

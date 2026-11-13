@@ -1170,3 +1170,1075 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get duelDrillDone => 'FEITO';
 }
+
+/// The translations for Portuguese, as used in Portugal (`pt_PT`).
+class AppLocalizationsPtPt extends AppLocalizationsPt {
+  AppLocalizationsPtPt() : super('pt_PT');
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get cancel => 'CANCELAR';
+
+  @override
+  String get connect => 'LIGAR';
+
+  @override
+  String nearbyJoinFailedTitle(String hostName) {
+    return 'Não foi possível ligar a $hostName';
+  }
+
+  @override
+  String get nearbyJoinFailedBody =>
+      'O anfitrião estava visível, mas a ligação não foi estabelecida.\n\nO jogo por proximidade precisa de Wi-Fi ponto a ponto, que o iOS desliga enquanto a Zona Wi-Fi pessoal está ativa — desative-a nos dois dispositivos e tente novamente, ou ligue ambos à mesma rede Wi-Fi.';
+
+  @override
+  String get gameOverCampaign =>
+      'Missão falhada — equipamento e créditos mantidos. Tente novamente a partir do Centro de Comando.';
+
+  @override
+  String get gameOverEndless =>
+      'A reconstruir no Setor 1 — equipamento e créditos mantidos';
+
+  @override
+  String get waitingForHost => 'À espera do anfitrião...';
+
+  @override
+  String get waitingForHostHint =>
+      'O jogo começa quando o anfitrião estiver pronto';
+
+  @override
+  String get vesselLost => 'NAVE PERDIDA';
+
+  @override
+  String scoreValue(String score) {
+    return 'Pontuação: $score';
+  }
+
+  @override
+  String creditsValue(String credits) {
+    return 'Créditos: $credits';
+  }
+
+  @override
+  String get creditsPrefix => 'Créditos: ';
+
+  @override
+  String get leaderboard => 'CLASSIFICAÇÃO';
+
+  @override
+  String get achievements => 'CONQUISTAS';
+
+  @override
+  String get redeploy => 'VOLTAR AO COMBATE';
+
+  @override
+  String get resume => 'RETOMAR';
+
+  @override
+  String get pause => 'PAUSA';
+
+  @override
+  String get paused => 'EM PAUSA';
+
+  @override
+  String get skins => 'ASPETOS';
+
+  @override
+  String get skin => 'ASPETO';
+
+  @override
+  String get soundOn => 'SOM: LIGADO';
+
+  @override
+  String get soundOff => 'SOM: DESLIGADO';
+
+  @override
+  String get musicOn => 'MÚSICA: LIGADA';
+
+  @override
+  String get musicOff => 'MÚSICA: DESLIGADA';
+
+  @override
+  String get mainMenu => 'MENU PRINCIPAL';
+
+  @override
+  String get quitToDesktop => 'SAIR PARA O AMBIENTE DE TRABALHO';
+
+  @override
+  String get selectSkin => 'ESCOLHER ASPETO';
+
+  @override
+  String get difficulty => 'DIFICULDADE';
+
+  @override
+  String get difficultyEasy => 'FÁCIL';
+
+  @override
+  String get difficultyNormal => 'NORMAL';
+
+  @override
+  String get difficultyHard => 'DIFÍCIL';
+
+  @override
+  String get difficultyLord => 'LORD';
+
+  @override
+  String get campaign => 'CAMPANHA';
+
+  @override
+  String get quit => 'SAIR';
+
+  @override
+  String get restorePurchases => 'RESTAURAR COMPRAS';
+
+  @override
+  String get locked => 'BLOQUEADO';
+
+  @override
+  String get mainMenuTooltip => 'Menu principal';
+
+  @override
+  String nodeLevel(int level) {
+    return 'NÍVEL $level';
+  }
+
+  @override
+  String nodeLevelBoss(int level, String ordinal) {
+    return 'NÍVEL $level · CHEFE $ordinal';
+  }
+
+  @override
+  String get nodeLockedHint => 'Bloqueado. Conclua primeiro o nó anterior.';
+
+  @override
+  String get flyAgain => 'VOAR DE NOVO';
+
+  @override
+  String get launch => 'DESCOLAR';
+
+  @override
+  String zoneLabel(int zone) {
+    return 'ZONA $zone';
+  }
+
+  @override
+  String get objectiveStar => 'ESTRELA';
+
+  @override
+  String get continueButton => 'CONTINUAR';
+
+  @override
+  String get replayNode => 'REPETIR NÓ';
+
+  @override
+  String get retry => 'TENTAR DE NOVO';
+
+  @override
+  String get nodeCleared => 'NÓ CONCLUÍDO';
+
+  @override
+  String get nodeFailed => 'NÓ FALHADO';
+
+  @override
+  String get weaponTierUnlocked => 'NÍVEL DE ARMAS DESBLOQUEADO';
+
+  @override
+  String get onSaleInComCenter => 'À venda no Centro de Comando.';
+
+  @override
+  String get requiredTasksHint =>
+      'As tarefas obrigatórias decidem o nó. Volte a voá-lo — o que ganhou fica consigo.';
+
+  @override
+  String get objClear => 'Limpe o setor';
+
+  @override
+  String objKills(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Abata $count inimigos',
+      one: 'Abata 1 inimigo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get objUntouched => 'Não sofra danos no casco';
+
+  @override
+  String objHull(int percent) {
+    return 'Termine com mais de $percent% de casco';
+  }
+
+  @override
+  String objWeaponKills(int count, String weapon) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Elimine $count com a $weapon',
+      one: 'Elimine 1 com a $weapon',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String objSideGunKills(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Elimine $count com os canhões laterais',
+      one: 'Elimine 1 com os canhões laterais',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String objFlyWithFront(String weapon) {
+    return 'Descole com a $weapon à frente';
+  }
+
+  @override
+  String objFlyWithSide(String weapon) {
+    return 'Descole com a $weapon num suporte lateral';
+  }
+
+  @override
+  String get objBuySideGun => 'Compre um canhão lateral no Centro de Comando';
+
+  @override
+  String objUpgradeGenerator(int level) {
+    return 'Melhore o gerador até ao nível $level';
+  }
+
+  @override
+  String objUpgradeFrontGun(int level) {
+    return 'Melhore o canhão frontal até ao nível $level';
+  }
+
+  @override
+  String objUpgradeSideGun(int level) {
+    return 'Melhore um canhão lateral até ao nível $level';
+  }
+
+  @override
+  String objPickups(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Apanhe $count bónus',
+      one: 'Apanhe 1 bónus',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String objFleets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Elimine $count formações inteiras',
+      one: 'Elimine 1 formação inteira',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get objNoRam => 'Não embata em nenhum asteroide';
+
+  @override
+  String objUnderTime(int seconds) {
+    return 'Termine em $seconds s';
+  }
+
+  @override
+  String get objStripBoss => 'Destrua todas as partes do chefe antes do núcleo';
+
+  @override
+  String get joinCoopTitle => 'Entrar em cooperativo';
+
+  @override
+  String get cannotSearchNetwork => 'Não é possível pesquisar nesta rede';
+
+  @override
+  String get joinHintNearby =>
+      'A mesma rede Wi-Fi funciona em qualquer dispositivo. iPhone, iPad e Mac também se encontram por proximidade sem ela — com a Zona Wi-Fi pessoal desativada em ambos.';
+
+  @override
+  String get joinHintWifi =>
+      'Os dois jogadores têm de estar na mesma rede Wi-Fi — uma Zona Wi-Fi pessoal também serve.';
+
+  @override
+  String noHostsYet(String hint) {
+    return 'Ainda sem anfitriões. $hint';
+  }
+
+  @override
+  String get lookingForHosts =>
+      'À procura de anfitriões nesta rede Wi-Fi e por perto…';
+
+  @override
+  String get hostNearby => 'Por perto · Bluetooth / Wi-Fi ponto a ponto';
+
+  @override
+  String hostSameWifi(String address) {
+    return '$address · mesma rede Wi-Fi';
+  }
+
+  @override
+  String get enterIpManually => 'Introduzir IP manualmente';
+
+  @override
+  String get hudHp => 'HP';
+
+  @override
+  String get hudShield => 'ESC';
+
+  @override
+  String get hudPower => 'EN';
+
+  @override
+  String get hudGen => 'GER';
+
+  @override
+  String bossShielded(String name) {
+    return '$name — COM ESCUDO';
+  }
+
+  @override
+  String get bossPartTurret => 'Torre';
+
+  @override
+  String get bossPartShieldPod => 'Módulo de escudo';
+
+  @override
+  String get bossPartThruster => 'Propulsor';
+
+  @override
+  String get bossPartCannon => 'Canhão';
+
+  @override
+  String sectorUnknownSpace(int level) {
+    return 'Setor $level — Espaço desconhecido';
+  }
+
+  @override
+  String get player2Joined => 'O jogador 2 entrou!';
+
+  @override
+  String get player2Disconnected => 'O jogador 2 desligou-se';
+
+  @override
+  String get hostDisconnected => 'O anfitrião desligou-se';
+
+  @override
+  String maxLevelSold(String amount) {
+    return 'Nível máx.! Vendido por \$$amount';
+  }
+
+  @override
+  String weaponLevelUnlocked(String tier) {
+    return 'Nível de armas $tier desbloqueado';
+  }
+
+  @override
+  String get cheatsEnabled => 'Batotas ativadas';
+
+  @override
+  String get cheatsDisabled => 'Batotas desativadas';
+
+  @override
+  String get cheatsMaxed =>
+      'BATOTA: créditos no máximo, todas as armas desbloqueadas';
+
+  @override
+  String get cheats => 'BATOTAS';
+
+  @override
+  String get maxCredits => 'CRÉDITOS MÁX.';
+
+  @override
+  String get sectionStats => 'ESTATÍSTICAS';
+
+  @override
+  String get sectionLoadout => 'EQUIPAMENTO';
+
+  @override
+  String levelShort(int level) {
+    return 'Nv.$level';
+  }
+
+  @override
+  String get max => 'MÁX';
+
+  @override
+  String get upgradeShort => 'MELH';
+
+  @override
+  String get sell => 'VENDER';
+
+  @override
+  String get buy => 'COMPRAR';
+
+  @override
+  String get commandCenter => 'CENTRO DE COMANDO';
+
+  @override
+  String get pilot => 'Piloto';
+
+  @override
+  String get dps => 'DPS';
+
+  @override
+  String get score => 'PONTUAÇÃO';
+
+  @override
+  String get nextWeapon => 'PRÓXIMA ARMA';
+
+  @override
+  String pointsValue(String points) {
+    return '$points pts';
+  }
+
+  @override
+  String get slotFront => 'Frente';
+
+  @override
+  String get slotLeft => 'Esq.';
+
+  @override
+  String get slotRight => 'Dir.';
+
+  @override
+  String get slotGen => 'Ger';
+
+  @override
+  String get power => 'EN';
+
+  @override
+  String get launchMission => 'LANÇAR MISSÃO';
+
+  @override
+  String get startMission => 'INICIAR MISSÃO';
+
+  @override
+  String get continueMission => 'CONTINUAR MISSÃO';
+
+  @override
+  String get padControlsHint =>
+      '[↑↓] Linha   [←→] Escolher   [B] Comprar/Melhorar/Trocar   [X/Y] Vender   [OPTIONS] Continuar missão';
+
+  @override
+  String get host => 'ALOJAR';
+
+  @override
+  String hostingAs(String name) {
+    return 'A ALOJAR como $name';
+  }
+
+  @override
+  String get join => 'ENTRAR';
+
+  @override
+  String get familyBubble => 'BUBBLE';
+
+  @override
+  String get familyVulcan => 'VULCAN';
+
+  @override
+  String get familyBlaster => 'BLASTER';
+
+  @override
+  String get familyStar => 'STAR';
+
+  @override
+  String get familyLaser => 'LASER';
+
+  @override
+  String get overload => 'SOBRECARGA';
+
+  @override
+  String weaponOff(String weapon) {
+    return '$weapon DESLIGADA — gerador demasiado fraco';
+  }
+
+  @override
+  String unlocksAt(String points) {
+    return 'Desbloqueia aos $points pts';
+  }
+
+  @override
+  String joinConnecting(String target) {
+    return 'A ligar a $target…';
+  }
+
+  @override
+  String lanJoinFailedBody(String reason) {
+    return 'O anfitrião não respondeu: $reason.\n\nOs dois jogadores têm de estar na mesma rede Wi-Fi (uma Zona Wi-Fi pessoal também serve) e o anfitrião tem de ter premido ALOJAR. Verifique o endereço e tente novamente.';
+  }
+
+  @override
+  String get lanJoinNoAnswer => 'sem resposta';
+
+  @override
+  String objBossUnder(int seconds) {
+    return 'Destrua o núcleo do chefe em $seconds s após a sua chegada';
+  }
+
+  @override
+  String get sectionHangar => 'HANGAR';
+
+  @override
+  String get sectionVault => 'COFRE';
+
+  @override
+  String get rackSide => 'Lateral';
+
+  @override
+  String get rackHull => 'Casco';
+
+  @override
+  String get rarityCommon => 'COMUM';
+
+  @override
+  String get rarityRare => 'RARO';
+
+  @override
+  String get rarityMythic => 'MÍTICO';
+
+  @override
+  String get curse => 'MALDIÇÃO';
+
+  @override
+  String get modFit => 'MONTAR';
+
+  @override
+  String get modUnfit => 'DESMONTAR';
+
+  @override
+  String get modForge => 'FORJA';
+
+  @override
+  String get forgeHint =>
+      'Escolha 3 da mesma raridade para forjar 1 da seguinte';
+
+  @override
+  String get vaultEmpty =>
+      'Ainda sem mods. Conclua um nó com todas as estrelas, derrote um chefe depressa ou abata um chefe no modo infinito.';
+
+  @override
+  String modNeeds(String families) {
+    return 'Funciona com $families';
+  }
+
+  @override
+  String get modRackFull => 'Suporte cheio';
+
+  @override
+  String get modAlreadyFitted => 'Já montado';
+
+  @override
+  String get modWrongRack => 'Não encaixa neste suporte';
+
+  @override
+  String modsSpilled(int n) {
+    return '$n mods de volta ao cofre';
+  }
+
+  @override
+  String get hullLocked => 'Bloqueado';
+
+  @override
+  String hullUnlockBoss(int n) {
+    return 'Derrote o chefe de campanha $n';
+  }
+
+  @override
+  String get hullUnlockFinish => 'Conclua a campanha ou chegue ao setor 30';
+
+  @override
+  String get statAgility => 'AGI';
+
+  @override
+  String get statHitbox => 'ALVO';
+
+  @override
+  String get perkNone => 'Nave de série';
+
+  @override
+  String get perkAfterimage => 'Fique parado: disparos ×1,5';
+
+  @override
+  String get perkBulwark => 'O dano que passa o escudo é reduzido a metade';
+
+  @override
+  String get perkOverclock => 'Dispara até 130 % da capacidade, mais devagar';
+
+  @override
+  String get perkBattery => 'Um drone de combate gratuito acompanha-o';
+
+  @override
+  String get rewardTitle => 'RECOMPENSA';
+
+  @override
+  String newHull(String name) {
+    return 'Novo casco: $name';
+  }
+
+  @override
+  String get socketEmpty => 'vazio';
+
+  @override
+  String fxStreams(int n) {
+    return '$n feixes paralelos';
+  }
+
+  @override
+  String fxFan(int n) {
+    return 'Leque de $n disparos';
+  }
+
+  @override
+  String fxSalvo(int n) {
+    return 'Salva de $n disparos';
+  }
+
+  @override
+  String fxFireRate(String x) {
+    return 'Cadência ×$x';
+  }
+
+  @override
+  String fxDamage(String x) {
+    return 'Dano ×$x';
+  }
+
+  @override
+  String fxShotSpeed(String x) {
+    return 'Velocidade dos disparos ×$x';
+  }
+
+  @override
+  String fxShotSize(String x) {
+    return 'Tamanho dos disparos ×$x';
+  }
+
+  @override
+  String fxPower(String x) {
+    return 'Consumo de energia ×$x';
+  }
+
+  @override
+  String fxHoming(int n) {
+    return 'Teleguiado +$n';
+  }
+
+  @override
+  String fxPierce(int n) {
+    return 'Atravessa $n alvos';
+  }
+
+  @override
+  String get fxPierceAll => 'Atravessa tudo';
+
+  @override
+  String fxCrit(int pct, String x) {
+    return '$pct % de hipótese de dano ×$x';
+  }
+
+  @override
+  String fxBossCrit(String x) {
+    return 'Críticos ×$x em chefes';
+  }
+
+  @override
+  String fxFork(int n) {
+    return 'Abates espalham $n disparos';
+  }
+
+  @override
+  String get fxChain => 'Disparos espalhados voltam a espalhar-se';
+
+  @override
+  String get fxSplit => 'Divide-se em dois ao acertar';
+
+  @override
+  String get fxFrost => 'Os impactos abrandam os inimigos';
+
+  @override
+  String get fxCrossfire => 'Os canhões laterais apontam para dentro';
+
+  @override
+  String get fxRearguard => 'Os canhões laterais também disparam para trás';
+
+  @override
+  String get fxOrbit => 'Os disparos serpenteiam';
+
+  @override
+  String fxBounce(int n) {
+    return 'Ressalta nas paredes $n×';
+  }
+
+  @override
+  String get fxBounceTop => '…e no topo';
+
+  @override
+  String get fxOverdrive => 'Dispara a crédito de energia';
+
+  @override
+  String get fxReactor =>
+      'Armas acima da capacidade disparam na mesma, devagar';
+
+  @override
+  String fxGenPower(String x) {
+    return 'Recarga do gerador ×$x';
+  }
+
+  @override
+  String fxGenMax(String x) {
+    return 'Capacidade do gerador ×$x';
+  }
+
+  @override
+  String get fxSurge => 'Gerador cheio: disparos ×2';
+
+  @override
+  String fxSiphon(int pct) {
+    return 'Abates repõem $pct % de energia';
+  }
+
+  @override
+  String fxHp(String x) {
+    return 'Casco ×$x';
+  }
+
+  @override
+  String fxShield(String x) {
+    return 'Escudo ×$x';
+  }
+
+  @override
+  String fxRegen(String x) {
+    return 'Regeneração do escudo ×$x';
+  }
+
+  @override
+  String fxLeech(int n) {
+    return 'Abates curam $n HP';
+  }
+
+  @override
+  String get fxMagnet => 'Atrai os bónus';
+
+  @override
+  String get fxMagnetAll => 'Atrai todos os bónus';
+
+  @override
+  String fxReflect(int pct) {
+    return '$pct % dos disparos ressaltam no escudo';
+  }
+
+  @override
+  String get fxReflectGuided => 'Disparos refletidos são teleguiados';
+
+  @override
+  String fxGhost(String sec) {
+    return 'Intocável $sec s após um impacto no casco';
+  }
+
+  @override
+  String get fxNova => 'O escudo parte-se: explosão em todo o ecrã';
+
+  @override
+  String fxAgility(String x) {
+    return 'Agilidade ×$x';
+  }
+
+  @override
+  String fxHitbox(String x) {
+    return 'Área de impacto ×$x';
+  }
+
+  @override
+  String fxCredits(String x) {
+    return 'Créditos ×$x';
+  }
+
+  @override
+  String fxScore(String x) {
+    return 'Pontuação ×$x';
+  }
+
+  @override
+  String get fxSatellite => 'Um drone de combate acompanha-o';
+
+  @override
+  String get fxTimewarp => 'Um impacto no casco abranda o tempo';
+
+  @override
+  String get fxGambler => 'Cada disparo é uma arma aleatória';
+
+  @override
+  String get vaultAll => 'TODOS';
+
+  @override
+  String get sigilMissUnknown => 'forma desconhecida';
+
+  @override
+  String get sigilMissTooSlow => 'demasiado lento';
+
+  @override
+  String get sigilMissSkippedDot => 'saltou um ponto';
+
+  @override
+  String get sigilMissLeftRimEarly => 'largou cedo demais';
+
+  @override
+  String get sigilMissWrongDirection => 'desenhado ao contrário';
+
+  @override
+  String get sigilMissWrongLayer => 'botão de ombro errado';
+
+  @override
+  String get sigilDry => 'carga insuficiente';
+
+  @override
+  String get sigilBusy => 'o anterior ainda está ativo';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'PARTES DO CHEFE';
+
+  @override
+  String get arenaBareCore => 'núcleo exposto';
+
+  @override
+  String get arenaCompanions => 'COMPANHEIROS';
+
+  @override
+  String get arenaCharge => 'CARGA';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VELOCIDADE DO MUNDO';
+
+  @override
+  String get arenaDrill => 'TREINO';
+
+  @override
+  String get arenaFreePlay => 'JOGO LIVRE';
+
+  @override
+  String get arenaFight => 'COMBATER';
+
+  @override
+  String get arenaNewBoss => 'NOVO CHEFE';
+
+  @override
+  String get arenaLeave => 'SAIR DA ARENA';
+
+  @override
+  String get arenaHint =>
+      'O chefe volta assim que morre. Nada aqui é guardado.';
+
+  @override
+  String get arenaColCast => 'USOS';
+
+  @override
+  String get arenaColMiss => 'FALHAS';
+
+  @override
+  String get arenaColAvg => 'MÉDIA';
+
+  @override
+  String get arenaColBest => 'MELHOR';
+
+  @override
+  String get arenaColTime => 'MAIS RÁPIDO';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Chefes $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'COMANDO: SIGILOS';
+
+  @override
+  String get padSchemeClassic => 'COMANDO: CLÁSSICO';
+
+  @override
+  String get padSouthpawOn => 'CANHOTO: SIM';
+
+  @override
+  String get padSouthpawOff => 'CANHOTO: NÃO';
+
+  @override
+  String get sigilDescHop => 'Um salto rápido na direção do gesto';
+
+  @override
+  String get sigilDescSidestep => 'Um longo passo lateral pelo campo';
+
+  @override
+  String get sigilDescStrike => 'Investida com três tiros pesados e regresso';
+
+  @override
+  String get sigilDescRetreat => 'Recua enquanto o fogo de cobertura avança';
+
+  @override
+  String get sigilDescDash => 'Arranque diagonal pelo fogo, intocável a meio';
+
+  @override
+  String get sigilDescRoll => 'Um tonneau para o lado, intocável';
+
+  @override
+  String get sigilDescShadow => 'Fixa-se sob o inimigo mais próximo e dispara';
+
+  @override
+  String get sigilDescEcho =>
+      'Uma sombra repete os teus últimos dois segundos com metade do dano';
+
+  @override
+  String get sigilDescLoop => 'Looping por cima: os tiros passam por baixo';
+
+  @override
+  String get sigilDescSlalom => 'Uma curva em S pelo campo com fogo em leque';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Saca-rolhas em frente a disparar em redor, intocável';
+
+  @override
+  String get sigilDescSnapshot => 'Um tiro pesado na direção do gesto';
+
+  @override
+  String get sigilDescBroadside => 'Uma salva pelos dois flancos';
+
+  @override
+  String get sigilDescVolley => 'Cinco raios carregados em frente';
+
+  @override
+  String get sigilDescCaltrop => 'Larga uma mina que engole tiros e explode';
+
+  @override
+  String get sigilDescFrenzy =>
+      'As armas disparam mais depressa por uns segundos';
+
+  @override
+  String get sigilDescStasis =>
+      'Inimigos e os seus tiros a metade da velocidade';
+
+  @override
+  String get sigilDescHalo =>
+      'O escudo recarrega quatro vezes mais rápido e nada passa';
+
+  @override
+  String get sigilDescRadial => 'Um anel de dezasseis tiros';
+
+  @override
+  String get sigilDescStorm => 'Todas as armas a fundo, de graça';
+
+  @override
+  String get sigilDescPing =>
+      'Os companheiros concentram fogo na direção do gesto';
+
+  @override
+  String get sigilDescWingman => 'Chama um ala para o flanco desenhado';
+
+  @override
+  String get sigilDescHunter =>
+      'Chama um caçador que voa à frente e escolhe alvos';
+
+  @override
+  String get sigilDescWarden => 'Chama um guardião que leva os tiros por ti';
+
+  @override
+  String get sigilDescFormation =>
+      'Os companheiros alternam entre aberta e cunha';
+
+  @override
+  String get sigilDescWhirl =>
+      'Os companheiros giram à tua volta e absorvem tiros';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Os companheiros mergulham e explodem, devolvendo carga';
+
+  @override
+  String get grimoire => 'GRIMÓRIO';
+
+  @override
+  String get grimoireHint =>
+      'Desenha com o stick direito. LB para ARMAS, RB para ALAS, ambos para MEGA RAJADA.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'custo $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'intocável';
+
+  @override
+  String get lessonWatch => 'OBSERVA';
+
+  @override
+  String get lessonTrace => 'DESENHA';
+
+  @override
+  String get lessonSlow => 'LENTO';
+
+  @override
+  String get lessonLive => 'VELOCIDADE TOTAL';
+
+  @override
+  String get lessonStreak => 'CINCO SEGUIDOS';
+
+  @override
+  String get lessonLearned => 'APRENDIDO';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'RITMO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Move rápido o stick direito';
+
+  @override
+  String get hintLoop => 'Desenha um círculo: voas por cima dos tiros';
+
+  @override
+  String get hintStream => 'Prime LT: dois ou três feixes';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NENHUM';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'próximo $sigil em $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'DESAFIO';
+
+  @override
+  String get arenaOn => 'SIM';
+
+  @override
+  String get arenaOff => 'NÃO';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Nota $rating · melhor $best';
+  }
+}

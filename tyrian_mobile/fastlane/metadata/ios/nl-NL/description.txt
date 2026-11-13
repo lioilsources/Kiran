@@ -1,0 +1,23 @@
+Vlieg met een eenzaam gevechtsschip door een eindeloze gang vol vijanden, sector na sector van zestig seconden.
+
+Kirian is een verticale arcadeshooter met een roguelike-lus. Je schip verliezen is niet het einde van de run: je behoudt elk wapen, elke credit en elk punt en begint weer bij sector 1 om dieper te komen. Voortgang is blijvend. Alleen je romp wordt gereset.
+
+ELEMENTAIRE VERNIETIGING
+Vijanden sterven naar gelang het wapen: waterexplosies, versplinterend ijs, brandende vlammen, bliksem of een magenta plasmanova. Elke kill is in één oogopslag leesbaar.
+
+BOUW JE GEVECHTSSCHIP
+Tussen sectoren upgrade je in het Com Center voorwapens, zijwapens, generatoren, romp en schilden over vijfentwintig niveaus. Energie is beperkt, dus elke uitrusting is een afweging. De score wordt nooit gereset en ontgrendelt blijvend hogere wapenniveaus.
+
+HANDGEMAAKTE GOLVEN, DAARNA EINDELOOS
+Achttien handgemaakte sectoren in zes zones, daarna een eindeloze generator met een eindbaas elk vijfde niveau.
+
+TWEE SPELERS, ÉÉN KAMER
+Coöp via lokaal wifi met automatische detectie. Geen accounts, geen servers, geen internet.
+
+VEERTIEN LOOKS
+Elke skin geeft schepen, vijanden, achtergronden, interface en geluid een nieuwe stijl. Drie zijn gratis, de andere elf zijn eenmalige aankopen. Geen advertenties, geen abonnementen.
+
+GEMAAKT OM GOED AAN TE VOELEN
+GPU-shaders voor bloom, scanlines en chromatische aberratie, fysica-gedreven versplintering. Speel met touch, toetsenbord of controller.
+
+Twee Game Center-ranglijsten en prestaties. De interface is beschikbaar in 45 talen.

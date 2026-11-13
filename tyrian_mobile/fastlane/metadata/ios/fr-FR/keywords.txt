@@ -1,0 +1,1 @@
+shmup,bullet hell,roguelite,rétro,arcade,vaisseau,coop,défilement vertical,shoot,pixel art

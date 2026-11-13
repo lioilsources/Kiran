@@ -1,0 +1,23 @@
+Pilotiraj usamljenim borbenim brodom kroz beskrajni hodnik neprijatelja, jedan šezdesetsekundni sektor po jedan.
+
+Kirian je vertikalni arkadni shooter izgrađen na roguelike petlji. Gubitak broda ne prekida igru: zadržavaš svako oružje, kredit i bod i vraćaš se u sektor 1 kako bi stigao dalje. Napredak je trajan. Resetira se samo trup.
+
+ELEMENTARNO UNIŠTENJE
+Neprijatelji umiru prema oružju: eksplozije vode, pucajući led, plamen, munje ili magenta plazma nova. Svako ubojstvo čita se na prvi pogled.
+
+IZGRADI SVOJ BORBENI BROD
+Između sektora u Com Centru nadograđuješ prednja i bočna oružja, generatore, trup i štitove kroz dvadeset i pet razina. Energija je ograničena pa je svaka oprema kompromis. Rezultat se nikad ne resetira i trajno otključava više razine oružja.
+
+RUČNO IZRAĐENI VALOVI, ZATIM BESKRAJ
+Osamnaest ručno izrađenih sektora u šest zona, zatim beskrajni generator s bossom na svakoj petoj razini.
+
+DVA IGRAČA, JEDNA SOBA
+Co-op preko lokalnog Wi-Fija s automatskim otkrivanjem. Bez računa, poslužitelja i interneta.
+
+ČETRNAEST IZGLEDA
+Svaki skin mijenja stil brodova, neprijatelja, pozadina, sučelja i zvuka. Tri su besplatna, ostalih jedanaest su jednokratne kupnje. Bez reklama i pretplata.
+
+IZRAĐENO DA SE DOBRO OSJEĆA
+GPU shaderi za bloom, scanlines i kromatsku aberaciju, fizikalno razlamanje. Igraj dodirom, tipkovnicom ili kontrolerom.
+
+Dvije Game Center ljestvice i postignuća. Sučelje je dostupno na 45 jezika.
