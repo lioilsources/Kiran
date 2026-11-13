@@ -257,8 +257,9 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
                 color: col,
                 fontSize: size,
                 fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
-                letterSpacing: 1)),
-        textDirection: TextDirection.ltr,
+                // Spacing breaks the joined Arabic/Urdu script.
+                letterSpacing: L10n.textDirection == TextDirection.rtl ? 0 : 1)),
+        textDirection: L10n.textDirection,
       )..layout();
     });
     tp.paint(canvas,

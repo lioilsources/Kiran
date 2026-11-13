@@ -811,4 +811,253 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get vaultAll => 'सर्व';
+
+  @override
+  String get sigilMissUnknown => 'अज्ञात आकार';
+
+  @override
+  String get sigilMissTooSlow => 'खूप हळू';
+
+  @override
+  String get sigilMissSkippedDot => 'एक बिंदू चुकला';
+
+  @override
+  String get sigilMissLeftRimEarly => 'खूप लवकर सोडले';
+
+  @override
+  String get sigilMissWrongDirection => 'उलटे काढले';
+
+  @override
+  String get sigilMissWrongLayer => 'चुकीचे शोल्डर बटण';
+
+  @override
+  String get sigilDry => 'पुरेसा चार्ज नाही';
+
+  @override
+  String get sigilBusy => 'आधीचे अजून सुरू आहे';
+
+  @override
+  String get arena => 'अरेना';
+
+  @override
+  String get arenaBossParts => 'बॉसचे भाग';
+
+  @override
+  String get arenaBareCore => 'उघडा कोअर';
+
+  @override
+  String get arenaCompanions => 'साथीदार';
+
+  @override
+  String get arenaCharge => 'चार्ज';
+
+  @override
+  String get arenaChargeNormal => 'सामान्य';
+
+  @override
+  String get arenaSpeed => 'जगाचा वेग';
+
+  @override
+  String get arenaDrill => 'सराव';
+
+  @override
+  String get arenaFreePlay => 'मुक्त खेळ';
+
+  @override
+  String get arenaFight => 'लढा';
+
+  @override
+  String get arenaNewBoss => 'नवा बॉस';
+
+  @override
+  String get arenaLeave => 'अरेना सोडा';
+
+  @override
+  String get arenaHint => 'बॉस मरताच परत येतो. इथे काहीही सेव्ह होत नाही.';
+
+  @override
+  String get arenaColCast => 'वापर';
+
+  @override
+  String get arenaColMiss => 'चूक';
+
+  @override
+  String get arenaColAvg => 'सरासरी';
+
+  @override
+  String get arenaColBest => 'सर्वोत्तम';
+
+  @override
+  String get arenaColTime => 'सर्वात जलद';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'बॉस $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'पॅड: सिजिल';
+
+  @override
+  String get padSchemeClassic => 'पॅड: क्लासिक';
+
+  @override
+  String get padSouthpawOn => 'डावखुरा: चालू';
+
+  @override
+  String get padSouthpawOff => 'डावखुरा: बंद';
+
+  @override
+  String get sigilDescHop => 'फ्लिकच्या दिशेने झटपट उडी';
+
+  @override
+  String get sigilDescSidestep => 'मैदानभर लांब बाजूची पायरी';
+
+  @override
+  String get sigilDescStrike => 'तीन जड गोळ्यांसह पुढे झेप, मग परत';
+
+  @override
+  String get sigilDescRetreat => 'मागे सरका, संरक्षक मारा पुढे जातो';
+
+  @override
+  String get sigilDescDash => 'आगीतून तिरकी धाव, मध्ये अस्पर्श्य';
+
+  @override
+  String get sigilDescRoll => 'बाजूला बॅरल रोल, अस्पर्श्य';
+
+  @override
+  String get sigilDescShadow => 'जवळच्या शत्रूखाली चिकटा आणि मारा करत राहा';
+
+  @override
+  String get sigilDescEcho =>
+      'सावली तुमचे शेवटचे दोन सेकंद अर्ध्या नुकसानीने पुन्हा करते';
+
+  @override
+  String get sigilDescLoop => 'वरून लूप: गोळ्या तुमच्या खालून जातात';
+
+  @override
+  String get sigilDescSlalom => 'पंख्यासारख्या माऱ्यासह मैदानभर S-वळण';
+
+  @override
+  String get sigilDescCorkscrew => 'चहूबाजूंनी मारा करत पुढे पिळवळ, अस्पर्श्य';
+
+  @override
+  String get sigilDescSnapshot => 'फ्लिकच्या दिशेने एक जड गोळी';
+
+  @override
+  String get sigilDescBroadside => 'दोन्ही बाजूंनी सल्वो';
+
+  @override
+  String get sigilDescVolley => 'पुढे पाच चार्ज केलेले किरण';
+
+  @override
+  String get sigilDescCaltrop => 'गोळ्या गिळून फुटणारी सुरुंग टाका';
+
+  @override
+  String get sigilDescFrenzy => 'काही सेकंद तोफा जलद मारा करतात';
+
+  @override
+  String get sigilDescStasis => 'शत्रू आणि त्यांच्या गोळ्या अर्ध्या वेगाने';
+
+  @override
+  String get sigilDescHalo => 'ढाल चौपट वेगाने भरते आणि काहीही आत येत नाही';
+
+  @override
+  String get sigilDescRadial => 'सोळा गोळ्यांचे वर्तुळ';
+
+  @override
+  String get sigilDescStorm => 'प्रत्येक तोफ पूर्ण जोराने, मोफत';
+
+  @override
+  String get sigilDescPing => 'साथीदार फ्लिकच्या दिशेने मारा केंद्रित करतात';
+
+  @override
+  String get sigilDescWingman => 'काढलेल्या बाजूला विंगमॅन बोलवा';
+
+  @override
+  String get sigilDescHunter => 'पुढे उडून लक्ष्य निवडणारा शिकारी बोलवा';
+
+  @override
+  String get sigilDescWarden => 'तुमच्यासाठीच्या गोळ्या झेलणारा रक्षक बोलवा';
+
+  @override
+  String get sigilDescFormation => 'साथीदार रुंद आणि पाचर रचनेत बदलतात';
+
+  @override
+  String get sigilDescWhirl => 'साथीदार तुमच्याभोवती फिरून गोळ्या गिळतात';
+
+  @override
+  String get sigilDescSacrifice => 'साथीदार सूर मारून फुटतात, चार्ज परत देतात';
+
+  @override
+  String get grimoire => 'ग्रिमोयर';
+
+  @override
+  String get grimoireHint =>
+      'उजव्या स्टिकने काढा. ARMS साठी LB, WING साठी RB, MEGA BLAST साठी दोन्ही धरा.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'किंमत $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'अस्पर्श्य';
+
+  @override
+  String get lessonWatch => 'पाहा';
+
+  @override
+  String get lessonTrace => 'गिरवा';
+
+  @override
+  String get lessonSlow => 'हळू';
+
+  @override
+  String get lessonLive => 'पूर्ण वेग';
+
+  @override
+  String get lessonStreak => 'सलग पाच';
+
+  @override
+  String get lessonLearned => 'शिकलात';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'टेम्पो $pct %';
+  }
+
+  @override
+  String get hintHop => 'उजवी स्टिक फ्लिक करा';
+
+  @override
+  String get hintLoop => 'वर्तुळ काढा: तुम्ही गोळ्यांवरून उडता';
+
+  @override
+  String get hintStream => 'LT दाबा: दोन-तीन धारा';
+
+  @override
+  String get arenaKata => 'काटा';
+
+  @override
+  String get arenaKataOff => 'काही नाही';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'पुढील $sigil $secs s मध्ये';
+  }
+
+  @override
+  String get arenaGauntlet => 'गॉन्टलेट';
+
+  @override
+  String get arenaOn => 'चालू';
+
+  @override
+  String get arenaOff => 'बंद';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'रेटिंग $rating · सर्वोत्तम $best';
+  }
 }

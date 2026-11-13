@@ -817,4 +817,264 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get vaultAll => 'அனைத்தும்';
+
+  @override
+  String get sigilMissUnknown => 'தெரியாத வடிவம்';
+
+  @override
+  String get sigilMissTooSlow => 'மிக மெதுவாக';
+
+  @override
+  String get sigilMissSkippedDot => 'ஒரு புள்ளி தவறியது';
+
+  @override
+  String get sigilMissLeftRimEarly => 'முன்கூட்டியே விட்டீர்கள்';
+
+  @override
+  String get sigilMissWrongDirection => 'தலைகீழாக வரைந்தது';
+
+  @override
+  String get sigilMissWrongLayer => 'தவறான தோள் பொத்தான்';
+
+  @override
+  String get sigilDry => 'போதுமான சார்ஜ் இல்லை';
+
+  @override
+  String get sigilBusy => 'முந்தையது இன்னும் இயங்குகிறது';
+
+  @override
+  String get arena => 'அரங்கம்';
+
+  @override
+  String get arenaBossParts => 'தலைவன் பாகங்கள்';
+
+  @override
+  String get arenaBareCore => 'வெற்றுக் கோர்';
+
+  @override
+  String get arenaCompanions => 'துணைகள்';
+
+  @override
+  String get arenaCharge => 'சார்ஜ்';
+
+  @override
+  String get arenaChargeNormal => 'சாதாரணம்';
+
+  @override
+  String get arenaSpeed => 'உலக வேகம்';
+
+  @override
+  String get arenaDrill => 'பயிற்சி';
+
+  @override
+  String get arenaFreePlay => 'இலவச ஆட்டம்';
+
+  @override
+  String get arenaFight => 'சண்டை';
+
+  @override
+  String get arenaNewBoss => 'புதிய தலைவன்';
+
+  @override
+  String get arenaLeave => 'அரங்கை விடு';
+
+  @override
+  String get arenaHint =>
+      'தலைவன் இறந்தவுடன் மீண்டும் வருவான். இங்கு எதுவும் சேமிக்கப்படாது.';
+
+  @override
+  String get arenaColCast => 'பயன்';
+
+  @override
+  String get arenaColMiss => 'தவறு';
+
+  @override
+  String get arenaColAvg => 'சராசரி';
+
+  @override
+  String get arenaColBest => 'சிறந்தது';
+
+  @override
+  String get arenaColTime => 'வேகமானது';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'தலைவர்கள் $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'பேட்: சின்னங்கள்';
+
+  @override
+  String get padSchemeClassic => 'பேட்: கிளாசிக்';
+
+  @override
+  String get padSouthpawOn => 'இடக்கை: ஆன்';
+
+  @override
+  String get padSouthpawOff => 'இடக்கை: ஆஃப்';
+
+  @override
+  String get sigilDescHop => 'சுண்டும் திசையில் விரைவுத் தாவல்';
+
+  @override
+  String get sigilDescSidestep => 'களம் முழுதும் நீண்ட பக்கவாட்டு நகர்வு';
+
+  @override
+  String get sigilDescStrike => 'மூன்று கனமான சுடுதலுடன் முன்பாய்ந்து திரும்பு';
+
+  @override
+  String get sigilDescRetreat => 'மறைப்புச் சுடுதல் முன் செல்ல பின்வாங்கு';
+
+  @override
+  String get sigilDescDash =>
+      'நெருப்பினூடே குறுக்குப் பாய்ச்சல், நடுவில் தொடமுடியாது';
+
+  @override
+  String get sigilDescRoll => 'பக்கவாட்டு பேரல் ரோல், தொடமுடியாது';
+
+  @override
+  String get sigilDescShadow => 'அருகிலுள்ள எதிரியின் கீழ் நிலைத்து சுடு';
+
+  @override
+  String get sigilDescEcho =>
+      'ஒரு நிழல் உங்கள் கடைசி இரு வினாடிகளை பாதி சேதத்துடன் மீண்டும் செய்யும்';
+
+  @override
+  String get sigilDescLoop => 'மேலே லூப்: சுடுதல்கள் கீழே கடக்கும்';
+
+  @override
+  String get sigilDescSlalom => 'விசிறிச் சுடுதலுடன் களத்தில் S-வளைவு';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'சுற்றிலும் சுட்டபடி திருகு முன்னேற்றம், தொடமுடியாது';
+
+  @override
+  String get sigilDescSnapshot => 'சுண்டும் திசையில் ஒரு கனமான சுடுதல்';
+
+  @override
+  String get sigilDescBroadside => 'இரு பக்கங்களிலிருந்தும் ஒரு வெடிப்பு';
+
+  @override
+  String get sigilDescVolley => 'முன்னோக்கி ஐந்து சார்ஜ் கதிர்கள்';
+
+  @override
+  String get sigilDescCaltrop =>
+      'சுடுதல்களை விழுங்கி வெடிக்கும் கண்ணிவெடியை இடு';
+
+  @override
+  String get sigilDescFrenzy => 'சில வினாடிகள் துப்பாக்கிகள் வேகமாகச் சுடும்';
+
+  @override
+  String get sigilDescStasis =>
+      'எதிரிகளும் அவர்களின் சுடுதல்களும் பாதி வேகத்தில்';
+
+  @override
+  String get sigilDescHalo =>
+      'கேடயம் நான்கு மடங்கு வேகமாக நிரம்பும், எதுவும் ஊடுருவாது';
+
+  @override
+  String get sigilDescRadial => 'பதினாறு சுடுதல்களின் வளையம்';
+
+  @override
+  String get sigilDescStorm =>
+      'எல்லாத் துப்பாக்கிகளும் முழு வேகத்தில், இலவசமாக';
+
+  @override
+  String get sigilDescPing => 'சுண்டும் இடத்தில் துணைகள் சுடுதலைக் குவிக்கும்';
+
+  @override
+  String get sigilDescWingman => 'வரைந்த பக்கத்திற்கு ஒரு விங்மேனை அழை';
+
+  @override
+  String get sigilDescHunter =>
+      'முன்னே பறந்து இலக்குகளைத் தேர்வுசெய்யும் வேட்டைக்காரனை அழை';
+
+  @override
+  String get sigilDescWarden => 'உங்களுக்கான சுடுதல்களை ஏற்கும் காவலனை அழை';
+
+  @override
+  String get sigilDescFormation =>
+      'துணைகள் அகலம் மற்றும் ஆப்பு வடிவத்திற்கிடையே மாறும்';
+
+  @override
+  String get sigilDescWhirl =>
+      'துணைகள் உங்களைச் சுற்றி வந்து சுடுதல்களை உண்ணும்';
+
+  @override
+  String get sigilDescSacrifice =>
+      'துணைகள் பாய்ந்து வெடித்து சார்ஜைத் திருப்பித் தரும்';
+
+  @override
+  String get grimoire => 'மந்திர நூல்';
+
+  @override
+  String get grimoireHint =>
+      'வலது ஸ்டிக்கால் வரையவும். ஆயுதங்களுக்கு LB, சிறகுக்கு RB, மெகா வெடிப்புக்கு இரண்டும்.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'விலை $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'தொடமுடியாது';
+
+  @override
+  String get lessonWatch => 'பார்';
+
+  @override
+  String get lessonTrace => 'வரைந்து பார்';
+
+  @override
+  String get lessonSlow => 'மெதுவாக';
+
+  @override
+  String get lessonLive => 'முழு வேகம்';
+
+  @override
+  String get lessonStreak => 'தொடர்ந்து ஐந்து';
+
+  @override
+  String get lessonLearned => 'கற்றது';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'வேகம் $pct %';
+  }
+
+  @override
+  String get hintHop => 'வலது ஸ்டிக்கைச் சுண்டவும்';
+
+  @override
+  String get hintLoop => 'ஒரு வட்டம் வரையவும்: சுடுதல்களுக்கு மேல் பறப்பீர்கள்';
+
+  @override
+  String get hintStream => 'LT-ஐ அழுத்தவும்: இரண்டு அல்லது மூன்று கற்றைகள்';
+
+  @override
+  String get arenaKata => 'கட்டா';
+
+  @override
+  String get arenaKataOff => 'இல்லை';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'அடுத்த $sigil $secs வினாடியில்';
+  }
+
+  @override
+  String get arenaGauntlet => 'சவால் ஓட்டம்';
+
+  @override
+  String get arenaOn => 'ஆன்';
+
+  @override
+  String get arenaOff => 'ஆஃப்';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'மதிப்பீடு $rating · சிறந்தது $best';
+  }
 }

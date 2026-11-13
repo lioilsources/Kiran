@@ -813,4 +813,264 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get vaultAll => 'ALLA';
+
+  @override
+  String get sigilMissUnknown => 'okänd form';
+
+  @override
+  String get sigilMissTooSlow => 'för långsamt';
+
+  @override
+  String get sigilMissSkippedDot => 'hoppade över en punkt';
+
+  @override
+  String get sigilMissLeftRimEarly => 'släppte för tidigt';
+
+  @override
+  String get sigilMissWrongDirection => 'ritad baklänges';
+
+  @override
+  String get sigilMissWrongLayer => 'fel axelknapp';
+
+  @override
+  String get sigilDry => 'för lite laddning';
+
+  @override
+  String get sigilBusy => 'förra pågår fortfarande';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BOSSDELAR';
+
+  @override
+  String get arenaBareCore => 'bar kärna';
+
+  @override
+  String get arenaCompanions => 'FÖLJESLAGARE';
+
+  @override
+  String get arenaCharge => 'LADDNING';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VÄRLDSHASTIGHET';
+
+  @override
+  String get arenaDrill => 'ÖVNING';
+
+  @override
+  String get arenaFreePlay => 'FRITT SPEL';
+
+  @override
+  String get arenaFight => 'SLÅSS';
+
+  @override
+  String get arenaNewBoss => 'NY BOSS';
+
+  @override
+  String get arenaLeave => 'LÄMNA ARENAN';
+
+  @override
+  String get arenaHint =>
+      'Bossen kommer tillbaka så fort den dör. Inget här sparas.';
+
+  @override
+  String get arenaColCast => 'KAST';
+
+  @override
+  String get arenaColMiss => 'MISS';
+
+  @override
+  String get arenaColAvg => 'SNITT';
+
+  @override
+  String get arenaColBest => 'BÄST';
+
+  @override
+  String get arenaColTime => 'SNABBAST';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossar $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILL';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSISK';
+
+  @override
+  String get padSouthpawOn => 'VÄNSTERHÄNT: PÅ';
+
+  @override
+  String get padSouthpawOff => 'VÄNSTERHÄNT: AV';
+
+  @override
+  String get sigilDescHop => 'Ett snabbt hopp åt det håll du snärtar';
+
+  @override
+  String get sigilDescSidestep => 'Ett långt sidsteg över fältet';
+
+  @override
+  String get sigilDescStrike =>
+      'Utfall framåt med tre tunga skott, sedan tillbaka';
+
+  @override
+  String get sigilDescRetreat => 'Dra dig tillbaka medan täckeld går framåt';
+
+  @override
+  String get sigilDescDash =>
+      'En diagonal rusning genom elden, oåtkomlig mitt i';
+
+  @override
+  String get sigilDescRoll => 'En tunnroll åt sidan, oåtkomlig';
+
+  @override
+  String get sigilDescShadow =>
+      'Lås dig under närmaste fiende och fortsätt skjuta';
+
+  @override
+  String get sigilDescEcho =>
+      'En skugga upprepar dina två senaste sekunder med halv skada';
+
+  @override
+  String get sigilDescLoop => 'Looping över toppen: skotten passerar under dig';
+
+  @override
+  String get sigilDescSlalom => 'En S-kurva över fältet med solfjäderseld';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Korkskruv framåt med eld runt om, oåtkomlig';
+
+  @override
+  String get sigilDescSnapshot => 'Ett tungt skott åt det håll du snärtar';
+
+  @override
+  String get sigilDescBroadside => 'En salva från båda flankerna';
+
+  @override
+  String get sigilDescVolley => 'Fem laddade strålar framåt';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Släpp en mina som sväljer skott och exploderar';
+
+  @override
+  String get sigilDescFrenzy => 'Vapnen skjuter snabbare i några sekunder';
+
+  @override
+  String get sigilDescStasis =>
+      'Fiender och deras skott saktar ner till halv fart';
+
+  @override
+  String get sigilDescHalo =>
+      'Skölden laddas fyra gånger snabbare och inget tränger igenom';
+
+  @override
+  String get sigilDescRadial => 'En ring av sexton skott';
+
+  @override
+  String get sigilDescStorm => 'Alla vapen för fullt, gratis';
+
+  @override
+  String get sigilDescPing => 'Följeslagarna fokuserar elden dit du snärtar';
+
+  @override
+  String get sigilDescWingman =>
+      'Kalla en flygkamrat till flanken du ritade mot';
+
+  @override
+  String get sigilDescHunter =>
+      'Kalla en jägare som flyger före och väljer mål';
+
+  @override
+  String get sigilDescWarden => 'Kalla en väktare som tar skotten åt dig';
+
+  @override
+  String get sigilDescFormation => 'Följeslagarna växlar mellan bred och kil';
+
+  @override
+  String get sigilDescWhirl => 'Följeslagarna cirklar runt dig och äter skott';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Följeslagarna dyker och exploderar, ger tillbaka laddning';
+
+  @override
+  String get grimoire => 'GRIMOAR';
+
+  @override
+  String get grimoireHint =>
+      'Rita med höger spak. Håll LB för VAPEN, RB för VINGE, båda för MEGASMÄLL.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'kostar $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'oåtkomlig';
+
+  @override
+  String get lessonWatch => 'TITTA';
+
+  @override
+  String get lessonTrace => 'RITA AV';
+
+  @override
+  String get lessonSlow => 'LÅNGSAMT';
+
+  @override
+  String get lessonLive => 'FULL FART';
+
+  @override
+  String get lessonStreak => 'FEM I RAD';
+
+  @override
+  String get lessonLearned => 'INLÄRD';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Snärta höger spak';
+
+  @override
+  String get hintLoop => 'Rita en cirkel: du flyger över skotten';
+
+  @override
+  String get hintStream => 'Kläm LT: två eller tre strålar';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'INGEN';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'nästa $sigil om $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'GATLOPP';
+
+  @override
+  String get arenaOn => 'PÅ';
+
+  @override
+  String get arenaOff => 'AV';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Betyg $rating · bäst $best';
+  }
 }

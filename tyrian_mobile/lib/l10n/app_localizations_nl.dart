@@ -813,4 +813,263 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get vaultAll => 'ALLE';
+
+  @override
+  String get sigilMissUnknown => 'onbekende vorm';
+
+  @override
+  String get sigilMissTooSlow => 'te traag';
+
+  @override
+  String get sigilMissSkippedDot => 'punt overgeslagen';
+
+  @override
+  String get sigilMissLeftRimEarly => 'te vroeg losgelaten';
+
+  @override
+  String get sigilMissWrongDirection => 'achterstevoren getekend';
+
+  @override
+  String get sigilMissWrongLayer => 'verkeerde schouderknop';
+
+  @override
+  String get sigilDry => 'niet genoeg lading';
+
+  @override
+  String get sigilBusy => 'vorige loopt nog';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BAASDELEN';
+
+  @override
+  String get arenaBareCore => 'kale kern';
+
+  @override
+  String get arenaCompanions => 'GEZELLEN';
+
+  @override
+  String get arenaCharge => 'LADING';
+
+  @override
+  String get arenaChargeNormal => 'NORMAAL';
+
+  @override
+  String get arenaSpeed => 'WERELDSNELHEID';
+
+  @override
+  String get arenaDrill => 'OEFENING';
+
+  @override
+  String get arenaFreePlay => 'VRIJ SPEL';
+
+  @override
+  String get arenaFight => 'VECHT';
+
+  @override
+  String get arenaNewBoss => 'NIEUWE BAAS';
+
+  @override
+  String get arenaLeave => 'ARENA VERLATEN';
+
+  @override
+  String get arenaHint =>
+      'De baas keert terug zodra hij sterft. Niets wordt hier opgeslagen.';
+
+  @override
+  String get arenaColCast => 'CAST';
+
+  @override
+  String get arenaColMiss => 'MIS';
+
+  @override
+  String get arenaColAvg => 'GEM';
+
+  @override
+  String get arenaColBest => 'BESTE';
+
+  @override
+  String get arenaColTime => 'SNELSTE';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bazen $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILS';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSIEK';
+
+  @override
+  String get padSouthpawOn => 'LINKSHANDIG: AAN';
+
+  @override
+  String get padSouthpawOff => 'LINKSHANDIG: UIT';
+
+  @override
+  String get sigilDescHop => 'Een snelle sprong in je veegrichting';
+
+  @override
+  String get sigilDescSidestep => 'Een lange zijstap over het veld';
+
+  @override
+  String get sigilDescStrike =>
+      'Uitval naar voren met drie zware schoten, dan terug';
+
+  @override
+  String get sigilDescRetreat =>
+      'Terugvallen terwijl dekkingsvuur vooruit gaat';
+
+  @override
+  String get sigilDescDash =>
+      'Diagonale sprint door vuur, halverwege onaantastbaar';
+
+  @override
+  String get sigilDescRoll => 'Een rolbeweging opzij, onaantastbaar';
+
+  @override
+  String get sigilDescShadow =>
+      'Hang onder de dichtstbijzijnde vijand en blijf vuren';
+
+  @override
+  String get sigilDescEcho =>
+      'Een schaduw herhaalt je laatste twee seconden op halve schade';
+
+  @override
+  String get sigilDescLoop => 'Looping over de top: schoten gaan onder je door';
+
+  @override
+  String get sigilDescSlalom => 'Een S-bocht over het veld met waaiervuur';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Kurkentrekker vooruit, vuur rondom, onaantastbaar';
+
+  @override
+  String get sigilDescSnapshot => 'Eén zwaar schot in je veegrichting';
+
+  @override
+  String get sigilDescBroadside => 'Een salvo uit beide flanken';
+
+  @override
+  String get sigilDescVolley => 'Vijf geladen stralen vooruit';
+
+  @override
+  String get sigilDescCaltrop => 'Leg een mijn die schoten opslokt en ontploft';
+
+  @override
+  String get sigilDescFrenzy => 'Wapens vuren een paar seconden sneller';
+
+  @override
+  String get sigilDescStasis => 'Vijanden en hun schoten op halve snelheid';
+
+  @override
+  String get sigilDescHalo =>
+      'Schild laadt vier keer sneller en niets komt erdoor';
+
+  @override
+  String get sigilDescRadial => 'Een ring van zestien schoten';
+
+  @override
+  String get sigilDescStorm => 'Elk wapen vuurt voluit, gratis';
+
+  @override
+  String get sigilDescPing => 'Gezellen richten hun vuur waar je veegt';
+
+  @override
+  String get sigilDescWingman => 'Roep een wingman naar de getekende flank';
+
+  @override
+  String get sigilDescHunter =>
+      'Roep een jager die vooruit vliegt en doelen kiest';
+
+  @override
+  String get sigilDescWarden =>
+      'Roep een wachter die de schoten voor jou opvangt';
+
+  @override
+  String get sigilDescFormation => 'Gezellen wisselen tussen breed en wig';
+
+  @override
+  String get sigilDescWhirl => 'Gezellen cirkelen om je heen en vangen schoten';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Gezellen duiken en ontploffen, lading terug';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Teken met de rechterstick. LB voor ARMS, RB voor WING, beide voor MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'kost $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'onaantastbaar';
+
+  @override
+  String get lessonWatch => 'KIJK';
+
+  @override
+  String get lessonTrace => 'NATEKENEN';
+
+  @override
+  String get lessonSlow => 'LANGZAAM';
+
+  @override
+  String get lessonLive => 'VOLLE SNELHEID';
+
+  @override
+  String get lessonStreak => 'VIJF OP RIJ';
+
+  @override
+  String get lessonLearned => 'GELEERD';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Veeg met de rechterstick';
+
+  @override
+  String get hintLoop => 'Teken een cirkel: je vliegt over de schoten';
+
+  @override
+  String get hintStream => 'Knijp LT: twee of drie stralen';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'GEEN';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'volgende $sigil over $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'UITPUTTINGSSLAG';
+
+  @override
+  String get arenaOn => 'AAN';
+
+  @override
+  String get arenaOff => 'UIT';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Score $rating · beste $best';
+  }
 }

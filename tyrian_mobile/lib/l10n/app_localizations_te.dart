@@ -814,4 +814,260 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get vaultAll => 'అన్నీ';
+
+  @override
+  String get sigilMissUnknown => 'తెలియని ఆకారం';
+
+  @override
+  String get sigilMissTooSlow => 'చాలా నెమ్మదిగా';
+
+  @override
+  String get sigilMissSkippedDot => 'ఒక చుక్క వదిలేశారు';
+
+  @override
+  String get sigilMissLeftRimEarly => 'ముందుగానే వదిలేశారు';
+
+  @override
+  String get sigilMissWrongDirection => 'వెనక్కి గీశారు';
+
+  @override
+  String get sigilMissWrongLayer => 'తప్పు భుజం బటన్';
+
+  @override
+  String get sigilDry => 'తగినంత ఛార్జ్ లేదు';
+
+  @override
+  String get sigilBusy => 'మునుపటిది ఇంకా నడుస్తోంది';
+
+  @override
+  String get arena => 'అరేనా';
+
+  @override
+  String get arenaBossParts => 'బాస్ భాగాలు';
+
+  @override
+  String get arenaBareCore => 'బయటపడిన కోర్';
+
+  @override
+  String get arenaCompanions => 'సహచరులు';
+
+  @override
+  String get arenaCharge => 'ఛార్జ్';
+
+  @override
+  String get arenaChargeNormal => 'సాధారణం';
+
+  @override
+  String get arenaSpeed => 'ప్రపంచ వేగం';
+
+  @override
+  String get arenaDrill => 'సాధన';
+
+  @override
+  String get arenaFreePlay => 'ఉచిత ఆట';
+
+  @override
+  String get arenaFight => 'పోరాడు';
+
+  @override
+  String get arenaNewBoss => 'కొత్త బాస్';
+
+  @override
+  String get arenaLeave => 'అరేనా వదులు';
+
+  @override
+  String get arenaHint =>
+      'బాస్ చనిపోయిన వెంటనే తిరిగి వస్తాడు. ఇక్కడ ఏదీ సేవ్ కాదు.';
+
+  @override
+  String get arenaColCast => 'వాడకం';
+
+  @override
+  String get arenaColMiss => 'మిస్';
+
+  @override
+  String get arenaColAvg => 'సగటు';
+
+  @override
+  String get arenaColBest => 'ఉత్తమం';
+
+  @override
+  String get arenaColTime => 'వేగవంతం';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'బాస్‌లు $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'ప్యాడ్: సిగిల్స్';
+
+  @override
+  String get padSchemeClassic => 'ప్యాడ్: క్లాసిక్';
+
+  @override
+  String get padSouthpawOn => 'ఎడమచేతి: ఆన్';
+
+  @override
+  String get padSouthpawOff => 'ఎడమచేతి: ఆఫ్';
+
+  @override
+  String get sigilDescHop => 'మీరు విసిరిన దిశలో వేగవంతమైన గెంతు';
+
+  @override
+  String get sigilDescSidestep => 'మైదానం అంతటా పొడవైన పక్క అడుగు';
+
+  @override
+  String get sigilDescStrike =>
+      'మూడు భారీ షాట్లతో ముందుకు దూకి, తిరిగి వెనక్కి';
+
+  @override
+  String get sigilDescRetreat =>
+      'కవరింగ్ ఫైర్ ముందుకు వెళ్తుండగా వెనక్కి తగ్గు';
+
+  @override
+  String get sigilDescDash => 'మంటల గుండా వికర్ణ దూకుడు, మధ్యలో తాకలేనిది';
+
+  @override
+  String get sigilDescRoll => 'పక్కకు బ్యారెల్ రోల్, తాకలేనిది';
+
+  @override
+  String get sigilDescShadow => 'దగ్గరి శత్రువు కింద లాక్ అయి కాల్చుతూ ఉండు';
+
+  @override
+  String get sigilDescEcho =>
+      'ఒక నీడ మీ చివరి రెండు సెకన్లను సగం నష్టంతో మళ్లీ చేస్తుంది';
+
+  @override
+  String get sigilDescLoop => 'పైనుంచి లూప్: షాట్లు మీ కింద నుంచి వెళ్తాయి';
+
+  @override
+  String get sigilDescSlalom => 'విసనకర్ర కాల్పులతో మైదానంలో S-వంపు';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'చుట్టూ కాల్చుతూ కార్క్‌స్క్రూ ముందుకు, తాకలేనిది';
+
+  @override
+  String get sigilDescSnapshot => 'మీరు విసిరిన దిశలో ఒక భారీ షాట్';
+
+  @override
+  String get sigilDescBroadside => 'రెండు పక్కల నుంచీ ఒక సాల్వో';
+
+  @override
+  String get sigilDescVolley => 'ముందుకు ఐదు ఛార్జ్ కిరణాలు';
+
+  @override
+  String get sigilDescCaltrop => 'షాట్లను మింగి పేలే మైన్‌ను వదులు';
+
+  @override
+  String get sigilDescFrenzy => 'కొన్ని సెకన్లు తుపాకులు వేగంగా కాల్చుతాయి';
+
+  @override
+  String get sigilDescStasis => 'శత్రువులు, వారి షాట్లు సగం వేగానికి తగ్గుతాయి';
+
+  @override
+  String get sigilDescHalo =>
+      'కవచం నాలుగు రెట్లు వేగంగా నిండుతుంది, ఏదీ దూసుకురాదు';
+
+  @override
+  String get sigilDescRadial => 'పదహారు షాట్ల వలయం';
+
+  @override
+  String get sigilDescStorm => 'అన్ని తుపాకులూ పూర్తి వేగంతో, ఉచితంగా';
+
+  @override
+  String get sigilDescPing =>
+      'మీరు విసిరిన చోట సహచరులు కాల్పులు కేంద్రీకరిస్తారు';
+
+  @override
+  String get sigilDescWingman => 'మీరు గీసిన పక్కకు వింగ్‌మ్యాన్‌ను పిలువు';
+
+  @override
+  String get sigilDescHunter =>
+      'ముందు ఎగిరి లక్ష్యాలను ఎంచుకునే హంటర్‌ను పిలువు';
+
+  @override
+  String get sigilDescWarden => 'మీ కోసం షాట్లను తీసుకునే వార్డెన్‌ను పిలువు';
+
+  @override
+  String get sigilDescFormation => 'సహచరులు వెడల్పు, చీలిక మధ్య మారుతారు';
+
+  @override
+  String get sigilDescWhirl => 'సహచరులు మీ చుట్టూ తిరిగి షాట్లను మింగుతారు';
+
+  @override
+  String get sigilDescSacrifice => 'సహచరులు దూకి పేలి, ఛార్జ్ తిరిగి ఇస్తారు';
+
+  @override
+  String get grimoire => 'మంత్ర గ్రంథం';
+
+  @override
+  String get grimoireHint =>
+      'కుడి స్టిక్‌తో గీయండి. ఆయుధాలకు LB, రెక్కకు RB, మెగా పేలుడుకు రెండూ.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'ఖర్చు $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'తాకలేనిది';
+
+  @override
+  String get lessonWatch => 'చూడు';
+
+  @override
+  String get lessonTrace => 'గీయి';
+
+  @override
+  String get lessonSlow => 'నెమ్మది';
+
+  @override
+  String get lessonLive => 'పూర్తి వేగం';
+
+  @override
+  String get lessonStreak => 'వరుసగా ఐదు';
+
+  @override
+  String get lessonLearned => 'నేర్చుకున్నారు';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'టెంపో $pct %';
+  }
+
+  @override
+  String get hintHop => 'కుడి స్టిక్‌ను విసరండి';
+
+  @override
+  String get hintLoop => 'వృత్తం గీయండి: షాట్ల పైనుంచి ఎగురుతారు';
+
+  @override
+  String get hintStream => 'LT నొక్కండి: రెండు లేదా మూడు ధారలు';
+
+  @override
+  String get arenaKata => 'కాటా';
+
+  @override
+  String get arenaKataOff => 'ఏదీ లేదు';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'తదుపరి $sigil $secs సెకన్లలో';
+  }
+
+  @override
+  String get arenaGauntlet => 'సవాలు';
+
+  @override
+  String get arenaOn => 'ఆన్';
+
+  @override
+  String get arenaOff => 'ఆఫ్';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'రేటింగ్ $rating · ఉత్తమం $best';
+  }
 }

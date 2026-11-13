@@ -822,4 +822,262 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get vaultAll => 'WSZYSTKO';
+
+  @override
+  String get sigilMissUnknown => 'nieznany kształt';
+
+  @override
+  String get sigilMissTooSlow => 'za wolno';
+
+  @override
+  String get sigilMissSkippedDot => 'pominięty punkt';
+
+  @override
+  String get sigilMissLeftRimEarly => 'puszczone za wcześnie';
+
+  @override
+  String get sigilMissWrongDirection => 'narysowane wstecz';
+
+  @override
+  String get sigilMissWrongLayer => 'zły przycisk ramienia';
+
+  @override
+  String get sigilDry => 'za mało ładunku';
+
+  @override
+  String get sigilBusy => 'poprzedni wciąż działa';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'CZĘŚCI BOSSA';
+
+  @override
+  String get arenaBareCore => 'goły rdzeń';
+
+  @override
+  String get arenaCompanions => 'TOWARZYSZE';
+
+  @override
+  String get arenaCharge => 'ŁADUNEK';
+
+  @override
+  String get arenaChargeNormal => 'NORMALNY';
+
+  @override
+  String get arenaSpeed => 'PRĘDKOŚĆ ŚWIATA';
+
+  @override
+  String get arenaDrill => 'TRENING';
+
+  @override
+  String get arenaFreePlay => 'WOLNA GRA';
+
+  @override
+  String get arenaFight => 'WALKA';
+
+  @override
+  String get arenaNewBoss => 'NOWY BOSS';
+
+  @override
+  String get arenaLeave => 'OPUŚĆ ARENĘ';
+
+  @override
+  String get arenaHint =>
+      'Boss wraca w chwili śmierci. Nic tu nie jest zapisywane.';
+
+  @override
+  String get arenaColCast => 'UŻYCIA';
+
+  @override
+  String get arenaColMiss => 'PUDŁA';
+
+  @override
+  String get arenaColAvg => 'ŚR.';
+
+  @override
+  String get arenaColBest => 'NAJLEPSZY';
+
+  @override
+  String get arenaColTime => 'NAJSZYBCIEJ';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bossy $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILE';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASYCZNY';
+
+  @override
+  String get padSouthpawOn => 'LEWORĘCZNY: WŁ.';
+
+  @override
+  String get padSouthpawOff => 'LEWORĘCZNY: WYŁ.';
+
+  @override
+  String get sigilDescHop => 'Szybki skok w kierunku machnięcia';
+
+  @override
+  String get sigilDescSidestep => 'Długi unik w bok przez całe pole';
+
+  @override
+  String get sigilDescStrike =>
+      'Wypad naprzód z trzema ciężkimi strzałami i powrót';
+
+  @override
+  String get sigilDescRetreat => 'Odwrót, a ogień osłonowy leci naprzód';
+
+  @override
+  String get sigilDescDash => 'Skośny zryw przez ogień, w połowie nietykalny';
+
+  @override
+  String get sigilDescRoll => 'Beczka w bok, nietykalny';
+
+  @override
+  String get sigilDescShadow =>
+      'Przyklej się pod najbliższym wrogiem i strzelaj';
+
+  @override
+  String get sigilDescEcho =>
+      'Cień powtarza twoje ostatnie dwie sekundy z połową obrażeń';
+
+  @override
+  String get sigilDescLoop => 'Pętla górą: pociski przelatują pod tobą';
+
+  @override
+  String get sigilDescSlalom => 'Slalom przez pole z ogniem wachlarzowym';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Korkociąg naprzód z ogniem dookoła, nietykalny';
+
+  @override
+  String get sigilDescSnapshot => 'Jeden ciężki strzał w kierunku machnięcia';
+
+  @override
+  String get sigilDescBroadside => 'Salwa z obu burt';
+
+  @override
+  String get sigilDescVolley => 'Pięć naładowanych promieni naprzód';
+
+  @override
+  String get sigilDescCaltrop => 'Mina, która połyka pociski i wybucha';
+
+  @override
+  String get sigilDescFrenzy => 'Działa strzelają szybciej przez kilka sekund';
+
+  @override
+  String get sigilDescStasis => 'Wrogowie i ich pociski zwalniają o połowę';
+
+  @override
+  String get sigilDescHalo =>
+      'Osłona ładuje się cztery razy szybciej i nic nie przejdzie';
+
+  @override
+  String get sigilDescRadial => 'Pierścień szesnastu strzałów';
+
+  @override
+  String get sigilDescStorm => 'Każde działo strzela na pełną moc, za darmo';
+
+  @override
+  String get sigilDescPing => 'Towarzysze skupiają ogień tam, gdzie machniesz';
+
+  @override
+  String get sigilDescWingman => 'Wezwij skrzydłowego na narysowaną flankę';
+
+  @override
+  String get sigilDescHunter =>
+      'Wezwij łowcę, który leci przodem i wybiera cele';
+
+  @override
+  String get sigilDescWarden =>
+      'Wezwij strażnika, który przyjmuje strzały za ciebie';
+
+  @override
+  String get sigilDescFormation =>
+      'Towarzysze zmieniają szyk: szeroki lub klin';
+
+  @override
+  String get sigilDescWhirl => 'Towarzysze krążą wokół i łapią pociski';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Towarzysze nurkują i wybuchają, zwracając ładunek';
+
+  @override
+  String get grimoire => 'GRIMUAR';
+
+  @override
+  String get grimoireHint =>
+      'Rysuj prawą gałką. LB: ARMS, RB: WING, oba: MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'koszt $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'nietykalny';
+
+  @override
+  String get lessonWatch => 'PATRZ';
+
+  @override
+  String get lessonTrace => 'OBRYSUJ';
+
+  @override
+  String get lessonSlow => 'POWOLI';
+
+  @override
+  String get lessonLive => 'PEŁNA PRĘDKOŚĆ';
+
+  @override
+  String get lessonStreak => 'PIĘĆ Z RZĘDU';
+
+  @override
+  String get lessonLearned => 'OPANOWANE';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Machnij prawą gałką';
+
+  @override
+  String get hintLoop => 'Narysuj koło: przelatujesz nad pociskami';
+
+  @override
+  String get hintStream => 'Wciśnij LT: dwa lub trzy strumienie';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'BRAK';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'następny $sigil za $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'RĘKAWICA';
+
+  @override
+  String get arenaOn => 'WŁ.';
+
+  @override
+  String get arenaOff => 'WYŁ.';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Ocena $rating · najlepsza $best';
+  }
 }

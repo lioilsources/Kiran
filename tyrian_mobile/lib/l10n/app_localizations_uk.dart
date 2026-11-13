@@ -821,4 +821,264 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get vaultAll => 'УСІ';
+
+  @override
+  String get sigilMissUnknown => 'невідома форма';
+
+  @override
+  String get sigilMissTooSlow => 'надто повільно';
+
+  @override
+  String get sigilMissSkippedDot => 'пропущено точку';
+
+  @override
+  String get sigilMissLeftRimEarly => 'відпущено зарано';
+
+  @override
+  String get sigilMissWrongDirection => 'намальовано навпаки';
+
+  @override
+  String get sigilMissWrongLayer => 'не та плечова кнопка';
+
+  @override
+  String get sigilDry => 'замало заряду';
+
+  @override
+  String get sigilBusy => 'попередній ще діє';
+
+  @override
+  String get arena => 'АРЕНА';
+
+  @override
+  String get arenaBossParts => 'ЧАСТИНИ БОСА';
+
+  @override
+  String get arenaBareCore => 'оголене ядро';
+
+  @override
+  String get arenaCompanions => 'СУПУТНИКИ';
+
+  @override
+  String get arenaCharge => 'ЗАРЯД';
+
+  @override
+  String get arenaChargeNormal => 'ЗВИЧАЙНИЙ';
+
+  @override
+  String get arenaSpeed => 'ШВИДКІСТЬ СВІТУ';
+
+  @override
+  String get arenaDrill => 'ТРЕНУВАННЯ';
+
+  @override
+  String get arenaFreePlay => 'ВІЛЬНА ГРА';
+
+  @override
+  String get arenaFight => 'БІЙ';
+
+  @override
+  String get arenaNewBoss => 'НОВИЙ БОС';
+
+  @override
+  String get arenaLeave => 'ПОКИНУТИ АРЕНУ';
+
+  @override
+  String get arenaHint =>
+      'Бос повертається, щойно гине. Тут нічого не зберігається.';
+
+  @override
+  String get arenaColCast => 'ЗАСТОСУВ.';
+
+  @override
+  String get arenaColMiss => 'ПРОМАХИ';
+
+  @override
+  String get arenaColAvg => 'СЕРЕД.';
+
+  @override
+  String get arenaColBest => 'НАЙКРАЩЕ';
+
+  @override
+  String get arenaColTime => 'НАЙШВИДШЕ';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Боси $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'ГЕЙМПАД: СИГІЛИ';
+
+  @override
+  String get padSchemeClassic => 'ГЕЙМПАД: КЛАСИКА';
+
+  @override
+  String get padSouthpawOn => 'ЛІВША: УВІМК.';
+
+  @override
+  String get padSouthpawOff => 'ЛІВША: ВИМК.';
+
+  @override
+  String get sigilDescHop => 'Швидкий стрибок у бік ривка';
+
+  @override
+  String get sigilDescSidestep => 'Довгий крок убік через поле';
+
+  @override
+  String get sigilDescStrike =>
+      'Випад уперед із трьома важкими пострілами й назад';
+
+  @override
+  String get sigilDescRetreat =>
+      'Відступ, поки прикривальний вогонь летить уперед';
+
+  @override
+  String get sigilDescDash =>
+      'Діагональний ривок крізь вогонь, невразливий посередині';
+
+  @override
+  String get sigilDescRoll => 'Бочка вбік, невразливий';
+
+  @override
+  String get sigilDescShadow => 'Зачепися під найближчим ворогом і стріляй';
+
+  @override
+  String get sigilDescEcho =>
+      'Тінь повторює твої останні дві секунди з половинною шкодою';
+
+  @override
+  String get sigilDescLoop => 'Петля згори: постріли проходять під тобою';
+
+  @override
+  String get sigilDescSlalom => 'S-подібна крива через поле з віялом вогню';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Штопор уперед із вогнем довкола, невразливий';
+
+  @override
+  String get sigilDescSnapshot => 'Один важкий постріл у бік ривка';
+
+  @override
+  String get sigilDescBroadside => 'Залп з обох флангів';
+
+  @override
+  String get sigilDescVolley => 'П\'ять заряджених променів уперед';
+
+  @override
+  String get sigilDescCaltrop => 'Скинь міну, що ковтає постріли й вибухає';
+
+  @override
+  String get sigilDescFrenzy => 'Гармати кілька секунд стріляють швидше';
+
+  @override
+  String get sigilDescStasis => 'Вороги та їхні постріли сповільнюються вдвічі';
+
+  @override
+  String get sigilDescHalo =>
+      'Щит заряджається вчетверо швидше й нічого не проходить';
+
+  @override
+  String get sigilDescRadial => 'Кільце з шістнадцяти пострілів';
+
+  @override
+  String get sigilDescStorm => 'Усі гармати на повну, безкоштовно';
+
+  @override
+  String get sigilDescPing => 'Супутники зосереджують вогонь у бік ривка';
+
+  @override
+  String get sigilDescWingman => 'Виклич веденого на фланг, куди малював';
+
+  @override
+  String get sigilDescHunter =>
+      'Виклич мисливця, що летить попереду й обирає цілі';
+
+  @override
+  String get sigilDescWarden =>
+      'Виклич вартового, що приймає постріли замість тебе';
+
+  @override
+  String get sigilDescFormation =>
+      'Супутники перемикаються між широким строєм і клином';
+
+  @override
+  String get sigilDescWhirl =>
+      'Супутники кружляють довкола й поглинають постріли';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Супутники пікірують і вибухають, повертаючи заряд';
+
+  @override
+  String get grimoire => 'ГРИМУАР';
+
+  @override
+  String get grimoireHint =>
+      'Малюй правим стіком. LB — ЗБРОЯ, RB — КРИЛО, обидві — МЕГАВИБУХ.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'ціна $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'невразливий';
+
+  @override
+  String get lessonWatch => 'ДИВИСЬ';
+
+  @override
+  String get lessonTrace => 'ОБВЕДИ';
+
+  @override
+  String get lessonSlow => 'ПОВІЛЬНО';
+
+  @override
+  String get lessonLive => 'ПОВНА ШВИДКІСТЬ';
+
+  @override
+  String get lessonStreak => 'П\'ЯТЬ ПОСПІЛЬ';
+
+  @override
+  String get lessonLearned => 'ВИВЧЕНО';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'ТЕМП $pct %';
+  }
+
+  @override
+  String get hintHop => 'Різко хитни правий стік';
+
+  @override
+  String get hintLoop => 'Намалюй коло: ти пролетиш над пострілами';
+
+  @override
+  String get hintStream => 'Натисни LT: два або три потоки';
+
+  @override
+  String get arenaKata => 'КАТА';
+
+  @override
+  String get arenaKataOff => 'НЕМАЄ';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'наступний $sigil за $secs с';
+  }
+
+  @override
+  String get arenaGauntlet => 'ВИПРОБУВАННЯ';
+
+  @override
+  String get arenaOn => 'УВІМК.';
+
+  @override
+  String get arenaOff => 'ВИМК.';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Рейтинг $rating · рекорд $best';
+  }
 }

@@ -812,4 +812,261 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get vaultAll => 'ALLE';
+
+  @override
+  String get sigilMissUnknown => 'ukendt form';
+
+  @override
+  String get sigilMissTooSlow => 'for langsomt';
+
+  @override
+  String get sigilMissSkippedDot => 'sprang et punkt over';
+
+  @override
+  String get sigilMissLeftRimEarly => 'slap for tidligt';
+
+  @override
+  String get sigilMissWrongDirection => 'tegnet baglæns';
+
+  @override
+  String get sigilMissWrongLayer => 'forkert skulderknap';
+
+  @override
+  String get sigilDry => 'ikke nok ladning';
+
+  @override
+  String get sigilBusy => 'den forrige kører stadig';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BOSSDELE';
+
+  @override
+  String get arenaBareCore => 'bar kerne';
+
+  @override
+  String get arenaCompanions => 'LEDSAGERE';
+
+  @override
+  String get arenaCharge => 'LADNING';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VERDENSHASTIGHED';
+
+  @override
+  String get arenaDrill => 'ØVELSE';
+
+  @override
+  String get arenaFreePlay => 'FRIT SPIL';
+
+  @override
+  String get arenaFight => 'KÆMP';
+
+  @override
+  String get arenaNewBoss => 'NY BOSS';
+
+  @override
+  String get arenaLeave => 'FORLAD ARENA';
+
+  @override
+  String get arenaHint =>
+      'Bossen vender tilbage, så snart den dør. Intet her gemmes.';
+
+  @override
+  String get arenaColCast => 'KAST';
+
+  @override
+  String get arenaColMiss => 'MISS';
+
+  @override
+  String get arenaColAvg => 'GNS';
+
+  @override
+  String get arenaColBest => 'BEDST';
+
+  @override
+  String get arenaColTime => 'HURTIGST';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bosser $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILLER';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASSISK';
+
+  @override
+  String get padSouthpawOn => 'VENSTREHÅNDET: TIL';
+
+  @override
+  String get padSouthpawOff => 'VENSTREHÅNDET: FRA';
+
+  @override
+  String get sigilDescHop => 'Et hurtigt hop i den retning, du svirper';
+
+  @override
+  String get sigilDescSidestep => 'Et langt sidetrin over banen';
+
+  @override
+  String get sigilDescStrike => 'Fremstød med tre tunge skud, så tilbage';
+
+  @override
+  String get sigilDescRetreat => 'Træk dig tilbage under dækningsild fremad';
+
+  @override
+  String get sigilDescDash =>
+      'Et diagonalt spurt gennem ilden, urørlig midtvejs';
+
+  @override
+  String get sigilDescRoll => 'En tønderulning til siden, urørlig';
+
+  @override
+  String get sigilDescShadow =>
+      'Lås dig under nærmeste fjende og bliv ved at skyde';
+
+  @override
+  String get sigilDescEcho =>
+      'En skygge gentager dine sidste to sekunder med halv skade';
+
+  @override
+  String get sigilDescLoop => 'Et loop over toppen: skud passerer under dig';
+
+  @override
+  String get sigilDescSlalom => 'En S-kurve over banen med vifteild';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Proptrækker fremad med ild hele vejen rundt, urørlig';
+
+  @override
+  String get sigilDescSnapshot => 'Ét tungt skud i den retning, du svirper';
+
+  @override
+  String get sigilDescBroadside => 'En salve ud af begge flanker';
+
+  @override
+  String get sigilDescVolley => 'Fem ladede stråler fremad';
+
+  @override
+  String get sigilDescCaltrop => 'Smid en mine, der sluger skud og eksploderer';
+
+  @override
+  String get sigilDescFrenzy => 'Kanonerne skyder hurtigere i et par sekunder';
+
+  @override
+  String get sigilDescStasis => 'Fjender og deres skud sænkes til halv fart';
+
+  @override
+  String get sigilDescHalo =>
+      'Skjoldet lader fire gange hurtigere, og intet slipper igennem';
+
+  @override
+  String get sigilDescRadial => 'En ring af seksten skud';
+
+  @override
+  String get sigilDescStorm => 'Alle kanoner skyder for fuld kraft, gratis';
+
+  @override
+  String get sigilDescPing => 'Ledsagerne samler ilden, hvor du svirper';
+
+  @override
+  String get sigilDescWingman =>
+      'Kald en wingman til den flanke, du tegnede mod';
+
+  @override
+  String get sigilDescHunter =>
+      'Kald en jæger, der flyver forrest og vælger mål';
+
+  @override
+  String get sigilDescWarden => 'Kald en vogter, der tager skuddene for dig';
+
+  @override
+  String get sigilDescFormation => 'Ledsagerne skifter mellem bred og kile';
+
+  @override
+  String get sigilDescWhirl => 'Ledsagerne kredser om dig og sluger skud';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Ledsagerne styrtdykker og eksploderer og giver ladning tilbage';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Tegn med højre stik. Hold LB for VÅBEN, RB for VINGE, begge for MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'pris $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'urørlig';
+
+  @override
+  String get lessonWatch => 'SE';
+
+  @override
+  String get lessonTrace => 'TEGN EFTER';
+
+  @override
+  String get lessonSlow => 'LANGSOMT';
+
+  @override
+  String get lessonLive => 'FULD FART';
+
+  @override
+  String get lessonStreak => 'FEM I TRÆK';
+
+  @override
+  String get lessonLearned => 'LÆRT';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Svirp med højre stik';
+
+  @override
+  String get hintLoop => 'Tegn en cirkel: du flyver over skuddene';
+
+  @override
+  String get hintStream => 'Klem LT: to eller tre stråler';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'INGEN';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'næste $sigil om $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'GAUNTLET';
+
+  @override
+  String get arenaOn => 'TIL';
+
+  @override
+  String get arenaOff => 'FRA';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Rating $rating · bedst $best';
+  }
 }

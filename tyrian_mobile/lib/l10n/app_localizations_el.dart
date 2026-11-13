@@ -818,4 +818,265 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get vaultAll => 'ΟΛΑ';
+
+  @override
+  String get sigilMissUnknown => 'άγνωστο σχήμα';
+
+  @override
+  String get sigilMissTooSlow => 'πολύ αργά';
+
+  @override
+  String get sigilMissSkippedDot => 'παραλείφθηκε σημείο';
+
+  @override
+  String get sigilMissLeftRimEarly => 'άφησες πολύ νωρίς';
+
+  @override
+  String get sigilMissWrongDirection => 'σχεδιάστηκε ανάποδα';
+
+  @override
+  String get sigilMissWrongLayer => 'λάθος πλαϊνό κουμπί';
+
+  @override
+  String get sigilDry => 'ανεπαρκής φόρτιση';
+
+  @override
+  String get sigilBusy => 'το προηγούμενο τρέχει ακόμα';
+
+  @override
+  String get arena => 'ΑΡΕΝΑ';
+
+  @override
+  String get arenaBossParts => 'ΜΕΡΗ BOSS';
+
+  @override
+  String get arenaBareCore => 'γυμνός πυρήνας';
+
+  @override
+  String get arenaCompanions => 'ΣΥΝΤΡΟΦΟΙ';
+
+  @override
+  String get arenaCharge => 'ΦΟΡΤΙΣΗ';
+
+  @override
+  String get arenaChargeNormal => 'ΚΑΝΟΝΙΚΗ';
+
+  @override
+  String get arenaSpeed => 'ΤΑΧΥΤΗΤΑ ΚΟΣΜΟΥ';
+
+  @override
+  String get arenaDrill => 'ΑΣΚΗΣΗ';
+
+  @override
+  String get arenaFreePlay => 'ΕΛΕΥΘΕΡΟ ΠΑΙΧΝΙΔΙ';
+
+  @override
+  String get arenaFight => 'ΜΑΧΗ';
+
+  @override
+  String get arenaNewBoss => 'ΝΕΟ BOSS';
+
+  @override
+  String get arenaLeave => 'ΕΞΟΔΟΣ ΑΠΟ ΑΡΕΝΑ';
+
+  @override
+  String get arenaHint =>
+      'Το boss επιστρέφει μόλις πεθάνει. Τίποτα δεν αποθηκεύεται εδώ.';
+
+  @override
+  String get arenaColCast => 'ΡΙΨΕΙΣ';
+
+  @override
+  String get arenaColMiss => 'ΑΣΤΟΧ.';
+
+  @override
+  String get arenaColAvg => 'Μ.Ο.';
+
+  @override
+  String get arenaColBest => 'ΚΑΛΥΤΕΡΟ';
+
+  @override
+  String get arenaColTime => 'ΤΑΧΥΤΕΡΟ';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Boss $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: ΣΦΡΑΓΙΔΕΣ';
+
+  @override
+  String get padSchemeClassic => 'PAD: ΚΛΑΣΙΚΟ';
+
+  @override
+  String get padSouthpawOn => 'ΑΡΙΣΤΕΡΟΧΕΙΡΑΣ: ΝΑΙ';
+
+  @override
+  String get padSouthpawOff => 'ΑΡΙΣΤΕΡΟΧΕΙΡΑΣ: ΟΧΙ';
+
+  @override
+  String get sigilDescHop => 'Γρήγορο άλμα προς την κατεύθυνση της κίνησης';
+
+  @override
+  String get sigilDescSidestep => 'Μεγάλο πλευρικό βήμα στο πεδίο';
+
+  @override
+  String get sigilDescStrike => 'Εφόρμηση με τρεις βαριές βολές και επιστροφή';
+
+  @override
+  String get sigilDescRetreat => 'Υποχώρηση με πυρά κάλυψης προς τα εμπρός';
+
+  @override
+  String get sigilDescDash =>
+      'Διαγώνια εφόρμηση μέσα από πυρά, άτρωτο στη μέση';
+
+  @override
+  String get sigilDescRoll => 'Περιστροφή στο πλάι, άτρωτο';
+
+  @override
+  String get sigilDescShadow =>
+      'Κλείδωσε κάτω από τον πλησιέστερο εχθρό και πυροβόλα';
+
+  @override
+  String get sigilDescEcho =>
+      'Μια σκιά επαναλαμβάνει τα 2 τελευταία δευτερόλεπτα με μισή ζημιά';
+
+  @override
+  String get sigilDescLoop => 'Λούπα από πάνω: οι βολές περνούν από κάτω σου';
+
+  @override
+  String get sigilDescSlalom => 'Καμπύλη S στο πεδίο με βεντάλια πυρών';
+
+  @override
+  String get sigilDescCorkscrew => 'Τιρμπουσόν μπροστά με πυρά παντού, άτρωτο';
+
+  @override
+  String get sigilDescSnapshot =>
+      'Μία βαριά βολή προς την κατεύθυνση της κίνησης';
+
+  @override
+  String get sigilDescBroadside => 'Ομοβροντία και από τα δύο πλευρά';
+
+  @override
+  String get sigilDescVolley => 'Πέντε φορτισμένες ακτίνες μπροστά';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Ρίξε νάρκη που καταπίνει βολές και εκρήγνυται';
+
+  @override
+  String get sigilDescFrenzy =>
+      'Τα όπλα πυροβολούν ταχύτερα για λίγα δευτερόλεπτα';
+
+  @override
+  String get sigilDescStasis => 'Εχθροί και βολές τους στη μισή ταχύτητα';
+
+  @override
+  String get sigilDescHalo =>
+      'Η ασπίδα φορτίζει 4 φορές ταχύτερα και τίποτα δεν περνά';
+
+  @override
+  String get sigilDescRadial => 'Δαχτυλίδι δεκαέξι βολών';
+
+  @override
+  String get sigilDescStorm => 'Όλα τα όπλα στο φουλ, δωρεάν';
+
+  @override
+  String get sigilDescPing => 'Οι σύντροφοι εστιάζουν πυρά όπου δείχνεις';
+
+  @override
+  String get sigilDescWingman =>
+      'Κάλεσε συνοδό στο πλευρό προς το οποίο σχεδίασες';
+
+  @override
+  String get sigilDescHunter =>
+      'Κάλεσε κυνηγό που πετά μπροστά και διαλέγει στόχους';
+
+  @override
+  String get sigilDescWarden => 'Κάλεσε φύλακα που δέχεται τις βολές για σένα';
+
+  @override
+  String get sigilDescFormation =>
+      'Οι σύντροφοι αλλάζουν μεταξύ φαρδιάς και σφήνας';
+
+  @override
+  String get sigilDescWhirl =>
+      'Οι σύντροφοι κάνουν κύκλους γύρω σου και τρώνε βολές';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Οι σύντροφοι βουτούν και εκρήγνυνται, επιστρέφοντας φόρτιση';
+
+  @override
+  String get grimoire => 'ΓΚΡΙΜΟΥΑΡ';
+
+  @override
+  String get grimoireHint =>
+      'Σχεδίασε με το δεξί stick. LB για ΟΠΛΑ, RB για ΠΤΕΡΥΓΑ, και τα δύο για MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'κόστος $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'άτρωτο';
+
+  @override
+  String get lessonWatch => 'ΔΕΣ';
+
+  @override
+  String get lessonTrace => 'ΑΚΟΛΟΥΘΗΣΕ';
+
+  @override
+  String get lessonSlow => 'ΑΡΓΑ';
+
+  @override
+  String get lessonLive => 'ΠΛΗΡΗΣ ΤΑΧΥΤΗΤΑ';
+
+  @override
+  String get lessonStreak => 'ΠΕΝΤΕ ΣΤΗ ΣΕΙΡΑ';
+
+  @override
+  String get lessonLearned => 'ΕΜΑΘΕΣ';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'ΤΕΜΠΟ $pct %';
+  }
+
+  @override
+  String get hintHop => 'Τίναξε το δεξί stick';
+
+  @override
+  String get hintLoop => 'Σχεδίασε κύκλο: πετάς πάνω από τις βολές';
+
+  @override
+  String get hintStream => 'Πάτα LT: δύο ή τρεις ριπές';
+
+  @override
+  String get arenaKata => 'ΚΑΤΑ';
+
+  @override
+  String get arenaKataOff => 'ΚΑΜΙΑ';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'επόμενο $sigil σε $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'ΔΟΚΙΜΑΣΙΑ';
+
+  @override
+  String get arenaOn => 'ΝΑΙ';
+
+  @override
+  String get arenaOff => 'ΟΧΙ';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Βαθμός $rating · καλύτερο $best';
+  }
 }

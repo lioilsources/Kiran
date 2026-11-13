@@ -806,4 +806,265 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get vaultAll => 'SEMUA';
+
+  @override
+  String get sigilMissUnknown => 'bentuk tidak dikenali';
+
+  @override
+  String get sigilMissTooSlow => 'terlalu perlahan';
+
+  @override
+  String get sigilMissSkippedDot => 'terlepas satu titik';
+
+  @override
+  String get sigilMissLeftRimEarly => 'dilepas terlalu awal';
+
+  @override
+  String get sigilMissWrongDirection => 'dilukis terbalik';
+
+  @override
+  String get sigilMissWrongLayer => 'butang bahu salah';
+
+  @override
+  String get sigilDry => 'cas tidak cukup';
+
+  @override
+  String get sigilBusy => 'yang sebelum masih berjalan';
+
+  @override
+  String get arena => 'ARENA';
+
+  @override
+  String get arenaBossParts => 'BAHAGIAN BOS';
+
+  @override
+  String get arenaBareCore => 'teras terdedah';
+
+  @override
+  String get arenaCompanions => 'PENEMAN';
+
+  @override
+  String get arenaCharge => 'CAS';
+
+  @override
+  String get arenaChargeNormal => 'BIASA';
+
+  @override
+  String get arenaSpeed => 'KELAJUAN DUNIA';
+
+  @override
+  String get arenaDrill => 'LATIHAN';
+
+  @override
+  String get arenaFreePlay => 'MAIN BEBAS';
+
+  @override
+  String get arenaFight => 'LAWAN';
+
+  @override
+  String get arenaNewBoss => 'BOS BARU';
+
+  @override
+  String get arenaLeave => 'TINGGALKAN ARENA';
+
+  @override
+  String get arenaHint =>
+      'Bos kembali sebaik sahaja ia mati. Tiada apa disimpan di sini.';
+
+  @override
+  String get arenaColCast => 'GUNA';
+
+  @override
+  String get arenaColMiss => 'TERLEPAS';
+
+  @override
+  String get arenaColAvg => 'PURATA';
+
+  @override
+  String get arenaColBest => 'TERBAIK';
+
+  @override
+  String get arenaColTime => 'TERPANTAS';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Bos $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGIL';
+
+  @override
+  String get padSchemeClassic => 'PAD: KLASIK';
+
+  @override
+  String get padSouthpawOn => 'KIDAL: HIDUP';
+
+  @override
+  String get padSouthpawOff => 'KIDAL: MATI';
+
+  @override
+  String get sigilDescHop => 'Lompatan pantas ke arah jentikan';
+
+  @override
+  String get sigilDescSidestep => 'Langkah sisi panjang merentas medan';
+
+  @override
+  String get sigilDescStrike =>
+      'Menerpa ke depan dengan tiga tembakan berat, lalu undur';
+
+  @override
+  String get sigilDescRetreat =>
+      'Berundur sambil tembakan perlindungan ke depan';
+
+  @override
+  String get sigilDescDash =>
+      'Pecutan pepenjuru menembusi tembakan, kebal di tengah';
+
+  @override
+  String get sigilDescRoll => 'Gulingan tong ke sisi, kebal';
+
+  @override
+  String get sigilDescShadow =>
+      'Kunci di bawah musuh terdekat dan terus menembak';
+
+  @override
+  String get sigilDescEcho =>
+      'Bayang mengulang dua saat terakhir anda pada separuh kerosakan';
+
+  @override
+  String get sigilDescLoop => 'Gelung ke atas: tembakan lalu di bawah anda';
+
+  @override
+  String get sigilDescSlalom =>
+      'Lengkung S merentas medan dengan tembakan kipas';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'Pusaran ke depan menembak sekeliling, kebal';
+
+  @override
+  String get sigilDescSnapshot => 'Satu tembakan berat ke arah jentikan';
+
+  @override
+  String get sigilDescBroadside => 'Salvo dari kedua-dua rusuk';
+
+  @override
+  String get sigilDescVolley => 'Lima sinar bercas ke depan';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Jatuhkan periuk api yang menelan tembakan dan meletup';
+
+  @override
+  String get sigilDescFrenzy => 'Senjata menembak lebih laju beberapa saat';
+
+  @override
+  String get sigilDescStasis => 'Musuh dan tembakannya perlahan separuh';
+
+  @override
+  String get sigilDescHalo =>
+      'Perisai dicas empat kali lebih laju dan tiada yang tembus';
+
+  @override
+  String get sigilDescRadial => 'Gelang enam belas tembakan';
+
+  @override
+  String get sigilDescStorm => 'Semua senjata menembak penuh, percuma';
+
+  @override
+  String get sigilDescPing => 'Peneman menumpukan tembakan ke arah jentikan';
+
+  @override
+  String get sigilDescWingman => 'Panggil wingman ke rusuk yang dilukis';
+
+  @override
+  String get sigilDescHunter =>
+      'Panggil pemburu yang terbang ke depan dan pilih sasaran';
+
+  @override
+  String get sigilDescWarden =>
+      'Panggil penjaga yang menahan tembakan untuk anda';
+
+  @override
+  String get sigilDescFormation => 'Peneman bertukar antara lebar dan baji';
+
+  @override
+  String get sigilDescWhirl => 'Peneman mengelilingi anda dan menelan tembakan';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Peneman menjunam dan meletup, memulangkan cas';
+
+  @override
+  String get grimoire => 'GRIMOIRE';
+
+  @override
+  String get grimoireHint =>
+      'Lukis dengan batang kanan. Tahan LB untuk ARMS, RB untuk WING, kedua-duanya untuk MEGA BLAST.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'kos $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'kebal';
+
+  @override
+  String get lessonWatch => 'LIHAT';
+
+  @override
+  String get lessonTrace => 'SURIH';
+
+  @override
+  String get lessonSlow => 'PERLAHAN';
+
+  @override
+  String get lessonLive => 'KELAJUAN PENUH';
+
+  @override
+  String get lessonStreak => 'LIMA BERTURUT';
+
+  @override
+  String get lessonLearned => 'DIPELAJARI';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Jentik batang kanan';
+
+  @override
+  String get hintLoop => 'Lukis bulatan: anda terbang atas tembakan';
+
+  @override
+  String get hintStream => 'Picit LT: dua atau tiga aliran';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'TIADA';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return '$sigil seterusnya dalam $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'CABARAN';
+
+  @override
+  String get arenaOn => 'HIDUP';
+
+  @override
+  String get arenaOff => 'MATI';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Penarafan $rating · terbaik $best';
+  }
 }

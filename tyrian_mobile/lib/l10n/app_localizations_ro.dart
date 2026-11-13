@@ -819,4 +819,265 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get vaultAll => 'TOATE';
+
+  @override
+  String get sigilMissUnknown => 'formă necunoscută';
+
+  @override
+  String get sigilMissTooSlow => 'prea încet';
+
+  @override
+  String get sigilMissSkippedDot => 'ai sărit un punct';
+
+  @override
+  String get sigilMissLeftRimEarly => 'eliberat prea devreme';
+
+  @override
+  String get sigilMissWrongDirection => 'desenat invers';
+
+  @override
+  String get sigilMissWrongLayer => 'buton de umăr greșit';
+
+  @override
+  String get sigilDry => 'încărcare insuficientă';
+
+  @override
+  String get sigilBusy => 'cel anterior încă rulează';
+
+  @override
+  String get arena => 'ARENĂ';
+
+  @override
+  String get arenaBossParts => 'PĂRȚI DE BOSS';
+
+  @override
+  String get arenaBareCore => 'nucleu expus';
+
+  @override
+  String get arenaCompanions => 'ÎNSOȚITORI';
+
+  @override
+  String get arenaCharge => 'ÎNCĂRCARE';
+
+  @override
+  String get arenaChargeNormal => 'NORMAL';
+
+  @override
+  String get arenaSpeed => 'VITEZA LUMII';
+
+  @override
+  String get arenaDrill => 'EXERCIȚIU';
+
+  @override
+  String get arenaFreePlay => 'JOC LIBER';
+
+  @override
+  String get arenaFight => 'LUPTĂ';
+
+  @override
+  String get arenaNewBoss => 'BOSS NOU';
+
+  @override
+  String get arenaLeave => 'IEȘI DIN ARENĂ';
+
+  @override
+  String get arenaHint =>
+      'Bossul revine imediat ce moare. Nimic de aici nu se salvează.';
+
+  @override
+  String get arenaColCast => 'FOLOSIRI';
+
+  @override
+  String get arenaColMiss => 'RATĂRI';
+
+  @override
+  String get arenaColAvg => 'MEDIE';
+
+  @override
+  String get arenaColBest => 'RECORD';
+
+  @override
+  String get arenaColTime => 'CEL MAI RAPID';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'Boși $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'PAD: SIGILII';
+
+  @override
+  String get padSchemeClassic => 'PAD: CLASIC';
+
+  @override
+  String get padSouthpawOn => 'STÂNGACI: DA';
+
+  @override
+  String get padSouthpawOff => 'STÂNGACI: NU';
+
+  @override
+  String get sigilDescHop => 'Un salt rapid în direcția gestului';
+
+  @override
+  String get sigilDescSidestep => 'Un pas lateral lung peste câmp';
+
+  @override
+  String get sigilDescStrike =>
+      'Atac înainte cu trei focuri grele, apoi înapoi';
+
+  @override
+  String get sigilDescRetreat => 'Retragere cu foc de acoperire înainte';
+
+  @override
+  String get sigilDescDash =>
+      'Țâșnire diagonală prin foc, intangibil la mijloc';
+
+  @override
+  String get sigilDescRoll => 'Un tonou lateral, intangibil';
+
+  @override
+  String get sigilDescShadow =>
+      'Fixare sub cel mai apropiat inamic, cu foc continuu';
+
+  @override
+  String get sigilDescEcho =>
+      'O umbră îți repetă ultimele două secunde cu daune înjumătățite';
+
+  @override
+  String get sigilDescLoop => 'Looping pe deasupra: focurile trec pe dedesubt';
+
+  @override
+  String get sigilDescSlalom => 'O curbă în S peste câmp cu foc în evantai';
+
+  @override
+  String get sigilDescCorkscrew => 'Tirbușon înainte cu foc în jur, intangibil';
+
+  @override
+  String get sigilDescSnapshot => 'Un foc greu în direcția gestului';
+
+  @override
+  String get sigilDescBroadside => 'O salvă din ambele flancuri';
+
+  @override
+  String get sigilDescVolley => 'Cinci raze încărcate înainte';
+
+  @override
+  String get sigilDescCaltrop =>
+      'Lasă o mină care înghite focuri și explodează';
+
+  @override
+  String get sigilDescFrenzy => 'Armele trag mai repede câteva secunde';
+
+  @override
+  String get sigilDescStasis =>
+      'Inamicii și focurile lor încetinesc la jumătate';
+
+  @override
+  String get sigilDescHalo =>
+      'Scutul se reîncarcă de patru ori mai repede și nimic nu trece';
+
+  @override
+  String get sigilDescRadial => 'Un inel de șaisprezece focuri';
+
+  @override
+  String get sigilDescStorm => 'Toate armele trag la maximum, gratuit';
+
+  @override
+  String get sigilDescPing =>
+      'Însoțitorii concentrează focul în direcția gestului';
+
+  @override
+  String get sigilDescWingman => 'Cheamă un coechipier pe flancul desenat';
+
+  @override
+  String get sigilDescHunter =>
+      'Cheamă un vânător care zboară înainte și alege ținte';
+
+  @override
+  String get sigilDescWarden =>
+      'Cheamă un gardian care primește focurile în locul tău';
+
+  @override
+  String get sigilDescFormation => 'Însoțitorii comută între larg și pană';
+
+  @override
+  String get sigilDescWhirl =>
+      'Însoțitorii se rotesc în jurul tău și absorb focuri';
+
+  @override
+  String get sigilDescSacrifice =>
+      'Însoțitorii plonjează și explodează, returnând încărcare';
+
+  @override
+  String get grimoire => 'GRIMOAR';
+
+  @override
+  String get grimoireHint =>
+      'Desenează cu stickul drept. LB pentru ARME, RB pentru ARIPĂ, ambele pentru MEGA EXPLOZIE.';
+
+  @override
+  String sigilCost(int cost) {
+    return 'cost $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'intangibil';
+
+  @override
+  String get lessonWatch => 'PRIVEȘTE';
+
+  @override
+  String get lessonTrace => 'DESENEAZĂ';
+
+  @override
+  String get lessonSlow => 'ÎNCET';
+
+  @override
+  String get lessonLive => 'VITEZĂ MAXIMĂ';
+
+  @override
+  String get lessonStreak => 'CINCI LA RÂND';
+
+  @override
+  String get lessonLearned => 'ÎNVĂȚAT';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'TEMPO $pct %';
+  }
+
+  @override
+  String get hintHop => 'Mișcă scurt stickul drept';
+
+  @override
+  String get hintLoop => 'Desenează un cerc: zbori peste focuri';
+
+  @override
+  String get hintStream => 'Apasă LT: două sau trei fascicule';
+
+  @override
+  String get arenaKata => 'KATA';
+
+  @override
+  String get arenaKataOff => 'NICIUNA';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'următorul $sigil în $secs s';
+  }
+
+  @override
+  String get arenaGauntlet => 'PROBA DE FOC';
+
+  @override
+  String get arenaOn => 'DA';
+
+  @override
+  String get arenaOff => 'NU';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'Scor $rating · record $best';
+  }
 }

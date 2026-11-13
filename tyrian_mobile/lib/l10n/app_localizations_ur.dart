@@ -810,4 +810,257 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get vaultAll => 'سب';
+
+  @override
+  String get sigilMissUnknown => 'نامعلوم شکل';
+
+  @override
+  String get sigilMissTooSlow => 'بہت سست';
+
+  @override
+  String get sigilMissSkippedDot => 'ایک نقطہ چھوٹ گیا';
+
+  @override
+  String get sigilMissLeftRimEarly => 'بہت جلد چھوڑ دیا';
+
+  @override
+  String get sigilMissWrongDirection => 'الٹا بنایا';
+
+  @override
+  String get sigilMissWrongLayer => 'غلط شولڈر بٹن';
+
+  @override
+  String get sigilDry => 'چارج ناکافی';
+
+  @override
+  String get sigilBusy => 'پچھلا ابھی جاری ہے';
+
+  @override
+  String get arena => 'میدان';
+
+  @override
+  String get arenaBossParts => 'باس کے حصے';
+
+  @override
+  String get arenaBareCore => 'کھلا کور';
+
+  @override
+  String get arenaCompanions => 'ساتھی';
+
+  @override
+  String get arenaCharge => 'چارج';
+
+  @override
+  String get arenaChargeNormal => 'عام';
+
+  @override
+  String get arenaSpeed => 'دنیا کی رفتار';
+
+  @override
+  String get arenaDrill => 'مشق';
+
+  @override
+  String get arenaFreePlay => 'آزاد کھیل';
+
+  @override
+  String get arenaFight => 'لڑو';
+
+  @override
+  String get arenaNewBoss => 'نیا باس';
+
+  @override
+  String get arenaLeave => 'میدان چھوڑیں';
+
+  @override
+  String get arenaHint =>
+      'باس مرتے ہی واپس آ جاتا ہے۔ یہاں کچھ محفوظ نہیں ہوتا۔';
+
+  @override
+  String get arenaColCast => 'استعمال';
+
+  @override
+  String get arenaColMiss => 'چوک';
+
+  @override
+  String get arenaColAvg => 'اوسط';
+
+  @override
+  String get arenaColBest => 'بہترین';
+
+  @override
+  String get arenaColTime => 'تیز ترین';
+
+  @override
+  String arenaSummary(int bosses, int knockouts) {
+    return 'باس $bosses · K.O. $knockouts';
+  }
+
+  @override
+  String get padSchemeSigil => 'پیڈ: سگل';
+
+  @override
+  String get padSchemeClassic => 'پیڈ: کلاسک';
+
+  @override
+  String get padSouthpawOn => 'بایاں ہاتھ: آن';
+
+  @override
+  String get padSouthpawOff => 'بایاں ہاتھ: آف';
+
+  @override
+  String get sigilDescHop => 'جھٹکے کی سمت ایک تیز چھلانگ';
+
+  @override
+  String get sigilDescSidestep => 'میدان کے پار لمبا سائیڈ اسٹیپ';
+
+  @override
+  String get sigilDescStrike => 'تین بھاری گولیوں کے ساتھ آگے جھپٹ کر واپس';
+
+  @override
+  String get sigilDescRetreat => 'پیچھے ہٹیں جبکہ کور فائر آگے جائے';
+
+  @override
+  String get sigilDescDash => 'آگ میں سے ترچھی دوڑ، بیچ میں ناقابلِ چھو';
+
+  @override
+  String get sigilDescRoll => 'سائیڈ کی طرف بیرل رول، ناقابلِ چھو';
+
+  @override
+  String get sigilDescShadow => 'قریب ترین دشمن کے نیچے جم کر فائر کرتے رہیں';
+
+  @override
+  String get sigilDescEcho =>
+      'ایک سایہ آپ کے آخری دو سیکنڈ آدھے نقصان کے ساتھ دہراتا ہے';
+
+  @override
+  String get sigilDescLoop => 'اوپر سے لوپ: گولیاں نیچے سے گزرتی ہیں';
+
+  @override
+  String get sigilDescSlalom => 'پنکھا نما فائر کے ساتھ میدان میں S موڑ';
+
+  @override
+  String get sigilDescCorkscrew =>
+      'چاروں طرف فائر کرتے ہوئے کارک اسکرو، ناقابلِ چھو';
+
+  @override
+  String get sigilDescSnapshot => 'جھٹکے کی سمت ایک بھاری گولی';
+
+  @override
+  String get sigilDescBroadside => 'دونوں پہلوؤں سے ایک بوچھاڑ';
+
+  @override
+  String get sigilDescVolley => 'آگے پانچ چارج شدہ شعاعیں';
+
+  @override
+  String get sigilDescCaltrop => 'بارودی سرنگ گرائیں جو گولیاں نگل کر پھٹے';
+
+  @override
+  String get sigilDescFrenzy => 'چند سیکنڈ بندوقیں تیز چلتی ہیں';
+
+  @override
+  String get sigilDescStasis => 'دشمن اور ان کی گولیاں آدھی رفتار پر';
+
+  @override
+  String get sigilDescHalo =>
+      'ڈھال چار گنا تیز چارج ہوتی ہے اور کچھ نہیں گزرتا';
+
+  @override
+  String get sigilDescRadial => 'سولہ گولیوں کا حلقہ';
+
+  @override
+  String get sigilDescStorm => 'ہر بندوق پوری رفتار سے، مفت';
+
+  @override
+  String get sigilDescPing => 'ساتھی جھٹکے کی سمت فائر مرکوز کرتے ہیں';
+
+  @override
+  String get sigilDescWingman => 'بنائی گئی سمت کے پہلو پر ونگ مین بلائیں';
+
+  @override
+  String get sigilDescHunter => 'ایک شکاری بلائیں جو آگے اڑ کر ہدف چنے';
+
+  @override
+  String get sigilDescWarden => 'ایک محافظ بلائیں جو آپ کی گولیاں جھیلے';
+
+  @override
+  String get sigilDescFormation => 'ساتھی چوڑی اور نوکدار ترتیب میں بدلتے ہیں';
+
+  @override
+  String get sigilDescWhirl => 'ساتھی آپ کے گرد گھوم کر گولیاں کھاتے ہیں';
+
+  @override
+  String get sigilDescSacrifice =>
+      'ساتھی غوطہ لگا کر پھٹتے ہیں، چارج واپس دیتے ہیں';
+
+  @override
+  String get grimoire => 'جادو کی کتاب';
+
+  @override
+  String get grimoireHint =>
+      'دائیں اسٹک سے بنائیں۔ ہتھیار کے لیے LB، ونگ کے لیے RB، میگا دھماکے کے لیے دونوں۔';
+
+  @override
+  String sigilCost(int cost) {
+    return 'قیمت $cost';
+  }
+
+  @override
+  String get sigilUntouchable => 'ناقابلِ چھو';
+
+  @override
+  String get lessonWatch => 'دیکھیں';
+
+  @override
+  String get lessonTrace => 'بنائیں';
+
+  @override
+  String get lessonSlow => 'آہستہ';
+
+  @override
+  String get lessonLive => 'پوری رفتار';
+
+  @override
+  String get lessonStreak => 'لگاتار پانچ';
+
+  @override
+  String get lessonLearned => 'سیکھ لیا';
+
+  @override
+  String lessonTempo(int pct) {
+    return 'رفتار $pct %';
+  }
+
+  @override
+  String get hintHop => 'دائیں اسٹک کو جھٹکیں';
+
+  @override
+  String get hintLoop => 'دائرہ بنائیں: آپ گولیوں کے اوپر سے اڑیں گے';
+
+  @override
+  String get hintStream => 'LT دبائیں: دو یا تین دھارے';
+
+  @override
+  String get arenaKata => 'کاتا';
+
+  @override
+  String get arenaKataOff => 'کوئی نہیں';
+
+  @override
+  String kataNext(String sigil, String secs) {
+    return 'اگلا $sigil $secs سیکنڈ میں';
+  }
+
+  @override
+  String get arenaGauntlet => 'چیلنج';
+
+  @override
+  String get arenaOn => 'آن';
+
+  @override
+  String get arenaOff => 'آف';
+
+  @override
+  String gauntletRating(int rating, int best) {
+    return 'درجہ $rating · بہترین $best';
+  }
 }
