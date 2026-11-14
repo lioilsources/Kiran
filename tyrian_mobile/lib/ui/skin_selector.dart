@@ -50,7 +50,26 @@ class _SkinSelectorState extends State<SkinSelector> {
   bool _prevDiscard = true;
 
   final FocusNode _focusNode = FocusNode();
-  final List<GlobalKey> _cardKeys = List.generate(kSkins.length, (_) => GlobalKey());
+  final Map<String, GlobalKey> _cardKeys = {
+    for (final s in kSkins) s.id: GlobalKey(),
+  };
+
+  /// The grid's order: owned skins first (plan 32 Q2). [_focusIndex] points
+  /// into this list, and [_reorder] keeps it on the same skin when a
+  /// purchase moves cards around.
+  List<SkinInfo> _skins = SkinStoreService.instance.orderedSkins;
+
+  void _reorder() {
+    final focused =
+        _focusIndex < _skins.length ? _skins[_focusIndex].id : null;
+    _skins = SkinStoreService.instance.orderedSkins;
+    if (focused == null) return;
+    final i = _skins.indexWhere((s) => s.id == focused);
+    if (i >= 0 && i != _focusIndex) {
+      _focusIndex = i;
+      _scrollToFocus();
+    }
+  }
 
   @override
   void initState() {
@@ -78,6 +97,7 @@ class _SkinSelectorState extends State<SkinSelector> {
     // A purchase started from this selector just completed — jump straight
     // into the freshly bought skin.
     final purchased = SkinStoreService.instance.takeJustPurchased();
+    _reorder(); // a skin may have just become owned
     if (purchased != null) {
       _selectAndPlay(purchased);
       return;
@@ -90,7 +110,8 @@ class _SkinSelectorState extends State<SkinSelector> {
     final saved = prefs.getString('selected_skin') ?? 'default';
     final previews = await AssetLibrary.instance.loadPreviews();
     if (mounted) {
-      final idx = kSkins.indexWhere((s) => s.id == saved);
+      _skins = SkinStoreService.instance.orderedSkins;
+      final idx = _skins.indexWhere((s) => s.id == saved);
       setState(() {
         _focusIndex = idx >= 0 ? idx : 0;
         _previews = previews;
@@ -122,7 +143,7 @@ class _SkinSelectorState extends State<SkinSelector> {
   bool get _hasQuit => widget.showQuit && platform.isDesktop;
 
   /// Pseudo focus index for the QUIT entry, one past the skin grid.
-  int get _quitIndex => kSkins.length;
+  int get _quitIndex => _skins.length;
 
   Future<void> _quit() async {
     await windowManager.destroy();
@@ -132,7 +153,7 @@ class _SkinSelectorState extends State<SkinSelector> {
   void _moveFocus(int dx, int dy) {
     if (_loading) return;
     final cols = platform.isLandscape ? 4 : 2;
-    final count = kSkins.length;
+    final count = _skins.length;
 
     // QUIT sits below the grid: down from the last row lands on it, up from it
     // returns to the last row. Left/right on it stay put.
@@ -167,8 +188,8 @@ class _SkinSelectorState extends State<SkinSelector> {
   void _scrollToFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (_focusIndex >= _cardKeys.length) return; // QUIT entry has no card
-      final ctx = _cardKeys[_focusIndex].currentContext;
+      if (_focusIndex >= _skins.length) return; // QUIT entry has no card
+      final ctx = _cardKeys[_skins[_focusIndex].id]?.currentContext;
       if (ctx == null) return;
       Scrollable.ensureVisible(ctx,
           duration: const Duration(milliseconds: 150),
@@ -200,7 +221,7 @@ class _SkinSelectorState extends State<SkinSelector> {
       if (_focusIndex == _quitIndex) {
         _quit();
       } else {
-        _selectAndPlay(kSkins[_focusIndex].id);
+        _selectAndPlay(_skins[_focusIndex].id);
       }
     }
     if (discard && !_prevDiscard) widget.onDiscard?.call();
@@ -237,7 +258,7 @@ class _SkinSelectorState extends State<SkinSelector> {
       if (_focusIndex == _quitIndex) {
         _quit();
       } else {
-        _selectAndPlay(kSkins[_focusIndex].id);
+        _selectAndPlay(_skins[_focusIndex].id);
       }
       return KeyEventResult.handled;
     }
@@ -288,7 +309,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                           childAspectRatio: platform.isLandscape ? 1.0 : 0.85,
-                          children: List.generate(kSkins.length, (i) => _buildSkinCard(i)),
+                          children: List.generate(_skins.length, (i) => _buildSkinCard(i)),
                         ),
                       ),
               ),
@@ -344,10 +365,10 @@ class _SkinSelectorState extends State<SkinSelector> {
   }
 
   Widget _buildSkinCard(int index) {
-    final skin = kSkins[index];
+    final skin = _skins[index];
     final store = SkinStoreService.instance;
     return SkinCard(
-      key: _cardKeys[index],
+      key: _cardKeys[skin.id],
       skin: skin,
       preview: _previews[skin.id],
       highlighted: index == _focusIndex,
@@ -587,7 +608,8 @@ class _SkinShopSectionState extends State<SkinShopSection> {
           crossAxisSpacing: 12,
           childAspectRatio: widget.crossAxisCount >= 4 ? 1.0 : 0.85,
           children: [
-            for (final skin in kSkins)
+            // Owned skins first (plan 32 Q2), re-sorted on every rebuild.
+            for (final skin in store.orderedSkins)
               SkinCard(
                 key: _cardKeys[skin.id],
                 skin: skin,

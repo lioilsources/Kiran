@@ -39,6 +39,22 @@ class SkinStoreService extends ChangeNotifier {
     return _unlocked.contains(skinId);
   }
 
+  /// The order both skin grids show (plan 32 Q2): skins the player owns —
+  /// free or bought — first, then the locked ones. Within each group the
+  /// order is [kSkins] itself, i.e. by release year. Where everything is
+  /// unlocked (desktop) this is [kSkins] unchanged.
+  List<SkinInfo> get orderedSkins => ownedFirst(kSkins, isUnlocked);
+
+  /// Stable split of [skins] into unlocked, then locked.
+  static List<SkinInfo> ownedFirst(
+          List<SkinInfo> skins, bool Function(String id) unlocked) =>
+      [
+        for (final s in skins)
+          if (unlocked(s.id)) s,
+        for (final s in skins)
+          if (!unlocked(s.id)) s,
+      ];
+
   /// Localized store price for a locked skin, or null when the product query
   /// failed / hasn't finished — the UI then shows the lock without a price.
   String? priceFor(String skinId) {
