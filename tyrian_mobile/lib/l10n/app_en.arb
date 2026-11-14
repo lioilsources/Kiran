@@ -166,5 +166,9 @@
         "type": "String"
       }
     }
+  },
+  "swapHint": "Tap a second finger to swap weapons",
+  "@swapHint": {
+    "description": "ComCenter, touch only: a second finger in flight swaps to the alternate weapons (plan 32 Q3)"
   }
 }

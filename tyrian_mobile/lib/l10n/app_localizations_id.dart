@@ -256,4 +256,7 @@ class AppLocalizationsId extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Terbuka di $points poin';
   }
+
+  @override
+  String get swapHint => 'Ketuk dengan jari kedua untuk mengganti senjata';
 }

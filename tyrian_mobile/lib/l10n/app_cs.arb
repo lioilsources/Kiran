@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "PŘETÍŽENÍ",
   "weaponOff": "{weapon} VYPNUT — slabý generátor",
-  "unlocksAt": "Odemkne se při {points} b."
+  "unlocksAt": "Odemkne se při {points} b.",
+  "swapHint": "Druhým prstem přepneš zbraně"
 }

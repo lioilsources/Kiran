@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "ÜBERLAST",
   "weaponOff": "{weapon} AUS — Generator zu schwach",
-  "unlocksAt": "Freigeschaltet ab {points} Pkt."
+  "unlocksAt": "Freigeschaltet ab {points} Pkt.",
+  "swapHint": "Tippe mit einem zweiten Finger, um die Waffen zu wechseln"
 }

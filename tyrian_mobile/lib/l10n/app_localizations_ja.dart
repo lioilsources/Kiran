@@ -255,4 +255,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points ptで解放';
   }
+
+  @override
+  String get swapHint => '2本目の指でタップして武器を切り替えよう';
 }

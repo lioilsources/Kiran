@@ -256,4 +256,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Unlocks at $points pts';
   }
+
+  @override
+  String get swapHint => 'Tap a second finger to swap weapons';
 }

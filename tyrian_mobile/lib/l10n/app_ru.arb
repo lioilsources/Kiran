@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "ПЕРЕГРУЗКА",
   "weaponOff": "{weapon} ОТКЛ. — генератор слишком слаб",
-  "unlocksAt": "Откроется при {points} очк."
+  "unlocksAt": "Откроется при {points} очк.",
+  "swapHint": "Коснись вторым пальцем, чтобы сменить оружие"
 }

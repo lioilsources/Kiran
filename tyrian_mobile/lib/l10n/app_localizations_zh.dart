@@ -255,6 +255,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points 分解锁';
   }
+
+  @override
+  String get swapHint => '用第二根手指点击以切换武器';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -508,4 +511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String unlocksAt(String points) {
     return '$points 分解鎖';
   }
+
+  @override
+  String get swapHint => '用第二根手指點擊以切換武器';
 }
