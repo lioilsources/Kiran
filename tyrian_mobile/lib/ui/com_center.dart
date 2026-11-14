@@ -10,6 +10,7 @@ import 'format.dart';
 import '../game/platform_config.dart' as platform;
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
+import '../systems/dps_preview.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
 import '../services/asset_library.dart';
@@ -872,7 +873,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           children: [
             Text('${_l.dps} ', style: _labelStyle(_theme.accent)),
             Text(
-              vessel.totalDps.toStringAsFixed(1),
+              fmtNum(vessel.poweredDps),
               style: _theme.styled(
                 TextStyle(color: Colors.white70, fontSize: _fs(10)),
               ),
@@ -1099,26 +1100,33 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final starved = _starved;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _rowLabel(label),
-          for (var i = 0; i < cat.length; i++)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 3),
-                child: _buildChip(
-                  slot: slot,
-                  index: i,
-                  fitted: fitted?.name == cat[i].name ? fitted : null,
-                  hangar: vessel.hangarEntry(cat[i].name, slot),
-                  pending: pending?.name == cat[i].name,
-                  starved:
-                      fitted?.name == cat[i].name && starved.contains(fitted),
+          Row(
+            children: [
+              _rowLabel(label),
+              for (var i = 0; i < cat.length; i++)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 3),
+                    child: _buildChip(
+                      slot: slot,
+                      index: i,
+                      fitted: fitted?.name == cat[i].name ? fitted : null,
+                      hangar: vessel.hangarEntry(cat[i].name, slot),
+                      pending: pending?.name == cat[i].name,
+                      starved:
+                          fitted?.name == cat[i].name && starved.contains(fitted),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          const SizedBox(width: 3),
-          _buildRowButtons(slot, fitted, pending),
+              const SizedBox(width: 3),
+              _buildRowButtons(slot, fitted, pending),
+            ],
+          ),
+          _buildRateLine(slot, fitted, pending),
         ],
       ),
     );
@@ -1139,6 +1147,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final owned = fitted ?? hangar;
     final affordable = vessel.credit >= type.price;
     final focused = _cellFocused(slot, _ChipCell(type));
+
+    // Plan 32 Q4: what fitting / upgrading this chip does to STATS' DPS.
+    final delta = unlocked
+        ? _preview.chip(slot, type, fitted: fitted, hangar: hangar)
+        : null;
 
     final String sub;
     Color subColor = Colors.white60;
@@ -1228,6 +1241,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   ),
                 ),
               ),
+              if (delta != null) _deltaText(delta),
               // Fitted marker — the line under the weapon that flies.
               Container(
                 margin: const EdgeInsets.only(top: 2),
@@ -1237,6 +1251,44 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  DpsPreview get _preview => DpsPreview(vessel);
+
+  /// `+48` green, `-12` red, `0` grey; red whatever the sign when the
+  /// generator could not power the gun.
+  Widget _deltaText(ChipDelta d) {
+    final v = d.value;
+    final text = v > 0 ? '+${fmtNum(v)}' : fmtNum(v);
+    final color = !d.powered
+        ? _theme.danger
+        : (v > 0 ? _theme.success : (v < 0 ? _theme.danger : Colors.white38));
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        text,
+        maxLines: 1,
+        style: _theme.styled(TextStyle(color: color, fontSize: _fs(7))),
+      ),
+    );
+  }
+
+  /// Under a weapon row: the selected gun (pending purchase, else fitted)
+  /// as damage × rate, e.g. `12 × 4.0/s`.
+  Widget _buildRateLine(WeaponSlot slot, Device? fitted, DevType? pending) {
+    final d = pending != null ? Device.fromType(pending, slot) : fitted;
+    if (d == null) return const SizedBox.shrink();
+    final b = DpsPreview.breakdown(d);
+    return Padding(
+      padding: const EdgeInsets.only(left: 56),
+      child: Text(
+        '${fmtNum(b.damage)} × ${b.rate.toStringAsFixed(1)}/s',
+        maxLines: 1,
+        style: _theme.styled(
+          TextStyle(color: Colors.white54, fontSize: _fs(7)),
         ),
       ),
     );
