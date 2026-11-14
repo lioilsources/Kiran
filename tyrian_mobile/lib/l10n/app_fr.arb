@@ -25,6 +25,8 @@
   "soundOff": "SON : NON",
   "musicOn": "MUSIQUE : OUI",
   "musicOff": "MUSIQUE : NON",
+  "statsOn": "STATS : OUI",
+  "statsOff": "STATS : NON",
   "mainMenu": "MENU PRINCIPAL",
   "quitToDesktop": "QUITTER LE JEU",
   "selectSkin": "CHOISIR UNE APPARENCE",

@@ -25,6 +25,8 @@
   "soundOff": "SUARA: MATI",
   "musicOn": "MUSIK: NYALA",
   "musicOff": "MUSIK: MATI",
+  "statsOn": "STATISTIK: NYALA",
+  "statsOff": "STATISTIK: MATI",
   "mainMenu": "MENU UTAMA",
   "quitToDesktop": "KELUAR KE DESKTOP",
   "selectSkin": "PILIH SKIN",

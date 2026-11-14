@@ -25,6 +25,8 @@
   "soundOff": "ZVUK: ISKLJ.",
   "musicOn": "GLAZBA: UKLJ.",
   "musicOff": "GLAZBA: ISKLJ.",
+  "statsOn": "STATISTIKA: UKLJ.",
+  "statsOff": "STATISTIKA: ISKLJ.",
   "mainMenu": "GLAVNI IZBORNIK",
   "quitToDesktop": "IZLAZ NA RADNU POVRŠINU",
   "selectSkin": "ODABERI IZGLED",

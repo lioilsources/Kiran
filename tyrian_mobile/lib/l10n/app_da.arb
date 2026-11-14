@@ -25,6 +25,8 @@
   "soundOff": "LYD: FRA",
   "musicOn": "MUSIK: TIL",
   "musicOff": "MUSIK: FRA",
+  "statsOn": "STATISTIK: TIL",
+  "statsOff": "STATISTIK: FRA",
   "mainMenu": "HOVEDMENU",
   "quitToDesktop": "AFSLUT TIL SKRIVEBORD",
   "selectSkin": "VÆLG SKIN",

@@ -71,10 +71,12 @@ import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
+import '../services/telemetry_service.dart';
 import '../l10n/l10n.dart';
 import '../systems/mods/mod_rewards.dart';
 import '../systems/mods/mods_state.dart';
 import '../systems/mods/hull_spec.dart';
+import 'telemetry_probe.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -480,6 +482,7 @@ class TyrianGame extends FlameGame
     if (sigilDemo) arena.infiniteCharge = true;
     _startArenaRound();
     _startSectorMusic();
+    TelemetryProbe.sectorStart(this);
   }
 
   /// Apply changed dials: a fresh boss, the ship patched up.
@@ -536,6 +539,7 @@ class TyrianGame extends FlameGame
   /// Back to the endless ship, exactly as it went in.
   void leaveArena() {
     if (mode != GameMode.training) return;
+    TelemetryProbe.sectorEnd(this, 'menu');
     duel.reset();
     _leaveMission();
     vessel.caster.onReading = _onFieldReading;
@@ -897,6 +901,7 @@ class TyrianGame extends FlameGame
     campaignTracker?.onLaunch(vessel);
     AchievementService.instance
         .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
+    TelemetryProbe.sectorStart(this);
   }
 
   /// Kick off the heroic intro + reset the adaptive-music director for a sector.
@@ -1195,6 +1200,7 @@ class TyrianGame extends FlameGame
 
   void _onSectorComplete() {
     if (mode == GameMode.training) return _arenaBossDown();
+    TelemetryProbe.sectorEnd(this, 'completed');
     SoundService.instance.play(SfxEvent.sectorComplete);
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
 
@@ -1480,6 +1486,7 @@ class TyrianGame extends FlameGame
   /// Leave whatever is on the field, for the main menu or a mode switch.
   /// Progress since the last save is dropped, exactly as a death drops it.
   void abandonMission() {
+    TelemetryProbe.sectorEnd(this, 'menu');
     _leaveMission();
     vessel.resetVessel();
     MusicService.instance.setPaused(false);
@@ -1516,6 +1523,7 @@ class TyrianGame extends FlameGame
     // The shop has just closed, so this is the loadout the node is flown with
     // — what every loadout task is graded against.
     campaignTracker?.onLaunch(vessel);
+    TelemetryProbe.sectorStart(this);
   }
 
   void togglePause() {
@@ -1536,6 +1544,7 @@ class TyrianGame extends FlameGame
   }
 
   void triggerGameOver() {
+    TelemetryProbe.sectorEnd(this, 'death');
     SoundService.instance.play(SfxEvent.gameOver);
     MusicService.instance.stop();
     state = GameState.gameOver;
@@ -2037,7 +2046,10 @@ class TyrianGame extends FlameGame
             }
             continue;
           }
-          if (!v.tryReflect(p)) v.takeDamage(p.damage.toInt());
+          if (!v.tryReflect(p)) {
+            TelemetryService.instance.noteHit('shot');
+            v.takeDamage(p.damage.toInt());
+          }
           hit = true;
           break;
         }

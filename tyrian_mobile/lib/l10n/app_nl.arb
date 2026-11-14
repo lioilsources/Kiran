@@ -25,6 +25,8 @@
   "soundOff": "GELUID: UIT",
   "musicOn": "MUZIEK: AAN",
   "musicOff": "MUZIEK: UIT",
+  "statsOn": "STATISTIEK: AAN",
+  "statsOff": "STATISTIEK: UIT",
   "mainMenu": "HOOFDMENU",
   "quitToDesktop": "NAAR BUREAUBLAD",
   "selectSkin": "KIES SKIN",

@@ -25,6 +25,8 @@
   "soundOff": "BUNYI: MATI",
   "musicOn": "MUZIK: HIDUP",
   "musicOff": "MUZIK: MATI",
+  "statsOn": "STATISTIK: HIDUP",
+  "statsOff": "STATISTIK: MATI",
   "mainMenu": "MENU UTAMA",
   "quitToDesktop": "KELUAR KE DESKTOP",
   "selectSkin": "PILIH KULIT",

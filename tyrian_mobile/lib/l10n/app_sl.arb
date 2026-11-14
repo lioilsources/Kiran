@@ -25,6 +25,8 @@
   "soundOff": "ZVOK: IZKL.",
   "musicOn": "GLASBA: VKL.",
   "musicOff": "GLASBA: IZKL.",
+  "statsOn": "STATISTIKA: VKL.",
+  "statsOff": "STATISTIKA: IZKL.",
   "mainMenu": "GLAVNI MENI",
   "quitToDesktop": "IZHOD NA NAMIZJE",
   "selectSkin": "IZBERI VIDEZ",
