@@ -25,6 +25,8 @@
   "soundOff": "音效:關",
   "musicOn": "音樂:開",
   "musicOff": "音樂:關",
+  "statsOn": "統計:開",
+  "statsOff": "統計:關",
   "mainMenu": "主選單",
   "quitToDesktop": "返回桌面",
   "selectSkin": "選擇外觀",

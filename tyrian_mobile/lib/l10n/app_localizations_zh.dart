@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -89,6 +90,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get musicOff => '音樂:關';
+
+  @override
+  String get statsOn => '統計:開';
+
+  @override
+  String get statsOff => '統計:關';
 
   @override
   String get mainMenu => '主選單';
@@ -1218,6 +1225,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get musicOff => '音樂:關';
+
+  @override
+  String get statsOn => '統計:開';
+
+  @override
+  String get statsOff => '統計:關';
 
   @override
   String get mainMenu => '主選單';

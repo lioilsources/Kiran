@@ -46,7 +46,7 @@ jobs:
 
       - name: Build Linux (release)
         working-directory: tyrian_mobile
-        run: flutter build linux --release
+        run: flutter build linux --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       # Before packaging, so both the tar.gz and the AppImage carry it.
       - name: Bundle libmpv into the build

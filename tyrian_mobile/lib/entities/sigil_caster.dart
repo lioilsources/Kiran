@@ -7,6 +7,7 @@ import '../input/pad_scheme.dart';
 import '../net/protocol.dart' show SigilSnap;
 import '../systems/sigils/sigil_catalog.dart';
 import '../services/sound_service.dart';
+import '../services/telemetry_service.dart';
 import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../systems/mods/shot_plan.dart';
@@ -802,6 +803,7 @@ class SigilCaster {
     final type = DevType.byName(d.name);
     if (type == null) return;
     final fitted = vessel.fitWeapon(type, slot);
+    TelemetryService.instance.noteWeaponSwitch();
     fitted.cd = fitted.cooldown + config.swapDelay;
     vessel.game.showMessage(fitted.displayName.toUpperCase());
   }
