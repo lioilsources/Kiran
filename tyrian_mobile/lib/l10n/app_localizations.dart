@@ -2101,6 +2101,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DONE'**
   String get duelDrillDone;
+
+  /// ComCenter, touch only: a second finger in flight swaps to the alternate weapons (plan 32 Q3)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a second finger to swap weapons'**
+  String get swapHint;
 }
 
 class _AppLocalizationsDelegate

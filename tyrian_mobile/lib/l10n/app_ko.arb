@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "자세를 잡고 보스 쪽으로 시질을 그려라",
   "duelDrillTurn": "뒤돌기",
   "duelDrillTurnHow": "보스가 아래에 있다: 기수를 돌려 맞혀라",
-  "duelDrillDone": "완료"
+  "duelDrillDone": "완료",
+  "swapHint": "두 번째 손가락으로 탭하면 무기 교체"
 }

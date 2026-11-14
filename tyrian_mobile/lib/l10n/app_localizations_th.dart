@@ -1139,4 +1139,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'สำเร็จ';
+
+  @override
+  String get swapHint => 'แตะด้วยนิ้วที่สองเพื่อสลับอาวุธ';
 }

@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "構えたままボスの方向へシジルを描こう",
   "duelDrillTurn": "振り返る",
   "duelDrillTurnHow": "ボスは下にいる：機首を回して当てよう",
-  "duelDrillDone": "完了"
+  "duelDrillDone": "完了",
+  "swapHint": "2本目の指でタップして武器を切り替えよう"
 }

@@ -1167,4 +1167,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FET';
+
+  @override
+  String get swapHint => 'Toca amb un segon dit per canviar d\'armes';
 }

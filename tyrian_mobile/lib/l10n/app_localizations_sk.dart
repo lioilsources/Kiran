@@ -1166,4 +1166,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'HOTOVO';
+
+  @override
+  String get swapHint => 'Druhým prstom prepneš zbrane';
 }

@@ -1157,4 +1157,7 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FERDIG';
+
+  @override
+  String get swapHint => 'Trykk med en annen finger for å bytte våpen';
 }

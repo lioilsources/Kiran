@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Στη στάση, σχεδίασε σφραγίδα προς το boss",
   "duelDrillTurn": "ΓΥΡΝΑ",
   "duelDrillTurnHow": "Το boss είναι από κάτω: γύρνα τη μύτη και χτύπα το",
-  "duelDrillDone": "ΤΕΛΟΣ"
+  "duelDrillDone": "ΤΕΛΟΣ",
+  "swapHint": "Πάτησε με δεύτερο δάχτυλο για αλλαγή όπλων"
 }

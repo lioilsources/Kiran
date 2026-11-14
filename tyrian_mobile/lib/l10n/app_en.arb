@@ -828,5 +828,9 @@
   "duelDrillDrawHow": "In the stance, draw a sigil toward the boss",
   "duelDrillTurn": "TURN ROUND",
   "duelDrillTurnHow": "The boss is below you: turn the nose and hit it",
-  "duelDrillDone": "DONE"
+  "duelDrillDone": "DONE",
+  "swapHint": "Tap a second finger to swap weapons",
+  "@swapHint": {
+    "description": "ComCenter, touch only: a second finger in flight swaps to the alternate weapons (plan 32 Q3)"
+  }
 }

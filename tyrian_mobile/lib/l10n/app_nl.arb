@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Teken in de houding een sigil richting de baas",
   "duelDrillTurn": "OMKEREN",
   "duelDrillTurnHow": "De baas is onder je: draai de neus en raak hem",
-  "duelDrillDone": "KLAAR"
+  "duelDrillDone": "KLAAR",
+  "swapHint": "Tik met een tweede vinger om van wapen te wisselen"
 }

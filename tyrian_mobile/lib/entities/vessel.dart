@@ -1337,6 +1337,56 @@ class Vessel extends PositionComponent
     return device;
   }
 
+  /// Fit [type] in flight: as [fitWeapon], then the gun waits out its
+  /// cooldown plus [config.swapDelay] before the first shot.
+  Device swapIn(DevType type, WeaponSlot slot) {
+    final fitted = fitWeapon(type, slot);
+    fitted.cd = fitted.cooldown + config.swapDelay;
+    return fitted;
+  }
+
+  /// What the touch swap (plan 32 Q3) would fit into [slot]: of the weapons
+  /// owned for it, fitted and in the hangar, ranked by DPS at their own
+  /// level, the strongest — or the second strongest when the strongest is
+  /// the one fitted. Null when the slot owns fewer than two weapons.
+  Device? alternateFor(WeaponSlot slot) {
+    final fitted = getDevice(slot);
+    final owned = [
+      ?fitted,
+      for (final d in hangar)
+        if (d.slot == slot) d,
+    ];
+    if (owned.length < 2) return null;
+    final dps = {for (final d in owned) d: effectiveDps(d)};
+    // On a tie the fitted gun counts as the stronger, so the swap still
+    // moves to the other one.
+    owned.sort((a, b) {
+      final byDps = dps[b]!.compareTo(dps[a]!);
+      if (byDps != 0) return byDps;
+      return (identical(b, fitted) ? 1 : 0) - (identical(a, fitted) ? 1 : 0);
+    });
+    return identical(owned.first, fitted) ? owned[1] : owned.first;
+  }
+
+  /// The touch swap: front, left and right each move to [alternateFor].
+  /// Repeating it flips between the two strongest sets. The generator stays.
+  /// Returns whether any slot changed.
+  bool swapToAlternate() {
+    var changed = false;
+    for (final slot in const [
+      WeaponSlot.frontGun,
+      WeaponSlot.leftGun,
+      WeaponSlot.rightGun,
+    ]) {
+      final pick = alternateFor(slot);
+      final type = pick == null ? null : DevType.byName(pick.name);
+      if (type == null) continue;
+      swapIn(type, slot);
+      changed = true;
+    }
+    return changed;
+  }
+
   /// Sell the device fitted in [slot] for its current price. The slot stays
   /// empty even when the hangar holds something for it — the player picks.
   /// The generator is not sellable. Returns the credits gained.

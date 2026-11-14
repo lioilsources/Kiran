@@ -801,8 +801,7 @@ class SigilCaster {
   void _fit(Device d, WeaponSlot slot) {
     final type = DevType.byName(d.name);
     if (type == null) return;
-    final fitted = vessel.fitWeapon(type, slot);
-    fitted.cd = fitted.cooldown + config.swapDelay;
+    final fitted = vessel.swapIn(type, slot);
     vessel.game.showMessage(fitted.displayName.toUpperCase());
   }
 

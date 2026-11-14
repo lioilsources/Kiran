@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "En postura, dibuixa un sigil cap al boss",
   "duelDrillTurn": "GIRA'T",
   "duelDrillTurnHow": "El boss és a sota: gira el morro i encerta'l",
-  "duelDrillDone": "FET"
+  "duelDrillDone": "FET",
+  "swapHint": "Toca amb un segon dit per canviar d'armes"
 }

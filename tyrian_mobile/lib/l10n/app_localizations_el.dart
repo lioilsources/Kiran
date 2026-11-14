@@ -1169,4 +1169,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ΤΕΛΟΣ';
+
+  @override
+  String get swapHint => 'Πάτησε με δεύτερο δάχτυλο για αλλαγή όπλων';
 }

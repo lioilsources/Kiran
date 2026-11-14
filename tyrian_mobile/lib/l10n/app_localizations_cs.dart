@@ -1158,4 +1158,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'HOTOVO';
+
+  @override
+  String get swapHint => 'Druhým prstem přepneš zbraně';
 }

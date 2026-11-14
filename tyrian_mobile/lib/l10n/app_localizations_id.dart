@@ -1160,4 +1160,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'SELESAI';
+
+  @override
+  String get swapHint => 'Ketuk dengan jari kedua untuk mengganti senjata';
 }

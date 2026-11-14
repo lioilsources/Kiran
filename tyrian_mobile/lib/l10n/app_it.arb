@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "In postura, traccia un sigillo verso il boss",
   "duelDrillTurn": "GIRATI",
   "duelDrillTurnHow": "Il boss è sotto di te: gira il muso e colpiscilo",
-  "duelDrillDone": "FATTO"
+  "duelDrillDone": "FATTO",
+  "swapHint": "Tocca con un secondo dito per cambiare armi"
 }

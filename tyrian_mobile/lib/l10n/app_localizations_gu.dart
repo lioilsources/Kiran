@@ -1148,4 +1148,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'પૂર્ણ';
+
+  @override
+  String get swapHint => 'હથિયારો બદલવા બીજી આંગળીથી ટેપ કરો';
 }

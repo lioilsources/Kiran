@@ -1170,4 +1170,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ГОТОВО';
+
+  @override
+  String get swapHint => 'Коснись вторым пальцем, чтобы сменить оружие';
 }

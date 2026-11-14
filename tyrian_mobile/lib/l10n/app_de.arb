@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Zeichne in der Haltung ein Sigill zum Boss hin",
   "duelDrillTurn": "UMDREHEN",
   "duelDrillTurnHow": "Der Boss ist unter dir: Dreh die Nase und triff ihn",
-  "duelDrillDone": "GESCHAFFT"
+  "duelDrillDone": "GESCHAFFT",
+  "swapHint": "Tippe mit einem zweiten Finger, um die Waffen zu wechseln"
 }

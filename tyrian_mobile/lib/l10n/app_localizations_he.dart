@@ -1148,4 +1148,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'הושלם';
+
+  @override
+  String get swapHint => 'הקש באצבע שנייה כדי להחליף נשק';
 }

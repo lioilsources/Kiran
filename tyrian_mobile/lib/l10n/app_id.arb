@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Dalam kuda-kuda, gambar sigil ke arah bos",
   "duelDrillTurn": "BERBALIK",
   "duelDrillTurnHow": "Bos ada di bawahmu: putar moncong dan kenai",
-  "duelDrillDone": "SELESAI"
+  "duelDrillDone": "SELESAI",
+  "swapHint": "Ketuk dengan jari kedua untuk mengganti senjata"
 }
