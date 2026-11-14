@@ -68,11 +68,11 @@ jobs:
 
       - name: Build release AAB
         working-directory: tyrian_mobile
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       - name: Build release APK
         working-directory: tyrian_mobile
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       - name: Verify APK signing certificate
         run: |
@@ -98,7 +98,7 @@ jobs:
       # overwrites app-release.apk, and the public APK must stay gated.
       - name: Build tester APK (all skins unlocked)
         working-directory: tyrian_mobile
-        run: flutter build apk --release --dart-define=TESTER_UNLOCK=true
+        run: flutter build apk --release --dart-define=TESTER_UNLOCK=true --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
