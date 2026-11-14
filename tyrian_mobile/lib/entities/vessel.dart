@@ -737,6 +737,17 @@ class Vessel extends PositionComponent
     return total;
   }
 
+  /// DPS of the weapons the generator can power (plan 32 Q4): a device with
+  /// pwrNeed > genMax never fires and counts 0. What ComCenter STATS, the HUD
+  /// and the +DPS deltas show. [totalDps] stays the VB6 scaling input.
+  double get poweredDps {
+    double total = 0;
+    for (final d in devices) {
+      if (d.pwrNeed <= genMax) total += d.dps;
+    }
+    return total;
+  }
+
   // P2 tint: modulate keeps alpha intact, tints RGB toward green
   static final _p2Paint = Paint()
     ..colorFilter = const ColorFilter.mode(Color(0xFF80FFA0), BlendMode.modulate);
