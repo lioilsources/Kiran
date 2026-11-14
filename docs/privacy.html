@@ -69,12 +69,13 @@
     advertising or tracking and are not sold or shared.
   </p>
   <p>
-    <strong>Who processes them, and where.</strong> The statistics are
-    received and stored for us by PostHog, Inc. in its EU cloud region (PostHog
-    Cloud EU), acting as our data processor. Sending them, like any internet
-    connection, reveals your IP address to PostHog; it is used only to derive
-    your country and is not stored. Your country is the only location
-    information kept.
+    <strong>Who receives them, and where.</strong> The statistics are received
+    and stored by the developer, on the developer's own server in the EU
+    (Czech Republic). Nobody else receives them: no analytics company or
+    other third party is involved. Sending them, like any internet
+    connection, reveals your IP address to that server; the IP address is not
+    stored, it is used only to derive your country. Your country is the only
+    location information kept.
   </p>
   <p>
     <strong>How long.</strong> Statistics are kept for 12 months and then
@@ -106,8 +107,9 @@
     Game progress (score, upgrades, settings, pilot name, purchased skins) is
     stored locally on your device using standard platform storage
     (SharedPreferences / NSUserDefaults). We never receive it. The statistics
-    keep two small numbers there — the day measuring began and a play-session
-    counter — from which the bands above are worked out on your device.
+    keep a few small values there — the day measuring began, a play-session
+    counter and the last day band — from which the bands above are worked out
+    on your device.
   </p>
 
   <h2>Local Co-op</h2>
@@ -119,12 +121,8 @@
 
   <h2>Third-Party Services</h2>
   <p>
-    Kirian contains no advertising or tracking SDKs.
-  </p>
-  <p>
-    <strong>Anonymous statistics</strong> are processed by PostHog, Inc.
-    (PostHog Cloud EU) as described above. See the
-    <a href="https://posthog.com/privacy">PostHog Privacy Policy</a>.
+    Kirian contains no advertising, analytics or tracking SDKs. The anonymous
+    statistics go only to the developer's own server, as described above.
   </p>
   <p>
     <strong>Leaderboards and achievements</strong> use Google Play Games

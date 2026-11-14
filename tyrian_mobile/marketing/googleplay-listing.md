@@ -299,8 +299,8 @@ Two sources collect data. The **Play Games Services SDK** does, on the app's
 behalf (Google's guidance, developer.android.com/games/pgs/data-collection,
 says to declare it). From the first build with them, the app's own
 **anonymous gameplay statistics** do too (plan 33, `docs/telemetry.md`):
-they go to PostHog Cloud EU, which processes them on the developer's behalf
-(a service provider, so this is *collected*, not *shared*). **Update this
+they go only to the developer's own server in the EU (Czech Republic), and
+no third party receives them, so this is *collected*, not *shared*. **Update this
 form before that build is submitted**, and only after the new
 `docs/privacy.html` is live.
 
@@ -321,9 +321,9 @@ form before that build is submitted**, and only after the new
 | App activity → **Other actions** (scores, achievements) | App functionality | No | Required | leaderboards, achievements |
 | App info and performance → **Diagnostics** | Analytics | No | Required (the PGS SDK cannot be turned off; the statistics' load times also fall here) | PGS SDK default, anonymous statistics |
 | App info and performance → **Crash logs** | Analytics | No | Required | PGS SDK default |
-| Location → **Approximate location** | **Analytics** | No | **Optional** (same toggle) | country derived from the IP by the statistics service |
+| Location → **Approximate location** | **Analytics** | No | **Optional** (same toggle) | country derived from the IP by the developer's collector (IP not stored) |
 
-If the owner turns the country off in the PostHog project (T0), drop the
+If the owner turns the country off on the collector (T0), drop the
 *Approximate location* row.
 
 Not collected: precise location, personal info (the pilot name never leaves

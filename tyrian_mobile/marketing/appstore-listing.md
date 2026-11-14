@@ -144,9 +144,10 @@ Why each:
 - *Product Interaction*: launches, menu and skin taps, sector starts and
   ends, ComCenter visits (counts and seconds).
 - *Performance Data*: launch-to-menu and skin load times in milliseconds.
-- *Coarse Location*: the statistics service derives the country from the
-  connection's IP address and keeps only the country. If the owner turns
-  the country off in the PostHog project (T0), untick this row and remove
+- *Coarse Location*: the developer's own collector derives the country from
+  the connection's IP address, keeps only the country and does not store the
+  IP. If the owner turns the country off on the collector (T0), untick this
+  row and remove
   `NSPrivacyCollectedDataTypeCoarseLocation` from both privacy manifests.
 
 Not collected (leave unticked): Contact Info, Health & Fitness, Financial
