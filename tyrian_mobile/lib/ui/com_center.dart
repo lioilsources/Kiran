@@ -13,6 +13,7 @@ import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
 import '../services/asset_library.dart';
+import '../services/comcenter_gate.dart';
 import 'loadout_cursor.dart';
 import 'ui_theme.dart';
 import 'skin_painter.dart';
@@ -139,6 +140,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   @override
   void initState() {
     super.initState();
+    ComCenterGate.markSeen(); // plan 32 Q1: from now on PLAY shows the shop
     _pilotController = TextEditingController(text: vessel.pilotName);
     _theme = UiTheme.forSkin(AssetLibrary.instance.skinId);
     _bgAnim = AnimationController(
