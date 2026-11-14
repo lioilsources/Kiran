@@ -256,4 +256,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Откроется при $points очк.';
   }
+
+  @override
+  String get swapHint => 'Коснись вторым пальцем, чтобы сменить оружие';
 }

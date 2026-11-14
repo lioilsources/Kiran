@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "AŞIRI YÜK",
   "weaponOff": "{weapon} KAPALI — jeneratör çok zayıf",
-  "unlocksAt": "{points} puanda açılır"
+  "unlocksAt": "{points} puanda açılır",
+  "swapHint": "Silah değiştirmek için ikinci parmakla dokun"
 }

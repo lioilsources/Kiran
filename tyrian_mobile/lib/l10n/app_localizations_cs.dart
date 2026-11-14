@@ -257,4 +257,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Odemkne se při $points b.';
   }
+
+  @override
+  String get swapHint => 'Druhým prstem přepneš zbraně';
 }

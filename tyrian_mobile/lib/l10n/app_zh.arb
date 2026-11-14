@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "过载",
   "weaponOff": "{weapon} 关闭 — 发电机功率不足",
-  "unlocksAt": "{points} 分解锁"
+  "unlocksAt": "{points} 分解锁",
+  "swapHint": "用第二根手指点击以切换武器"
 }

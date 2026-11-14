@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "SURCHARGE",
   "weaponOff": "{weapon} HORS SERVICE — générateur trop faible",
-  "unlocksAt": "Débloqué à {points} pts"
+  "unlocksAt": "Débloqué à {points} pts",
+  "swapHint": "Touche avec un deuxième doigt pour changer d'armes"
 }

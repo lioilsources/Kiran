@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "KELEBIHAN BEBAN",
   "weaponOff": "{weapon} MATI — generator terlalu lemah",
-  "unlocksAt": "Terbuka di {points} poin"
+  "unlocksAt": "Terbuka di {points} poin",
+  "swapHint": "Ketuk dengan jari kedua untuk mengganti senjata"
 }

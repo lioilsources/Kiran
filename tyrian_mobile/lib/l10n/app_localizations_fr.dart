@@ -258,4 +258,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Débloqué à $points pts';
   }
+
+  @override
+  String get swapHint => 'Touche avec un deuxième doigt pour changer d\'armes';
 }
