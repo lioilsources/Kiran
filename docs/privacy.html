@@ -26,29 +26,88 @@
 </head>
 <body>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: October 16, 2026</p>
+  <p class="updated">Last updated: November 14, 2026</p>
 
   <h2>Overview</h2>
   <p>
     This policy covers <em>Kirian</em> (formerly Kiran), a space shooter game by
     Oldřich Vořechovský / A+B — on Google Play as package
     <code>com.ab.kiran</code>, on the App Store as <code>com.ol1n.kiran</code>,
-    and the desktop builds. We do not collect, store, or share any personal
-    information.
+    and the desktop builds, including Steam. We do not collect personal
+    information. To learn where the game is too hard or confusing, the app
+    sends anonymous gameplay statistics, described below, which you can turn
+    off at any time.
+  </p>
+
+  <h2>Anonymous Gameplay Statistics</h2>
+  <p>
+    <strong>What is sent.</strong> Short records of gameplay moments: the app
+    was opened or went to the background, the main menu was ready (and how
+    many milliseconds that took), a skin was chosen or bought (and how long it
+    took to load), a sector started or ended (level, result, seconds flown,
+    what caused a loss), and what happened in the ComCenter shop (time spent,
+    number of purchases and upgrades). Each record also carries the app
+    version, platform (for example iOS or Windows), app language, current
+    skin, input type (touch, mouse, gamepad or keyboard), game mode and
+    difficulty, and two coarse bands: roughly how many times the game has been
+    played on this device (1, 2, 3–5, 6–10, 11+) and roughly how many days ago
+    (0, 1, 2–6, 7–29, 30+). Credits and weapon power are sent as ranges, not
+    exact values. The full list is published in the game's source repository
+    (<code>docs/telemetry.md</code>).
+  </p>
+  <p>
+    <strong>Why.</strong> To see how many new players get from launch to their
+    first mission, how long sessions last, whether the shop is understood and
+    which levels are too hard, so we can fix them.
+  </p>
+  <p>
+    <strong>No identifiers.</strong> The statistics contain no name, no email,
+    no pilot name or any other text you type, no account, no device or
+    advertising identifier and no exact device model. Each play session gets a
+    random number that exists only while the app runs, so two sessions cannot
+    be linked to each other or to you. The statistics are not used for
+    advertising or tracking and are not sold or shared.
+  </p>
+  <p>
+    <strong>Who processes them, and where.</strong> The statistics are
+    received and stored for us by PostHog, Inc. in its EU cloud region (PostHog
+    Cloud EU), acting as our data processor. Sending them, like any internet
+    connection, reveals your IP address to PostHog; it is used only to derive
+    your country and is not stored. Your country is the only location
+    information kept.
+  </p>
+  <p>
+    <strong>How long.</strong> Statistics are kept for 12 months and then
+    deleted.
+  </p>
+  <p>
+    <strong>Offline.</strong> The game works fully offline. Without a
+    connection, up to 500 recent records wait on your device and are sent
+    later; older ones are discarded.
+  </p>
+  <p>
+    <strong>How to turn them off.</strong> Pause the game and select
+    <em>USAGE STATS: ON</em> so it reads <em>USAGE STATS: OFF</em> (the same
+    menu as sound and music; the label is translated into your language).
+    This takes effect immediately: records waiting on your device are deleted
+    and nothing more is sent, until you turn it back on.
   </p>
 
   <h2>Data We Do Not Collect</h2>
   <p>Kirian does not collect:</p>
-  <p>— Personal identifiers (name, email, phone number)</p>
-  <p>— Location data</p>
-  <p>— Device identifiers or the advertising ID</p>
-  <p>— Usage analytics or telemetry</p>
+  <p>— Personal identifiers (name, email, phone number, account)</p>
+  <p>— Your pilot name or anything else you type</p>
+  <p>— Precise location (only the country, as above)</p>
+  <p>— Device identifiers, the advertising ID or the exact device model</p>
+  <p>— Contacts, photos, files or anything outside the game</p>
 
   <h2>Local Storage</h2>
   <p>
     Game progress (score, upgrades, settings, pilot name, purchased skins) is
     stored locally on your device using standard platform storage
-    (SharedPreferences / NSUserDefaults). We never receive it.
+    (SharedPreferences / NSUserDefaults). We never receive it. The statistics
+    keep two small numbers there — the day measuring began and a play-session
+    counter — from which the bands above are worked out on your device.
   </p>
 
   <h2>Local Co-op</h2>
@@ -60,7 +119,12 @@
 
   <h2>Third-Party Services</h2>
   <p>
-    Kirian does not integrate any third-party analytics, advertising, or tracking SDKs.
+    Kirian contains no advertising or tracking SDKs.
+  </p>
+  <p>
+    <strong>Anonymous statistics</strong> are processed by PostHog, Inc.
+    (PostHog Cloud EU) as described above. See the
+    <a href="https://posthog.com/privacy">PostHog Privacy Policy</a>.
   </p>
   <p>
     <strong>Leaderboards and achievements</strong> use Google Play Games
@@ -85,8 +149,11 @@
 
   <h2>Children</h2>
   <p>
-    Kirian is not directed at children and we do not knowingly collect any
-    information from children under 13. The app itself collects no data at all.
+    Kirian is not directed at children under 13 and is not offered in the App
+    Store Kids category or Google Play's Families programme. We do not
+    knowingly collect personal information from anyone, including children:
+    the anonymous statistics described above contain nothing that identifies a
+    person, and they can be turned off in the pause menu.
   </p>
 
   <h2>Changes to This Policy</h2>

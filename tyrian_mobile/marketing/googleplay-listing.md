@@ -295,26 +295,40 @@ children": **No**.
 
 ### Data safety
 
-The app itself collects nothing. The **Play Games Services SDK** does, on the
-app's behalf, and Google's guidance
-(developer.android.com/games/pgs/data-collection) says to declare it:
+Two sources collect data. The **Play Games Services SDK** does, on the app's
+behalf (Google's guidance, developer.android.com/games/pgs/data-collection,
+says to declare it). From the first build with them, the app's own
+**anonymous gameplay statistics** do too (plan 33, `docs/telemetry.md`):
+they go to PostHog Cloud EU, which processes them on the developer's behalf
+(a service provider, so this is *collected*, not *shared*). **Update this
+form before that build is submitted**, and only after the new
+`docs/privacy.html` is live.
 
 - Does your app collect or share any of the required user data types? **Yes.**
-- Is all user data encrypted in transit? **Yes** (HTTPS, per Google).
-- Do you provide a way for users to request deletion? **No** account in the
-  app; the player deletes Play Games data in their Play Games profile. Answer
-  No (deletion is required only for apps with account creation).
-- Data types, all **Collected**, not shared, processed ephemerally: No,
-  required (cannot be turned off in the app):
+- Is all user data encrypted in transit? **Yes** (HTTPS: Google for PGS; the
+  statistics client refuses a non-`https` host).
+- Do you provide a way for users to request deletion? **No.** There is no
+  account in the app. The player deletes Play Games data in their Play Games
+  profile. The statistics carry no identifier, so no record can be found for
+  a person; they can be switched off in the pause menu (which deletes the
+  unsent ones on the device) and are deleted after 12 months. Answer No
+  (deletion is required only for apps with account creation).
+- Data types, all **Collected**, **not shared**:
 
-| Data type | Purpose | Source |
-|---|---|---|
-| App activity → **Other actions** (scores, achievements) | App functionality | leaderboards, achievements |
-| App info and performance → **Diagnostics** | Analytics | PGS SDK default |
-| App info and performance → **Crash logs** | Analytics | PGS SDK default |
+| Data type | Purpose | Ephemeral? | Required or optional | Source |
+|---|---|---|---|---|
+| App activity → **App interactions** | **Analytics** | No | **Optional** (USAGE STATS toggle in the pause menu) | anonymous statistics |
+| App activity → **Other actions** (scores, achievements) | App functionality | No | Required | leaderboards, achievements |
+| App info and performance → **Diagnostics** | Analytics | No | Required (the PGS SDK cannot be turned off; the statistics' load times also fall here) | PGS SDK default, anonymous statistics |
+| App info and performance → **Crash logs** | Analytics | No | Required | PGS SDK default |
+| Location → **Approximate location** | **Analytics** | No | **Optional** (same toggle) | country derived from the IP by the statistics service |
 
-Not collected: location, personal info, financial info (purchases are Play
-Billing's data, not ours), device IDs, contacts, files, messages.
+If the owner turns the country off in the PostHog project (T0), drop the
+*Approximate location* row.
+
+Not collected: precise location, personal info (the pilot name never leaves
+the device), financial info (purchases are Play Billing's data, not ours),
+device or other IDs, contacts, files, messages, web browsing.
 **Advertising ID: No** — verified: the merged manifest of the 2.9.1 (85) AAB
 has no `com.google.android.gms.permission.AD_ID` (permissions: INTERNET,
 ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE, CHANGE_WIFI_MULTICAST_STATE,
