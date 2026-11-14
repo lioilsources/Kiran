@@ -579,8 +579,13 @@ class Vessel extends PositionComponent
     final s = satellite;
     if (s != null && s.name == front.name && s.level == front.level) return;
     s?.clearProjectiles();
+    satellite = satelliteOf(front);
+  }
+
+  /// The drone [front] would get: a half-strength copy, free to fire.
+  Device satelliteOf(Device front) {
     final type = DevType.byName(front.name) ?? DevType.bubbleGun;
-    satellite = Device.fromType(type, WeaponSlot.satellite)
+    return Device.fromType(type, WeaponSlot.satellite)
       ..level = front.level
       ..damage = max(1, (front.damage * config.modSatelliteDmg).round())
       ..cooldown = front.cooldown

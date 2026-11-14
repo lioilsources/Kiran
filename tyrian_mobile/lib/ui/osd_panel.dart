@@ -11,6 +11,8 @@ import '../services/music_service.dart';
 import 'skin_painter.dart';
 import '../l10n/l10n.dart';
 import 'mod_text.dart';
+import 'format.dart';
+import '../systems/dps_preview.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
@@ -302,6 +304,18 @@ class OsdPanel extends StatelessWidget {
         _staggeredBar(vessel.genValue, vessel.genMax,
             Colors.amberAccent, L10n.current.hudPower, 'icon_gen',
             indent: 20),
+        // Plan 32 Q4: what the powered guns put out — same basis as STATS.
+        Padding(
+          padding: const EdgeInsetsDirectional.only(start: 30, top: 2),
+          child: Text(
+            '${L10n.current.dps} ${fmtNum(DpsPreview.powered(vessel))}',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: _sc(9),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ],
     );
   }
