@@ -78,6 +78,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get musicOff => 'MÚSICA: DESLIGADA';
 
   @override
+  String get statsOn => 'ESTATÍSTICAS: LIGADAS';
+
+  @override
+  String get statsOff => 'ESTATÍSTICAS: DESLIGADAS';
+
+  @override
   String get quitToDesktop => 'SAIR PARA A ÁREA DE TRABALHO';
 
   @override

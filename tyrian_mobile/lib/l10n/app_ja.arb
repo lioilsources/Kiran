@@ -21,6 +21,8 @@
   "soundOff": "効果音: オフ",
   "musicOn": "音楽: オン",
   "musicOff": "音楽: オフ",
+  "statsOn": "統計: オン",
+  "statsOff": "統計: オフ",
   "quitToDesktop": "デスクトップに戻る",
   "selectSkin": "スキン選択",
   "quit": "終了",

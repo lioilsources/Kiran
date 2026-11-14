@@ -4,6 +4,7 @@ import '../game/game_config.dart' as config;
 import '../game/tyrian_game.dart';
 import '../systems/path_system.dart';
 import '../services/asset_library.dart';
+import '../services/telemetry_service.dart';
 
 /// Structure behavior types from VBA
 enum StructBehavior { fall, follow, fallAndFollow, byPath }
@@ -138,6 +139,7 @@ class Structure extends PositionComponent
           y2 - smy > vessel.position.y - vhy) {
         // Escalating ram punishment (shields down → half HP → death within a
         // short window), replacing the old flat collisionDmg + knockback.
+        TelemetryService.instance.noteHit('asteroid');
         vessel.hitByAsteroid();
         // Ramming shatters the asteroid into Voronoi fragments instead of
         // shoving the ship out below it. This is the ONLY way an asteroid

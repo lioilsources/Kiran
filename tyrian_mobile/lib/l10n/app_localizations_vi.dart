@@ -77,6 +77,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get musicOff => 'NHẠC: TẮT';
 
   @override
+  String get statsOn => 'THỐNG KÊ: BẬT';
+
+  @override
+  String get statsOff => 'THỐNG KÊ: TẮT';
+
+  @override
   String get quitToDesktop => 'THOÁT RA DESKTOP';
 
   @override

@@ -21,6 +21,8 @@
   "soundOff": "SONIDO: NO",
   "musicOn": "MÚSICA: SÍ",
   "musicOff": "MÚSICA: NO",
+  "statsOn": "ESTADÍSTICAS: SÍ",
+  "statsOff": "ESTADÍSTICAS: NO",
   "quitToDesktop": "SALIR AL ESCRITORIO",
   "selectSkin": "ELIGE ASPECTO",
   "quit": "SALIR",

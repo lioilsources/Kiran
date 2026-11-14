@@ -21,6 +21,8 @@
   "soundOff": "효과음: 끔",
   "musicOn": "음악: 켬",
   "musicOff": "음악: 끔",
+  "statsOn": "통계: 켬",
+  "statsOff": "통계: 끔",
   "quitToDesktop": "데스크톱으로 나가기",
   "selectSkin": "스킨 선택",
   "quit": "종료",

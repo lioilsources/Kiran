@@ -21,6 +21,8 @@
   "soundOff": "ZVUK: VYP",
   "musicOn": "HUDBA: ZAP",
   "musicOff": "HUDBA: VYP",
+  "statsOn": "STATISTIKY: ZAP",
+  "statsOff": "STATISTIKY: VYP",
   "quitToDesktop": "UKONČIT NA PLOCHU",
   "selectSkin": "VYBER VZHLED",
   "quit": "KONEC",

@@ -78,6 +78,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get musicOff => 'MUSIK: AUS';
 
   @override
+  String get statsOn => 'STATISTIK: AN';
+
+  @override
+  String get statsOff => 'STATISTIK: AUS';
+
+  @override
   String get quitToDesktop => 'ZUM DESKTOP';
 
   @override

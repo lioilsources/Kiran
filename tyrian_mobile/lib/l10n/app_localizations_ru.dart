@@ -77,6 +77,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get musicOff => 'МУЗЫКА: ВЫКЛ';
 
   @override
+  String get statsOn => 'СТАТИСТИКА: ВКЛ';
+
+  @override
+  String get statsOff => 'СТАТИСТИКА: ВЫКЛ';
+
+  @override
   String get quitToDesktop => 'ВЫЙТИ ИЗ ИГРЫ';
 
   @override

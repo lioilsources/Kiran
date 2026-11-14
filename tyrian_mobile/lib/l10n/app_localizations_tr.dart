@@ -77,6 +77,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get musicOff => 'MÜZİK: KAPALI';
 
   @override
+  String get statsOn => 'İSTATİSTİK: AÇIK';
+
+  @override
+  String get statsOff => 'İSTATİSTİK: KAPALI';
+
+  @override
   String get quitToDesktop => 'MASAÜSTÜNE ÇIK';
 
   @override

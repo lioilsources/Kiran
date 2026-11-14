@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' show AppExitResponse;
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,8 @@ import 'services/review_prompt_service.dart';
 import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
 import 'services/music_service.dart';
+import 'services/telemetry_service.dart';
+import 'game/telemetry_probe.dart';
 import 'net/coop_host.dart';
 import 'net/coop_client.dart';
 import 'net/discovery.dart';
@@ -45,7 +48,11 @@ bool _iosLacksOggDecoder() {
 }
 
 void main() async {
+  final launchedAt = DateTime.now();
   WidgetsFlutterBinding.ensureInitialized();
+  // Anonymous statistics (Prompts/33). Not awaited: the game never waits on
+  // it, and a build without TELEMETRY_KEY does nothing at all.
+  unawaited(TelemetryService.instance.init(launchedAt: launchedAt));
 
   if (platform.isDesktop) {
     // Route just_audio through media_kit (libmpv) on Linux and Windows.
@@ -183,6 +190,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       HardwareKeyboard.instance.addHandler(_handleGlobalKey);
     }
     _game = TyrianGame();
+    TelemetryProbe.bind(_game);
+    TelemetryService.instance.track('app_open', {'start': 'cold'});
     _setupGameCallbacks();
     // Achievements piggyback on the leaderboard's sign-in, so init them after
     // it settles — the first flush then pushes any progress accumulated
@@ -208,6 +217,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       _runInProgress = resumed;
       await ComCenterGate.load(hasSave: resumed);
       if (mounted) setState(() {});
+      TelemetryService.instance.menuReady();
     };
 
     _game.onShowComCenter = () {
@@ -316,8 +326,40 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     return true;
   }
 
+  /// What the player was looking at, for the statistics' session_pause.
+  String _telemetryScreen() {
+    if (_screen == _ScreenState.mainMenu) return 'menu';
+    if (_showComCenter) return 'comcenter';
+    return switch (_game.state) {
+      GameState.playing => 'game',
+      GameState.paused => 'pause',
+      GameState.gameOver => 'game_over',
+      _ => 'comcenter',
+    };
+  }
+
+  /// Screen as it was before `inactive` paused the game under it.
+  String? _telemetryScreenBefore;
+
+  @override
+  Future<AppExitResponse> didRequestAppExit() async {
+    await TelemetryProbe.quit(_telemetryScreen());
+    return AppExitResponse.exit;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.inactive:
+        _telemetryScreenBefore ??= _telemetryScreen();
+      case AppLifecycleState.hidden || AppLifecycleState.paused:
+        TelemetryProbe.paused(_telemetryScreenBefore ?? _telemetryScreen());
+      case AppLifecycleState.resumed:
+        _telemetryScreenBefore = null;
+        TelemetryService.instance.appResumed();
+      case AppLifecycleState.detached:
+        break;
+    }
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       AchievementService.instance.flush();
@@ -424,6 +466,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       return;
     }
 
+    TelemetryService.instance.comCenterReason = 'first';
     if (mounted) {
       setState(() {
         _screen = _ScreenState.game;
@@ -490,6 +533,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game.restartRun();
     _game.state = GameState.comCenter;
     _game.saveProgress();
+    TelemetryService.instance.comCenterReason = 'death';
     if (mounted) {
       setState(() {
         _showComCenter = true;
@@ -498,6 +542,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   void _returnToMainMenu() async {
+    TelemetryProbe.sectorEnd(_game, 'menu');
+    TelemetryService.instance.comCenterExit = 'menu';
     _disposeAutoHost();
     await _game.disposeCoop();
     // A run now survives death and app restarts, so this path — reachable only
@@ -528,6 +574,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     _game.vessel2?.resetVessel();
     _game.vessel2?.resetPosition();
     _game.state = GameState.comCenter;
+    TelemetryService.instance.comCenterReason = 'death';
     if (mounted) {
       setState(() {
         _showComCenter = true;
@@ -590,6 +637,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 },
                 onQuit: platform.isDesktop
                     ? () async {
+                        await TelemetryProbe.quit('pause');
                         await windowManager.destroy();
                         exit(0);
                       }
@@ -939,6 +987,10 @@ class _PauseMenuState extends State<_PauseMenu> {
             () => setState(SoundService.instance.toggleMute)),
         (MusicService.instance.muted ? context.l10n.musicOff : context.l10n.musicOn,
             () => setState(MusicService.instance.toggleMute)),
+        // Anonymous statistics (Prompts/33): off takes effect at once.
+        (TelemetryService.instance.enabled ? context.l10n.statsOn : context.l10n.statsOff,
+            () => setState(() => TelemetryService.instance
+                .setEnabled(!TelemetryService.instance.enabled))),
         if (widget.onQuit != null) (context.l10n.quitToDesktop, () => widget.onQuit!()),
       ];
 

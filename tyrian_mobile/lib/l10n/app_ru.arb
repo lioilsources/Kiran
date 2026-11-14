@@ -21,6 +21,8 @@
   "soundOff": "ЗВУК: ВЫКЛ",
   "musicOn": "МУЗЫКА: ВКЛ",
   "musicOff": "МУЗЫКА: ВЫКЛ",
+  "statsOn": "СТАТИСТИКА: ВКЛ",
+  "statsOff": "СТАТИСТИКА: ВЫКЛ",
   "quitToDesktop": "ВЫЙТИ ИЗ ИГРЫ",
   "selectSkin": "ВЫБОР СКИНА",
   "quit": "ВЫХОД",

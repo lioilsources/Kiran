@@ -77,6 +77,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get musicOff => 'เพลง: ปิด';
 
   @override
+  String get statsOn => 'สถิติ: เปิด';
+
+  @override
+  String get statsOff => 'สถิติ: ปิด';
+
+  @override
   String get quitToDesktop => 'ออกสู่เดสก์ท็อป';
 
   @override
