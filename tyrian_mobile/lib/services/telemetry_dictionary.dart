@@ -19,7 +19,7 @@ import 'skin_registry.dart';
 
 /// Version of the app this build reports. Kept in step with `pubspec.yaml`
 /// by `test/telemetry_test.dart` (there is no package_info dependency).
-const kTelemetryAppVersion = '3.9.3';
+const kTelemetryAppVersion = '3.9.4';
 
 /// Product line: 3 is `main`, 2 is `release/2.9.x`.
 const kTelemetryLine = '3';
