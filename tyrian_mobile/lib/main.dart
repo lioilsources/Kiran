@@ -977,10 +977,12 @@ class _PauseMenuState extends State<_PauseMenu> {
             () => setState(SoundService.instance.toggleMute)),
         (MusicService.instance.muted ? context.l10n.musicOff : context.l10n.musicOn,
             () => setState(MusicService.instance.toggleMute)),
-        // Anonymous statistics (Prompts/33): off takes effect at once.
-        (TelemetryService.instance.enabled ? context.l10n.statsOn : context.l10n.statsOff,
-            () => setState(() => TelemetryService.instance
-                .setEnabled(!TelemetryService.instance.enabled))),
+        // Anonymous statistics (Prompts/33): off takes effect at once. Only
+        // a build that can send anything (key and host set) shows it.
+        if (TelemetryService.instance.active)
+          (TelemetryService.instance.enabled ? context.l10n.statsOn : context.l10n.statsOff,
+              () => setState(() => TelemetryService.instance
+                  .setEnabled(!TelemetryService.instance.enabled))),
         if (widget.onQuit != null) (context.l10n.quitToDesktop, () => widget.onQuit!()),
       ];
 

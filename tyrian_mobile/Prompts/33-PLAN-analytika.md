@@ -72,19 +72,16 @@ Formuláře v obchodech vyplňuje vlastník, nebo Claude v Chrome na jeho výslo
 
 ## 5. Služba
 
+**Rozhodnuto (Olin, 14. 11. 2026): vlastní příjemce vývojáře**, ne PostHog. Statistiky přijímá a ukládá vývojář na vlastním serveru v EU (Česko); nikdo jiný je nedostává. IP adresa se neukládá, odvodí se z ní jen země. Uchování 12 měsíců. Společný plán pro všechny appky je `DevConventions/Prompts/04-PLAN-analytika.md` (§3 je Kirian).
+
 Klient je vlastní, tenký, nad `dart:io HttpClient`. Hotové SDK nepoužívat: oficiální pluginy PostHog a Firebase Analytics nemají Windows ani Linux a nová závislost by mohla chtít novější Dart, než drží CI.
 
-| | PostHog Cloud EU (doporučeno) | Aptabase EU |
-|---|---|---|
-| Příjem | HTTP capture API, anonymní události přes `$process_person_profile: false` | vlastní SDK nebo HTTP |
-| Analýza | trychtýře, rozpady, SQL | počty a rozpady, export CSV; trychtýře po lidech ani SQL neumí |
-| Vracející se hráči | nemá je odkud znát (bez trvalého ID), řeší pásma z §4 | stejně, denní hash |
-| Cena | podle paměti 1 mil. událostí měsíčně zdarma; **ověřit** | 20 tis. událostí měsíčně zdarma, pak od 10 USD |
-| IP adresa | **ověřit** nastavení „discard client IP“ a rozsah GeoIP | podle dodavatele se neukládá, z IP se odvodí země |
+- **Protokol v1** sdíleného balíčku `ol1n_telemetry` (`Ol1nTelemetry/docs/protocol.md`): `POST {TELEMETRY_HOST}/v1/batch`, klíč v hlavičce `X-Telemetry-Key`, tělo `{"v":1,"app":"kirian","events":[{n,t,s,i,p}]}`. `i` je pořadí události v relaci; příjemce podle `(s, i)` zahodí duplicity.
+- **`CollectorSink`** v `telemetry_service.dart` nahradil `PostHogSink`. Přechod na samotný balíček (git závislost s tagem) je pozdější krok: znamená přepis klienta i testů, a kdyby Kirian začal posílat i jádrové `screen_*`, `activation` nebo `feature_*`, je to změna slovníku, a tedy politiky.
+- **`app_open`** nese navíc `session_band_first` a `days_band_first` (první relace instalace v daném pásmu, počítáno v zařízení). Dávají přesné počty instalací, které došly k 2., 3., 6. a 11. relaci a ke dni 1, 2, 7 a 30, bez jakéhokoli ID.
+- PostHog (nebo jiná služba) zůstává možný: je to jen další třída za rozhraním `TelemetrySink`, zbytek klienta se nemění. Změna příjemce je ale změna politiky soukromí.
 
-Odhad objemu: asi 25 událostí na relaci s pěti sektory. Volný limit Aptabase by stačil na zhruba 800 relací měsíčně.
-
-V T0 ověřit u zvolené služby přímo v jejím nastavení: EU region, zahazování IP, co přidává GeoIP (chceme nanejvýš zemi), dobu uchování, zpracovatelskou smlouvu (DPA).
+Odhad objemu: asi 25 událostí na relaci s pěti sektory.
 
 ## 6. Události
 
@@ -139,9 +136,9 @@ Odpovědi na §8, založení účtu a projektu u zvolené služby, klíč do taj
 
 ## 8. Otázky na vlastníka (položit najednou; do odpovědi platí výchozí volba)
 
-1. **Služba**: PostHog Cloud EU, nebo Aptabase EU? Výchozí: PostHog.
+1. **Služba**: PostHog Cloud EU, nebo Aptabase EU? ~~Výchozí: PostHog.~~ Rozhodnuto: vlastní příjemce (§5).
 2. **Zapnuto od prvního spuštění s možností vypnout, nebo až po souhlasu?** Bez zapnutí od začátku nejde změřit konverze prvního spuštění. V EU je k tomu právní otázka (ePrivacy, GDPR), kterou plán neřeší. Výchozí: zapnuto, přepínač ve hře, popsáno v politice.
-3. **Země hráče** (odvozená dodavatelem z IP): chceme ji? Výchozí: ano, jen země.
+3. **Země hráče** (odvozená příjemcem z IP): chceme ji? Výchozí: ano, jen země.
 4. **Časy načítání** (start, skin): měřit? Přidává to do App Privacy kolonku Diagnostics. Výchozí: ano.
 5. **Doba uchování dat**: výchozí 12 měsíců.
 6. **Pořadí vydání vůči plánu 32**: nejdřív měření a změny z plánu 32 až v další verzi, aby bylo s čím srovnávat? Výchozí: ano, aspoň týden dat před změnami.
