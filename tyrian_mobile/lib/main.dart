@@ -32,6 +32,7 @@ import 'ui/skin_selector.dart';
 import 'services/achievement_service.dart';
 import 'services/asset_library.dart';
 import 'services/audio_log.dart';
+import 'services/comcenter_gate.dart';
 import 'services/leaderboard_service.dart';
 import 'services/skin_store_service.dart';
 import 'services/sound_service.dart';
@@ -272,6 +273,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         _game.vessel.newGame();
       }
       _runInProgress = resumed;
+      await ComCenterGate.load(hasSave: resumed);
       if (mounted) setState(() {});
       // ARENA_AUTOSTART: straight into the arena (demo and video capture).
       if (const bool.fromEnvironment('ARENA_AUTOSTART') && _game.sigilsAvailable) {
@@ -558,6 +560,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     // unlocks the higher weapon tiers.
     if (!_runInProgress) _game.resetForNewGame();
     _runInProgress = true;
+
+    // Plan 32 Q1: until the ComCenter has been seen once there is nothing to
+    // buy in it, so the tap on a skin is the START press.
+    if (ComCenterGate.skipComCenter) {
+      if (mounted) setState(() => _screen = _ScreenState.game);
+      await _onComCenterStart();
+      return;
+    }
 
     if (mounted) {
       setState(() {
