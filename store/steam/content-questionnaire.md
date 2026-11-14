@@ -28,10 +28,16 @@ a compliance form:
 ```
 The art and audio in Kirian were produced with generative AI tools as part of the development pipeline, then hand-selected, post-processed and assembled by the developer. This covers the ship, enemy and environment sprites, the background layers, the interface elements, the 24 visual skins, and the music and sound effects.
 
-The game itself runs entirely offline and contains no AI at runtime — nothing is generated while you play, and no data is sent anywhere.
+The game itself contains no AI at runtime — nothing is generated while you play — and runs fully offline. When online, it sends only anonymous gameplay statistics (no account, name or identifier) to help balance the levels; they can be switched off in the pause menu.
 
 Gameplay, level design, balance and code are the developer's own work, ported from the original game by Tomáš Burian.
 ```
+
+**Changed 2026-11-14 (plan 33):** the old last-but-one sentence said "no data
+is sent anywhere", which stops being true with the anonymous statistics.
+Paste the new text into Steamworks (*Dotazník ohledně obsahu* → AI
+disclosure) **before** the first Steam build with statistics goes live, and
+only after the new `docs/privacy.html` is published.
 
 **Why say it this plainly:** the pipeline is most of `pipeline/` and it produced
 essentially all visual and audio assets across 24 skins and 384 audio files.

@@ -118,6 +118,54 @@ The Com Center shows your score and the points left to your next weapon tier. Sk
 | In-app purchases | 11 non-consumable skins |
 | Game Center | Enabled — 2 leaderboards, achievements |
 
+## App Privacy (App Store Connect → App Privacy)
+
+Answers for the build with anonymous gameplay statistics (plan 33,
+`docs/telemetry.md`). **Fill in before that build is submitted**, and only
+after the new `docs/privacy.html` is live. They match the app's own
+`ios/Runner/PrivacyInfo.xcprivacy` and `macos/Runner/PrivacyInfo.xcprivacy`.
+What is declared today is not in the repo: compare with App Store Connect
+first and keep anything else already declared there.
+
+**Privacy Policy URL:** the GitHub Pages `privacy.html`, unchanged.
+
+**Do you or your third-party partners collect data from this app?** **Yes.**
+
+**Data types collected** (tick exactly these):
+
+| Category → type | Linked to the user? | Used for tracking? | Purpose |
+|---|---|---|---|
+| Usage Data → **Product Interaction** | **No** | **No** | **Analytics** |
+| Diagnostics → **Performance Data** | **No** | **No** | **Analytics** |
+| Location → **Coarse Location** | **No** | **No** | **Analytics** |
+
+Why each:
+
+- *Product Interaction*: launches, menu and skin taps, sector starts and
+  ends, ComCenter visits (counts and seconds).
+- *Performance Data*: launch-to-menu and skin load times in milliseconds.
+- *Coarse Location*: the developer's own collector derives the country from
+  the connection's IP address, keeps only the country and does not store the
+  IP. If the owner turns the country off on the collector (T0), untick this
+  row and remove
+  `NSPrivacyCollectedDataTypeCoarseLocation` from both privacy manifests.
+
+Not collected (leave unticked): Contact Info, Health & Fitness, Financial
+Info, Precise Location, Sensitive Info, Contacts, User Content, Browsing
+History, Search History, Identifiers (no User ID and no Device ID: the
+session id is random, lives in memory and is never reused), Purchases,
+Other Usage Data, Crash Data, Other Diagnostic Data, Other Data.
+
+**Linked to the user: No**, for every type: no account, no identifier, no
+pilot name; two sessions cannot be connected to each other.
+
+**Tracking: No.** Nothing is combined with other companies' data or shared
+with data brokers, and there is no advertising. No App Tracking
+Transparency prompt is needed (`NSPrivacyTracking` is `false`).
+
+Game Center data (scores, achievements) is collected by Apple under the
+player's Game Center account, not by the app; it is not declared here.
+
 ## Still to do in App Store Connect
 
 1. **App Review screenshot on each of the 11 in-app purchases.** Without it they
@@ -129,3 +177,5 @@ The Com Center shows your score and the points left to your next weapon tier. Sk
 4. **Screenshots.** Lead with gameplay mid-fight showing an elemental kill, then
    the Com Center loadout, then the skin grid, then co-op. The first two are the
    only ones most people see.
+5. **App Privacy** for the first build with anonymous statistics: the answers
+   above, after the new privacy policy is live.
