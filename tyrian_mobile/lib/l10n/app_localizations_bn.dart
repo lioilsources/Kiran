@@ -1149,4 +1149,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'সম্পন্ন';
+
+  @override
+  String get swapHint => 'অস্ত্র বদলাতে দ্বিতীয় আঙুল দিয়ে ট্যাপ করো';
 }

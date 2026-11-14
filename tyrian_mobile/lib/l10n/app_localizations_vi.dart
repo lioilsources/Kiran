@@ -1145,4 +1145,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'XONG';
+
+  @override
+  String get swapHint => 'Chạm bằng ngón tay thứ hai để đổi vũ khí';
 }

@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Trong thế đấu, vẽ một sigil về phía trùm",
   "duelDrillTurn": "QUAY LẠI",
   "duelDrillTurnHow": "Trùm ở bên dưới: xoay mũi tàu và bắn trúng",
-  "duelDrillDone": "XONG"
+  "duelDrillDone": "XONG",
+  "swapHint": "Chạm bằng ngón tay thứ hai để đổi vũ khí"
 }

@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "在架势中朝首领方向绘制符印",
   "duelDrillTurn": "掉头",
   "duelDrillTurnHow": "首领在你下方：转动机头并命中它",
-  "duelDrillDone": "完成"
+  "duelDrillDone": "完成",
+  "swapHint": "用第二根手指点击以切换武器"
 }

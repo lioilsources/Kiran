@@ -1164,4 +1164,8 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'പൂർത്തിയായി';
+
+  @override
+  String get swapHint =>
+      'ആയുധങ്ങൾ മാറ്റാൻ രണ്ടാമത്തെ വിരൽ കൊണ്ട് ടാപ്പ് ചെയ്യൂ';
 }

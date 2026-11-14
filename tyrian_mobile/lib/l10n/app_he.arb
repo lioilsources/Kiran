@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "בעמדה, צייר סמל לכיוון הבוס",
   "duelDrillTurn": "הסתובב",
   "duelDrillTurnHow": "הבוס מתחתיך: סובב את החרטום ופגע בו",
-  "duelDrillDone": "הושלם"
+  "duelDrillDone": "הושלם",
+  "swapHint": "הקש באצבע שנייה כדי להחליף נשק"
 }

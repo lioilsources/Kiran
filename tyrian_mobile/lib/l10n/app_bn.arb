@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "ভঙ্গিতে বসের দিকে একটি সিজিল আঁকো",
   "duelDrillTurn": "ঘুরে যাও",
   "duelDrillTurnHow": "বস তোমার নিচে: নাক ঘুরিয়ে আঘাত করো",
-  "duelDrillDone": "সম্পন্ন"
+  "duelDrillDone": "সম্পন্ন",
+  "swapHint": "অস্ত্র বদলাতে দ্বিতীয় আঙুল দিয়ে ট্যাপ করো"
 }

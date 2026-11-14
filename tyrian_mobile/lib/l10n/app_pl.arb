@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "W postawie narysuj sigil w stronę bossa",
   "duelDrillTurn": "ZAWRÓĆ",
   "duelDrillTurnHow": "Boss jest pod tobą: obróć dziób i traf go",
-  "duelDrillDone": "GOTOWE"
+  "duelDrillDone": "GOTOWE",
+  "swapHint": "Dotknij drugim palcem, aby zmienić broń"
 }

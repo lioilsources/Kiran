@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "V postoji nakresli sigil směrem k bossovi",
   "duelDrillTurn": "OTOČ SE",
   "duelDrillTurnHow": "Boss je pod tebou: otoč čumák a zasahuj",
-  "duelDrillDone": "HOTOVO"
+  "duelDrillDone": "HOTOVO",
+  "swapHint": "Druhým prstem přepneš zbraně"
 }

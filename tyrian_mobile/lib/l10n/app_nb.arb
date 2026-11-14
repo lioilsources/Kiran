@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "I stillingen, tegn en sigil mot bossen",
   "duelDrillTurn": "SNU",
   "duelDrillTurnHow": "Bossen er under deg: snu nesen og treff den",
-  "duelDrillDone": "FERDIG"
+  "duelDrillDone": "FERDIG",
+  "swapHint": "Trykk med en annen finger for å bytte våpen"
 }

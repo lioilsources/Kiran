@@ -35,6 +35,7 @@ void main() {
       expect(l.weaponOff('LASER'), contains('LASER'), reason: '$locale');
       expect(l.unlocksAt('400 000'), contains('400 000'), reason: '$locale');
       expect(l.padControlsHint, contains('[OPTIONS]'), reason: '$locale');
+      expect(l.swapHint, isNotEmpty, reason: '$locale');
       // Weapon family names are proper nouns: identical in every language.
       expect(
           [l.familyBubble, l.familyVulcan, l.familyBlaster, l.familyStar, l.familyLaser],

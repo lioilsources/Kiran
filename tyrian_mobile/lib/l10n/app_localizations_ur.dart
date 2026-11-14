@@ -1152,4 +1152,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'مکمل';
+
+  @override
+  String get swapHint => 'ہتھیار بدلنے کے لیے دوسری انگلی سے ٹیپ کریں';
 }

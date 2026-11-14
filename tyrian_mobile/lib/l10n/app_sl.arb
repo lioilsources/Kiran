@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "V drži nariši sigil proti bossu",
   "duelDrillTurn": "OBRNI SE",
   "duelDrillTurnHow": "Boss je pod teboj: obrni nos in ga zadeni",
-  "duelDrillDone": "KONČANO"
+  "duelDrillDone": "KONČANO",
+  "swapHint": "Tapni z drugim prstom za menjavo orožja"
 }

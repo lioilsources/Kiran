@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "ਮੁਦਰਾ ਵਿੱਚ ਬੌਸ ਵੱਲ ਸਿਜਿਲ ਬਣਾਓ",
   "duelDrillTurn": "ਪਿੱਛੇ ਮੁੜੋ",
   "duelDrillTurnHow": "ਬੌਸ ਤੁਹਾਡੇ ਹੇਠਾਂ ਹੈ: ਨੱਕ ਮੋੜੋ ਅਤੇ ਮਾਰੋ",
-  "duelDrillDone": "ਹੋ ਗਿਆ"
+  "duelDrillDone": "ਹੋ ਗਿਆ",
+  "swapHint": "ਹਥਿਆਰ ਬਦਲਣ ਲਈ ਦੂਜੀ ਉਂਗਲ ਨਾਲ ਟੈਪ ਕਰੋ"
 }

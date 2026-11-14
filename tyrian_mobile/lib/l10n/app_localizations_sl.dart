@@ -1170,4 +1170,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'KONČANO';
+
+  @override
+  String get swapHint => 'Tapni z drugim prstom za menjavo orožja';
 }

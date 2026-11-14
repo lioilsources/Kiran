@@ -1153,4 +1153,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'TAMAM';
+
+  @override
+  String get swapHint => 'Silah değiştirmek için ikinci parmakla dokun';
 }
