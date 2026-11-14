@@ -76,6 +76,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get musicOff => '音樂:關';
 
   @override
+  String get statsOn => '統計:開';
+
+  @override
+  String get statsOff => '統計:關';
+
+  @override
   String get quitToDesktop => '返回桌面';
 
   @override
@@ -327,6 +333,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get musicOff => '音樂:關';
+
+  @override
+  String get statsOn => '統計:開';
+
+  @override
+  String get statsOff => '統計:關';
 
   @override
   String get quitToDesktop => '返回桌面';

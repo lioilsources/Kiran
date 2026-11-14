@@ -77,6 +77,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get musicOff => 'MUSIK: MATI';
 
   @override
+  String get statsOn => 'STATISTIK: NYALA';
+
+  @override
+  String get statsOff => 'STATISTIK: MATI';
+
+  @override
   String get quitToDesktop => 'KELUAR KE DESKTOP';
 
   @override

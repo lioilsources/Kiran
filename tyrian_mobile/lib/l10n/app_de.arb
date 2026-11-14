@@ -21,6 +21,8 @@
   "soundOff": "SOUND: AUS",
   "musicOn": "MUSIK: AN",
   "musicOff": "MUSIK: AUS",
+  "statsOn": "STATISTIK: AN",
+  "statsOff": "STATISTIK: AUS",
   "quitToDesktop": "ZUM DESKTOP",
   "selectSkin": "SKIN WÄHLEN",
   "quit": "BEENDEN",

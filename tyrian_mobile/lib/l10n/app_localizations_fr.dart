@@ -78,6 +78,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get musicOff => 'MUSIQUE : NON';
 
   @override
+  String get statsOn => 'STATS : OUI';
+
+  @override
+  String get statsOff => 'STATS : NON';
+
+  @override
   String get quitToDesktop => 'QUITTER LE JEU';
 
   @override
