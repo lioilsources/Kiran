@@ -25,6 +25,8 @@
   "soundOff": "HANG: KI",
   "musicOn": "ZENE: BE",
   "musicOff": "ZENE: KI",
+  "statsOn": "STATISZTIKA: BE",
+  "statsOff": "STATISZTIKA: KI",
   "mainMenu": "FŐMENÜ",
   "quitToDesktop": "KILÉPÉS AZ ASZTALRA",
   "selectSkin": "VÁLASSZ SKINT",

@@ -12,8 +12,10 @@ import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import '../services/skin_registry.dart';
 import '../services/skin_store_service.dart';
+import '../services/telemetry_service.dart';
 import '../game/challenge.dart';
 import '../game/platform_config.dart' as platform;
+import '../game/telemetry_probe.dart';
 import '../input/gamepad_input.dart';
 import '../l10n/l10n.dart';
 
@@ -140,9 +142,11 @@ class _SkinSelectorState extends State<SkinSelector> {
     // Locked skin: every input path (tap, keyboard, gamepad) converges here,
     // so this one gate turns "select" into "buy" for skins not yet owned.
     if (!SkinStoreService.instance.isUnlocked(id)) {
+      _trackTap(id, owned: false, loadMs: 0);
       SkinStoreService.instance.buy(id);
       return;
     }
+    final loadTime = Stopwatch()..start();
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
@@ -152,8 +156,18 @@ class _SkinSelectorState extends State<SkinSelector> {
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     await MusicService.instance.loadSkin(id);
+    _trackTap(id, owned: true, loadMs: loadTime.elapsedMilliseconds);
     widget.onPlay();
   }
+
+  void _trackTap(String id, {required bool owned, required int loadMs}) =>
+      TelemetryService.instance.track('skin_tap', {
+        'target': id,
+        'owned': owned,
+        'result': owned ? 'play' : 'purchase',
+        'load_ms': loadMs.clamp(0, 3600000),
+        'where': widget.onDiscard == null ? 'menu' : 'pause',
+      });
 
   bool get _hasQuit => widget.showQuit && platform.isDesktop;
   bool get _hasCampaign => widget.onCampaign != null;
@@ -194,6 +208,7 @@ class _SkinSelectorState extends State<SkinSelector> {
   }
 
   Future<void> _quit() async {
+    await TelemetryProbe.quit('menu');
     await windowManager.destroy();
     exit(0);
   }

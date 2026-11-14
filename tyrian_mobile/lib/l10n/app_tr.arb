@@ -25,6 +25,8 @@
   "soundOff": "SES: KAPALI",
   "musicOn": "MÜZİK: AÇIK",
   "musicOff": "MÜZİK: KAPALI",
+  "statsOn": "İSTATİSTİK: AÇIK",
+  "statsOff": "İSTATİSTİK: KAPALI",
   "mainMenu": "ANA MENÜ",
   "quitToDesktop": "MASAÜSTÜNE ÇIK",
   "selectSkin": "GÖRÜNÜM SEÇ",

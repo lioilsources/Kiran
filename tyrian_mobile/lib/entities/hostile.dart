@@ -9,6 +9,7 @@ import '../systems/device.dart';
 import '../systems/dev_type.dart';
 import '../systems/weapon_family.dart';
 import '../services/asset_library.dart';
+import '../services/telemetry_service.dart';
 import 'vessel.dart';
 
 /// Host types from VBA Objects.cls HostType enum
@@ -371,6 +372,7 @@ class Hostile extends PositionComponent with HasGameReference<TyrianGame> {
           x2 - hmx > vessel.position.x - vhx &&
           position.y + hmy < vessel.position.y + vhy &&
           y2 - hmy > vessel.position.y - vhy) {
+        TelemetryService.instance.noteHit('ram');
         vessel.takeDamage(collisionDmg);
       }
     }

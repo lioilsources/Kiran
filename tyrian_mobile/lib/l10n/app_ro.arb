@@ -25,6 +25,8 @@
   "soundOff": "SUNET: OPRIT",
   "musicOn": "MUZICĂ: PORNITĂ",
   "musicOff": "MUZICĂ: OPRITĂ",
+  "statsOn": "STATISTICI: PORNITE",
+  "statsOff": "STATISTICI: OPRITE",
   "mainMenu": "MENIU PRINCIPAL",
   "quitToDesktop": "IEȘIRE PE DESKTOP",
   "selectSkin": "ALEGE SKINUL",

@@ -25,6 +25,8 @@
   "soundOff": "LJUD: AV",
   "musicOn": "MUSIK: PÅ",
   "musicOff": "MUSIK: AV",
+  "statsOn": "STATISTIK: PÅ",
+  "statsOff": "STATISTIK: AV",
   "mainMenu": "HUVUDMENY",
   "quitToDesktop": "AVSLUTA TILL SKRIVBORDET",
   "selectSkin": "VÄLJ SKIN",

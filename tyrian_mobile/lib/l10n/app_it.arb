@@ -25,6 +25,8 @@
   "soundOff": "SUONI: NO",
   "musicOn": "MUSICA: SÌ",
   "musicOff": "MUSICA: NO",
+  "statsOn": "STATISTICHE: SÌ",
+  "statsOff": "STATISTICHE: NO",
   "mainMenu": "MENU PRINCIPALE",
   "quitToDesktop": "ESCI AL DESKTOP",
   "selectSkin": "SCEGLI SKIN",

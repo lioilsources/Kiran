@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
+import '../game/telemetry_probe.dart';
+import '../services/telemetry_service.dart' show ComCenterAction;
 import 'credits_wave.dart';
 import 'format.dart';
 import '../game/platform_config.dart' as platform;
@@ -183,10 +185,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         (_) => _pollGamepad(),
       );
     }
+    TelemetryProbe.comCenterOpened(game);
   }
 
   @override
   void dispose() {
+    TelemetryProbe.comCenterClosed();
     _bgAnim.dispose();
     _pollTimer?.cancel();
     _focusNode.dispose();
@@ -275,6 +279,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   void _tapChip(WeaponSlot slot, int index) {
     final type = _catalogue(slot)[index];
     if (!_unlocked(index)) {
+      TelemetryProbe.comCenterAction(ComCenterAction.unavailable);
       final now = DateTime.now();
       if (now.difference(_lastLockedToast) > const Duration(seconds: 2)) {
         _lastLockedToast = now;
@@ -289,6 +294,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       } else if (vessel.hangarEntry(type.name, slot) != null) {
         // Owned: switching is free and keeps the level.
         vessel.fitWeapon(type, slot);
+        TelemetryProbe.comCenterAction(ComCenterAction.switchWeapon);
         _pending[slot] = null;
         game.saveProgress();
       } else {
@@ -307,7 +313,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   void _buy(DevType type, WeaponSlot slot) {
-    if (vessel.credit < type.price) return;
+    if (vessel.credit < type.price) {
+      return TelemetryProbe.comCenterAction(ComCenterAction.unavailable);
+    }
+    TelemetryProbe.comCenterAction(ComCenterAction.buy);
     vessel.credit -= type.price;
     vessel.fitWeapon(type, slot);
     _pending[slot] = null;
@@ -319,7 +328,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final device = vessel.getDevice(slot);
     if (device == null || device.level >= Device.maxLevel) return;
     final cost = device.price;
-    if (vessel.credit < cost) return;
+    if (vessel.credit < cost) {
+      return TelemetryProbe.comCenterAction(ComCenterAction.unavailable);
+    }
+    TelemetryProbe.comCenterAction(ComCenterAction.upgrade);
     vessel.credit -= cost;
     device.upgrade();
     _animateCreditChange(-cost);
@@ -331,6 +343,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   void _sellSlot(WeaponSlot slot) {
     final gained = vessel.sellFitted(slot);
     if (gained == 0) return;
+    TelemetryProbe.comCenterAction(ComCenterAction.sell);
     _pending[slot] = null;
     _animateCreditChange(gained);
     game.saveProgress();
@@ -693,6 +706,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   /// assets are already loaded; restyle this screen (chip icons come from the
   /// new atlas on the next build) and the game behind it.
   void _onSkinChanged(String id) {
+    TelemetryProbe.comCenterAction(ComCenterAction.skin);
     game.refreshSprites();
     setState(() => _theme = UiTheme.forSkin(AssetLibrary.instance.skinId));
   }

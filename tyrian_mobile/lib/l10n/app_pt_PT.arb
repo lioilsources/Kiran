@@ -25,6 +25,8 @@
   "soundOff": "SOM: DESLIGADO",
   "musicOn": "MÚSICA: LIGADA",
   "musicOff": "MÚSICA: DESLIGADA",
+  "statsOn": "ESTATÍSTICAS: LIGADAS",
+  "statsOff": "ESTATÍSTICAS: DESLIGADAS",
   "mainMenu": "MENU PRINCIPAL",
   "quitToDesktop": "SAIR PARA O AMBIENTE DE TRABALHO",
   "selectSkin": "ESCOLHER ASPETO",

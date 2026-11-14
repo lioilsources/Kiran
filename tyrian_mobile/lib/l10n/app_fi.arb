@@ -25,6 +25,8 @@
   "soundOff": "ÄÄNI: POIS",
   "musicOn": "MUSIIKKI: PÄÄLLÄ",
   "musicOff": "MUSIIKKI: POIS",
+  "statsOn": "TILASTOT: PÄÄLLÄ",
+  "statsOff": "TILASTOT: POIS",
   "mainMenu": "PÄÄVALIKKO",
   "quitToDesktop": "LOPETA TYÖPÖYDÄLLE",
   "selectSkin": "VALITSE ULKOASU",

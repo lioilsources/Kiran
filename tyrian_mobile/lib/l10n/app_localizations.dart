@@ -332,6 +332,18 @@ abstract class AppLocalizations {
   /// **'MUSIC: OFF'**
   String get musicOff;
 
+  /// Pause-menu toggle for the anonymous gameplay statistics (docs/telemetry.md). Same ON/OFF wording as SOUND and MUSIC.
+  ///
+  /// In en, this message translates to:
+  /// **'USAGE STATS: ON'**
+  String get statsOn;
+
+  /// No description provided for @statsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'USAGE STATS: OFF'**
+  String get statsOff;
+
   /// No description provided for @mainMenu.
   ///
   /// In en, this message translates to:

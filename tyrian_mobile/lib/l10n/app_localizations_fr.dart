@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -92,6 +93,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get musicOff => 'MUSIQUE : NON';
+
+  @override
+  String get statsOn => 'STATS : OUI';
+
+  @override
+  String get statsOff => 'STATS : NON';
 
   @override
   String get mainMenu => 'MENU PRINCIPAL';

@@ -25,6 +25,8 @@
   "soundOff": "आवाज़: बंद",
   "musicOn": "संगीत: चालू",
   "musicOff": "संगीत: बंद",
+  "statsOn": "आँकड़े: चालू",
+  "statsOff": "आँकड़े: बंद",
   "mainMenu": "मुख्य मेन्यू",
   "quitToDesktop": "डेस्कटॉप पर लौटें",
   "selectSkin": "स्किन चुनें",
