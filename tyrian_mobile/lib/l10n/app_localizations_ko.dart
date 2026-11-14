@@ -76,6 +76,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get musicOff => '음악: 끔';
 
   @override
+  String get statsOn => '통계: 켬';
+
+  @override
+  String get statsOff => '통계: 끔';
+
+  @override
   String get quitToDesktop => '데스크톱으로 나가기';
 
   @override

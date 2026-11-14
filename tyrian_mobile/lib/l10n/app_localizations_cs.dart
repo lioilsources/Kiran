@@ -77,6 +77,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get musicOff => 'HUDBA: VYP';
 
   @override
+  String get statsOn => 'STATISTIKY: ZAP';
+
+  @override
+  String get statsOff => 'STATISTIKY: VYP';
+
+  @override
   String get quitToDesktop => 'UKONČIT NA PLOCHU';
 
   @override

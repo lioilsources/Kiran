@@ -78,6 +78,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get musicOff => 'MÚSICA: NO';
 
   @override
+  String get statsOn => 'ESTADÍSTICAS: SÍ';
+
+  @override
+  String get statsOff => 'ESTADÍSTICAS: NO';
+
+  @override
   String get quitToDesktop => 'SALIR AL ESCRITORIO';
 
   @override

@@ -44,6 +44,8 @@ import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
+import '../services/telemetry_service.dart';
+import 'telemetry_probe.dart';
 import '../l10n/l10n.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
@@ -391,6 +393,7 @@ class TyrianGame extends FlameGame
     _startSectorMusic();
     AchievementService.instance
         .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
+    TelemetryProbe.sectorStart(this);
   }
 
   /// Kick off the heroic intro + reset the adaptive-music director for a sector.
@@ -629,6 +632,7 @@ class TyrianGame extends FlameGame
   }
 
   void _onSectorComplete() {
+    TelemetryProbe.sectorEnd(this, 'completed');
     AchievementService.instance.onSectorCompleted(
       // Level of the sector the player advances to — with three parts per
       // level, finishing Inner Zone II must not claim "reached sector 3".
@@ -763,6 +767,7 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     _startSectorMusic();
+    TelemetryProbe.sectorStart(this);
   }
 
   void togglePause() {
@@ -783,6 +788,7 @@ class TyrianGame extends FlameGame
   }
 
   void triggerGameOver() {
+    TelemetryProbe.sectorEnd(this, 'death');
     SoundService.instance.play(SfxEvent.gameOver);
     MusicService.instance.stop();
     state = GameState.gameOver;
@@ -1022,6 +1028,7 @@ class TyrianGame extends FlameGame
       bool hit = false;
       for (final v in allVessels) {
         if (_projectileHitsVessel(p, v)) {
+          TelemetryService.instance.noteHit('shot');
           v.takeDamage(p.damage.toInt());
           hit = true;
           break;
