@@ -27,7 +27,8 @@ export 'telemetry_dictionary.dart';
 ///   time is when it happened.
 /// - Turning it off takes effect at once: the queue is wiped and nothing
 ///   further is sent.
-/// - The vendor sits behind [TelemetrySink]; swapping it is one class.
+/// - The receiver sits behind [TelemetrySink]; swapping it is one class.
+///   Today it is the owner's own collector ([CollectorSink], protocol v1).
 ///
 /// Measuring never steers the game: nothing here is read by gameplay code.
 class TelemetryService {
@@ -63,6 +64,10 @@ class TelemetryService {
   static const _kSessions = 'telemetry_sessions';
   static const _kQueue = 'telemetry_queue';
   static const _kPending = 'telemetry_pending';
+  static const _kDaysBand = 'telemetry_days_band';
+
+  /// The app's id at the collector (protocol v1 envelope `app`).
+  static const collectorApp = 'kirian';
 
   /// Keys only a pilot who played before measuring began can have.
   static const _legacyKeys = [
@@ -78,7 +83,7 @@ class TelemetryService {
     if (_key.isEmpty || _host.isEmpty) return null;
     final uri = Uri.tryParse(_host);
     if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return null;
-    return PostHogSink(host: uri, apiKey: _key);
+    return CollectorSink(host: uri, app: collectorApp, key: _key);
   }
 
   /// Wall clock; replaced in tests.
@@ -102,7 +107,9 @@ class TelemetryService {
 
   // Session and cohort
   String _session = _newId();
+  int _seq = 0; // order within the session (`i`), from 1
   int _sessionNumber = 1;
+  String? _lastDaysBand; // the days band of the last app_open
   int _installDay = 0;
   bool _legacy = false;
   DateTime? _launchedAt;
@@ -178,6 +185,7 @@ class TelemetryService {
       }
       _sessionNumber = (p.getInt(_kSessions) ?? 0) + 1;
       await p.setInt(_kSessions, _sessionNumber);
+      _lastDaysBand = p.getString(_kDaysBand);
 
       if (_enabled) {
         _queue.addAll(_decode(p.getString(_kQueue)));
@@ -235,7 +243,7 @@ class TelemetryService {
     if (!_started || !_enabled || (_ready && _sink == null)) return;
     try {
       final all = <String, Object>{...props, ..._context()};
-      final e = TelemetryEvent(event, all, now(), _session);
+      final e = TelemetryEvent(event, all, now(), _session, 0);
       if (!_ready) {
         if (_early.length < 50) _early.add(e);
         return;
@@ -247,11 +255,16 @@ class TelemetryService {
   }
 
   void _enqueue(TelemetryEvent raw) {
-    final props = {...raw.props, ..._cohort()};
+    final props = {
+      ...raw.props,
+      ..._cohort(),
+      if (raw.name == 'app_open' && raw.session == _session) ..._firsts(),
+    };
     final ok = TelemetryDictionary.valid(raw.name, props);
     assert(ok, 'telemetry: ${raw.name} does not match the dictionary: $props');
     if (!ok) return;
-    _queue.add(TelemetryEvent(raw.name, props, raw.at, raw.session));
+    final seq = raw.session == _session ? ++_seq : raw.seq;
+    _queue.add(TelemetryEvent(raw.name, props, raw.at, raw.session, seq));
     _trim();
     _dirty = true;
   }
@@ -286,6 +299,26 @@ class TelemetryService {
             legacy: _legacy),
         'first_session': _sessionNumber == 1 && !_legacy,
       };
+
+  /// `app_open` only: is this the install's first session in its session
+  /// band, and the first in its days band? Counted on the device, so the
+  /// collector gets exact "reached session 2/3/6/11, day 1/2/7/30" numbers
+  /// without any id (ol1n_telemetry, DevConventions plan 04 §6.2).
+  Map<String, Object> _firsts() {
+    final band = TelemetryBands.session(_sessionNumber);
+    final sessionFirst = _sessionNumber <= 1 ||
+        band != TelemetryBands.session(_sessionNumber - 1);
+    final days =
+        TelemetryBands.daysSince(_day(now()) - _installDay, legacy: _legacy);
+    final daysFirst = days != _lastDaysBand;
+    if (daysFirst) {
+      _lastDaysBand = days;
+      try {
+        _prefs?.setString(_kDaysBand, days);
+      } catch (_) {}
+    }
+    return {'session_band_first': sessionFirst, 'days_band_first': daysFirst};
+  }
 
   static String _platform() {
     for (final p in const ['ios', 'android', 'macos', 'windows', 'linux']) {
@@ -351,6 +384,7 @@ class TelemetryService {
     _clearPending();
     if (t.difference(bg) > sessionGap) {
       _session = _newId();
+      _seq = 0;
       _sessionNumber++;
       _active = Duration.zero;
       _sectors = 0;
@@ -425,7 +459,8 @@ class TelemetryService {
           'switches': _switches,
         },
         now(),
-        _session);
+        _session,
+        0);
   }
 
   /// What last hurt the hull; read only if that hit was fatal.
@@ -546,7 +581,7 @@ class TelemetryService {
   void _savePending(TelemetryEvent raw) {
     final props = {...raw.props, ..._context(), ..._cohort()};
     if (!TelemetryDictionary.valid(raw.name, props)) return;
-    final e = TelemetryEvent(raw.name, props, raw.at, raw.session);
+    final e = TelemetryEvent(raw.name, props, raw.at, raw.session, ++_seq);
     try {
       _prefs?.setString(_kPending, jsonEncode([e.toJson()]));
     } catch (_) {}
@@ -620,27 +655,36 @@ class _Visit {
   _Visit(this.props, this.affordableLeft, this.since);
 }
 
-/// One recorded event: name, dictionary properties, creation time and the
-/// in-memory id of the session it belongs to.
+/// One recorded event: name, dictionary properties, creation time, the
+/// in-memory id of the session it belongs to and its order in that session.
 class TelemetryEvent {
   final String name;
   final Map<String, Object> props;
   final DateTime at;
   final String session;
-  const TelemetryEvent(this.name, this.props, this.at, this.session);
 
+  /// Order in the session, from 1 (`i` in protocol v1); 0 until queued. The
+  /// collector drops a repeated `(s, i)`, so a batch sent twice is stored
+  /// once.
+  final int seq;
+  const TelemetryEvent(this.name, this.props, this.at, this.session,
+      [this.seq = 0]);
+
+  /// The wire and queue shape: `{n, t, s, i, p}` (`i` left out while 0).
   Map<String, Object> toJson() => {
         'n': name,
-        'p': props,
         't': at.toUtc().toIso8601String(),
         's': session,
+        if (seq > 0) 'i': seq,
+        'p': props,
       };
 
   static TelemetryEvent? fromJson(Map<String, dynamic> j) {
     final at = DateTime.tryParse(j['t'] as String? ?? '');
-    final n = j['n'], s = j['s'], p = j['p'];
+    final n = j['n'], s = j['s'], p = j['p'], i = j['i'];
     if (at == null || n is! String || s is! String || p is! Map) return null;
-    return TelemetryEvent(n, Map<String, Object>.from(p), at, s);
+    return TelemetryEvent(
+        n, Map<String, Object>.from(p), at, s, i is int && i > 0 ? i : 0);
   }
 }
 
@@ -660,36 +704,59 @@ abstract interface class TelemetrySink {
   Future<SinkResult> send(List<TelemetryEvent> batch);
 }
 
-/// PostHog's HTTP batch capture API. Every event is anonymous
-/// (`$process_person_profile: false`) and its `distinct_id` is the session's
-/// random id, so nothing ties two sessions together.
-class PostHogSink implements TelemetrySink {
+/// The owner's own collector, protocol v1 (the `ol1n_telemetry` package's
+/// `docs/protocol.md`): `POST {host}/v1/batch` with the app key in
+/// `X-Telemetry-Key` and the body `{"v":1,"app":"kirian","events":[...]}`.
+/// No identifier beyond the session's random id goes with it.
+///
+/// A batch over [maxEvents] events or [maxBodyBytes] is split. If any part
+/// has to be retried the whole batch is retried; the collector skips what it
+/// already stored by `(s, i)`.
+class CollectorSink implements TelemetrySink {
+  static const version = 1;
+  static const path = '/v1/batch';
+  static const keyHeader = 'X-Telemetry-Key';
+  static const maxEvents = 100;
+  static const maxBodyBytes = 64 * 1024;
+
   final Uri host;
-  final String apiKey;
+  final String app;
+  final String key;
   final Duration timeout;
-  const PostHogSink(
+  const CollectorSink(
       {required this.host,
-      required this.apiKey,
+      required this.app,
+      required this.key,
       this.timeout = const Duration(seconds: 8)});
 
-  Uri get endpoint => host.resolve('/batch/');
+  /// `{host}/v1/batch`, keeping any path prefix of the host.
+  Uri get endpoint {
+    var p = host.path;
+    while (p.endsWith('/')) {
+      p = p.substring(0, p.length - 1);
+    }
+    return Uri(
+      scheme: host.scheme,
+      host: host.host,
+      port: host.hasPort ? host.port : null,
+      path: '$p$path',
+    );
+  }
 
   Map<String, Object> body(List<TelemetryEvent> batch) => {
-        'api_key': apiKey,
-        'batch': [
-          for (final e in batch)
-            {
-              'event': e.name,
-              'timestamp': e.at.toUtc().toIso8601String(),
-              'properties': {
-                ...e.props,
-                'distinct_id': e.session,
-                r'$process_person_profile': false,
-                r'$lib': 'kirian',
-              },
-            },
-        ],
+        'v': version,
+        'app': app,
+        'events': [for (final e in batch) e.toJson()],
       };
+
+  /// 2xx sent; 408, 429 and 5xx later; anything else dropped.
+  static SinkResult resultFor(int status) {
+    if (status >= 200 && status < 300) return SinkResult.sent;
+    if (status == 408 || status == 429 || status >= 500) {
+      return SinkResult.retry;
+    }
+    return SinkResult.drop;
+  }
 
   @override
   Future<SinkResult> send(List<TelemetryEvent> batch) async {
@@ -698,19 +765,33 @@ class PostHogSink implements TelemetrySink {
       ..connectionTimeout = const Duration(seconds: 5)
       ..userAgent = 'Kirian';
     try {
-      final req = await client.postUrl(endpoint).timeout(timeout);
-      req.headers.contentType = ContentType.json;
-      req.add(utf8.encode(jsonEncode(body(batch))));
-      final res = await req.close().timeout(timeout);
-      await res.drain<void>().timeout(timeout);
-      final c = res.statusCode;
-      if (c >= 200 && c < 300) return SinkResult.sent;
-      if (c == 408 || c == 429 || c >= 500) return SinkResult.retry;
-      return SinkResult.drop;
-    } catch (_) {
-      return SinkResult.retry;
+      return await _send(client, batch);
     } finally {
       client.close(force: true);
+    }
+  }
+
+  Future<SinkResult> _send(HttpClient client, List<TelemetryEvent> batch) async {
+    final bytes = utf8.encode(jsonEncode(body(batch)));
+    if (bytes.length > maxBodyBytes || batch.length > maxEvents) {
+      if (batch.length == 1) return SinkResult.drop;
+      final half = batch.length ~/ 2;
+      final a = await _send(client, batch.sublist(0, half));
+      if (a == SinkResult.retry) return a;
+      final b = await _send(client, batch.sublist(half));
+      return b == SinkResult.retry ? b : SinkResult.sent;
+    }
+    try {
+      final req = await client.postUrl(endpoint).timeout(timeout);
+      req.headers.contentType = ContentType.json;
+      req.headers.set(keyHeader, key);
+      req.contentLength = bytes.length;
+      req.add(bytes);
+      final res = await req.close().timeout(timeout);
+      await res.drain<void>().timeout(timeout);
+      return resultFor(res.statusCode);
+    } catch (_) {
+      return SinkResult.retry;
     }
   }
 }
@@ -721,7 +802,8 @@ class LogSink implements TelemetrySink {
   @override
   Future<SinkResult> send(List<TelemetryEvent> batch) async {
     for (final e in batch) {
-      debugPrint('telemetry ${e.at.toIso8601String()} ${e.name} ${e.props}');
+      debugPrint('telemetry ${e.at.toUtc().toIso8601String()} '
+          'i=${e.seq} ${e.name} ${e.props}');
     }
     return SinkResult.sent;
   }
