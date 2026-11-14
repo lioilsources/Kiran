@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "SOBRECARGA",
   "weaponOff": "{weapon} DESLIGADO — gerador fraco demais",
-  "unlocksAt": "Desbloqueia com {points} pts"
+  "unlocksAt": "Desbloqueia com {points} pts",
+  "swapHint": "Toque com um segundo dedo para trocar de armas"
 }

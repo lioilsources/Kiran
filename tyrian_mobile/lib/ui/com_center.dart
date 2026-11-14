@@ -20,6 +20,14 @@ import 'skin_painter.dart';
 import 'skin_selector.dart' show SkinShopSection;
 import '../l10n/l10n.dart';
 
+/// Plan 32 Q3: the second-finger swap is explained here and nowhere else —
+/// on touch screens only, and only once some slot has two weapons to swap
+/// between.
+bool swapHintVisible(Vessel v, {bool? touch}) =>
+    (touch ?? !platform.isDesktop) &&
+    const [WeaponSlot.frontGun, WeaponSlot.leftGun, WeaponSlot.rightGun]
+        .any((s) => v.alternateFor(s) != null);
+
 /// Ported from ComCenter.cls — the between-sector equipment screen.
 ///
 /// Loadout-first: there is no separate shop. Each of the four LOADOUT rows
@@ -1046,6 +1054,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           _buildWeaponRow(_l.slotLeft, WeaponSlot.leftGun),
           _buildWeaponRow(_l.slotRight, WeaponSlot.rightGun),
           _buildGeneratorRow(),
+          if (swapHintVisible(vessel))
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                _l.swapHint,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: _theme.styled(
+                  TextStyle(color: Colors.white60, fontSize: _fs(8)),
+                ),
+              ),
+            ),
         ],
       ),
     );

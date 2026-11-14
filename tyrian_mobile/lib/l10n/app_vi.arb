@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "QUÁ TẢI",
   "weaponOff": "{weapon} TẮT — máy phát quá yếu",
-  "unlocksAt": "Mở khóa ở {points} điểm"
+  "unlocksAt": "Mở khóa ở {points} điểm",
+  "swapHint": "Chạm bằng ngón tay thứ hai để đổi vũ khí"
 }

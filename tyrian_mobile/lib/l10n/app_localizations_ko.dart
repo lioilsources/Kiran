@@ -255,4 +255,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points점에서 해금';
   }
+
+  @override
+  String get swapHint => '두 번째 손가락으로 탭하면 무기 교체';
 }

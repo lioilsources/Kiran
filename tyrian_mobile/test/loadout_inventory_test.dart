@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tyrian_mobile/entities/vessel.dart';
+import 'package:tyrian_mobile/game/game_config.dart' as config;
+import 'package:tyrian_mobile/systems/device.dart';
 import 'package:tyrian_mobile/systems/dev_type.dart';
+import 'package:tyrian_mobile/ui/com_center.dart' show swapHintVisible;
 
 /// The ComCenter loadout lets a pilot own several weapons per slot and switch
 /// between them for free. These pin the hangar rules the screen relies on.
@@ -124,5 +127,126 @@ void main() {
     expect(v.hangar, isNotEmpty);
     v.newGame();
     expect(v.hangar, isEmpty);
+  });
+
+  // ── Touch swap (plan 32 Q3): the two strongest sets, per slot ──
+
+  double dps(Vessel v, Device d) => d.dps;
+  Device? front(Vessel v) => v.getDevice(WeaponSlot.frontGun);
+
+  /// [types] owned for [slot], ranked strongest first at their levels.
+  List<Device> own(Vessel v, WeaponSlot slot, List<DevType> types) {
+    final devices = [for (final t in types) v.fitWeapon(t, slot)];
+    return devices..sort((a, b) => dps(v, b).compareTo(dps(v, a)));
+  }
+
+  test('two weapons: the swap flips between them', () {
+    final v = Vessel();
+    final ranked = own(v, WeaponSlot.frontGun,
+        [DevType.bubbleGun, DevType.vulcanCannon]);
+    v.fitWeapon(DevType.byName(ranked[0].name)!, WeaponSlot.frontGun);
+    expect(v.swapToAlternate(), isTrue);
+    expect(front(v), same(ranked[1]), reason: 'strongest fitted → second');
+    expect(v.swapToAlternate(), isTrue);
+    expect(front(v), same(ranked[0]));
+  });
+
+  test('three weapons: a weaker one fitted goes to the strongest, then the '
+      'swap flips between the top two', () {
+    final v = Vessel();
+    final ranked = own(v, WeaponSlot.frontGun,
+        [DevType.bubbleGun, DevType.vulcanCannon, DevType.blaster]);
+    expect(dps(v, ranked[0]), greaterThan(dps(v, ranked[2])));
+    v.fitWeapon(DevType.byName(ranked[2].name)!, WeaponSlot.frontGun);
+    v.swapToAlternate();
+    expect(front(v), same(ranked[0]));
+    v.swapToAlternate();
+    expect(front(v), same(ranked[1]));
+    v.swapToAlternate();
+    expect(front(v), same(ranked[0]));
+    expect(v.hangar.where((d) => d.slot == WeaponSlot.frontGun).length, 2);
+  });
+
+  test('ranking is by DPS at the current level', () {
+    final v = Vessel();
+    final bubble = v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    final vulcan = v.fitWeapon(DevType.vulcanCannon, WeaponSlot.frontGun);
+    // Upgrade whichever is weaker until it is the stronger one.
+    final weak = dps(v, bubble) < dps(v, vulcan) ? bubble : vulcan;
+    final strong = identical(weak, bubble) ? vulcan : bubble;
+    while (dps(v, weak) <= dps(v, strong) && weak.level < 4) {
+      weak.upgrade();
+    }
+    if (dps(v, weak) <= dps(v, strong)) return; // cannot overtake: nothing to pin
+    v.fitWeapon(DevType.byName(strong.name)!, WeaponSlot.frontGun);
+    v.swapToAlternate();
+    expect(front(v), same(weak), reason: 'the upgraded gun is now the strongest');
+  });
+
+  test('left and right swap independently; a single weapon stays', () {
+    final v = Vessel();
+    v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    final left = own(v, WeaponSlot.leftGun,
+        [DevType.smallBubble, DevType.smallVulcan]);
+    v.fitWeapon(DevType.byName(left[0].name)!, WeaponSlot.leftGun);
+    final right = v.fitWeapon(DevType.smallBubble, WeaponSlot.rightGun);
+    final frontGun = front(v);
+
+    expect(v.swapToAlternate(), isTrue);
+    expect(v.getDevice(WeaponSlot.leftGun), same(left[1]));
+    expect(v.getDevice(WeaponSlot.rightGun), same(right),
+        reason: 'one weapon in the slot: nothing to swap to');
+    expect(front(v), same(frontGun));
+    expect(v.hangarEntry(DevType.smallBubble.name, WeaponSlot.rightGun), isNull);
+  });
+
+  test('nothing to swap: the gesture does nothing', () {
+    final v = Vessel();
+    v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    v.fitWeapon(DevType.smallBubble, WeaponSlot.leftGun);
+    expect(v.swapToAlternate(), isFalse);
+    expect(v.hangar, isEmpty);
+  });
+
+  test('levels survive the swap; the new gun waits out the swap delay', () {
+    final v = Vessel();
+    final bubble = v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    bubble.upgrade();
+    bubble.upgrade();
+    final vulcan = v.fitWeapon(DevType.vulcanCannon, WeaponSlot.frontGun);
+    vulcan.upgrade();
+    v.swapToAlternate();
+    v.swapToAlternate();
+    v.swapToAlternate();
+    expect(bubble.level, 2);
+    expect(vulcan.level, 1);
+    final fitted = front(v)!;
+    expect(fitted.cd, closeTo(fitted.cooldown + config.swapDelay, 1e-9));
+  });
+
+  test('the hangar draws no power', () {
+    final v = Vessel();
+    v.equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
+    v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    final alone = v.generatorLoad;
+    v.fitWeapon(DevType.laser, WeaponSlot.frontGun);
+    v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun); // laser to hangar
+    expect(v.generatorLoad, alone);
+    v.swapToAlternate(); // laser fitted, bubble in the hangar
+    expect(front(v)!.name, DevType.laser.name);
+    final laserOnly = Vessel()
+      ..equipWeapon(DevType.generatorBasic, WeaponSlot.generator)
+      ..fitWeapon(DevType.laser, WeaponSlot.frontGun);
+    expect(v.generatorLoad, laserOnly.generatorLoad);
+  });
+
+  test('the swap hint shows on touch only, once a slot has two weapons', () {
+    final v = Vessel();
+    v.fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
+    expect(swapHintVisible(v, touch: true), isFalse);
+    v.fitWeapon(DevType.smallBubble, WeaponSlot.rightGun);
+    v.fitWeapon(DevType.smallVulcan, WeaponSlot.rightGun);
+    expect(swapHintVisible(v, touch: true), isTrue);
+    expect(swapHintVisible(v, touch: false), isFalse);
   });
 }

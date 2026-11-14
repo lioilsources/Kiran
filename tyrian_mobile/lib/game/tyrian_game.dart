@@ -40,6 +40,8 @@ import '../rendering/beam_renderer.dart';
 import '../rendering/shader_pipeline.dart';
 import '../services/skin_registry.dart';
 import '../ui/float_text.dart';
+import '../ui/format.dart';
+import '../input/touch_fingers.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
@@ -493,6 +495,7 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
+    _fingers.flush();
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
       final snap = coopClient?.latestSnapshot;
@@ -815,10 +818,33 @@ class TyrianGame extends FlameGame
   double _clientTargetY = config.gameHeight * 0.75;
   bool _clientFire = false;
 
+  /// Primary finger vs. swap fingers (plan 32 Q3). Only the primary moves
+  /// the ship and holds the fire.
+  final TouchFingers _fingers = TouchFingers();
+
+  /// A second finger landed while the first is held: swap to the alternate
+  /// weapons. Solo and host only — a co-op client sends position and fire.
+  void _touchSwap() {
+    if (coopRole == CoopRole.client) return;
+    if (!vessel.swapToAlternate()) return;
+    final front = vessel.getDevice(WeaponSlot.frontGun);
+    // What the generator can power: a gun with pwrNeed > genMax is off.
+    var powered = 0.0;
+    for (final d in vessel.devices) {
+      if (d.pwrNeed <= vessel.genMax) powered += d.dps;
+    }
+    showMessage('${front?.displayName.toUpperCase() ?? ''}  DPS ${fmtNum(powered)}');
+  }
+
   @override
   void onDragStart(DragStartEvent event) {
     super.onDragStart(event);
+    final finger = _fingers.down(event.pointerId);
     if (state != GameState.playing) return;
+    if (!finger.primary) {
+      if (finger.landed) _touchSwap();
+      return;
+    }
     _prevDragPos = event.canvasPosition.clone();
 
     if (coopRole == CoopRole.client) {
@@ -832,6 +858,7 @@ class TyrianGame extends FlameGame
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
     if (state != GameState.playing || _prevDragPos == null) return;
+    if (!_fingers.isPrimary(event.pointerId)) return;
     final pos = event.canvasEndPosition;
     final delta = pos - _prevDragPos!;
     _prevDragPos = pos.clone();
@@ -859,6 +886,10 @@ class TyrianGame extends FlameGame
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
+    final primary = _fingers.isPrimary(event.pointerId);
+    _fingers.up(event.pointerId);
+    // A swap finger lifting leaves the ship and its fire alone.
+    if (!primary) return;
     if (state != GameState.playing) return;
     _prevDragPos = null;
 
@@ -873,7 +904,12 @@ class TyrianGame extends FlameGame
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
+    final finger = _fingers.down(event.pointerId);
     if (state != GameState.playing) return;
+    if (!finger.primary) {
+      if (finger.landed) _touchSwap();
+      return;
+    }
 
     if (coopRole == CoopRole.client) {
       _clientFire = !_clientFire;
@@ -881,6 +917,18 @@ class TyrianGame extends FlameGame
     } else {
       vessel.fire = !vessel.fire;
     }
+  }
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    super.onTapUp(event);
+    _fingers.up(event.pointerId);
+  }
+
+  @override
+  void onTapCancel(TapCancelEvent event) {
+    super.onTapCancel(event);
+    _fingers.tapCancelled(event.pointerId);
   }
 
   // ── Keyboard input (desktop) ──────────────────────────────

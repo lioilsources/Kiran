@@ -256,4 +256,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Mở khóa ở $points điểm';
   }
+
+  @override
+  String get swapHint => 'Chạm bằng ngón tay thứ hai để đổi vũ khí';
 }

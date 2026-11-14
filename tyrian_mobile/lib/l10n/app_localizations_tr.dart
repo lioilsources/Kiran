@@ -256,4 +256,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points puanda açılır';
   }
+
+  @override
+  String get swapHint => 'Silah değiştirmek için ikinci parmakla dokun';
 }

@@ -28,6 +28,7 @@ void main() {
       expect(l.ipValue('host.example'), contains('host.example'), reason: '$locale');
       expect(l.connectToHost, isNotEmpty, reason: '$locale');
       expect(l.padControlsHint, contains('[OPTIONS]'), reason: '$locale');
+      expect(l.swapHint, isNotEmpty, reason: '$locale');
     }
   });
 

@@ -108,6 +108,10 @@ const double upgCooldownDivisor = 1.02;
 const double upgPwrGenMultiplier = 1.255;
 const double upgGenMaxMultiplier = 1.2;
 
+// Weapon swap in flight (second finger, plan 32 Q3): the new gun waits its
+// cooldown plus this before the first shot. Same as the 3.x pad swap.
+const double swapDelay = 0.5;
+
 // --- Adaptive music ---------------------------------------------------------
 // The soundtrack is N intensity tiers (theme_1..theme_N) plus a one-shot
 // heroic `intro` per sector. MusicDirector computes a live "threat" score each

@@ -74,5 +74,6 @@
   "familyLaser": "LASER",
   "overload": "โอเวอร์โหลด",
   "weaponOff": "{weapon} ปิด — เครื่องกำเนิดไฟฟ้าอ่อนเกินไป",
-  "unlocksAt": "ปลดล็อกที่ {points} คะแนน"
+  "unlocksAt": "ปลดล็อกที่ {points} คะแนน",
+  "swapHint": "แตะด้วยนิ้วที่สองเพื่อสลับอาวุธ"
 }
