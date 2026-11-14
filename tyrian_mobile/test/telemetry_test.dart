@@ -109,6 +109,8 @@ void main() {
         'difficulty': 'normal',
         'tester': false,
         'start': 'cold',
+        'session_band_first': true,
+        'days_band_first': true,
       };
       expect(TelemetryDictionary.valid('app_open', props), isTrue);
       for (var i = 0; i < 20; i++) {
@@ -122,6 +124,18 @@ void main() {
       expect(TelemetryDictionary.valid('app_open', {...props}..remove('start')), isFalse);
       expect(TelemetryDictionary.valid('pilot_renamed', props), isFalse);
       expect(TelemetryDictionary.valid('app_open', {...props, 'start': 3}), isFalse);
+    });
+
+    test('names and values fit collector protocol v1', () {
+      final name = RegExp(r'^[a-z][a-z0-9_]{1,39}$');
+      for (final MapEntry(:key, :value) in TelemetryDictionary.events.entries) {
+        expect(name.hasMatch(key), isTrue, reason: key);
+        expect(value.length + TelemetryDictionary.common.length,
+            lessThanOrEqualTo(32), reason: key);
+        for (final p in [...value.keys, ...TelemetryDictionary.common.keys]) {
+          expect(name.hasMatch(p), isTrue, reason: '$key.$p');
+        }
+      }
     });
 
     test('languages are the shipped locales, as the app names them', () {
@@ -383,6 +397,51 @@ void main() {
       expect(open.session, t.sessionId);
     });
 
+    test('events are numbered within the session; a new session restarts at 1',
+        () async {
+      final t = await start();
+      t.track('app_open', {'start': 'cold'});
+      t.menuReady();
+      t.appPaused(screen: 'menu', index: 0);
+      expect([for (final e in t.queued) e.seq], [1, 2, 3]);
+      clock = clock.add(const Duration(minutes: 31));
+      t.appResumed();
+      final open = t.queued.last;
+      expect(open.name, 'app_open');
+      expect(open.seq, 1);
+      expect(open.toJson()['i'], 1);
+    });
+
+    test('app_open says whether this is the first session in its bands', () async {
+      Map<String, Object> open() {
+        final e = TelemetryService.instance.queued
+            .firstWhere((e) => e.name == 'app_open');
+        return {
+          's': e.props['session_band_first']!,
+          'd': e.props['days_band_first']!,
+        };
+      }
+
+      final seen = <Map<String, Object>>[];
+      for (final days in [0, 0, 0, 1, 1, 6, 7]) {
+        clock = DateTime(2026, 11, 14, 12).add(Duration(days: days));
+        final t = await start(resetPrefs: seen.isEmpty);
+        t.track('app_open', {'start': 'cold'});
+        seen.add(open());
+      }
+      // sessions 1, 2, 3-5 (3), 3-5 (4), 3-5 (5), 6-10 (6), 6-10 (7)
+      // days    0, 0, 0, 1, 1, 2-6, 7-29
+      expect(seen, [
+        {'s': true, 'd': true},
+        {'s': true, 'd': false},
+        {'s': true, 'd': false},
+        {'s': false, 'd': true},
+        {'s': false, 'd': false},
+        {'s': true, 'd': true},
+        {'s': false, 'd': true},
+      ]);
+    });
+
     test('session_pause reports foreground time, sectors and deaths', () async {
       final t = await start();
       t.sectorStarted(_sector(0));
@@ -410,6 +469,7 @@ void main() {
         'telemetry_install_day',
         'telemetry_legacy',
         'telemetry_sessions',
+        'telemetry_days_band',
       });
       for (final k in prefs.getKeys()) {
         expect('${prefs.get(k)}', isNot(contains(t.sessionId)), reason: k);
@@ -441,6 +501,9 @@ void main() {
       clock = clock.add(const Duration(hours: 5));
       final t2 = await start(resetPrefs: false);
       final end = t2.queued.lastWhere((e) => e.name == 'sector_end');
+      final pause = sink.sent.lastWhere((e) => e.name == 'session_pause');
+      expect(end.seq, greaterThan(0));
+      expect(pause.seq, end.seq + 1);
       expect(end.props['result'], 'background');
       expect(end.props['secs'], 30);
       expect(end.props['part'], 2);
@@ -501,42 +564,77 @@ void main() {
     });
   });
 
-  group('PostHog sink', () {
-    test('anonymous batch: session id as distinct_id, no person profile', () async {
+  group('collector sink (protocol v1)', () {
+    test('posts the v1 envelope with the key in the header', () async {
       await HttpOverrides.runWithHttpOverrides(() async {
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
         final bodies = <Map<String, dynamic>>[];
-        var status = 200;
+        final keys = <String?>[];
+        var status = 204;
         server.listen((req) async {
+          expect(req.method, 'POST');
+          expect(req.uri.path, '/x/v1/batch');
+          keys.add(req.headers.value('X-Telemetry-Key'));
           bodies.add(jsonDecode(await utf8.decodeStream(req)) as Map<String, dynamic>);
-          expect(req.uri.path, '/batch/');
           req.response.statusCode = status;
           await req.response.close();
         });
-        final s = PostHogSink(
-            host: Uri.parse('http://127.0.0.1:${server.port}'), apiKey: 'k');
+        final s = CollectorSink(
+            host: Uri.parse('http://127.0.0.1:${server.port}/x/'),
+            app: 'kirian',
+            key: 'k');
+        const session = '0123456789abcdef0123456789abcdef';
         final e = TelemetryEvent('menu_ready', const {'ms': 5},
-            DateTime.utc(2026, 11, 14, 12), 'abc');
+            DateTime.utc(2026, 11, 14, 12), session, 2);
         expect(await s.send([e]), SinkResult.sent);
-        final b = bodies.single;
-        expect(b['api_key'], 'k');
-        final ev = (b['batch'] as List).single as Map;
-        expect(ev['event'], 'menu_ready');
-        expect(ev['timestamp'], '2026-11-14T12:00:00.000Z');
-        expect(ev['properties'], {
-          'ms': 5,
-          'distinct_id': 'abc',
-          r'$process_person_profile': false,
-          r'$lib': 'kirian',
+        expect(keys.single, 'k');
+        expect(bodies.single, {
+          'v': 1,
+          'app': 'kirian',
+          'events': [
+            {
+              'n': 'menu_ready',
+              't': '2026-11-14T12:00:00.000Z',
+              's': session,
+              'i': 2,
+              'p': {'ms': 5},
+            }
+          ],
         });
 
-        status = 400;
+        // Over 100 events: split, and every part goes.
+        bodies.clear();
+        expect(await s.send(List.filled(150, e)), SinkResult.sent);
+        expect([for (final b in bodies) (b['events'] as List).length], [75, 75]);
+
+        status = 401;
         expect(await s.send([e]), SinkResult.drop);
+        status = 429;
+        expect(await s.send([e]), SinkResult.retry);
         status = 503;
         expect(await s.send([e]), SinkResult.retry);
         await server.close(force: true);
         expect(await s.send([e]), SinkResult.retry); // nobody listening
       }, _RealHttp());
+    });
+
+    test('status codes map as the protocol says', () {
+      expect(
+          {
+            for (final c in [200, 204, 400, 401, 408, 413, 429, 500, 503])
+              c: CollectorSink.resultFor(c)
+          },
+          {
+            200: SinkResult.sent,
+            204: SinkResult.sent,
+            400: SinkResult.drop,
+            401: SinkResult.drop,
+            408: SinkResult.retry,
+            413: SinkResult.drop,
+            429: SinkResult.retry,
+            500: SinkResult.retry,
+            503: SinkResult.retry,
+          });
     });
   });
 }

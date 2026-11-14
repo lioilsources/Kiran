@@ -42,30 +42,50 @@ Adding an event or a property is a change to the privacy policy
   disk. Nothing further is sent, queued events included.
 - **Measuring never steers the game.** No gameplay code reads anything the
   service holds.
-- **Vendor behind an interface.** `TelemetrySink` has one method; the
-  PostHog implementation is `PostHogSink`.
+- **Receiver behind an interface.** `TelemetrySink` has one method. The
+  implementation in use is `CollectorSink`, for the owner's own collector
+  (protocol v1). Another receiver (PostHog, for example) would be one more
+  sink class; nothing else changes.
 
 ## Configuration
 
 | `--dart-define` | Meaning |
 |---|---|
-| `TELEMETRY_KEY` | The vendor's project key (PostHog `phc_…`). Empty → nothing is sent. |
-| `TELEMETRY_HOST` | Ingestion host, e.g. the PostHog EU ingestion host. Must be `https`. Empty → nothing is sent. |
+| `TELEMETRY_KEY` | Kirian's key at the collector (sent as `X-Telemetry-Key`). Empty → nothing is sent. |
+| `TELEMETRY_HOST` | The collector's base address. Must be `https`. Empty → nothing is sent. |
 | `TELEMETRY_DEBUG` | `true` prints events to the console instead of sending them. For checking a build by hand. |
 
 The release workflows (`release-ios`, `release-android`, `release-macos`,
 `release-windows`, `release-linux`, `steam-deploy`) pass both from the GitHub
 secrets of the same names. An absent secret expands to an empty string and
-the build is silent. The key, the project URL and dashboard links never go
-into this public repository.
+the build is silent; such a build also hides the USAGE STATS toggle in the
+pause menu, since there is nothing to switch. The key, the collector's
+address and dashboard links never go into this public repository.
 
 ## Transport
 
-PostHog Cloud EU, HTTP batch capture (`POST /batch/`). Each event carries
-`distinct_id` = the session id and `$process_person_profile: false`, so
-PostHog creates no person profiles and nothing links two sessions. The
-client is a thin `dart:io HttpClient`; no SDK (the official plugins lack
-Windows and Linux, and a new dependency could outgrow the Dart pinned in CI).
+The owner's own collector, run by the developer on their own server in the
+EU (Czech Republic); nobody else receives the events. The wire format is
+protocol v1 of the shared `ol1n_telemetry` package
+(<https://github.com/lioilsources/Ol1nTelemetry>, `docs/protocol.md`):
+
+```
+POST {TELEMETRY_HOST}/v1/batch
+X-Telemetry-Key: <key>
+{"v":1,"app":"kirian","events":[{"n":…,"t":…,"s":…,"i":…,"p":{…}}]}
+```
+
+`n` is the event, `t` its creation time (UTC), `s` the session's random id,
+`i` its order within the session (from 1; the collector drops a repeated
+`(s, i)`, so a batch sent twice is stored once) and `p` the properties
+below. A batch over 100 events or 64 kB is split. `2xx` is sent; `408`,
+`429` and `5xx` are retried later; anything else is dropped. The collector
+derives the country from the connection and does not store the IP address.
+
+The client is a thin `dart:io HttpClient` in
+`tyrian_mobile/lib/services/telemetry_service.dart`, speaking the same
+protocol as the package; moving onto the package itself is a later step
+with no change in behaviour. No SDK, no new dependency.
 
 ## Sessions and cohorts
 
@@ -82,7 +102,7 @@ Windows and Linux, and a new dependency could outgrow the Dart pinned in CI).
 
 ## Retention
 
-Raw events are kept **12 months**, set in the PostHog project settings.
+Raw events are kept **12 months** on the collector.
 
 ## Common properties
 
@@ -112,6 +132,12 @@ Cold start, or a new session after more than 30 minutes in the background.
 | Property | Type | Values |
 |---|---|---|
 | `start` | enum | `cold`, `resume` |
+| `session_band_first` | bool | the first session of this install in its `session_band` (counted on the device) |
+| `days_band_first` | bool | the first session of this install in its `days_band` (counted on the device) |
+
+`session_band_first` and `days_band_first` give exact counts of installs
+that reached their 2nd, 3rd, 6th and 11th session and day 1, 2, 7 and 30,
+without any id.
 
 ### `menu_ready`
 
@@ -215,19 +241,21 @@ The app goes to the background or closes.
 The first-session funnel in the plan names a `run_start` step; there is no
 such event. The first `sector_start` of a session is the run start.
 
-Saved views to create in PostHog once the project exists (filter
-`tester = false` everywhere; split by `line` and `platform` where useful):
+Views to build on the collector's data (filter `tester = false`
+everywhere; split by `line` and `platform` where useful):
 
 1. **First-session funnel.** Funnel, `first_session = true`, steps
    `app_open` → `menu_ready` → `skin_tap` → `sector_start` → `sector_end`,
-   conversion window 1 hour, aggregated by `distinct_id` (= session).
+   conversion window 1 hour, per session (`s`), steps ordered by `i`.
 2. **Time to quit.** Trend of the last `session_pause` per session: histogram
    of `active_secs`, broken down by `screen`. Second tab: same with
    `first_session = true` only.
 3. **Session length.** Per session: max `active_secs` and max `sectors` from
    `session_pause`; weekly median and p75. Breakdown by `session_band`.
 4. **New against returning.** Weekly unique sessions broken down by
-   `session_band` and by `days_band`.
+   `session_band` and by `days_band`. Retention: count `app_open` with
+   `session_band_first = true` per `session_band`, and with
+   `days_band_first = true` per `days_band`.
 5. **ComCenter understanding.** From `comcenter_close`: median `secs`,
    share with `buys + upgrades = 0`, share with `left_affordable = true`,
    mean `unavailable`; broken down by the `reason` of the matching
@@ -243,20 +271,11 @@ p50/p90 by `platform`.
 
 ## Owner setup (T0)
 
-1. Create the PostHog Cloud **EU** project. Settings to check in the
-   project itself, not from memory:
-   - **Discard client IP data** on.
-   - GeoIP: keep the **country** only (drop city, subdivision, postal code
-     and coordinates, e.g. with a property-drop transformation). Check
-     whether discarding the IP still allows the country lookup; if it does
-     not, decide between country and IP discarding before launch.
-   - Data retention **12 months**.
-   - Person profiles: the client already sends
-     `$process_person_profile: false`; confirm no persons appear.
-   - Accept the DPA.
-   - Free tier volume (about 25 events per five-sector session).
-2. Add the GitHub secrets `TELEMETRY_KEY` (project API key) and
-   `TELEMETRY_HOST` (the EU ingestion host, `https://…`).
+1. Register Kirian (`app: kirian`) on the collector with a key, the
+   country lookup on and 12-month retention. The collector stores no IP
+   address.
+2. Add the GitHub secrets `TELEMETRY_KEY` (Kirian's collector key) and
+   `TELEMETRY_HOST` (the collector's base address, `https://…`).
 3. Publish the new `docs/privacy.html` and fill in App Store App Privacy,
    Google Play Data safety and the Steam AI disclosure
    (answers in `tyrian_mobile/marketing/*-listing.md` and
@@ -273,7 +292,8 @@ flutter run -d macos \
   --dart-define=TELEMETRY_KEY=<key> --dart-define=TELEMETRY_HOST=<host>
 ```
 
-Then compare PostHog's live events with this dictionary: only the events
+Then compare the events the collector stored for that session with this
+dictionary: only the events
 above, each with exactly its properties plus the common ones. With
 `--dart-define=TELEMETRY_DEBUG=true` instead, the same events print to the
 console and nothing is sent.

@@ -155,6 +155,8 @@ abstract final class TelemetryDictionary {
   static final Map<String, Map<String, TelemetryProp>> events = {
     'app_open': {
       'start': const EnumProp({'cold', 'resume'}),
+      'session_band_first': const BoolProp(),
+      'days_band_first': const BoolProp(),
     },
     'menu_ready': {
       'ms': _ms,
