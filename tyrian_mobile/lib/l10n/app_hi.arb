@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "मुद्रा में, बॉस की ओर सिजिल बनाओ",
   "duelDrillTurn": "मुड़ो",
   "duelDrillTurnHow": "बॉस नीचे है: नाक घुमाओ और मारो",
-  "duelDrillDone": "हो गया"
+  "duelDrillDone": "हो गया",
+  "swapHint": "हथियार बदलने के लिए दूसरी उँगली से टैप करो"
 }

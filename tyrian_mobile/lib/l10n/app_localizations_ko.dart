@@ -1134,4 +1134,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get duelDrillDone => '완료';
+
+  @override
+  String get swapHint => '두 번째 손가락으로 탭하면 무기 교체';
 }

@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "I stillingen, tegn en sigil mod bossen",
   "duelDrillTurn": "VEND OM",
   "duelDrillTurnHow": "Bossen er under dig: drej næsen og ram den",
-  "duelDrillDone": "FÆRDIG"
+  "duelDrillDone": "FÆRDIG",
+  "swapHint": "Tryk med en anden finger for at skifte våben"
 }

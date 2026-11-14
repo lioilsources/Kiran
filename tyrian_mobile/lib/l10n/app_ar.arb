@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "في الوضعية، ارسم رمزًا نحو الزعيم",
   "duelDrillTurn": "استدر",
   "duelDrillTurnHow": "الزعيم تحتك: أدر المقدمة وأصبه",
-  "duelDrillDone": "تم"
+  "duelDrillDone": "تم",
+  "swapHint": "انقر بإصبع ثانٍ لتبديل الأسلحة"
 }

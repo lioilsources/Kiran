@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Dalam sikap, lukis sigil ke arah bos",
   "duelDrillTurn": "PUSING",
   "duelDrillTurnHow": "Bos di bawah anda: pusing muncung dan kenakan",
-  "duelDrillDone": "SELESAI"
+  "duelDrillDone": "SELESAI",
+  "swapHint": "Ketik dengan jari kedua untuk menukar senjata"
 }

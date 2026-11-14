@@ -1158,4 +1158,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'పూర్తయింది';
+
+  @override
+  String get swapHint => 'ఆయుధాలు మార్చడానికి రెండో వేలితో ట్యాప్ చేయండి';
 }

@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "În poziție, desenează un sigiliu spre boss",
   "duelDrillTurn": "ÎNTOARCE-TE",
   "duelDrillTurnHow": "Bossul e sub tine: întoarce botul și lovește-l",
-  "duelDrillDone": "GATA"
+  "duelDrillDone": "GATA",
+  "swapHint": "Atinge cu un al doilea deget ca să schimbi armele"
 }

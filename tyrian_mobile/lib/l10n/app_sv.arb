@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "I ställningen, rita ett sigill mot bossen",
   "duelDrillTurn": "VÄND OM",
   "duelDrillTurnHow": "Bossen är under dig: vänd nosen och träffa den",
-  "duelDrillDone": "KLART"
+  "duelDrillDone": "KLART",
+  "swapHint": "Tryck med ett andra finger för att byta vapen"
 }

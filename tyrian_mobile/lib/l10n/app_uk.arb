@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "У стійці намалюй сигіл у бік боса",
   "duelDrillTurn": "РОЗВЕРНИСЬ",
   "duelDrillTurnHow": "Бос під тобою: розверни ніс і влуч",
-  "duelDrillDone": "ГОТОВО"
+  "duelDrillDone": "ГОТОВО",
+  "swapHint": "Торкнись другим пальцем, щоб змінити зброю"
 }

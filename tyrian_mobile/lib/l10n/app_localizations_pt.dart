@@ -1169,6 +1169,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FEITO';
+
+  @override
+  String get swapHint => 'Toque com um segundo dedo para trocar de armas';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -2332,4 +2335,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get duelDrillDone => 'FEITO';
+
+  @override
+  String get swapHint => 'Toca com um segundo dedo para trocar de armas';
 }

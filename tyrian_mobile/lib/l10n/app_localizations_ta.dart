@@ -1168,4 +1168,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'முடிந்தது';
+
+  @override
+  String get swapHint => 'ஆயுதங்களை மாற்ற இரண்டாவது விரலால் தட்டுங்கள்';
 }

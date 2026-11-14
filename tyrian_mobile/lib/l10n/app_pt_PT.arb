@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Na postura, desenha um sigilo em direção ao chefe",
   "duelDrillTurn": "DAR A VOLTA",
   "duelDrillTurnHow": "O chefe está abaixo de ti: vira o nariz e acerta-lhe",
-  "duelDrillDone": "FEITO"
+  "duelDrillDone": "FEITO",
+  "swapHint": "Toca com um segundo dedo para trocar de armas"
 }

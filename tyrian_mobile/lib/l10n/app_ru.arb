@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "В стойке нарисуй сигил в сторону босса",
   "duelDrillTurn": "РАЗВЕРНИСЬ",
   "duelDrillTurnHow": "Босс под тобой: разверни нос и попадай",
-  "duelDrillDone": "ГОТОВО"
+  "duelDrillDone": "ГОТОВО",
+  "swapHint": "Коснись вторым пальцем, чтобы сменить оружие"
 }

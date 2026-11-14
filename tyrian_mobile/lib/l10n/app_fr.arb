@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "En posture, trace un sigil vers le boss",
   "duelDrillTurn": "DEMI-TOUR",
   "duelDrillTurnHow": "Le boss est sous toi : tourne le nez et touche-le",
-  "duelDrillDone": "RÉUSSI"
+  "duelDrillDone": "RÉUSSI",
+  "swapHint": "Touche avec un deuxième doigt pour changer d'armes"
 }

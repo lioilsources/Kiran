@@ -1133,4 +1133,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get duelDrillDone => '完了';
+
+  @override
+  String get swapHint => '2本目の指でタップして武器を切り替えよう';
 }

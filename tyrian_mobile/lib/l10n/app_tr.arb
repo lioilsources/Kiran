@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Duruştayken boss'a doğru bir sigil çiz",
   "duelDrillTurn": "ARKANI DÖN",
   "duelDrillTurnHow": "Boss altında: burnu çevir ve vur",
-  "duelDrillDone": "TAMAM"
+  "duelDrillDone": "TAMAM",
+  "swapHint": "Silah değiştirmek için ikinci parmakla dokun"
 }

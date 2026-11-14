@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "ในท่าดวล ให้วาดซิจิลไปทางบอส",
   "duelDrillTurn": "หันกลับ",
   "duelDrillTurnHow": "บอสอยู่ใต้คุณ: หมุนหัวยานแล้วยิงให้โดน",
-  "duelDrillDone": "สำเร็จ"
+  "duelDrillDone": "สำเร็จ",
+  "swapHint": "แตะด้วยนิ้วที่สองเพื่อสลับอาวุธ"
 }

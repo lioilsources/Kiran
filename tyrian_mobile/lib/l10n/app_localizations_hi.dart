@@ -1152,4 +1152,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'हो गया';
+
+  @override
+  String get swapHint => 'हथियार बदलने के लिए दूसरी उँगली से टैप करो';
 }

@@ -319,5 +319,6 @@
   "duelDrillDrawHow": "Tartásban rajzolj jelet a boss felé",
   "duelDrillTurn": "FORDULJ MEG",
   "duelDrillTurnHow": "A boss alattad van: fordítsd az orrt és találd el",
-  "duelDrillDone": "KÉSZ"
+  "duelDrillDone": "KÉSZ",
+  "swapHint": "Koppints egy második ujjal a fegyvercseréhez"
 }
