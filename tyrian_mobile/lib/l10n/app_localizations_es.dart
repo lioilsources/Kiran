@@ -260,6 +260,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get swapHint => 'Con dos dedos disparas tu segundo juego de armas';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: disparos más fuertes';
   }

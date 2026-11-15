@@ -257,6 +257,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get swapHint => '두 손가락을 대고 있으면 두 번째 무기 세트로 발사';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: 더 강한 사격';
   }

@@ -75,6 +75,7 @@
   "overload": "SURCHARGE",
   "weaponOff": "{weapon} HORS SERVICE — générateur trop faible",
   "unlocksAt": "Débloqué à {points} pts",
+  "swapHint": "À deux doigts, tu tires avec ton second jeu d'armes",
   "pickupWeapon": "{slot} {lv} : tirs plus puissants",
   "pickupRepair": "+{amount} HP : coque réparée",
   "pickupShield": "+{amount} de bouclier, recharge plus rapide",

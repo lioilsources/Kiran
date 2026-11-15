@@ -75,6 +75,7 @@
   "overload": "PŘETÍŽENÍ",
   "weaponOff": "{weapon} VYPNUT — slabý generátor",
   "unlocksAt": "Odemkne se při {points} b.",
+  "swapHint": "Dvěma prsty střílíš druhou sadou zbraní",
   "pickupWeapon": "{slot} {lv}: silnější střelba",
   "pickupRepair": "+{amount} HP: trup opraven",
   "pickupShield": "+{amount} štítu, rychleji se dobíjí",

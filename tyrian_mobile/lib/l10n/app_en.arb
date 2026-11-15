@@ -167,6 +167,10 @@
       }
     }
   },
+  "swapHint": "Hold two fingers to fire your second weapons",
+  "@swapHint": {
+    "description": "ComCenter, touch only: two fingers on the screen fly the second weapon set, one finger the first (plan 34)"
+  },
   "pickupWeapon": "{slot} {lv}: stronger shots",
   "@pickupWeapon": {
     "description": "Pickup note: a weapon slot went up a level. slot = the slot name (Front/Left/Right), lv = the level (\"Lv.3\")",

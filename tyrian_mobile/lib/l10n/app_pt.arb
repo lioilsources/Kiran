@@ -75,6 +75,7 @@
   "overload": "SOBRECARGA",
   "weaponOff": "{weapon} DESLIGADO — gerador fraco demais",
   "unlocksAt": "Desbloqueia com {points} pts",
+  "swapHint": "Com dois dedos você atira com o segundo conjunto de armas",
   "pickupWeapon": "{slot} {lv}: tiros mais fortes",
   "pickupRepair": "+{amount} HP: casco reparado",
   "pickupShield": "+{amount} de escudo, recarrega mais rápido",

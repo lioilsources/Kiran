@@ -258,6 +258,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get swapHint => 'Giữ hai ngón tay để bắn bằng bộ vũ khí thứ hai';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: bắn mạnh hơn';
   }

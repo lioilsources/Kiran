@@ -75,6 +75,7 @@
   "overload": "SOVRACCARICO",
   "weaponOff": "{weapon} SPENTO — generatore troppo debole",
   "unlocksAt": "Si sblocca a {points} punti",
+  "swapHint": "Con due dita spari con il secondo set di armi",
   "pickupWeapon": "{slot} {lv}: colpi più potenti",
   "pickupRepair": "+{amount} HP: scafo riparato",
   "pickupShield": "+{amount} di scudo, si ricarica più in fretta",

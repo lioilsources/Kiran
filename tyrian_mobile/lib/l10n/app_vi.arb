@@ -75,6 +75,7 @@
   "overload": "QUÁ TẢI",
   "weaponOff": "{weapon} TẮT — máy phát quá yếu",
   "unlocksAt": "Mở khóa ở {points} điểm",
+  "swapHint": "Giữ hai ngón tay để bắn bằng bộ vũ khí thứ hai",
   "pickupWeapon": "{slot} {lv}: bắn mạnh hơn",
   "pickupRepair": "+{amount} HP: thân tàu đã sửa",
   "pickupShield": "+{amount} khiên, sạc nhanh hơn",

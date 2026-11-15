@@ -75,6 +75,7 @@
   "overload": "過載",
   "weaponOff": "{weapon} 關閉 — 發電機功率不足",
   "unlocksAt": "{points} 分解鎖",
+  "swapHint": "兩根手指按住時使用第二套武器射擊",
   "pickupWeapon": "{slot} {lv}：火力更強",
   "pickupRepair": "+{amount} HP：船體已修復",
   "pickupShield": "護盾 +{amount}，充能更快",

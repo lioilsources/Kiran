@@ -40,6 +40,8 @@ import '../rendering/beam_renderer.dart';
 import '../rendering/shader_pipeline.dart';
 import '../services/skin_registry.dart';
 import '../ui/float_text.dart';
+import '../ui/format.dart';
+import '../input/touch_controls.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
@@ -50,7 +52,7 @@ enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
 
 class TyrianGame extends FlameGame
-    with DragCallbacks, TapCallbacks, KeyboardEvents {
+    with DragCallbacks, TapCallbacks, TouchControls, KeyboardEvents {
   TyrianGame();
 
   final KeyboardInput keyboardInput = KeyboardInput();
@@ -102,7 +104,20 @@ class TyrianGame extends FlameGame
   final Map<int, Structure> clientStructures = {};
   final List<Projectile> clientPlayerProjectiles = [];
 
-  GameState state = GameState.comCenter;
+  GameState _state = GameState.comCenter;
+
+  GameState get state => _state;
+
+  /// Leaving [GameState.playing] puts the touch's first weapon set back at
+  /// once (plan 34), before anything else sees the loadout: the ComCenter,
+  /// the save written on the way into it, the game over.
+  set state(GameState next) {
+    if (_state == GameState.playing && next != GameState.playing) {
+      vessel.setAlternate(false);
+    }
+    _state = next;
+  }
+
   bool isLoaded = false;
 
   // Active game objects
@@ -373,6 +388,7 @@ class TyrianGame extends FlameGame
 
   void startGame() {
     state = GameState.playing;
+    touchReset();
     vessel.visible = true;
     vessel.resetPosition();
     if (vessel2 != null) {
@@ -494,6 +510,7 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
+    touchTick(dt);
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
       final snap = coopClient?.latestSnapshot;
@@ -759,6 +776,7 @@ class TyrianGame extends FlameGame
       vessel2!.position.x += 60;
     }
     state = GameState.playing;
+    touchReset();
     // Notify client that game is starting
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
@@ -809,35 +827,40 @@ class TyrianGame extends FlameGame
     return d1 <= d2 ? vessel.position.x : vessel2!.position.x;
   }
 
-  // Touch input — delta-based so finger and vessel move in sync
-  Vector2? _prevDragPos;
-
   // Client touch target position (for sending to host)
   double _clientTargetX = config.gameWidth / 2;
   double _clientTargetY = config.gameHeight * 0.75;
   bool _clientFire = false;
 
-  @override
-  void onDragStart(DragStartEvent event) {
-    super.onDragStart(event);
-    if (state != GameState.playing) return;
-    _prevDragPos = event.canvasPosition.clone();
+  // ── Touch: [TouchControls] decides which finger does what (plan 34) ──
 
-    if (coopRole == CoopRole.client) {
-      _clientFire = true;
-    } else {
-      vessel.fire = true;
+  @override
+  bool get touchFlies => state == GameState.playing;
+
+  /// The second set: solo and host only — a co-op client sends position and
+  /// fire, nothing else.
+  @override
+  bool get touchSwaps => touchFlies && coopRole != CoopRole.client;
+
+  @override
+  bool get touchAlternate => vessel.alternateActive;
+
+  /// Two fingers fly the second weapon set, one the first (plan 34). The
+  /// message names the front gun and the DPS that flies now.
+  @override
+  void touchSetAlternate(bool on, {required bool announce}) {
+    if (!vessel.setAlternate(on) || !announce) return;
+    final front = vessel.getDevice(WeaponSlot.frontGun);
+    // What the generator can power: a gun with pwrNeed > genMax is off.
+    var powered = 0.0;
+    for (final d in vessel.devices) {
+      if (d.pwrNeed <= vessel.genMax) powered += d.dps;
     }
+    showMessage('${front?.displayName.toUpperCase() ?? ''}  DPS ${fmtNum(powered)}');
   }
 
   @override
-  void onDragUpdate(DragUpdateEvent event) {
-    super.onDragUpdate(event);
-    if (state != GameState.playing || _prevDragPos == null) return;
-    final pos = event.canvasEndPosition;
-    final delta = pos - _prevDragPos!;
-    _prevDragPos = pos.clone();
-
+  void touchSteer(Vector2 delta) {
     // Divide by camera zoom so a finger drag still moves the vessel 1:1 on screen
     // when the immersive camera is zoomed in (zoom is 1.0 otherwise → no-op).
     final scale = config.gameWidth / size.x / camera.viewfinder.zoom;
@@ -859,29 +882,22 @@ class TyrianGame extends FlameGame
   }
 
   @override
-  void onDragEnd(DragEndEvent event) {
-    super.onDragEnd(event);
-    if (state != GameState.playing) return;
-    _prevDragPos = null;
-
-    if (coopRole == CoopRole.client) {
-      _clientFire = false;
-      coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
-    } else {
-      vessel.fire = false;
-    }
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
-    if (state != GameState.playing) return;
-
+  void touchToggleFire() {
     if (coopRole == CoopRole.client) {
       _clientFire = !_clientFire;
       coopClient?.sendInput(_clientTargetX, _clientTargetY, _clientFire);
     } else {
       vessel.fire = !vessel.fire;
+    }
+  }
+
+  @override
+  void touchSetFire(bool on) {
+    if (coopRole == CoopRole.client) {
+      _clientFire = on;
+      if (!on) coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
+    } else {
+      vessel.fire = on;
     }
   }
 

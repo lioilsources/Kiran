@@ -257,6 +257,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get swapHint => '两根手指按住时使用第二套武器射击';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv：火力更强';
   }
@@ -536,6 +539,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String unlocksAt(String points) {
     return '$points 分解鎖';
   }
+
+  @override
+  String get swapHint => '兩根手指按住時使用第二套武器射擊';
 
   @override
   String pickupWeapon(String slot, String lv) {

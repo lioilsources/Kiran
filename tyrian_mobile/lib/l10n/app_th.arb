@@ -75,6 +75,7 @@
   "overload": "โอเวอร์โหลด",
   "weaponOff": "{weapon} ปิด — เครื่องกำเนิดไฟฟ้าอ่อนเกินไป",
   "unlocksAt": "ปลดล็อกที่ {points} คะแนน",
+  "swapHint": "แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง",
   "pickupWeapon": "{slot} {lv}: ยิงแรงขึ้น",
   "pickupRepair": "+{amount} HP: ซ่อมตัวยานแล้ว",
   "pickupShield": "โล่ +{amount} ชาร์จเร็วขึ้น",

@@ -75,6 +75,7 @@
   "overload": "KELEBIHAN BEBAN",
   "weaponOff": "{weapon} MATI — generator terlalu lemah",
   "unlocksAt": "Terbuka di {points} poin",
+  "swapHint": "Dengan dua jari, kamu menembak dengan set senjata kedua",
   "pickupWeapon": "{slot} {lv}: tembakan lebih kuat",
   "pickupRepair": "+{amount} HP: lambung diperbaiki",
   "pickupShield": "+{amount} perisai, isi ulang lebih cepat",

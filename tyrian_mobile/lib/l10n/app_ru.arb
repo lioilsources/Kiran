@@ -75,6 +75,7 @@
   "overload": "ПЕРЕГРУЗКА",
   "weaponOff": "{weapon} ОТКЛ. — генератор слишком слаб",
   "unlocksAt": "Откроется при {points} очк.",
+  "swapHint": "Двумя пальцами стреляешь вторым набором оружия",
   "pickupWeapon": "{slot} {lv}: выстрелы мощнее",
   "pickupRepair": "+{amount} HP: корпус починен",
   "pickupShield": "+{amount} щита, заряжается быстрее",
