@@ -296,4 +296,77 @@ class AppLocalizationsPt extends AppLocalizations {
   String nodeLevel(int level) {
     return 'NÍVEL $level';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Power-ups de arma sobem o nível: mais dano, tiro mais rápido';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparos consertam o casco; com o casco cheio, aumentam o HP máximo';
+
+  @override
+  String get tutPickupShield =>
+      'O escudo aguenta os tiros antes do casco e recarrega sozinho';
+
+  @override
+  String get tutPickupGenerator =>
+      'O gerador alimenta as armas: mais energia mantém mais armas atirando';
+
+  @override
+  String get tutPickupCredits =>
+      'Créditos compram armas e melhorias no ComCenter entre as rodadas';
+
+  @override
+  String get tutBoss =>
+      'CHEFE! A vida dele é a barra no topo. Continue se mexendo e atirando';
+
+  @override
+  String get tutLowHp => 'Casco no limite! Um reparo ou o ComCenter resolve';
+
+  @override
+  String get tutGenStarved =>
+      'Suas armas pedem mais energia do que o gerador dá: melhore-o';
+
+  @override
+  String get tutCanAfford =>
+      'Você pode comprar uma melhoria: passe no ComCenter após a rodada';
+
+  @override
+  String get tutFly =>
+      'Arraste para voar. As armas atiram enquanto seu dedo estiver na tela';
+
+  @override
+  String get introCollect => 'Pegue os ícones que os inimigos soltam';
+
+  @override
+  String get introShop => 'Entre as rodadas, gaste seus créditos no ComCenter';
+
+  @override
+  String get objBoss => 'Objetivo: sobreviva às ondas e derrote o chefe';
+
+  @override
+  String get objSurvive => 'Objetivo: sobreviva às ondas';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits créditos · $kills abates';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Melhor arma: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Os tiros do chefe são fortes: um escudo melhor te dá tempo';
+
+  @override
+  String get deathShield =>
+      'Melhore o escudo no ComCenter: ele aguenta os tiros antes do casco';
+
+  @override
+  String get deathGuns =>
+      'Armas mais fortes limpam as ondas antes que te machuquem';
 }

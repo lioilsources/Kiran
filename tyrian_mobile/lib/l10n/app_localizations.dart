@@ -627,6 +627,119 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'LEVEL {level}'**
   String nodeLevel(int level);
+  /// Tutor: First time the player collects a weapon pickup
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon pickups raise a gun's level: more damage, faster fire'**
+  String get tutPickupWeapon;
+
+  /// Tutor: First repair pickup. HP = hull points, keep 'HP'
+  ///
+  /// In en, this message translates to:
+  /// **'Repair pickups mend the hull; when healthy they also raise max HP'**
+  String get tutPickupHealth;
+
+  /// Tutor: First shield pickup
+  ///
+  /// In en, this message translates to:
+  /// **'The shield takes hits before the hull and refills by itself'**
+  String get tutPickupShield;
+
+  /// Tutor: First generator pickup
+  ///
+  /// In en, this message translates to:
+  /// **'The generator powers your guns: more power keeps more guns firing'**
+  String get tutPickupGenerator;
+
+  /// Tutor: First credit pickup
+  ///
+  /// In en, this message translates to:
+  /// **'Credits buy guns and upgrades in the ComCenter between rounds'**
+  String get tutPickupCredits;
+
+  /// Tutor: First boss appearance
+  ///
+  /// In en, this message translates to:
+  /// **'BOSS! Its health is the bar at the top. Keep moving, keep firing'**
+  String get tutBoss;
+
+  /// Tutor: Hull below 30%
+  ///
+  /// In en, this message translates to:
+  /// **'Hull low! Repair pickups or the ComCenter fix it'**
+  String get tutLowHp;
+
+  /// Tutor: Generator empty while firing
+  ///
+  /// In en, this message translates to:
+  /// **'Your guns want more power than the generator gives: upgrade it'**
+  String get tutGenStarved;
+
+  /// Tutor: Enough credits for an upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'You can afford an upgrade: see the ComCenter after this round'**
+  String get tutCanAfford;
+
+  /// Tutor: First flight, touch screens only
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to fly. Your guns fire while your finger is down'**
+  String get tutFly;
+
+  /// Tutor: Intro lesson step 2
+  ///
+  /// In en, this message translates to:
+  /// **'Catch the icons that enemies drop'**
+  String get introCollect;
+
+  /// Tutor: Intro lesson step 3, shown as the first round ends
+  ///
+  /// In en, this message translates to:
+  /// **'Between rounds, spend your credits in the ComCenter'**
+  String get introShop;
+
+  /// Tutor: Under the round title when the round ends with a boss
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: survive the waves and beat the boss'**
+  String get objBoss;
+
+  /// Tutor: Under the round title, no boss
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: survive the waves'**
+  String get objSurvive;
+
+  /// Tutor: Round end. credits is a formatted number string, kills an int
+  ///
+  /// In en, this message translates to:
+  /// **'+{credits} credits · {kills} kills'**
+  String roundSummary(String credits, int kills);
+
+  /// Tutor: Round end. weapon is a proper noun like VULCAN
+  ///
+  /// In en, this message translates to:
+  /// **'Best weapon: {weapon}'**
+  String roundBestWeapon(String weapon);
+
+  /// Tutor: Game over tip: killed while a boss was on the field
+  ///
+  /// In en, this message translates to:
+  /// **'Boss shots hit hard: a stronger shield buys you time'**
+  String get deathBoss;
+
+  /// Tutor: Game over tip: weak shield
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade the shield in the ComCenter: it takes hits before the hull'**
+  String get deathShield;
+
+  /// Tutor: Game over tip: otherwise
+  ///
+  /// In en, this message translates to:
+  /// **'Stronger guns clear waves before they can hurt you'**
+  String get deathGuns;
 }
 
 class _AppLocalizationsDelegate

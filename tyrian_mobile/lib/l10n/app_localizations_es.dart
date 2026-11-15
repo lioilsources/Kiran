@@ -296,4 +296,77 @@ class AppLocalizationsEs extends AppLocalizations {
   String nodeLevel(int level) {
     return 'NIVEL $level';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Los power-ups de arma suben su nivel: más daño, disparo más rápido';
+
+  @override
+  String get tutPickupHealth =>
+      'Las reparaciones arreglan el casco; si estás bien, suben el HP máx.';
+
+  @override
+  String get tutPickupShield =>
+      'El escudo recibe los golpes antes que el casco y se recarga solo';
+
+  @override
+  String get tutPickupGenerator =>
+      'El generador alimenta tus armas: más energía, más armas disparando';
+
+  @override
+  String get tutPickupCredits =>
+      'Con créditos compras armas y mejoras en el ComCenter entre rondas';
+
+  @override
+  String get tutBoss =>
+      '¡BOSS! Su vida es la barra de arriba. Muévete y dispara';
+
+  @override
+  String get tutLowHp =>
+      '¡Casco bajo! Una reparación o el ComCenter lo arreglan';
+
+  @override
+  String get tutGenStarved =>
+      'Tus armas piden más energía que el generador: mejóralo';
+
+  @override
+  String get tutCanAfford =>
+      'Te alcanza para una mejora: pasa por el ComCenter tras la ronda';
+
+  @override
+  String get tutFly => 'Arrastra para volar. Tus armas disparan mientras tocas';
+
+  @override
+  String get introCollect => 'Atrapa los iconos que sueltan los enemigos';
+
+  @override
+  String get introShop => 'Entre rondas, gasta tus créditos en el ComCenter';
+
+  @override
+  String get objBoss => 'Objetivo: sobrevive a las oleadas y vence al jefe';
+
+  @override
+  String get objSurvive => 'Objetivo: sobrevive a las oleadas';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits créditos · $kills derribos';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Mejor arma: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Los disparos del jefe duelen: un escudo mejor te da tiempo';
+
+  @override
+  String get deathShield =>
+      'Mejora el escudo en el ComCenter: recibe golpes antes que el casco';
+
+  @override
+  String get deathGuns =>
+      'Armas más fuertes barren oleadas antes de que te dañen';
 }
