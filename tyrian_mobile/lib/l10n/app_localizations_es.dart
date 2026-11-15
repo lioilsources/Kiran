@@ -260,5 +260,5 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get swapHint => 'Toca con un segundo dedo para cambiar de armas';
+  String get swapHint => 'Con dos dedos disparas tu segundo juego de armas';
 }

@@ -75,5 +75,5 @@
   "overload": "SURCHARGE",
   "weaponOff": "{weapon} HORS SERVICE — générateur trop faible",
   "unlocksAt": "Débloqué à {points} pts",
-  "swapHint": "Touche avec un deuxième doigt pour changer d'armes"
+  "swapHint": "À deux doigts, tu tires avec ton second jeu d'armes"
 }

@@ -187,6 +187,7 @@ class Vessel extends PositionComponent
     }
     devices.clear();
     hangar.clear();
+    _clearAlternate();
     guidedWeapon = false;
     equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
     equipWeapon(DevType.generatorBasic, WeaponSlot.generator);
@@ -236,6 +237,7 @@ class Vessel extends PositionComponent
     for (final d in devices) {
       d.clearProjectiles();
     }
+    _clearAlternate();
     devices.clear();
     final weapons = (state['weapons'] as List?) ?? const [];
     for (final w in weapons) {
@@ -689,23 +691,69 @@ class Vessel extends PositionComponent
     return identical(owned.first, fitted) ? owned[1] : owned.first;
   }
 
-  /// The touch swap: front, left and right each move to [alternateFor].
-  /// Repeating it flips between the two strongest sets. The generator stays.
-  /// Returns whether any slot changed.
-  bool swapToAlternate() {
-    var changed = false;
-    for (final slot in const [
-      WeaponSlot.frontGun,
-      WeaponSlot.leftGun,
-      WeaponSlot.rightGun,
-    ]) {
-      final pick = alternateFor(slot);
-      final type = pick == null ? null : DevType.byName(pick.name);
-      if (type == null) continue;
-      swapIn(type, slot);
-      changed = true;
+  static const _alternateSlots = [
+    WeaponSlot.frontGun,
+    WeaponSlot.leftGun,
+    WeaponSlot.rightGun,
+  ];
+
+  /// The touch's second weapon set (plan 34): for each slot it changed, what
+  /// the first set had there — a weapon type's name, or null for an empty
+  /// slot.
+  final Map<WeaponSlot, String?> _firstSet = {};
+  bool _alternate = false;
+
+  /// Whether the touch's second set is fitted ([setAlternate]).
+  bool get alternateActive => _alternate;
+
+  /// Fit the second weapon set ([on]) or put the first back. Idempotent;
+  /// returns whether the set changed.
+  ///
+  /// The second set is, slot by slot (front, left, right), [alternateFor]
+  /// the first. A slot owning a single weapon keeps it; with no slot to
+  /// change the second set does not start. The generator stays. Putting the
+  /// first set back refits each changed slot from the hangar — never a
+  /// weapon the pilot no longer owns. Both ways the guns wait out
+  /// [config.swapDelay], as [swapIn] does.
+  bool setAlternate(bool on) {
+    if (on == _alternate) return false;
+    if (on) {
+      for (final slot in _alternateSlots) {
+        final pick = alternateFor(slot);
+        final type = pick == null ? null : DevType.byName(pick.name);
+        if (type == null) continue;
+        _firstSet[slot] = getDevice(slot)?.name;
+        swapIn(type, slot);
+      }
+      _alternate = _firstSet.isNotEmpty;
+      return _alternate;
     }
-    return changed;
+    for (final MapEntry(key: slot, value: name) in _firstSet.entries) {
+      if (name == null) {
+        _stow(slot);
+        continue;
+      }
+      final type = DevType.byName(name);
+      if (type == null || hangarEntry(name, slot) == null) continue;
+      swapIn(type, slot);
+    }
+    _clearAlternate();
+    return true;
+  }
+
+  void _clearAlternate() {
+    _firstSet.clear();
+    _alternate = false;
+  }
+
+  /// Move the gun fitted in [slot] to the hangar, leaving the slot empty.
+  void _stow(WeaponSlot slot) {
+    final current = getDevice(slot);
+    if (current == null) return;
+    current.clearProjectiles();
+    devices.remove(current);
+    hangar.add(current);
+    guidedWeapon = devices.any((d) => d.guide > 0);
   }
 
   /// Sell the device fitted in [slot] for its current price. The slot stays

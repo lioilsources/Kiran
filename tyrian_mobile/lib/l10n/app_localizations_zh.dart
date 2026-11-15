@@ -257,7 +257,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get swapHint => '用第二根手指点击以切换武器';
+  String get swapHint => '两根手指按住时使用第二套武器射击';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -513,5 +513,5 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get swapHint => '用第二根手指點擊以切換武器';
+  String get swapHint => '兩根手指按住時使用第二套武器射擊';
 }

@@ -257,5 +257,5 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get swapHint => '2本目の指でタップして武器を切り替えよう';
+  String get swapHint => '2本指で触れている間は2つ目の武器セットで撃てる';
 }

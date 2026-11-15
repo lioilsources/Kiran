@@ -75,5 +75,5 @@
   "overload": "過負荷",
   "weaponOff": "{weapon} 停止 — ジェネレーター出力不足",
   "unlocksAt": "{points} ptで解放",
-  "swapHint": "2本目の指でタップして武器を切り替えよう"
+  "swapHint": "2本指で触れている間は2つ目の武器セットで撃てる"
 }

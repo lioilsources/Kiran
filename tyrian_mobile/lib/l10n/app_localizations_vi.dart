@@ -258,5 +258,5 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get swapHint => 'Chạm bằng ngón tay thứ hai để đổi vũ khí';
+  String get swapHint => 'Giữ hai ngón tay để bắn bằng bộ vũ khí thứ hai';
 }

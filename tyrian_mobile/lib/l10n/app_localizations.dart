@@ -575,10 +575,10 @@ abstract class AppLocalizations {
   /// **'Unlocks at {points} pts'**
   String unlocksAt(String points);
 
-  /// ComCenter, touch only: a second finger in flight swaps to the alternate weapons (plan 32 Q3)
+  /// ComCenter, touch only: two fingers on the screen fly the second weapon set, one finger the first (plan 34)
   ///
   /// In en, this message translates to:
-  /// **'Tap a second finger to swap weapons'**
+  /// **'Hold two fingers to fire your second weapons'**
   String get swapHint;
 }
 

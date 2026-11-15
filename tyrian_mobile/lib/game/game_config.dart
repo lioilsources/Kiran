@@ -112,6 +112,11 @@ const double upgGenMaxMultiplier = 1.2;
 // cooldown plus this before the first shot. Same as the 3.x pad swap.
 const double swapDelay = 0.5;
 
+// Touch: two fingers fly the second weapon set (plan 34). Back to one finger
+// for this long and the first set returns — two fingers never lift in the
+// same frame, so without it every two-finger lift would blink the set.
+const double touchAltRelease = 0.15;
+
 // --- Adaptive music ---------------------------------------------------------
 // The soundtrack is N intensity tiers (theme_1..theme_N) plus a one-shot
 // heroic `intro` per sector. MusicDirector computes a live "threat" score each

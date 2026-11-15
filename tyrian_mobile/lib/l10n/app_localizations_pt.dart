@@ -260,5 +260,6 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get swapHint => 'Toque com um segundo dedo para trocar de armas';
+  String get swapHint =>
+      'Com dois dedos você atira com o segundo conjunto de armas';
 }

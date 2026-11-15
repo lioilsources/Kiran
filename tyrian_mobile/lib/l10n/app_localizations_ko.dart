@@ -257,5 +257,5 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get swapHint => '두 번째 손가락으로 탭하면 무기 교체';
+  String get swapHint => '두 손가락을 대고 있으면 두 번째 무기 세트로 발사';
 }
