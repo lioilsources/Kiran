@@ -1178,4 +1178,74 @@ class AppLocalizationsUr extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount کریڈٹ ComCenter کے لیے';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'ہتھیار پک اپ لیول بڑھاتے ہیں: زیادہ نقصان، تیز فائر';
+
+  @override
+  String get tutPickupHealth =>
+      'مرمت ڈھانچہ ٹھیک کرتی ہے؛ صحت مند ہوں تو زیادہ سے زیادہ HP بڑھتا ہے';
+
+  @override
+  String get tutPickupShield =>
+      'شیلڈ ڈھانچے سے پہلے وار سہتی ہے اور خود بھر جاتی ہے';
+
+  @override
+  String get tutPickupGenerator =>
+      'جنریٹر ہتھیاروں کو طاقت دیتا ہے: زیادہ طاقت، زیادہ ہتھیار';
+
+  @override
+  String get tutPickupCredits =>
+      'راؤنڈز کے بیچ ComCenter میں کریڈٹس سے ہتھیار خریدیں';
+
+  @override
+  String get tutBoss =>
+      'BOSS! اوپر والی بار اس کی صحت ہے۔ حرکت کریں، فائر کریں';
+
+  @override
+  String get tutLowHp => 'ڈھانچہ کمزور! مرمت یا ComCenter اسے ٹھیک کرے گا';
+
+  @override
+  String get tutGenStarved =>
+      'ہتھیاروں کو جنریٹر سے زیادہ طاقت چاہیے: اسے اپ گریڈ کریں';
+
+  @override
+  String get tutCanAfford =>
+      'اپ گریڈ کے پیسے ہیں: اس راؤنڈ کے بعد ComCenter جائیں';
+
+  @override
+  String get tutFly => 'اڑنے کے لیے گھسیٹیں۔ انگلی رکھنے تک ہتھیار چلتے ہیں';
+
+  @override
+  String get introCollect => 'دشمنوں کے گرائے آئیکن پکڑیں';
+
+  @override
+  String get introShop => 'راؤنڈز کے بیچ ComCenter میں کریڈٹس خرچ کریں';
+
+  @override
+  String get objBoss => 'ہدف: لہروں سے بچیں اور باس کو ہرائیں';
+
+  @override
+  String get objSurvive => 'ہدف: لہروں سے بچیں';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits کریڈٹس · $kills شکار';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'بہترین ہتھیار: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'باس کے وار سخت ہیں: مضبوط شیلڈ وقت دیتی ہے';
+
+  @override
+  String get deathShield =>
+      'ComCenter میں شیلڈ اپ گریڈ کریں: یہ ڈھانچے سے پہلے وار سہتی ہے';
+
+  @override
+  String get deathGuns => 'مضبوط ہتھیار لہروں کو نقصان سے پہلے صاف کرتے ہیں';
 }

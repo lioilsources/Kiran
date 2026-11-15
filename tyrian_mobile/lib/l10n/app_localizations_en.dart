@@ -1183,4 +1183,75 @@ class AppLocalizationsEn extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount credits to spend in the ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Weapon pickups raise a gun\'s level: more damage, faster fire';
+
+  @override
+  String get tutPickupHealth =>
+      'Repair pickups mend the hull; when healthy they also raise max HP';
+
+  @override
+  String get tutPickupShield =>
+      'The shield takes hits before the hull and refills by itself';
+
+  @override
+  String get tutPickupGenerator =>
+      'The generator powers your guns: more power keeps more guns firing';
+
+  @override
+  String get tutPickupCredits =>
+      'Credits buy guns and upgrades in the ComCenter between rounds';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Its health is the bar at the top. Keep moving, keep firing';
+
+  @override
+  String get tutLowHp => 'Hull low! Repair pickups or the ComCenter fix it';
+
+  @override
+  String get tutGenStarved =>
+      'Your guns want more power than the generator gives: upgrade it';
+
+  @override
+  String get tutCanAfford =>
+      'You can afford an upgrade: see the ComCenter after this round';
+
+  @override
+  String get tutFly => 'Drag to fly. Your guns fire while your finger is down';
+
+  @override
+  String get introCollect => 'Catch the icons that enemies drop';
+
+  @override
+  String get introShop => 'Between rounds, spend your credits in the ComCenter';
+
+  @override
+  String get objBoss => 'Goal: survive the waves and beat the boss';
+
+  @override
+  String get objSurvive => 'Goal: survive the waves';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits credits · $kills kills';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Best weapon: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Boss shots hit hard: a stronger shield buys you time';
+
+  @override
+  String get deathShield =>
+      'Upgrade the shield in the ComCenter: it takes hits before the hull';
+
+  @override
+  String get deathGuns => 'Stronger guns clear waves before they can hurt you';
 }

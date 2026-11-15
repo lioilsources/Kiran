@@ -1198,4 +1198,79 @@ class AppLocalizationsDe extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount Credits für das ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Waffen-Pickups erhöhen die Stufe: mehr Schaden, schnelleres Feuer';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparaturen flicken die Hülle; bei voller Hülle steigt max. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Der Schild fängt Treffer vor der Hülle ab und lädt sich selbst auf';
+
+  @override
+  String get tutPickupGenerator =>
+      'Der Generator speist deine Waffen: mehr Energie, mehr Feuer';
+
+  @override
+  String get tutPickupCredits =>
+      'Mit Credits kaufst du Waffen und Upgrades im ComCenter';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Seine Energie ist der Balken oben. Bleib in Bewegung, feuer!';
+
+  @override
+  String get tutLowHp => 'Hülle schwach! Reparaturen oder das ComCenter helfen';
+
+  @override
+  String get tutGenStarved =>
+      'Deine Waffen brauchen mehr Energie als der Generator: upgrade ihn';
+
+  @override
+  String get tutCanAfford =>
+      'Du kannst dir ein Upgrade leisten: ab ins ComCenter nach der Runde';
+
+  @override
+  String get tutFly =>
+      'Ziehen zum Fliegen. Deine Waffen feuern, solange du berührst';
+
+  @override
+  String get introCollect =>
+      'Schnapp dir die Symbole, die Gegner fallen lassen';
+
+  @override
+  String get introShop =>
+      'Zwischen den Runden gibst du Credits im ComCenter aus';
+
+  @override
+  String get objBoss => 'Ziel: Überlebe die Wellen und besiege den Boss';
+
+  @override
+  String get objSurvive => 'Ziel: Überlebe die Wellen';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits Credits · $kills Abschüsse';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Beste Waffe: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Boss-Schüsse treffen hart: ein stärkerer Schild verschafft Zeit';
+
+  @override
+  String get deathShield =>
+      'Verbessere den Schild im ComCenter: er schützt die Hülle';
+
+  @override
+  String get deathGuns =>
+      'Stärkere Waffen räumen Wellen ab, bevor sie dir schaden';
 }

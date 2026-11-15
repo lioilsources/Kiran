@@ -1179,4 +1179,77 @@ class AppLocalizationsTr extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount kredi, ComCenter\'da harca';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Silah bonusları seviyeyi artırır: daha çok hasar, daha hızlı ateş';
+
+  @override
+  String get tutPickupHealth =>
+      'Onarımlar gövdeyi tamir eder; canın tamsa maks. HP artar';
+
+  @override
+  String get tutPickupShield =>
+      'Kalkan darbeleri gövdeden önce alır ve kendiliğinden dolar';
+
+  @override
+  String get tutPickupGenerator =>
+      'Jeneratör silahları besler: daha çok güç, daha çok silah ateşler';
+
+  @override
+  String get tutPickupCredits =>
+      'Krediyle turlar arasında ComCenter\'dan silah ve geliştirme al';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Canı üstteki çubuk. Hareket et, ateş etmeye devam et';
+
+  @override
+  String get tutLowHp => 'Gövde zayıf! Onarım ya da ComCenter düzeltir';
+
+  @override
+  String get tutGenStarved =>
+      'Silahlar jeneratörün verdiğinden fazla güç istiyor: geliştir';
+
+  @override
+  String get tutCanAfford =>
+      'Geliştirmeye paran yetiyor: bu turdan sonra ComCenter\'a uğra';
+
+  @override
+  String get tutFly =>
+      'Uçmak için sürükle. Parmağın ekrandayken silahlar ateşler';
+
+  @override
+  String get introCollect => 'Düşmanların düşürdüğü simgeleri yakala';
+
+  @override
+  String get introShop => 'Turlar arasında kredilerini ComCenter\'da harca';
+
+  @override
+  String get objBoss => 'Hedef: dalgalardan sağ çık ve boss\'u yen';
+
+  @override
+  String get objSurvive => 'Hedef: dalgalardan sağ çık';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredi · $kills düşürülen';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'En iyi silah: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Boss sert vurur: daha güçlü kalkan sana zaman kazandırır';
+
+  @override
+  String get deathShield =>
+      'ComCenter\'da kalkanı geliştir: darbeleri gövdeden önce alır';
+
+  @override
+  String get deathGuns =>
+      'Güçlü silahlar dalgaları sana zarar vermeden temizler';
 }

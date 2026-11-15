@@ -1195,4 +1195,75 @@ class AppLocalizationsTa extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount கிரெடிட் ComCenter-க்கு';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'ஆயுதப் பொருட்கள் நிலையை உயர்த்தும்: அதிக சேதம், வேகமான சுடுதல்';
+
+  @override
+  String get tutPickupHealth =>
+      'பழுதுபார்ப்பு உடலைச் சரிசெய்யும்; நலமாக இருந்தால் அதிகபட்ச HP உயரும்';
+
+  @override
+  String get tutPickupShield =>
+      'கவசம் உடலுக்கு முன் அடிகளைத் தாங்கி, தானே நிரம்பும்';
+
+  @override
+  String get tutPickupGenerator =>
+      'ஜெனரேட்டர் ஆயுதங்களுக்கு சக்தி தரும்: அதிக சக்தி, அதிக ஆயுதங்கள்';
+
+  @override
+  String get tutPickupCredits =>
+      'சுற்றுகளுக்கு இடையே ComCenter-இல் கிரெடிட்களால் ஆயுதங்கள் வாங்கு';
+
+  @override
+  String get tutBoss => 'BOSS! மேலே உள்ள பட்டை அதன் உயிர். நகர்ந்துகொண்டே சுடு';
+
+  @override
+  String get tutLowHp =>
+      'உடல் பலவீனம்! பழுதுபார்ப்பு அல்லது ComCenter சரிசெய்யும்';
+
+  @override
+  String get tutGenStarved =>
+      'ஜெனரேட்டர் தருவதைவிட ஆயுதங்களுக்கு அதிக சக்தி தேவை: மேம்படுத்து';
+
+  @override
+  String get tutCanAfford =>
+      'மேம்படுத்த பணம் உள்ளது: இந்தச் சுற்றுக்குப் பின் ComCenter செல்';
+
+  @override
+  String get tutFly => 'பறக்க இழு. விரல் வைத்திருக்கும்வரை ஆயுதங்கள் சுடும்';
+
+  @override
+  String get introCollect => 'எதிரிகள் விடும் ஐகான்களைப் பிடி';
+
+  @override
+  String get introShop =>
+      'சுற்றுகளுக்கு இடையே ComCenter-இல் கிரெடிட்களைச் செலவிடு';
+
+  @override
+  String get objBoss => 'இலக்கு: அலைகளைத் தாண்டி பாஸை வெல்';
+
+  @override
+  String get objSurvive => 'இலக்கு: அலைகளைத் தாண்டு';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits கிரெடிட் · $kills வீழ்த்தல்';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'சிறந்த ஆயுதம்: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'பாஸின் குண்டுகள் கடுமை: வலிய கவசம் நேரம் தரும்';
+
+  @override
+  String get deathShield =>
+      'ComCenter-இல் கவசத்தை மேம்படுத்து: உடலுக்கு முன் அடி தாங்கும்';
+
+  @override
+  String get deathGuns => 'வலிய ஆயுதங்கள் அலைகளை முன்பே அழிக்கும்';
 }

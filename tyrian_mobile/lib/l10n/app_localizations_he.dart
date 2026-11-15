@@ -1174,4 +1174,70 @@ class AppLocalizationsHe extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount קרדיטים ל-ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'שדרוגי נשק מעלים את רמתו: יותר נזק, ירי מהיר יותר';
+
+  @override
+  String get tutPickupHealth =>
+      'תיקונים משקמים את הגוף; כשהוא שלם הם מעלים את ה-HP המרבי';
+
+  @override
+  String get tutPickupShield => 'המגן סופג פגיעות לפני הגוף ונטען מעצמו';
+
+  @override
+  String get tutPickupGenerator =>
+      'הגנרטור מזין את הנשקים: יותר אנרגיה, יותר נשקים יורים';
+
+  @override
+  String get tutPickupCredits =>
+      'בקרדיטים קונים נשקים ושדרוגים ב-ComCenter בין הסבבים';
+
+  @override
+  String get tutBoss => 'BOSS! החיים שלו הם הפס למעלה. תמשיך לזוז ולירות';
+
+  @override
+  String get tutLowHp => 'הגוף חלש! תיקון או ה-ComCenter יתקנו אותו';
+
+  @override
+  String get tutGenStarved =>
+      'הנשקים רוצים יותר אנרגיה ממה שהגנרטור נותן: שדרג אותו';
+
+  @override
+  String get tutCanAfford => 'יש לך מספיק לשדרוג: קפוץ ל-ComCenter אחרי הסבב';
+
+  @override
+  String get tutFly => 'גרור כדי לטוס. הנשקים יורים כל עוד האצבע על המסך';
+
+  @override
+  String get introCollect => 'תפוס את הסמלים שהאויבים מפילים';
+
+  @override
+  String get introShop => 'בין הסבבים, בזבז קרדיטים ב-ComCenter';
+
+  @override
+  String get objBoss => 'מטרה: לשרוד את הגלים ולנצח את הבוס';
+
+  @override
+  String get objSurvive => 'מטרה: לשרוד את הגלים';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits קרדיטים · $kills הפלות';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'הנשק הטוב ביותר: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'יריות הבוס כואבות: מגן חזק יותר קונה לך זמן';
+
+  @override
+  String get deathShield => 'שדרג את המגן ב-ComCenter: הוא סופג לפני הגוף';
+
+  @override
+  String get deathGuns => 'נשקים חזקים מנקים גלים לפני שהם פוגעים בך';
 }

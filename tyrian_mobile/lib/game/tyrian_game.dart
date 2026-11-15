@@ -77,6 +77,7 @@ import '../l10n/l10n.dart';
 import '../systems/mods/mod_rewards.dart';
 import '../systems/mods/mods_state.dart';
 import '../systems/mods/hull_spec.dart';
+import '../systems/tutor.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -680,6 +681,7 @@ class TyrianGame extends FlameGame
     _applyViewportLayout();
 
     await AssetLibrary.instance.loadAll();
+    await TutorMemory.instance.load();
 
     starfield = Starfield();
     world.add(starfield);
@@ -1100,6 +1102,8 @@ class TyrianGame extends FlameGame
       return;
     }
 
+    if (mode != GameMode.training) tutor.tick(dt);
+
     // The duel's doors run on the step's clock; the close-up stops the world.
     duel.update(dt);
     if (duel.frozen) dt = 0;
@@ -1155,6 +1159,7 @@ class TyrianGame extends FlameGame
         currentSector!.isComplete &&
         !_sectorCompleteFired) {
       _sectorCompleteFired = true;
+      if (mode != GameMode.training) tutor.roundEnd();
       _onSectorComplete();
     }
 
@@ -1561,6 +1566,7 @@ class TyrianGame extends FlameGame
   }
 
   void triggerGameOver() {
+    deathTip = mode == GameMode.training ? null : tutor.deathTip();
     SoundService.instance.play(SfxEvent.gameOver);
     MusicService.instance.stop();
     state = GameState.gameOver;
@@ -2054,14 +2060,22 @@ class TyrianGame extends FlameGame
   static const _messageRows = 4;
   static const double _messageRowHeight = 26;
 
-  /// The perimeter's name and its level, as a new round begins.
+  /// The perimeter's name and its level, as a new round begins — then the
+  /// tutor: the round's goal and whatever lesson is due.
   void announceSector() {
     if (mode == GameMode.training) return;
     final s = currentSector;
     if (s == null) return;
     showMessage(s.caption.toUpperCase(), duration: 3);
     showMessage(L10n.current.nodeLevel(s.level), fontSize: 14, duration: 3);
+    if (coopRole != CoopRole.client) tutor.roundStart();
   }
+
+  /// The texts that teach the game as it is played.
+  late final Tutor tutor = Tutor(this);
+
+  /// The tip under the game over title, set as the ship goes down.
+  String? deathTip;
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {
     // 70 % of the ship (fairness), and a square in a duel.

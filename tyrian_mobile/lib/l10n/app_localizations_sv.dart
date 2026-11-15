@@ -1188,4 +1188,78 @@ class AppLocalizationsSv extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount krediter till ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Vapenbonusar höjer vapnets nivå: mer skada, snabbare eld';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparationer lagar skrovet; vid full hälsa höjs max HP';
+
+  @override
+  String get tutPickupShield =>
+      'Skölden tar träffar före skrovet och laddar upp sig själv';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generatorn driver vapnen: mer kraft håller fler vapen igång';
+
+  @override
+  String get tutPickupCredits =>
+      'Krediter köper vapen och uppgraderingar i ComCenter mellan rundor';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Dess hälsa är mätaren överst. Rör på dig och skjut';
+
+  @override
+  String get tutLowHp =>
+      'Skrovet är svagt! Reparationer eller ComCenter fixar det';
+
+  @override
+  String get tutGenStarved =>
+      'Vapnen vill ha mer kraft än generatorn ger: uppgradera den';
+
+  @override
+  String get tutCanAfford =>
+      'Du har råd med en uppgradering: besök ComCenter efter rundan';
+
+  @override
+  String get tutFly =>
+      'Dra för att flyga. Vapnen skjuter medan fingret är nere';
+
+  @override
+  String get introCollect => 'Fånga ikonerna som fienderna tappar';
+
+  @override
+  String get introShop => 'Mellan rundorna spenderar du krediter i ComCenter';
+
+  @override
+  String get objBoss => 'Mål: överlev vågorna och besegra bossen';
+
+  @override
+  String get objSurvive => 'Mål: överlev vågorna';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits krediter · $kills nedskjutna';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Bästa vapen: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Bossens skott tar hårt: en starkare sköld köper dig tid';
+
+  @override
+  String get deathShield =>
+      'Uppgradera skölden i ComCenter: den tar träffar före skrovet';
+
+  @override
+  String get deathGuns =>
+      'Starkare vapen rensar vågorna innan de hinner skada dig';
 }

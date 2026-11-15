@@ -1000,6 +1000,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 subtitle: _game.mode == GameMode.campaign
                     ? context.l10n.gameOverCampaign
                     : context.l10n.gameOverEndless,
+                tip: _game.deathTip,
                 onClose: _game.mode == GameMode.campaign
                     ? _retryCampaignNode
                     : (_game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector),
@@ -1121,6 +1122,9 @@ class _GameOverOverlay extends StatefulWidget {
   /// What happens next — the endless rewind or the campaign retry.
   final String subtitle;
 
+  /// The tutor's word on what to change before the next try.
+  final String? tip;
+
   /// Leave the death screen — back to sector 1 via the shop (solo), the
   /// co-op ComCenter, or the same campaign node.
   final VoidCallback onClose;
@@ -1130,6 +1134,7 @@ class _GameOverOverlay extends StatefulWidget {
     required this.score,
     this.credit2,
     required this.subtitle,
+    this.tip,
     required this.onClose,
   });
 
@@ -1222,6 +1227,14 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
+              if (widget.tip != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  widget.tip!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.amberAccent, fontSize: 13),
+                ),
+              ],
               const SizedBox(height: 10),
               Text(
                 context.l10n.scoreValue(fmtNum(widget.score)),

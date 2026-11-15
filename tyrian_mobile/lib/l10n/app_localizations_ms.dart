@@ -1185,4 +1185,78 @@ class AppLocalizationsMs extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount kredit untuk ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Pickup senjata menaikkan tahap: lebih kerosakan, tembakan lebih laju';
+
+  @override
+  String get tutPickupHealth =>
+      'Pickup baiki memulihkan badan kapal; jika penuh, ia naikkan HP maksimum';
+
+  @override
+  String get tutPickupShield =>
+      'Perisai menahan tembakan sebelum badan kapal dan mengecas sendiri';
+
+  @override
+  String get tutPickupGenerator =>
+      'Penjana memberi kuasa senjata: lebih kuasa, lebih banyak senjata menembak';
+
+  @override
+  String get tutPickupCredits =>
+      'Kredit membeli senjata dan naik taraf di ComCenter antara pusingan';
+
+  @override
+  String get tutBoss =>
+      'BOS! Nyawanya ialah bar di atas. Terus bergerak, terus menembak';
+
+  @override
+  String get tutLowHp =>
+      'Badan kapal lemah! Pickup baiki atau ComCenter boleh pulihkan';
+
+  @override
+  String get tutGenStarved =>
+      'Senjata perlukan kuasa lebih daripada penjana: naik tarafnya';
+
+  @override
+  String get tutCanAfford =>
+      'Kredit cukup untuk naik taraf: lihat ComCenter selepas pusingan ini';
+
+  @override
+  String get tutFly =>
+      'Seret untuk terbang. Senjata menembak selagi jari anda di skrin';
+
+  @override
+  String get introCollect => 'Tangkap ikon yang dijatuhkan musuh';
+
+  @override
+  String get introShop => 'Antara pusingan, belanjakan kredit di ComCenter';
+
+  @override
+  String get objBoss => 'Matlamat: bertahan gelombang dan kalahkan bos';
+
+  @override
+  String get objSurvive => 'Matlamat: bertahan gelombang';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredit · $kills musnah';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Senjata terbaik: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Tembakan bos sangat kuat: perisai lebih kuat memberi anda masa';
+
+  @override
+  String get deathShield =>
+      'Naik taraf perisai di ComCenter: ia menahan tembakan sebelum badan kapal';
+
+  @override
+  String get deathGuns =>
+      'Senjata lebih kuat menghapus gelombang sebelum ia mencederakan anda';
 }

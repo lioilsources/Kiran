@@ -44,6 +44,19 @@ void main() {
       expect(l.pickupGenerator, isNotEmpty, reason: '$locale');
       expect(l.pickupCredits('1 500'), contains('1 500'), reason: '$locale');
       expect(l.nodeLevel(7), contains('7'), reason: '$locale');
+      // The tutor's lines: present, numbers kept.
+      expect(l.roundSummary('2 300', 42), allOf(contains('2 300'), contains('42')),
+          reason: '$locale');
+      expect(l.roundBestWeapon('VULCAN'), contains('VULCAN'), reason: '$locale');
+      for (final t in [
+        l.tutPickupWeapon, l.tutPickupHealth, l.tutPickupShield,
+        l.tutPickupGenerator, l.tutPickupCredits, l.tutBoss, l.tutLowHp,
+        l.tutGenStarved, l.tutCanAfford, l.tutFly, l.introCollect,
+        l.introShop, l.objBoss, l.objSurvive, l.deathBoss, l.deathShield,
+        l.deathGuns,
+      ]) {
+        expect(t, isNotEmpty, reason: '$locale');
+      }
       // Weapon family names are proper nouns: identical in every language.
       expect(
           [l.familyBubble, l.familyVulcan, l.familyBlaster, l.familyStar, l.familyLaser],

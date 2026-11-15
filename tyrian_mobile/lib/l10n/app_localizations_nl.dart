@@ -1189,4 +1189,78 @@ class AppLocalizationsNl extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount credits voor het ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Wapen-pickups verhogen het niveau: meer schade, sneller vuren';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparaties herstellen de romp; bij volle romp verhogen ze max HP';
+
+  @override
+  String get tutPickupShield =>
+      'Het schild vangt treffers op vóór de romp en laadt zelf bij';
+
+  @override
+  String get tutPickupGenerator =>
+      'De generator voedt je wapens: meer vermogen, meer wapens die vuren';
+
+  @override
+  String get tutPickupCredits =>
+      'Met credits koop je wapens en upgrades in het ComCenter tussen rondes';
+
+  @override
+  String get tutBoss =>
+      'BAAS! Zijn leven is de balk bovenaan. Blijf bewegen en vuren';
+
+  @override
+  String get tutLowHp =>
+      'Romp bijna kapot! Een reparatie of het ComCenter helpt';
+
+  @override
+  String get tutGenStarved =>
+      'Je wapens willen meer vermogen dan de generator geeft: upgrade hem';
+
+  @override
+  String get tutCanAfford =>
+      'Je kunt een upgrade betalen: ga na deze ronde naar het ComCenter';
+
+  @override
+  String get tutFly =>
+      'Sleep om te vliegen. Je wapens vuren zolang je vinger op het scherm is';
+
+  @override
+  String get introCollect => 'Vang de iconen die vijanden laten vallen';
+
+  @override
+  String get introShop => 'Besteed tussen rondes je credits in het ComCenter';
+
+  @override
+  String get objBoss => 'Doel: overleef de golven en versla de baas';
+
+  @override
+  String get objSurvive => 'Doel: overleef de golven';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits credits · $kills neergehaald';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Beste wapen: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Bazen schieten hard: een sterker schild geeft je tijd';
+
+  @override
+  String get deathShield =>
+      'Upgrade het schild in het ComCenter: het vangt treffers vóór de romp';
+
+  @override
+  String get deathGuns =>
+      'Sterkere wapens ruimen golven op voordat ze je raken';
 }

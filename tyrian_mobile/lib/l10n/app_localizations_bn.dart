@@ -1175,4 +1175,74 @@ class AppLocalizationsBn extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount ক্রেডিট, ComCenter-এ খরচ করো';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'অস্ত্র পিকআপ লেভেল বাড়ায়: বেশি ক্ষতি, দ্রুত গুলি';
+
+  @override
+  String get tutPickupHealth =>
+      'মেরামত পিকআপ হাল সারায়; সুস্থ থাকলে সর্বোচ্চ HP বাড়ায়';
+
+  @override
+  String get tutPickupShield =>
+      'শিল্ড হালের আগে আঘাত নেয় এবং নিজেই রিচার্জ হয়';
+
+  @override
+  String get tutPickupGenerator =>
+      'জেনারেটর অস্ত্র চালায়: বেশি শক্তি, বেশি অস্ত্র চালু';
+
+  @override
+  String get tutPickupCredits =>
+      'রাউন্ডের মাঝে ComCenter-এ ক্রেডিট দিয়ে অস্ত্র ও আপগ্রেড কিনুন';
+
+  @override
+  String get tutBoss =>
+      'BOSS! এর স্বাস্থ্য উপরের বারে। নড়তে থাকুন, গুলি চালান';
+
+  @override
+  String get tutLowHp => 'হাল দুর্বল! মেরামত পিকআপ বা ComCenter এটি সারাবে';
+
+  @override
+  String get tutGenStarved =>
+      'অস্ত্রের দরকার জেনারেটরের চেয়ে বেশি শক্তি: আপগ্রেড করুন';
+
+  @override
+  String get tutCanAfford =>
+      'আপগ্রেড কেনার সামর্থ্য আছে: এই রাউন্ডের পর ComCenter দেখুন';
+
+  @override
+  String get tutFly => 'উড়তে টানুন। আঙুল রাখলে অস্ত্র গুলি চালায়';
+
+  @override
+  String get introCollect => 'শত্রুদের ফেলা আইকনগুলো ধরুন';
+
+  @override
+  String get introShop => 'রাউন্ডের মাঝে ComCenter-এ ক্রেডিট খরচ করুন';
+
+  @override
+  String get objBoss => 'লক্ষ্য: ঢেউ টিকে থাকুন ও বসকে হারান';
+
+  @override
+  String get objSurvive => 'লক্ষ্য: ঢেউ টিকে থাকুন';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits ক্রেডিট · $kills কিল';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'সেরা অস্ত্র: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'বসের গুলি জোরালো: শক্ত শিল্ড সময় দেয়';
+
+  @override
+  String get deathShield =>
+      'ComCenter-এ শিল্ড আপগ্রেড করুন: এটি হালের আগে আঘাত নেয়';
+
+  @override
+  String get deathGuns => 'শক্তিশালী অস্ত্র ক্ষতির আগেই ঢেউ সাফ করে';
 }

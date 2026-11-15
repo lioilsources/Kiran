@@ -1198,4 +1198,78 @@ class AppLocalizationsRo extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount credite pentru ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Bonusurile de armă cresc nivelul: mai mult damage, foc mai rapid';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparațiile refac carena; la viață plină cresc HP maxim';
+
+  @override
+  String get tutPickupShield =>
+      'Scutul preia loviturile înaintea carenei și se reîncarcă singur';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generatorul alimentează armele: mai multă energie, mai multe arme';
+
+  @override
+  String get tutPickupCredits =>
+      'Cu credite cumperi arme și upgrade-uri în ComCenter între runde';
+
+  @override
+  String get tutBoss => 'BOSS! Viața lui e bara de sus. Mișcă-te și trage';
+
+  @override
+  String get tutLowHp =>
+      'Carena e slabă! O reparii cu bonusuri sau în ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Armele cer mai multă energie decât dă generatorul: îmbunătățește-l';
+
+  @override
+  String get tutCanAfford =>
+      'Îți permiți un upgrade: intră în ComCenter după runda asta';
+
+  @override
+  String get tutFly =>
+      'Trage cu degetul ca să zbori. Armele trag cât ții degetul';
+
+  @override
+  String get introCollect => 'Prinde iconițele lăsate de inamici';
+
+  @override
+  String get introShop => 'Între runde, cheltuie creditele în ComCenter';
+
+  @override
+  String get objBoss =>
+      'Obiectiv: supraviețuiește valurilor și învinge boss-ul';
+
+  @override
+  String get objSurvive => 'Obiectiv: supraviețuiește valurilor';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits credite · $kills doborâți';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Cea mai bună armă: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Boss-ul lovește tare: un scut mai puternic îți dă timp';
+
+  @override
+  String get deathShield =>
+      'Îmbunătățește scutul în ComCenter: preia loviturile înaintea carenei';
+
+  @override
+  String get deathGuns =>
+      'Arme mai puternice curăță valurile înainte să te rănească';
 }

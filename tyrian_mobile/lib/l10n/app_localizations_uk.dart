@@ -1195,4 +1195,74 @@ class AppLocalizationsUk extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount кредитів на покупки в ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Бонуси зброї підвищують рівень: більше шкоди, швидший вогонь';
+
+  @override
+  String get tutPickupHealth =>
+      'Ремонт лагодить корпус; при повному здоров\'ї підвищує макс. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Щит приймає удари раніше за корпус і сам відновлюється';
+
+  @override
+  String get tutPickupGenerator =>
+      'Генератор живить зброю: більше енергії — більше стволів у бою';
+
+  @override
+  String get tutPickupCredits =>
+      'За кредити купуй зброю й покращення в ComCenter між раундами';
+
+  @override
+  String get tutBoss => 'БОС! Його здоров\'я — смуга вгорі. Рухайся і стріляй';
+
+  @override
+  String get tutLowHp =>
+      'Корпус майже знищено! Допоможуть ремонт або ComCenter';
+
+  @override
+  String get tutGenStarved => 'Зброї бракує енергії генератора: покращ його';
+
+  @override
+  String get tutCanAfford =>
+      'Вистачає на покращення: зазирни в ComCenter після раунду';
+
+  @override
+  String get tutFly =>
+      'Веди пальцем, щоб летіти. Поки палець на екрані — вогонь';
+
+  @override
+  String get introCollect => 'Лови значки, які кидають вороги';
+
+  @override
+  String get introShop => 'Між раундами витрачай кредити в ComCenter';
+
+  @override
+  String get objBoss => 'Мета: переживи хвилі й переможи боса';
+
+  @override
+  String get objSurvive => 'Мета: переживи хвилі';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits кредитів · $kills збито';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Найкраща зброя: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Бос б\'є боляче: міцніший щит дасть тобі час';
+
+  @override
+  String get deathShield =>
+      'Покращ щит у ComCenter: він приймає удари раніше за корпус';
+
+  @override
+  String get deathGuns => 'Потужна зброя змете хвилі, перш ніж вони зашкодять';
 }
