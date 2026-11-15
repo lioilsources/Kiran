@@ -257,4 +257,32 @@ class AppLocalizationsCs extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Odemkne se při $points b.';
   }
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: silnější střelba';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: trup opraven';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount štítu, rychleji se dobíjí';
+  }
+
+  @override
+  String get pickupGenerator => 'Silnější generátor: víc energie pro zbraně';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditů na nákupy v ComCenteru';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'ÚROVEŇ $level';
+  }
 }

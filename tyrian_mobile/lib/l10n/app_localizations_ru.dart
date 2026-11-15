@@ -256,4 +256,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Откроется при $points очк.';
   }
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: выстрелы мощнее';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: корпус починен';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount щита, заряжается быстрее';
+  }
+
+  @override
+  String get pickupGenerator => 'Генератор мощнее: больше энергии для оружия';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount кредитов на покупки в ComCenter';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'УРОВЕНЬ $level';
+  }
 }

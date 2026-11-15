@@ -74,5 +74,11 @@
   "familyLaser": "LASER",
   "overload": "過載",
   "weaponOff": "{weapon} 關閉 — 發電機功率不足",
-  "unlocksAt": "{points} 分解鎖"
+  "unlocksAt": "{points} 分解鎖",
+  "pickupWeapon": "{slot} {lv}：火力更強",
+  "pickupRepair": "+{amount} HP：船體已修復",
+  "pickupShield": "護盾 +{amount}，充能更快",
+  "pickupGenerator": "發電機升級：武器能量更多",
+  "pickupCredits": "+{amount} 點數，可在 ComCenter 使用",
+  "nodeLevel": "等級 {level}"
 }

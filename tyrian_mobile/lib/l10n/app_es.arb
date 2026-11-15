@@ -74,5 +74,11 @@
   "familyLaser": "LASER",
   "overload": "SOBRECARGA",
   "weaponOff": "{weapon} APAGADO — generador demasiado débil",
-  "unlocksAt": "Se desbloquea con {points} pts"
+  "unlocksAt": "Se desbloquea con {points} pts",
+  "pickupWeapon": "{slot} {lv}: disparos más fuertes",
+  "pickupRepair": "+{amount} HP: casco reparado",
+  "pickupShield": "+{amount} de escudo, se recarga más rápido",
+  "pickupGenerator": "Generador mejorado: más energía para tus armas",
+  "pickupCredits": "+{amount} créditos para gastar en el ComCenter",
+  "nodeLevel": "NIVEL {level}"
 }

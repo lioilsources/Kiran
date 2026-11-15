@@ -388,6 +388,7 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     loadSector(currentSectorIndex);
+    announceSector();
     _startSectorMusic();
     AchievementService.instance
         .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
@@ -762,6 +763,7 @@ class TyrianGame extends FlameGame
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
     }
+    announceSector();
     _startSectorMusic();
   }
 
@@ -985,13 +987,42 @@ class TyrianGame extends FlameGame
     }
   }
 
-  void showMessage(String msg) {
-    world.add(FloatText(
+  /// Messages shown in the last moment, so a new one lines up under them
+  /// instead of on top (a pickup right after the sector title, say).
+  final List<FloatText> _messages = [];
+
+  void showMessage(String msg, {double fontSize = 18, double duration = 2.0}) {
+    _messages.removeWhere((m) => m.isRemoved || m.age > _messageStackAge);
+    final row = _messages.length.clamp(0, _messageRows - 1);
+    final text = FloatText(
       text: msg,
       color: const Color(0xFF00FFFF),
-      fontSize: 18,
-      position: Vector2(config.gameWidth / 2, config.gameHeight * 0.3),
-    ));
+      fontSize: fontSize,
+      duration: duration,
+      position: Vector2(config.gameWidth / 2,
+          config.gameHeight * 0.3 + row * _messageRowHeight),
+    );
+    _messages.add(text);
+    world.add(text);
+  }
+
+  /// The texts of the messages still on screen, oldest first.
+  @visibleForTesting
+  List<String> get recentMessages => [
+        for (final m in _messages)
+          if (!m.isRemoved) m.text,
+      ];
+
+  static const _messageStackAge = 0.8; // s a message still holds its row
+  static const _messageRows = 4;
+  static const double _messageRowHeight = 26;
+
+  /// The perimeter's name and its level, as a new round begins.
+  void announceSector() {
+    final s = currentSector;
+    if (s == null) return;
+    showMessage(s.caption.toUpperCase(), duration: 3);
+    showMessage(L10n.current.nodeLevel(s.level), fontSize: 14, duration: 3);
   }
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {

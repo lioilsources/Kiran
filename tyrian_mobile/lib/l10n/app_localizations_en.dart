@@ -256,4 +256,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Unlocks at $points pts';
   }
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: stronger shots';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: hull repaired';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount shield, recharges faster';
+  }
+
+  @override
+  String get pickupGenerator => 'Generator up: more power for your guns';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount credits to spend in the ComCenter';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'LEVEL $level';
+  }
 }

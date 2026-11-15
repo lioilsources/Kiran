@@ -74,5 +74,11 @@
   "familyLaser": "LASER",
   "overload": "過負荷",
   "weaponOff": "{weapon} 停止 — ジェネレーター出力不足",
-  "unlocksAt": "{points} ptで解放"
+  "unlocksAt": "{points} ptで解放",
+  "pickupWeapon": "{slot} {lv}：攻撃力アップ",
+  "pickupRepair": "+{amount} HP：船体を修理",
+  "pickupShield": "シールド +{amount}、回復が速くなる",
+  "pickupGenerator": "ジェネレーター強化：武器のエネルギーが増える",
+  "pickupCredits": "+{amount} クレジット、ComCenterで使える",
+  "nodeLevel": "レベル {level}"
 }

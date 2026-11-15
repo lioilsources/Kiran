@@ -74,5 +74,11 @@
   "familyLaser": "LASER",
   "overload": "SURCHARGE",
   "weaponOff": "{weapon} HORS SERVICE — générateur trop faible",
-  "unlocksAt": "Débloqué à {points} pts"
+  "unlocksAt": "Débloqué à {points} pts",
+  "pickupWeapon": "{slot} {lv} : tirs plus puissants",
+  "pickupRepair": "+{amount} HP : coque réparée",
+  "pickupShield": "+{amount} de bouclier, recharge plus rapide",
+  "pickupGenerator": "Générateur amélioré : plus d'énergie pour tes armes",
+  "pickupCredits": "+{amount} crédits à dépenser au ComCenter",
+  "nodeLevel": "NIVEAU {level}"
 }

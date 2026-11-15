@@ -74,5 +74,11 @@
   "familyLaser": "LASER",
   "overload": "QUÁ TẢI",
   "weaponOff": "{weapon} TẮT — máy phát quá yếu",
-  "unlocksAt": "Mở khóa ở {points} điểm"
+  "unlocksAt": "Mở khóa ở {points} điểm",
+  "pickupWeapon": "{slot} {lv}: bắn mạnh hơn",
+  "pickupRepair": "+{amount} HP: thân tàu đã sửa",
+  "pickupShield": "+{amount} khiên, sạc nhanh hơn",
+  "pickupGenerator": "Máy phát mạnh hơn: thêm năng lượng cho vũ khí",
+  "pickupCredits": "+{amount} tín dụng để tiêu ở ComCenter",
+  "nodeLevel": "CẤP {level}"
 }
