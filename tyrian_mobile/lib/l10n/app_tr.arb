@@ -77,5 +77,11 @@
   "overload": "AŞIRI YÜK",
   "weaponOff": "{weapon} KAPALI — jeneratör çok zayıf",
   "unlocksAt": "{points} puanda açılır",
-  "swapHint": "İki parmakla ikinci silah setinle ateş edersin"
+  "swapHint": "İki parmakla ikinci silah setinle ateş edersin",
+  "pickupWeapon": "{slot} {lv}: daha güçlü atışlar",
+  "pickupRepair": "+{amount} HP: gövde onarıldı",
+  "pickupShield": "+{amount} kalkan, daha hızlı dolar",
+  "pickupGenerator": "Jeneratör güçlendi: silahlara daha çok enerji",
+  "pickupCredits": "+{amount} kredi, ComCenter'da harca",
+  "nodeLevel": "SEVİYE {level}"
 }

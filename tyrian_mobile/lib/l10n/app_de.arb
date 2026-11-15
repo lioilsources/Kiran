@@ -77,5 +77,11 @@
   "overload": "ÜBERLAST",
   "weaponOff": "{weapon} AUS — Generator zu schwach",
   "unlocksAt": "Freigeschaltet ab {points} Pkt.",
-  "swapHint": "Mit zwei Fingern feuerst du dein zweites Waffenset"
+  "swapHint": "Mit zwei Fingern feuerst du dein zweites Waffenset",
+  "pickupWeapon": "{slot} {lv}: stärkere Schüsse",
+  "pickupRepair": "+{amount} HP: Rumpf repariert",
+  "pickupShield": "+{amount} Schild, lädt schneller",
+  "pickupGenerator": "Stärkerer Generator: mehr Energie für die Waffen",
+  "pickupCredits": "+{amount} Credits für das ComCenter",
+  "nodeLevel": "LEVEL {level}"
 }

@@ -77,5 +77,11 @@
   "overload": "โอเวอร์โหลด",
   "weaponOff": "{weapon} ปิด — เครื่องกำเนิดไฟฟ้าอ่อนเกินไป",
   "unlocksAt": "ปลดล็อกที่ {points} คะแนน",
-  "swapHint": "แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง"
+  "swapHint": "แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง",
+  "pickupWeapon": "{slot} {lv}: ยิงแรงขึ้น",
+  "pickupRepair": "+{amount} HP: ซ่อมตัวยานแล้ว",
+  "pickupShield": "โล่ +{amount} ชาร์จเร็วขึ้น",
+  "pickupGenerator": "เครื่องปั่นไฟแรงขึ้น: อาวุธได้พลังงานมากขึ้น",
+  "pickupCredits": "+{amount} เครดิตไว้ใช้ใน ComCenter",
+  "nodeLevel": "เลเวล {level}"
 }

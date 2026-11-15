@@ -77,5 +77,11 @@
   "overload": "과부하",
   "weaponOff": "{weapon} 꺼짐 — 발전기 출력 부족",
   "unlocksAt": "{points}점에서 해금",
-  "swapHint": "두 손가락을 대고 있으면 두 번째 무기 세트로 발사"
+  "swapHint": "두 손가락을 대고 있으면 두 번째 무기 세트로 발사",
+  "pickupWeapon": "{slot} {lv}: 더 강한 사격",
+  "pickupRepair": "+{amount} HP: 선체 수리",
+  "pickupShield": "보호막 +{amount}, 더 빨리 충전",
+  "pickupGenerator": "발전기 강화: 무기에 더 많은 에너지",
+  "pickupCredits": "+{amount} 크레딧, ComCenter에서 사용",
+  "nodeLevel": "레벨 {level}"
 }

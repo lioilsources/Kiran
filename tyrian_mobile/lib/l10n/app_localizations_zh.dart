@@ -264,6 +264,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get swapHint => '两根手指按住时使用第二套武器射击';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv：火力更强';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP：船体已修复';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '护盾 +$amount，充能更快';
+  }
+
+  @override
+  String get pickupGenerator => '发电机升级：武器能量更多';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount 积分，可在 ComCenter 使用';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return '等級 $level';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -526,4 +554,32 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get swapHint => '兩根手指按住時使用第二套武器射擊';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv：火力更強';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP：船體已修復';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '護盾 +$amount，充能更快';
+  }
+
+  @override
+  String get pickupGenerator => '發電機升級：武器能量更多';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount 點數，可在 ComCenter 使用';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return '等級 $level';
+  }
 }

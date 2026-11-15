@@ -267,4 +267,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get swapHint => 'Mit zwei Fingern feuerst du dein zweites Waffenset';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: stärkere Schüsse';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: Rumpf repariert';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount Schild, lädt schneller';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Stärkerer Generator: mehr Energie für die Waffen';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount Credits für das ComCenter';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'LEVEL $level';
+  }
 }

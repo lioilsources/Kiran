@@ -265,4 +265,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get swapHint => 'İki parmakla ikinci silah setinle ateş edersin';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: daha güçlü atışlar';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: gövde onarıldı';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount kalkan, daha hızlı dolar';
+  }
+
+  @override
+  String get pickupGenerator => 'Jeneratör güçlendi: silahlara daha çok enerji';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredi, ComCenter\'da harca';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'SEVİYE $level';
+  }
 }
