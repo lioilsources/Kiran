@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get musicOff => 'संगीत: बंद';
+
+  @override
+  String get statsOn => 'आँकड़े: चालू';
+
+  @override
+  String get statsOff => 'आँकड़े: बंद';
 
   @override
   String get mainMenu => 'मुख्य मेन्यू';
@@ -1152,4 +1159,101 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'हो गया';
+
+  @override
+  String get swapHint => 'दो उँगलियाँ रखो तो दूसरे सेट के हथियार चलेंगे';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ज़्यादा ताक़तवर गोलियाँ';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ढाँचा ठीक हुआ';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount कवच, जल्दी रिचार्ज होता है';
+  }
+
+  @override
+  String get pickupGenerator => 'बेहतर जनरेटर: हथियारों को ज़्यादा ऊर्जा';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount क्रेडिट, ComCenter में ख़र्च करो';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'हथियार पिकअप लेवल बढ़ाते हैं: ज़्यादा नुकसान, तेज़ फ़ायर';
+
+  @override
+  String get tutPickupHealth =>
+      'मरम्मत पिकअप हल ठीक करते हैं; स्वस्थ होने पर अधिकतम HP बढ़ाते हैं';
+
+  @override
+  String get tutPickupShield =>
+      'शील्ड हल से पहले वार झेलती है और खुद रिचार्ज होती है';
+
+  @override
+  String get tutPickupGenerator =>
+      'जनरेटर हथियार चलाता है: ज़्यादा पावर, ज़्यादा हथियार चालू';
+
+  @override
+  String get tutPickupCredits =>
+      'राउंड के बीच ComCenter में क्रेडिट से हथियार और अपग्रेड खरीदें';
+
+  @override
+  String get tutBoss =>
+      'BOSS! इसकी सेहत ऊपर की पट्टी है। चलते रहें, फ़ायर करते रहें';
+
+  @override
+  String get tutLowHp => 'हल कमज़ोर! मरम्मत पिकअप या ComCenter इसे ठीक करेगा';
+
+  @override
+  String get tutGenStarved =>
+      'हथियारों को जनरेटर से ज़्यादा पावर चाहिए: इसे अपग्रेड करें';
+
+  @override
+  String get tutCanAfford =>
+      'आप अपग्रेड खरीद सकते हैं: इस राउंड के बाद ComCenter देखें';
+
+  @override
+  String get tutFly =>
+      'उड़ने के लिए खींचें। उंगली रखने तक हथियार फ़ायर करते हैं';
+
+  @override
+  String get introCollect => 'दुश्मनों के गिराए आइकन पकड़ें';
+
+  @override
+  String get introShop => 'राउंड के बीच ComCenter में क्रेडिट खर्च करें';
+
+  @override
+  String get objBoss => 'लक्ष्य: लहरों से बचें और बॉस को हराएँ';
+
+  @override
+  String get objSurvive => 'लक्ष्य: लहरों से बचें';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits क्रेडिट · $kills किल';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'सबसे अच्छा हथियार: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'बॉस के वार भारी हैं: मज़बूत शील्ड समय देती है';
+
+  @override
+  String get deathShield =>
+      'ComCenter में शील्ड अपग्रेड करें: यह हल से पहले वार झेलती है';
+
+  @override
+  String get deathGuns => 'मज़बूत हथियार नुकसान से पहले लहरें साफ़ करते हैं';
 }

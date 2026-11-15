@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get musicOff => 'MUSIK: MATI';
+
+  @override
+  String get statsOn => 'STATISTIK: NYALA';
+
+  @override
+  String get statsOff => 'STATISTIK: MATI';
 
   @override
   String get mainMenu => 'MENU UTAMA';
@@ -1160,4 +1167,106 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'SELESAI';
+
+  @override
+  String get swapHint =>
+      'Dengan dua jari, kamu menembak dengan set senjata kedua';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tembakan lebih kuat';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: lambung diperbaiki';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount perisai, isi ulang lebih cepat';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generator naik: lebih banyak daya untuk senjata';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredit untuk ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Power-up senjata menaikkan level: damage lebih besar, tembakan lebih cepat';
+
+  @override
+  String get tutPickupHealth =>
+      'Perbaikan menambal lambung; saat sehat juga menaikkan HP maksimum';
+
+  @override
+  String get tutPickupShield =>
+      'Perisai menahan tembakan sebelum lambung dan terisi sendiri';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generator memberi daya senjata: makin besar, makin banyak yang menembak';
+
+  @override
+  String get tutPickupCredits =>
+      'Kredit untuk membeli senjata dan upgrade di ComCenter antar ronde';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Nyawanya ada di bar atas. Terus bergerak, terus menembak';
+
+  @override
+  String get tutLowHp =>
+      'Lambung kritis! Perbaiki dengan pickup atau di ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Senjatamu butuh daya lebih dari generator: upgrade generatornya';
+
+  @override
+  String get tutCanAfford =>
+      'Kreditmu cukup untuk upgrade: mampir ke ComCenter setelah ronde ini';
+
+  @override
+  String get tutFly =>
+      'Geser untuk terbang. Senjata menembak selama jarimu menempel';
+
+  @override
+  String get introCollect => 'Tangkap ikon yang dijatuhkan musuh';
+
+  @override
+  String get introShop => 'Di antara ronde, belanjakan kredit di ComCenter';
+
+  @override
+  String get objBoss => 'Misi: bertahan dari gelombang dan kalahkan boss';
+
+  @override
+  String get objSurvive => 'Misi: bertahan dari gelombang';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredit · $kills musuh hancur';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Senjata terbaik: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Tembakan boss sangat kuat: perisai lebih kuat memberimu waktu';
+
+  @override
+  String get deathShield =>
+      'Upgrade perisai di ComCenter: ia menahan tembakan sebelum lambung';
+
+  @override
+  String get deathGuns =>
+      'Senjata lebih kuat menyapu gelombang sebelum sempat melukaimu';
 }

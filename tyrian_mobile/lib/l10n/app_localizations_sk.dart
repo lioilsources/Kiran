@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get musicOff => 'HUDBA: VYP';
+
+  @override
+  String get statsOn => 'ŠTATISTIKY: ZAP';
+
+  @override
+  String get statsOff => 'ŠTATISTIKY: VYP';
 
   @override
   String get mainMenu => 'HLAVNÉ MENU';
@@ -1166,4 +1173,99 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'HOTOVO';
+
+  @override
+  String get swapHint => 'Dvoma prstami strieľaš druhou sadou zbraní';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: silnejšia streľba';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: trup opravený';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount štítu, rýchlejšie sa dobíja';
+  }
+
+  @override
+  String get pickupGenerator => 'Silnejší generátor: viac energie pre zbrane';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditov na nákupy v ComCenteri';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Zbraňové power-upy zvyšujú úroveň zbrane: viac poškodenia, rýchlejšia paľba';
+
+  @override
+  String get tutPickupHealth =>
+      'Opravy opravia trup; keď si v kondícii, zvýšia aj maximum HP';
+
+  @override
+  String get tutPickupShield =>
+      'Štít chytá zásahy skôr než trup a sám sa dobíja';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generátor napája zbrane: viac energie udrží v paľbe viac zbraní';
+
+  @override
+  String get tutPickupCredits =>
+      'Za kredity kúpiš zbrane a vylepšenia v ComCenteri medzi kolami';
+
+  @override
+  String get tutBoss => 'BOSS! Jeho zdravie je lišta hore. Hýb sa a strieľaj';
+
+  @override
+  String get tutLowHp => 'Trup je na dne! Opraví ho oprava alebo ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Zbrane chcú viac energie, než dá generátor: vylepši ho';
+
+  @override
+  String get tutCanAfford =>
+      'Máš na vylepšenie: po tomto kole zájdi do ComCentra';
+
+  @override
+  String get tutFly => 'Ťahaj prstom a leť. Zbrane strieľajú, kým držíš prst';
+
+  @override
+  String get introCollect => 'Chytaj ikony, ktoré padajú z nepriateľov';
+
+  @override
+  String get introShop => 'Medzi kolami minieš kredity v ComCenteri';
+
+  @override
+  String get objBoss => 'Cieľ: prežiť vlny a poraziť bossa';
+
+  @override
+  String get objSurvive => 'Cieľ: prežiť vlny';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditov · $kills zostrelov';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Najlepšia zbraň: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Strely bossa bolia: silnejší štít ti kúpi čas';
+
+  @override
+  String get deathShield =>
+      'Vylepši štít v ComCenteri: chytá zásahy skôr než trup';
+
+  @override
+  String get deathGuns => 'Silnejšie zbrane zmetú vlny skôr, než ti ublížia';
 }

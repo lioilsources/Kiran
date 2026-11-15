@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -90,6 +91,12 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get musicOff => 'מוזיקה: כבויה';
+
+  @override
+  String get statsOn => 'סטטיסטיקה: מופעלת';
+
+  @override
+  String get statsOff => 'סטטיסטיקה: כבויה';
 
   @override
   String get mainMenu => 'תפריט ראשי';
@@ -1148,4 +1155,96 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'הושלם';
+
+  @override
+  String get swapHint => 'בשתי אצבעות יורים עם ערכת הנשק השנייה';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: יריות חזקות יותר';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: הגוף תוקן';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount מגן, נטען מהר יותר';
+  }
+
+  @override
+  String get pickupGenerator => 'גנרטור משופר: יותר אנרגיה לנשק';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount קרדיטים ל-ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'שדרוגי נשק מעלים את רמתו: יותר נזק, ירי מהיר יותר';
+
+  @override
+  String get tutPickupHealth =>
+      'תיקונים משקמים את הגוף; כשהוא שלם הם מעלים את ה-HP המרבי';
+
+  @override
+  String get tutPickupShield => 'המגן סופג פגיעות לפני הגוף ונטען מעצמו';
+
+  @override
+  String get tutPickupGenerator =>
+      'הגנרטור מזין את הנשקים: יותר אנרגיה, יותר נשקים יורים';
+
+  @override
+  String get tutPickupCredits =>
+      'בקרדיטים קונים נשקים ושדרוגים ב-ComCenter בין הסבבים';
+
+  @override
+  String get tutBoss => 'BOSS! החיים שלו הם הפס למעלה. תמשיך לזוז ולירות';
+
+  @override
+  String get tutLowHp => 'הגוף חלש! תיקון או ה-ComCenter יתקנו אותו';
+
+  @override
+  String get tutGenStarved =>
+      'הנשקים רוצים יותר אנרגיה ממה שהגנרטור נותן: שדרג אותו';
+
+  @override
+  String get tutCanAfford => 'יש לך מספיק לשדרוג: קפוץ ל-ComCenter אחרי הסבב';
+
+  @override
+  String get tutFly => 'גרור כדי לטוס. הנשקים יורים כל עוד האצבע על המסך';
+
+  @override
+  String get introCollect => 'תפוס את הסמלים שהאויבים מפילים';
+
+  @override
+  String get introShop => 'בין הסבבים, בזבז קרדיטים ב-ComCenter';
+
+  @override
+  String get objBoss => 'מטרה: לשרוד את הגלים ולנצח את הבוס';
+
+  @override
+  String get objSurvive => 'מטרה: לשרוד את הגלים';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits קרדיטים · $kills הפלות';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'הנשק הטוב ביותר: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'יריות הבוס כואבות: מגן חזק יותר קונה לך זמן';
+
+  @override
+  String get deathShield => 'שדרג את המגן ב-ComCenter: הוא סופג לפני הגוף';
+
+  @override
+  String get deathGuns => 'נשקים חזקים מנקים גלים לפני שהם פוגעים בך';
 }

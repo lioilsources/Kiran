@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get musicOff => 'MUZYKA: WYŁ.';
+
+  @override
+  String get statsOn => 'STATYSTYKI: WŁ.';
+
+  @override
+  String get statsOff => 'STATYSTYKI: WYŁ.';
 
   @override
   String get mainMenu => 'MENU GŁÓWNE';
@@ -1169,4 +1176,101 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'GOTOWE';
+
+  @override
+  String get swapHint => 'Dwoma palcami strzelasz drugim zestawem broni';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: mocniejsze strzały';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: kadłub naprawiony';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount osłony, szybciej się ładuje';
+  }
+
+  @override
+  String get pickupGenerator => 'Lepszy generator: więcej mocy dla broni';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredytów do wydania w ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Ulepszenia broni podnoszą jej poziom: więcej obrażeń, szybszy ogień';
+
+  @override
+  String get tutPickupHealth =>
+      'Naprawy łatają kadłub; przy pełnym zdrowiu podnoszą maks. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Tarcza przyjmuje trafienia przed kadłubem i sama się ładuje';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generator zasila broń: więcej mocy to więcej strzelających dział';
+
+  @override
+  String get tutPickupCredits =>
+      'Za kredyty kupisz broń i ulepszenia w ComCenter między rundami';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Jego zdrowie to pasek u góry. Ruszaj się i strzelaj';
+
+  @override
+  String get tutLowHp => 'Kadłub na skraju! Naprawi go naprawa albo ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Broń chce więcej mocy, niż daje generator: ulepsz go';
+
+  @override
+  String get tutCanAfford =>
+      'Stać cię na ulepszenie: zajrzyj do ComCenter po tej rundzie';
+
+  @override
+  String get tutFly =>
+      'Przeciągnij, by lecieć. Broń strzela, dopóki trzymasz palec';
+
+  @override
+  String get introCollect => 'Łap ikony, które zostawiają wrogowie';
+
+  @override
+  String get introShop => 'Między rundami wydawaj kredyty w ComCenter';
+
+  @override
+  String get objBoss => 'Cel: przetrwaj fale i pokonaj bossa';
+
+  @override
+  String get objSurvive => 'Cel: przetrwaj fale';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredytów · $kills zestrzeleń';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Najlepsza broń: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Strzały bossa bolą: mocniejsza tarcza da ci czas';
+
+  @override
+  String get deathShield =>
+      'Ulepsz tarczę w ComCenter: przyjmuje trafienia przed kadłubem';
+
+  @override
+  String get deathGuns => 'Mocniejsza broń zmiecie fale, zanim cię zranią';
 }

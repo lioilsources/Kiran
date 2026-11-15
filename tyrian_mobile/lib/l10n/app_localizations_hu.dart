@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get musicOff => 'ZENE: KI';
+
+  @override
+  String get statsOn => 'STATISZTIKA: BE';
+
+  @override
+  String get statsOff => 'STATISZTIKA: KI';
 
   @override
   String get mainMenu => 'FŐMENÜ';
@@ -1162,4 +1169,103 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'KÉSZ';
+
+  @override
+  String get swapHint => 'Két ujjal a második fegyverkészleteddel lősz';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: erősebb lövések';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: a hajótest megjavítva';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount pajzs, gyorsabban töltődik';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Erősebb generátor: több energia a fegyvereknek';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredit a ComCenterbe';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'A fegyverbónusz emeli a szintet: több sebzés, gyorsabb tűz';
+
+  @override
+  String get tutPickupHealth =>
+      'A javítás foltozza a törzset; épen a max. HP-t is növeli';
+
+  @override
+  String get tutPickupShield =>
+      'A pajzs a törzs előtt fogja fel a találatokat, és magától töltődik';
+
+  @override
+  String get tutPickupGenerator =>
+      'A generátor táplálja a fegyvereket: több energia, több tűz';
+
+  @override
+  String get tutPickupCredits =>
+      'Kreditből fegyvert és fejlesztést veszel a ComCenterben';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Az élete a felső sáv. Mozogj és lőj folyamatosan';
+
+  @override
+  String get tutLowHp => 'Gyenge a törzs! Javítás vagy a ComCenter segít';
+
+  @override
+  String get tutGenStarved =>
+      'A fegyvereid több energiát kérnek, mint a generátor ad: fejleszd';
+
+  @override
+  String get tutCanAfford =>
+      'Futja egy fejlesztésre: kör után nézz be a ComCenterbe';
+
+  @override
+  String get tutFly =>
+      'Húzd az ujjad a repüléshez. Amíg érinted, a fegyverek lőnek';
+
+  @override
+  String get introCollect => 'Kapd el az ellenségek ejtette ikonokat';
+
+  @override
+  String get introShop => 'Körök között költsd a kreditet a ComCenterben';
+
+  @override
+  String get objBoss => 'Cél: éld túl a hullámokat és győzd le a bosst';
+
+  @override
+  String get objSurvive => 'Cél: éld túl a hullámokat';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredit · $kills kilövés';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Legjobb fegyver: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'A boss lövései fájnak: erősebb pajzs időt nyer';
+
+  @override
+  String get deathShield =>
+      'Fejleszd a pajzsot a ComCenterben: a törzs előtt fogja fel a találatot';
+
+  @override
+  String get deathGuns =>
+      'Erősebb fegyverek letarolják a hullámokat, mielőtt ártanának';
 }

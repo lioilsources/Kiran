@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get musicOff => 'الموسيقى: إيقاف';
+
+  @override
+  String get statsOn => 'الإحصاءات: تشغيل';
+
+  @override
+  String get statsOff => 'الإحصاءات: إيقاف';
 
   @override
   String get mainMenu => 'القائمة الرئيسية';
@@ -1165,4 +1172,95 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'تم';
+
+  @override
+  String get swapHint => 'ضع إصبعين لتطلق بمجموعة أسلحتك الثانية';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: طلقات أقوى';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: تم إصلاح الهيكل';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount درع، يُشحن أسرع';
+  }
+
+  @override
+  String get pickupGenerator => 'المولّد أقوى: طاقة أكثر لأسلحتك';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount رصيد للإنفاق في ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'مكافآت السلاح ترفع مستواه: ضرر أكبر وإطلاق أسرع';
+
+  @override
+  String get tutPickupHealth =>
+      'مكافآت الإصلاح ترمّم الهيكل، وعند سلامته ترفع الحد الأقصى لـ HP';
+
+  @override
+  String get tutPickupShield => 'الدرع يتلقى الضربات قبل الهيكل ويعيد شحن نفسه';
+
+  @override
+  String get tutPickupGenerator =>
+      'المولّد يغذي أسلحتك: طاقة أكثر تُبقي أسلحة أكثر تطلق';
+
+  @override
+  String get tutPickupCredits =>
+      'بالرصيد تشتري أسلحة وتحسينات في ComCenter بين الجولات';
+
+  @override
+  String get tutBoss => 'BOSS! صحته هي الشريط في الأعلى. واصل الحركة والإطلاق';
+
+  @override
+  String get tutLowHp => 'الهيكل ضعيف! أصلحه بمكافأة إصلاح أو في ComCenter';
+
+  @override
+  String get tutGenStarved => 'أسلحتك تحتاج طاقة أكثر مما يعطيه المولّد: حسّنه';
+
+  @override
+  String get tutCanAfford => 'يمكنك شراء تحسين: زر ComCenter بعد هذه الجولة';
+
+  @override
+  String get tutFly => 'اسحب لتطير. أسلحتك تطلق ما دام إصبعك على الشاشة';
+
+  @override
+  String get introCollect => 'التقط الأيقونات التي يسقطها الأعداء';
+
+  @override
+  String get introShop => 'بين الجولات، أنفق رصيدك في ComCenter';
+
+  @override
+  String get objBoss => 'الهدف: انجُ من الموجات واهزم الزعيم';
+
+  @override
+  String get objSurvive => 'الهدف: انجُ من الموجات';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits رصيد · $kills إسقاط';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'أفضل سلاح: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'ضربات الزعيم قوية: درع أقوى يمنحك وقتًا';
+
+  @override
+  String get deathShield => 'حسّن الدرع في ComCenter: يتلقى الضربات قبل الهيكل';
+
+  @override
+  String get deathGuns => 'الأسلحة الأقوى تمحو الموجات قبل أن تؤذيك';
 }

@@ -51,6 +51,20 @@ void main() {
     }
   });
 
+  // Both skin grids show kSkins in this order (owned ones lifted to the top,
+  // plan 32 Q2), and nothing else sorts it.
+  test('kSkins is ordered by the release year in the name', () {
+    final year = RegExp(r'\((\d{4})\)$');
+    var last = 0;
+    for (final s in kSkins) {
+      final m = year.firstMatch(s.name);
+      expect(m, isNotNull, reason: '${s.id} has no (year) in its name');
+      final y = int.parse(m!.group(1)!);
+      expect(y, greaterThanOrEqualTo(last), reason: '${s.id} is out of order');
+      last = y;
+    }
+  });
+
   test('skin ids are unique', () {
     final ids = kSkins.map((s) => s.id).toList();
     expect(ids.toSet().length, ids.length);

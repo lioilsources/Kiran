@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -92,6 +93,12 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get musicOff => 'MÚSICA: DESACTIVADA';
+
+  @override
+  String get statsOn => 'ESTADÍSTIQUES: ACTIVADES';
+
+  @override
+  String get statsOff => 'ESTADÍSTIQUES: DESACTIVADES';
 
   @override
   String get mainMenu => 'MENÚ PRINCIPAL';
@@ -1167,4 +1174,103 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FET';
+
+  @override
+  String get swapHint => 'Amb dos dits dispares el segon joc d\'armes';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: trets més forts';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: buc reparat';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount d\'escut, es recarrega més ràpid';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generador millorat: més energia per a les armes';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount crèdits per gastar al ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Els power-ups d\'arma pugen el nivell: més dany, tret més ràpid';
+
+  @override
+  String get tutPickupHealth =>
+      'Les reparacions arreglen el buc; si estàs bé, pugen l\'HP màxim';
+
+  @override
+  String get tutPickupShield =>
+      'L\'escut rep els cops abans que el buc i es recarrega sol';
+
+  @override
+  String get tutPickupGenerator =>
+      'El generador alimenta les armes: més energia, més armes disparant';
+
+  @override
+  String get tutPickupCredits =>
+      'Amb crèdits compres armes i millores al ComCenter entre rondes';
+
+  @override
+  String get tutBoss =>
+      'BOSS! La seva vida és la barra de dalt. Mou-te i dispara';
+
+  @override
+  String get tutLowHp => 'Buc baix! Una reparació o el ComCenter l\'arreglen';
+
+  @override
+  String get tutGenStarved =>
+      'Les armes volen més energia que el generador: millora\'l';
+
+  @override
+  String get tutCanAfford =>
+      'Et pots permetre una millora: passa pel ComCenter després';
+
+  @override
+  String get tutFly => 'Arrossega per volar. Les armes disparen mentre toques';
+
+  @override
+  String get introCollect => 'Atrapa les icones que deixen els enemics';
+
+  @override
+  String get introShop => 'Entre rondes, gasta els crèdits al ComCenter';
+
+  @override
+  String get objBoss => 'Objectiu: sobreviu a les onades i vènç el boss';
+
+  @override
+  String get objSurvive => 'Objectiu: sobreviu a les onades';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits crèdits · $kills baixes';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Millor arma: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Els trets del boss fan mal: un escut millor et dona temps';
+
+  @override
+  String get deathShield =>
+      'Millora l\'escut al ComCenter: rep els cops abans que el buc';
+
+  @override
+  String get deathGuns =>
+      'Armes més fortes netegen onades abans que et facin mal';
 }

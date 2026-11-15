@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Windows (release)
         working-directory: tyrian_mobile
-        run: flutter build windows --release
+        run: flutter build windows --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
 

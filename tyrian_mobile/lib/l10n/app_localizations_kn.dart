@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get musicOff => 'ಸಂಗೀತ: ಆಫ್';
+
+  @override
+  String get statsOn => 'ಅಂಕಿಅಂಶ: ಆನ್';
+
+  @override
+  String get statsOff => 'ಅಂಕಿಅಂಶ: ಆಫ್';
 
   @override
   String get mainMenu => 'ಮುಖ್ಯ ಮೆನು';
@@ -1158,4 +1165,101 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ಮುಗಿದಿದೆ';
+
+  @override
+  String get swapHint =>
+      'ಎರಡು ಬೆರಳು ಇಟ್ಟರೆ ಎರಡನೇ ಸೆಟ್ ಆಯುಧಗಳಿಂದ ಗುಂಡು ಹಾರಿಸುವಿರಿ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ಇನ್ನಷ್ಟು ಬಲವಾದ ಗುಂಡುಗಳು';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ಹಡಗು ದುರಸ್ತಿಯಾಯಿತು';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ಕವಚ, ಬೇಗ ಮರುಪೂರಣ';
+  }
+
+  @override
+  String get pickupGenerator => 'ಜನರೇಟರ್ ಉನ್ನತೀಕರಣ: ಆಯುಧಗಳಿಗೆ ಹೆಚ್ಚು ಶಕ್ತಿ';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ಕ್ರೆಡಿಟ್ ComCenter ಗಾಗಿ';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'ಆಯುಧ ಪಿಕಪ್‌ಗಳು ಮಟ್ಟ ಏರಿಸುತ್ತವೆ: ಹೆಚ್ಚು ಹಾನಿ, ವೇಗದ ಗುಂಡು';
+
+  @override
+  String get tutPickupHealth =>
+      'ರಿಪೇರಿ ಪಿಕಪ್ ಹಲ್ ಸರಿಪಡಿಸುತ್ತದೆ; ಪೂರ್ಣವಿದ್ದರೆ ಗರಿಷ್ಠ HP ಏರಿಸುತ್ತದೆ';
+
+  @override
+  String get tutPickupShield =>
+      'ಶೀಲ್ಡ್ ಹಲ್‌ಗಿಂತ ಮೊದಲು ಏಟು ತಡೆದು ತಾನೇ ತುಂಬಿಕೊಳ್ಳುತ್ತದೆ';
+
+  @override
+  String get tutPickupGenerator =>
+      'ಜನರೇಟರ್ ಆಯುಧಗಳಿಗೆ ಶಕ್ತಿ ನೀಡುತ್ತದೆ: ಹೆಚ್ಚು ಶಕ್ತಿ, ಹೆಚ್ಚು ಆಯುಧ';
+
+  @override
+  String get tutPickupCredits =>
+      'ಸುತ್ತುಗಳ ನಡುವೆ ComCenter ನಲ್ಲಿ ಕ್ರೆಡಿಟ್‌ನಿಂದ ಆಯುಧ, ಅಪ್‌ಗ್ರೇಡ್ ಕೊಳ್ಳಿ';
+
+  @override
+  String get tutBoss =>
+      'ಬಾಸ್! ಮೇಲಿನ ಪಟ್ಟಿ ಅದರ ಆರೋಗ್ಯ. ಚಲಿಸುತ್ತಿರಿ, ಗುಂಡು ಹಾರಿಸುತ್ತಿರಿ';
+
+  @override
+  String get tutLowHp => 'ಹಲ್ ಕಡಿಮೆ! ರಿಪೇರಿ ಪಿಕಪ್ ಅಥವಾ ComCenter ಸರಿಪಡಿಸುತ್ತದೆ';
+
+  @override
+  String get tutGenStarved =>
+      'ಆಯುಧಗಳಿಗೆ ಜನರೇಟರ್‌ಗಿಂತ ಹೆಚ್ಚು ಶಕ್ತಿ ಬೇಕು: ಅದನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ';
+
+  @override
+  String get tutCanAfford =>
+      'ಅಪ್‌ಗ್ರೇಡ್‌ಗೆ ಕ್ರೆಡಿಟ್ ಇದೆ: ಈ ಸುತ್ತಿನ ನಂತರ ComCenter ನೋಡಿ';
+
+  @override
+  String get tutFly => 'ಹಾರಲು ಎಳೆಯಿರಿ. ಬೆರಳು ಒತ್ತಿರುವವರೆಗೆ ಆಯುಧಗಳು ಹಾರಿಸುತ್ತವೆ';
+
+  @override
+  String get introCollect => 'ಶತ್ರುಗಳು ಬೀಳಿಸುವ ಐಕಾನ್‌ಗಳನ್ನು ಹಿಡಿಯಿರಿ';
+
+  @override
+  String get introShop => 'ಸುತ್ತುಗಳ ನಡುವೆ ComCenter ನಲ್ಲಿ ಕ್ರೆಡಿಟ್ ಖರ್ಚು ಮಾಡಿ';
+
+  @override
+  String get objBoss => 'ಗುರಿ: ಅಲೆಗಳನ್ನು ಬದುಕುಳಿದು ಬಾಸ್ ಸೋಲಿಸಿ';
+
+  @override
+  String get objSurvive => 'ಗುರಿ: ಅಲೆಗಳನ್ನು ಬದುಕುಳಿಯಿರಿ';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits ಕ್ರೆಡಿಟ್ · $kills ಹತ್ಯೆ';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'ಅತ್ಯುತ್ತಮ ಆಯುಧ: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'ಬಾಸ್ ಏಟುಗಳು ಬಲವಾಗಿವೆ: ಬಲವಾದ ಶೀಲ್ಡ್ ಸಮಯ ಕೊಡುತ್ತದೆ';
+
+  @override
+  String get deathShield =>
+      'ComCenter ನಲ್ಲಿ ಶೀಲ್ಡ್ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ: ಅದು ಹಲ್‌ಗಿಂತ ಮೊದಲು ಏಟು ತಡೆಯುತ್ತದೆ';
+
+  @override
+  String get deathGuns => 'ಬಲವಾದ ಆಯುಧಗಳು ಅಲೆಗಳು ನೋಯಿಸುವ ಮೊದಲೇ ತೆರವುಗೊಳಿಸುತ್ತವೆ';
 }

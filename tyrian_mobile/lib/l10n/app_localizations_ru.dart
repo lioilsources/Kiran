@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -91,6 +92,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get musicOff => 'МУЗЫКА: ВЫКЛ';
+
+  @override
+  String get statsOn => 'СТАТИСТИКА: ВКЛ';
+
+  @override
+  String get statsOff => 'СТАТИСТИКА: ВЫКЛ';
 
   @override
   String get mainMenu => 'ГЛАВНОЕ МЕНЮ';
@@ -1170,4 +1177,101 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ГОТОВО';
+
+  @override
+  String get swapHint => 'Двумя пальцами стреляешь вторым набором оружия';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: выстрелы мощнее';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: корпус починен';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount щита, заряжается быстрее';
+  }
+
+  @override
+  String get pickupGenerator => 'Генератор мощнее: больше энергии для оружия';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount кредитов на покупки в ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Бонусы оружия повышают уровень: больше урона, быстрее огонь';
+
+  @override
+  String get tutPickupHealth =>
+      'Ремонт чинит корпус; при полном здоровье повышает макс. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Щит принимает удары раньше корпуса и сам восстанавливается';
+
+  @override
+  String get tutPickupGenerator =>
+      'Генератор питает оружие: больше энергии — больше стволов в бою';
+
+  @override
+  String get tutPickupCredits =>
+      'На кредиты покупай оружие и улучшения в ComCenter между раундами';
+
+  @override
+  String get tutBoss =>
+      'БОСС! Его здоровье — полоса вверху. Двигайся и стреляй';
+
+  @override
+  String get tutLowHp => 'Корпус на исходе! Помогут ремонт или ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Оружию не хватает энергии генератора: улучши его';
+
+  @override
+  String get tutCanAfford =>
+      'Хватает на улучшение: загляни в ComCenter после раунда';
+
+  @override
+  String get tutFly =>
+      'Веди пальцем, чтобы лететь. Пока палец на экране — огонь';
+
+  @override
+  String get introCollect => 'Лови значки, которые роняют враги';
+
+  @override
+  String get introShop => 'Между раундами трать кредиты в ComCenter';
+
+  @override
+  String get objBoss => 'Цель: переживи волны и победи босса';
+
+  @override
+  String get objSurvive => 'Цель: переживи волны';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits кредитов · $kills сбито';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Лучшее оружие: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Босс бьёт больно: щит посильнее даст тебе время';
+
+  @override
+  String get deathShield =>
+      'Улучши щит в ComCenter: он принимает удары раньше корпуса';
+
+  @override
+  String get deathGuns => 'Мощное оружие сметёт волны, пока они не навредили';
 }

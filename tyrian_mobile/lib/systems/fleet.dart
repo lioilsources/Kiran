@@ -331,6 +331,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   void onHostileKilled(Hostile h, TyrianGame gameInstance, {Vessel? attacker}) {
     kills++;
+    if (gameInstance.mode != GameMode.training) gameInstance.tutor.onKill(h);
     // The arena's endless bosses must not farm achievements.
     if (gameInstance.mode != GameMode.training) {
       AchievementService.instance.onKill(h.hostType, isBoss: h is Boss);
