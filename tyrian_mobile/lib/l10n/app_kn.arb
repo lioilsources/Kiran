@@ -346,5 +346,7 @@
   "roundBestWeapon": "ಅತ್ಯುತ್ತಮ ಆಯುಧ: {weapon}",
   "deathBoss": "ಬಾಸ್ ಏಟುಗಳು ಬಲವಾಗಿವೆ: ಬಲವಾದ ಶೀಲ್ಡ್ ಸಮಯ ಕೊಡುತ್ತದೆ",
   "deathShield": "ComCenter ನಲ್ಲಿ ಶೀಲ್ಡ್ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ: ಅದು ಹಲ್‌ಗಿಂತ ಮೊದಲು ಏಟು ತಡೆಯುತ್ತದೆ",
-  "deathGuns": "ಬಲವಾದ ಆಯುಧಗಳು ಅಲೆಗಳು ನೋಯಿಸುವ ಮೊದಲೇ ತೆರವುಗೊಳಿಸುತ್ತವೆ"
+  "deathGuns": "ಬಲವಾದ ಆಯುಧಗಳು ಅಲೆಗಳು ನೋಯಿಸುವ ಮೊದಲೇ ತೆರವುಗೊಳಿಸುತ್ತವೆ",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

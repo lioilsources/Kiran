@@ -346,5 +346,7 @@
   "roundBestWeapon": "Meilleure arme : {weapon}",
   "deathBoss": "Les tirs du boss font mal : un meilleur bouclier te fait gagner du temps",
   "deathShield": "Améliore le bouclier au ComCenter : il encaisse avant la coque",
-  "deathGuns": "Des armes plus fortes nettoient les vagues avant qu'elles te blessent"
+  "deathGuns": "Des armes plus fortes nettoient les vagues avant qu'elles te blessent",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

@@ -1276,6 +1276,20 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get deathGuns =>
       'Armas mais fortes limpam as ondas antes que te machuquem';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -2545,4 +2559,18 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   @override
   String get deathGuns =>
       'Armas mais fortes limpam as vagas antes de te ferirem';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
 }

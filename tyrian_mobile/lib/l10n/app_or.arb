@@ -346,5 +346,7 @@
   "roundBestWeapon": "ସର୍ବୋତ୍ତମ ଅସ୍ତ୍ର: {weapon}",
   "deathBoss": "ବସ୍‌ର ଗୁଳି ଜୋରଦାର: ଶକ୍ତିଶାଳୀ ଢାଲ ସମୟ ଦିଏ",
   "deathShield": "ComCenter ରେ ଢାଲ ଅପଗ୍ରେଡ୍ କର: ଏହା ହଲ୍ ପୂର୍ବରୁ ଆଘାତ ସହେ",
-  "deathGuns": "ଶକ୍ତିଶାଳୀ ଅସ୍ତ୍ର ଢେଉକୁ କ୍ଷତି କରିବା ପୂର୍ବରୁ ସଫା କରେ"
+  "deathGuns": "ଶକ୍ତିଶାଳୀ ଅସ୍ତ୍ର ଢେଉକୁ କ୍ଷତି କରିବା ପୂର୍ବରୁ ସଫା କରେ",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

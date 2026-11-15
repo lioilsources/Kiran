@@ -346,5 +346,7 @@
   "roundBestWeapon": "সেরা অস্ত্র: {weapon}",
   "deathBoss": "বসের গুলি জোরালো: শক্ত শিল্ড সময় দেয়",
   "deathShield": "ComCenter-এ শিল্ড আপগ্রেড করুন: এটি হালের আগে আঘাত নেয়",
-  "deathGuns": "শক্তিশালী অস্ত্র ক্ষতির আগেই ঢেউ সাফ করে"
+  "deathGuns": "শক্তিশালী অস্ত্র ক্ষতির আগেই ঢেউ সাফ করে",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

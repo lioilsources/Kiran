@@ -346,5 +346,7 @@
   "roundBestWeapon": "بہترین ہتھیار: {weapon}",
   "deathBoss": "باس کے وار سخت ہیں: مضبوط شیلڈ وقت دیتی ہے",
   "deathShield": "ComCenter میں شیلڈ اپ گریڈ کریں: یہ ڈھانچے سے پہلے وار سہتی ہے",
-  "deathGuns": "مضبوط ہتھیار لہروں کو نقصان سے پہلے صاف کرتے ہیں"
+  "deathGuns": "مضبوط ہتھیار لہروں کو نقصان سے پہلے صاف کرتے ہیں",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

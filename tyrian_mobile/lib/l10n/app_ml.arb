@@ -346,5 +346,7 @@
   "roundBestWeapon": "മികച്ച ആയുധം: {weapon}",
   "deathBoss": "ബോസിന്റെ വെടി ശക്തമാണ്: ശക്തമായ ഷീൽഡ് സമയം നൽകും",
   "deathShield": "ComCenter-ൽ ഷീൽഡ് അപ്ഗ്രേഡ് ചെയ്യൂ: അത് ഹളിനു മുമ്പേ വെടി തടയും",
-  "deathGuns": "ശക്തമായ ആയുധങ്ങൾ തിരമാലകളെ നിങ്ങളെ മുറിവേൽപ്പിക്കും മുമ്പേ തുടച്ചുനീക്കും"
+  "deathGuns": "ശക്തമായ ആയുധങ്ങൾ തിരമാലകളെ നിങ്ങളെ മുറിവേൽപ്പിക്കും മുമ്പേ തുടച്ചുനീക്കും",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

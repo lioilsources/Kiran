@@ -967,5 +967,18 @@
   "deathGuns": "Stronger guns clear waves before they can hurt you",
   "@deathGuns": {
     "description": "Tutor: Game over tip: otherwise"
+  },
+  "allSkins": "ALL SKINS",
+  "@allSkins": {
+    "description": "Skin selector: the All skins bundle offered next to a locked skin's price"
+  },
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "@allSkinsCredited": {
+    "description": "Skin selector: under a discounted All skins price — the paid skins already bought were subtracted from it",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -346,5 +346,7 @@
   "roundBestWeapon": "सबसे अच्छा हथियार: {weapon}",
   "deathBoss": "बॉस के वार भारी हैं: मज़बूत शील्ड समय देती है",
   "deathShield": "ComCenter में शील्ड अपग्रेड करें: यह हल से पहले वार झेलती है",
-  "deathGuns": "मज़बूत हथियार नुकसान से पहले लहरें साफ़ करते हैं"
+  "deathGuns": "मज़बूत हथियार नुकसान से पहले लहरें साफ़ करते हैं",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

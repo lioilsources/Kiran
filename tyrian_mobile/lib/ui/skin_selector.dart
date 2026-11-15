@@ -389,6 +389,7 @@ class _SkinSelectorState extends State<SkinSelector> {
                         ),
                       ),
               ),
+              SkinsAllCredit(offer: SkinStoreService.instance.skinsAllOffer),
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: InkWell(
@@ -561,6 +562,9 @@ class _SkinSelectorState extends State<SkinSelector> {
       unlocked: store.isUnlocked(skin.id),
       buying: store.pendingSkinId == skin.id,
       price: store.priceFor(skin.id),
+      allOffer: store.skinsAllOffer,
+      allBuying: store.bundlePending,
+      onBuyAll: store.buyAllSkins,
       onTap: () {
         setState(() {
           _focusIndex = index;
@@ -589,6 +593,12 @@ class SkinCard extends StatelessWidget {
   final String? price;
   final VoidCallback onTap;
 
+  /// The "All skins" step on offer, shown on locked cards beside the skin's
+  /// own price. Null hides it.
+  final SkinsAllOffer? allOffer;
+  final bool allBuying;
+  final VoidCallback? onBuyAll;
+
   const SkinCard({
     super.key,
     required this.skin,
@@ -599,6 +609,9 @@ class SkinCard extends StatelessWidget {
     required this.buying,
     required this.price,
     required this.onTap,
+    this.allOffer,
+    this.allBuying = false,
+    this.onBuyAll,
   });
 
   @override
@@ -691,10 +704,100 @@ class SkinCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                  if (!unlocked && allOffer != null)
+                    SkinsAllChip(
+                      offer: allOffer!,
+                      buying: allBuying,
+                      onTap: onBuyAll,
+                    ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The "All skins" offer on a locked card: the offered step's store price
+/// and, on a credited step, step 0's store price struck through. Its own tap
+/// target, so it buys the bundle instead of the card's skin.
+class SkinsAllChip extends StatelessWidget {
+  final SkinsAllOffer offer;
+  final bool buying;
+  final VoidCallback? onTap;
+
+  const SkinsAllChip(
+      {super.key, required this.offer, required this.buying, this.onTap});
+
+  static const _color = Colors.cyanAccent;
+
+  @override
+  Widget build(BuildContext context) {
+    final full = offer.fullPrice;
+    return GestureDetector(
+      onTap: buying ? null : onTap,
+      child: Container(
+        margin: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          border: Border.all(color: _color.withAlpha(140)),
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: buying
+            ? const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(strokeWidth: 2, color: _color),
+              )
+            : Text.rich(
+                TextSpan(children: [
+                  TextSpan(text: '${context.l10n.allSkins} ${offer.price}'),
+                  if (full != null)
+                    TextSpan(
+                      text: ' $full',
+                      style: TextStyle(
+                        color: _color.withAlpha(120),
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: _color.withAlpha(160),
+                      ),
+                    ),
+                ]),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _color,
+                  fontSize: 10,
+                  letterSpacing: 1,
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+/// One line under the grid when the "All skins" offer credits skins already
+/// bought. Nothing on step 0 or without an offer.
+class SkinsAllCredit extends StatelessWidget {
+  final SkinsAllOffer? offer;
+
+  const SkinsAllCredit({super.key, required this.offer});
+
+  @override
+  Widget build(BuildContext context) {
+    final o = offer;
+    if (o == null || o.step == 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, left: 16, right: 16),
+      child: Text(
+        context.l10n.allSkinsCredited(o.owned),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.cyanAccent.withAlpha(180),
+          fontSize: 11,
+          letterSpacing: 1,
         ),
       ),
     );
@@ -874,10 +977,14 @@ class SkinShopSectionState extends State<SkinShopSection> {
                 unlocked: store.isUnlocked(skin.id),
                 buying: store.pendingSkinId == skin.id,
                 price: store.priceFor(skin.id),
+                allOffer: store.skinsAllOffer,
+                allBuying: store.bundlePending,
+                onBuyAll: store.buyAllSkins,
                 onTap: () => _select(skin.id),
               ),
           ],
         ),
+        SkinsAllCredit(offer: store.skinsAllOffer),
         if (store.supported)
           TextButton(
             onPressed: store.restore,

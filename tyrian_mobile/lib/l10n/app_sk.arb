@@ -346,5 +346,7 @@
   "roundBestWeapon": "Najlepšia zbraň: {weapon}",
   "deathBoss": "Strely bossa bolia: silnejší štít ti kúpi čas",
   "deathShield": "Vylepši štít v ComCenteri: chytá zásahy skôr než trup",
-  "deathGuns": "Silnejšie zbrane zmetú vlny skôr, než ti ublížia"
+  "deathGuns": "Silnejšie zbrane zmetú vlny skôr, než ti ublížia",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

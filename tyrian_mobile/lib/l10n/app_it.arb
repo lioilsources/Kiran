@@ -346,5 +346,7 @@
   "roundBestWeapon": "Arma migliore: {weapon}",
   "deathBoss": "I colpi del boss fanno male: uno scudo più forte ti fa guadagnare tempo",
   "deathShield": "Potenzia lo scudo nel ComCenter: assorbe i colpi prima dello scafo",
-  "deathGuns": "Armi più forti spazzano via le ondate prima che ti feriscano"
+  "deathGuns": "Armi più forti spazzano via le ondate prima che ti feriscano",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

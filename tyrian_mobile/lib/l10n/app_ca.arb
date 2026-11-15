@@ -346,5 +346,7 @@
   "roundBestWeapon": "Millor arma: {weapon}",
   "deathBoss": "Els trets del boss fan mal: un escut millor et dona temps",
   "deathShield": "Millora l'escut al ComCenter: rep els cops abans que el buc",
-  "deathGuns": "Armes més fortes netegen onades abans que et facin mal"
+  "deathGuns": "Armes més fortes netegen onades abans que et facin mal",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

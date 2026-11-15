@@ -346,5 +346,7 @@
   "roundBestWeapon": "Legjobb fegyver: {weapon}",
   "deathBoss": "A boss lövései fájnak: erősebb pajzs időt nyer",
   "deathShield": "Fejleszd a pajzsot a ComCenterben: a törzs előtt fogja fel a találatot",
-  "deathGuns": "Erősebb fegyverek letarolják a hullámokat, mielőtt ártanának"
+  "deathGuns": "Erősebb fegyverek letarolják a hullámokat, mielőtt ártanának",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

@@ -1260,4 +1260,19 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get deathGuns => 'Silnější zbraně smetou vlny dřív, než ti ublíží';
+
+  @override
+  String get allSkins => 'VŠECHNY SKINY';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Už máš $count skinů, odečetli jsme je',
+      few: 'Už máš $count skiny, odečetli jsme je',
+      one: 'Už máš 1 skin, odečetli jsme ho',
+    );
+    return '$_temp0';
+  }
 }

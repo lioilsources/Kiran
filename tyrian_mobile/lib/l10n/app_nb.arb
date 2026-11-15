@@ -346,5 +346,7 @@
   "roundBestWeapon": "Beste våpen: {weapon}",
   "deathBoss": "Bossens skudd treffer hardt: et sterkere skjold gir deg tid",
   "deathShield": "Oppgrader skjoldet i ComCenter: det tar treff før skroget",
-  "deathGuns": "Sterkere våpen rydder bølgene før de rekker å skade deg"
+  "deathGuns": "Sterkere våpen rydder bølgene før de rekker å skade deg",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

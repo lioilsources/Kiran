@@ -346,5 +346,7 @@
   "roundBestWeapon": "શ્રેષ્ઠ હથિયાર: {weapon}",
   "deathBoss": "બોસના ફટકા ભારે છે: મજબૂત શીલ્ડ સમય આપે છે",
   "deathShield": "ComCenterમાં શીલ્ડ અપગ્રેડ કરો: તે હલ પહેલાં ફટકા ઝીલે",
-  "deathGuns": "મજબૂત હથિયાર નુકસાન પહેલાં લહેરો સાફ કરે છે"
+  "deathGuns": "મજબૂત હથિયાર નુકસાન પહેલાં લહેરો સાફ કરે છે",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

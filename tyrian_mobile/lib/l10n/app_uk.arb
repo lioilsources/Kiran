@@ -346,5 +346,7 @@
   "roundBestWeapon": "Найкраща зброя: {weapon}",
   "deathBoss": "Бос б'є боляче: міцніший щит дасть тобі час",
   "deathShield": "Покращ щит у ComCenter: він приймає удари раніше за корпус",
-  "deathGuns": "Потужна зброя змете хвилі, перш ніж вони зашкодять"
+  "deathGuns": "Потужна зброя змете хвилі, перш ніж вони зашкодять",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }
