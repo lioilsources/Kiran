@@ -1178,4 +1178,76 @@ class AppLocalizationsMr extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount क्रेडिट, ComCenter मध्ये खर्च करा';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'शस्त्र पिकअप पातळी वाढवतात: जास्त नुकसान, वेगवान मारा';
+
+  @override
+  String get tutPickupHealth =>
+      'दुरुस्ती पिकअप हल दुरुस्त करतात; पूर्ण असताना कमाल HP वाढवतात';
+
+  @override
+  String get tutPickupShield => 'ढाल हलच्या आधी मार झेलते आणि आपोआप भरते';
+
+  @override
+  String get tutPickupGenerator =>
+      'जनरेटर शस्त्रांना ऊर्जा देतो: जास्त ऊर्जा, जास्त शस्त्रे चालू';
+
+  @override
+  String get tutPickupCredits =>
+      'फेऱ्यांदरम्यान ComCenter मध्ये क्रेडिटने शस्त्रे व अपग्रेड घ्या';
+
+  @override
+  String get tutBoss =>
+      'बॉस! वरची पट्टी त्याचे आरोग्य आहे. हलत राहा, मारा करत राहा';
+
+  @override
+  String get tutLowHp =>
+      'हल कमी! दुरुस्ती पिकअप किंवा ComCenter ते दुरुस्त करेल';
+
+  @override
+  String get tutGenStarved =>
+      'शस्त्रांना जनरेटरपेक्षा जास्त ऊर्जा हवी: तो अपग्रेड करा';
+
+  @override
+  String get tutCanAfford =>
+      'अपग्रेडसाठी क्रेडिट आहेत: या फेरीनंतर ComCenter पाहा';
+
+  @override
+  String get tutFly =>
+      'उडण्यासाठी ओढा. बोट टेकवलेले असेपर्यंत शस्त्रे मारा करतात';
+
+  @override
+  String get introCollect => 'शत्रू टाकतात ते आयकॉन पकडा';
+
+  @override
+  String get introShop => 'फेऱ्यांदरम्यान ComCenter मध्ये क्रेडिट खर्च करा';
+
+  @override
+  String get objBoss => 'ध्येय: लाटांतून वाचा आणि बॉसला हरवा';
+
+  @override
+  String get objSurvive => 'ध्येय: लाटांतून वाचा';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits क्रेडिट · $kills पाडले';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'सर्वोत्तम शस्त्र: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'बॉसचे मारे जोरदार असतात: मजबूत ढाल वेळ मिळवून देते';
+
+  @override
+  String get deathShield =>
+      'ComCenter मध्ये ढाल अपग्रेड करा: ती हलच्या आधी मार झेलते';
+
+  @override
+  String get deathGuns =>
+      'मजबूत शस्त्रे लाटा तुम्हाला इजा करण्याआधीच साफ करतात';
 }

@@ -1191,4 +1191,77 @@ class AppLocalizationsDa extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount kreditter til ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Våben-pickups hæver våbnets niveau: mere skade, hurtigere skud';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparationer lapper skroget; ved fuld styrke hæver de maks. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Skjoldet tager træffere før skroget og lader selv op';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generatoren driver våbnene: mere kraft holder flere våben i gang';
+
+  @override
+  String get tutPickupCredits =>
+      'Kreditter køber våben og opgraderinger i ComCenter mellem runder';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Dens liv er bjælken øverst. Bliv ved at bevæge dig og skyde';
+
+  @override
+  String get tutLowHp =>
+      'Skroget er lavt! Reparationer eller ComCenter fikser det';
+
+  @override
+  String get tutGenStarved =>
+      'Våbnene vil have mere kraft end generatoren giver: opgradér den';
+
+  @override
+  String get tutCanAfford =>
+      'Du har råd til en opgradering: tjek ComCenter efter runden';
+
+  @override
+  String get tutFly =>
+      'Træk for at flyve. Våbnene skyder, mens fingeren er nede';
+
+  @override
+  String get introCollect => 'Fang ikonerne, som fjender taber';
+
+  @override
+  String get introShop => 'Mellem runder bruger du kreditter i ComCenter';
+
+  @override
+  String get objBoss => 'Mål: overlev bølgerne og besejr bossen';
+
+  @override
+  String get objSurvive => 'Mål: overlev bølgerne';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditter · $kills drab';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Bedste våben: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Bossens skud rammer hårdt: et stærkere skjold køber tid';
+
+  @override
+  String get deathShield =>
+      'Opgradér skjoldet i ComCenter: det tager træffere før skroget';
+
+  @override
+  String get deathGuns => 'Stærkere våben rydder bølger, før de kan skade dig';
 }

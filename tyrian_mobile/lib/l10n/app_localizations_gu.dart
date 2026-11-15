@@ -1181,4 +1181,73 @@ class AppLocalizationsGu extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount ક્રેડિટ ComCenter માટે';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'હથિયાર પિકઅપ લેવલ વધારે છે: વધુ નુકસાન, ઝડપી ફાયર';
+
+  @override
+  String get tutPickupHealth =>
+      'રિપેર પિકઅપ હલ સુધારે છે; સ્વસ્થ હો તો મહત્તમ HP વધારે છે';
+
+  @override
+  String get tutPickupShield =>
+      'શીલ્ડ હલ પહેલાં ફટકા ઝીલે છે અને જાતે રિચાર્જ થાય છે';
+
+  @override
+  String get tutPickupGenerator =>
+      'જનરેટર હથિયારો ચલાવે છે: વધુ પાવર, વધુ હથિયાર ચાલુ';
+
+  @override
+  String get tutPickupCredits =>
+      'રાઉન્ડ વચ્ચે ComCenterમાં ક્રેડિટથી હથિયાર અને અપગ્રેડ ખરીદો';
+
+  @override
+  String get tutBoss =>
+      'BOSS! તેનું આરોગ્ય ઉપરની પટ્ટી છે. હલતા રહો, ફાયર કરતા રહો';
+
+  @override
+  String get tutLowHp => 'હલ નબળું! રિપેર પિકઅપ કે ComCenter તેને સુધારે';
+
+  @override
+  String get tutGenStarved =>
+      'હથિયારોને જનરેટર કરતાં વધુ પાવર જોઈએ: તેને અપગ્રેડ કરો';
+
+  @override
+  String get tutCanAfford => 'અપગ્રેડ પરવડે છે: આ રાઉન્ડ પછી ComCenter જુઓ';
+
+  @override
+  String get tutFly => 'ઉડવા માટે ખેંચો. આંગળી રાખો ત્યાં સુધી હથિયાર ચાલે';
+
+  @override
+  String get introCollect => 'દુશ્મનો જે આઇકન પાડે તે પકડો';
+
+  @override
+  String get introShop => 'રાઉન્ડ વચ્ચે ComCenterમાં ક્રેડિટ ખર્ચો';
+
+  @override
+  String get objBoss => 'ધ્યેય: લહેરો ટકી રહો અને બોસને હરાવો';
+
+  @override
+  String get objSurvive => 'ધ્યેય: લહેરો ટકી રહો';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits ક્રેડિટ · $kills કિલ';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'શ્રેષ્ઠ હથિયાર: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'બોસના ફટકા ભારે છે: મજબૂત શીલ્ડ સમય આપે છે';
+
+  @override
+  String get deathShield =>
+      'ComCenterમાં શીલ્ડ અપગ્રેડ કરો: તે હલ પહેલાં ફટકા ઝીલે';
+
+  @override
+  String get deathGuns => 'મજબૂત હથિયાર નુકસાન પહેલાં લહેરો સાફ કરે છે';
 }

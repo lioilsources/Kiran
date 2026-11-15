@@ -1203,4 +1203,77 @@ class AppLocalizationsEl extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount μονάδες για το ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Τα power-up όπλων ανεβάζουν επίπεδο: περισσότερη ζημιά, ταχύτερη βολή';
+
+  @override
+  String get tutPickupHealth =>
+      'Οι επισκευές φτιάχνουν το σκάφος· όταν είσαι γερός, αυξάνουν το μέγ. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Η ασπίδα δέχεται χτυπήματα πριν το σκάφος και γεμίζει μόνη της';
+
+  @override
+  String get tutPickupGenerator =>
+      'Η γεννήτρια τροφοδοτεί τα όπλα: περισσότερη ενέργεια, περισσότερα πυρά';
+
+  @override
+  String get tutPickupCredits =>
+      'Με τα credits αγοράζεις όπλα και αναβαθμίσεις στο ComCenter';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Η ζωή του είναι η μπάρα πάνω. Κινήσου και πυροβόλα';
+
+  @override
+  String get tutLowHp =>
+      'Σκάφος σε κίνδυνο! Επισκευή ή το ComCenter το φτιάχνουν';
+
+  @override
+  String get tutGenStarved =>
+      'Τα όπλα θέλουν περισσότερη ενέργεια από τη γεννήτρια: αναβάθμισέ τη';
+
+  @override
+  String get tutCanAfford =>
+      'Σου φτάνουν για αναβάθμιση: πέρνα από το ComCenter μετά';
+
+  @override
+  String get tutFly => 'Σύρε για να πετάξεις. Τα όπλα ρίχνουν όσο ακουμπάς';
+
+  @override
+  String get introCollect => 'Πιάσε τα εικονίδια που ρίχνουν οι εχθροί';
+
+  @override
+  String get introShop => 'Ανάμεσα στους γύρους, ξόδεψε credits στο ComCenter';
+
+  @override
+  String get objBoss => 'Στόχος: επίζησε στα κύματα και νίκησε το boss';
+
+  @override
+  String get objSurvive => 'Στόχος: επίζησε στα κύματα';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits credits · $kills καταρρίψεις';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Καλύτερο όπλο: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Τα πυρά του boss πονάνε: πιο δυνατή ασπίδα σού δίνει χρόνο';
+
+  @override
+  String get deathShield =>
+      'Αναβάθμισε την ασπίδα στο ComCenter: προστατεύει το σκάφος';
+
+  @override
+  String get deathGuns =>
+      'Πιο δυνατά όπλα καθαρίζουν τα κύματα πριν σε πληγώσουν';
 }

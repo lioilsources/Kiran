@@ -1182,4 +1182,76 @@ class AppLocalizationsPa extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount ਕ੍ਰੈਡਿਟ ComCenter ਲਈ';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'ਹਥਿਆਰ ਪਿਕਅੱਪ ਪੱਧਰ ਵਧਾਉਂਦੇ ਹਨ: ਵੱਧ ਨੁਕਸਾਨ, ਤੇਜ਼ ਫ਼ਾਇਰ';
+
+  @override
+  String get tutPickupHealth =>
+      'ਮੁਰੰਮਤ ਪਿਕਅੱਪ ਹਲ ਠੀਕ ਕਰਦੇ ਹਨ; ਪੂਰਾ ਹੋਣ \'ਤੇ ਵੱਧ ਤੋਂ ਵੱਧ HP ਵਧਾਉਂਦੇ ਹਨ';
+
+  @override
+  String get tutPickupShield =>
+      'ਢਾਲ ਹਲ ਤੋਂ ਪਹਿਲਾਂ ਵਾਰ ਝੱਲਦੀ ਹੈ ਅਤੇ ਆਪੇ ਭਰ ਜਾਂਦੀ ਹੈ';
+
+  @override
+  String get tutPickupGenerator =>
+      'ਜਨਰੇਟਰ ਹਥਿਆਰਾਂ ਨੂੰ ਊਰਜਾ ਦਿੰਦਾ ਹੈ: ਵੱਧ ਊਰਜਾ, ਵੱਧ ਹਥਿਆਰ ਚੱਲਦੇ';
+
+  @override
+  String get tutPickupCredits =>
+      'ਰਾਊਂਡਾਂ ਵਿਚਕਾਰ ComCenter ਵਿੱਚ ਕ੍ਰੈਡਿਟ ਨਾਲ ਹਥਿਆਰ ਤੇ ਅੱਪਗ੍ਰੇਡ ਖਰੀਦੋ';
+
+  @override
+  String get tutBoss =>
+      'ਬੌਸ! ਉੱਪਰਲੀ ਪੱਟੀ ਉਸਦੀ ਸਿਹਤ ਹੈ। ਹਿੱਲਦੇ ਰਹੋ, ਫ਼ਾਇਰ ਕਰਦੇ ਰਹੋ';
+
+  @override
+  String get tutLowHp =>
+      'ਹਲ ਕਮਜ਼ੋਰ! ਮੁਰੰਮਤ ਪਿਕਅੱਪ ਜਾਂ ComCenter ਇਸਨੂੰ ਠੀਕ ਕਰਦੇ ਹਨ';
+
+  @override
+  String get tutGenStarved =>
+      'ਹਥਿਆਰਾਂ ਨੂੰ ਜਨਰੇਟਰ ਤੋਂ ਵੱਧ ਊਰਜਾ ਚਾਹੀਦੀ ਹੈ: ਇਸਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ';
+
+  @override
+  String get tutCanAfford =>
+      'ਅੱਪਗ੍ਰੇਡ ਲਈ ਕ੍ਰੈਡਿਟ ਹਨ: ਇਸ ਰਾਊਂਡ ਤੋਂ ਬਾਅਦ ComCenter ਦੇਖੋ';
+
+  @override
+  String get tutFly => 'ਉੱਡਣ ਲਈ ਖਿੱਚੋ। ਉਂਗਲ ਟਿਕੀ ਰਹਿਣ ਤੱਕ ਹਥਿਆਰ ਫ਼ਾਇਰ ਕਰਦੇ ਹਨ';
+
+  @override
+  String get introCollect => 'ਦੁਸ਼ਮਣਾਂ ਵੱਲੋਂ ਸੁੱਟੇ ਆਈਕਨ ਫੜੋ';
+
+  @override
+  String get introShop => 'ਰਾਊਂਡਾਂ ਵਿਚਕਾਰ ComCenter ਵਿੱਚ ਕ੍ਰੈਡਿਟ ਖਰਚੋ';
+
+  @override
+  String get objBoss => 'ਟੀਚਾ: ਲਹਿਰਾਂ ਤੋਂ ਬਚੋ ਅਤੇ ਬੌਸ ਨੂੰ ਹਰਾਓ';
+
+  @override
+  String get objSurvive => 'ਟੀਚਾ: ਲਹਿਰਾਂ ਤੋਂ ਬਚੋ';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits ਕ੍ਰੈਡਿਟ · $kills ਤਬਾਹ';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'ਸਭ ਤੋਂ ਵਧੀਆ ਹਥਿਆਰ: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'ਬੌਸ ਦੇ ਵਾਰ ਭਾਰੀ ਹਨ: ਮਜ਼ਬੂਤ ਢਾਲ ਸਮਾਂ ਦਿੰਦੀ ਹੈ';
+
+  @override
+  String get deathShield =>
+      'ComCenter ਵਿੱਚ ਢਾਲ ਅੱਪਗ੍ਰੇਡ ਕਰੋ: ਇਹ ਹਲ ਤੋਂ ਪਹਿਲਾਂ ਵਾਰ ਝੱਲਦੀ ਹੈ';
+
+  @override
+  String get deathGuns =>
+      'ਮਜ਼ਬੂਤ ਹਥਿਆਰ ਲਹਿਰਾਂ ਨੂੰ ਨੁਕਸਾਨ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਸਾਫ਼ ਕਰ ਦਿੰਦੇ ਹਨ';
 }

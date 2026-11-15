@@ -1194,4 +1194,76 @@ class AppLocalizationsFi extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount krediittiä ComCenteriin';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Asepoimiat nostavat aseen tasoa: lisää vahinkoa, nopeampi tuli';
+
+  @override
+  String get tutPickupHealth =>
+      'Korjaukset paikkaavat rungon; ehjänä ne nostavat max-HP:ta';
+
+  @override
+  String get tutPickupShield =>
+      'Kilpi ottaa osumat ennen runkoa ja latautuu itsestään';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generaattori syöttää aseita: enemmän virtaa, enemmän tulta';
+
+  @override
+  String get tutPickupCredits =>
+      'Krediiteillä ostat aseita ja päivityksiä ComCenteristä';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Sen elämä on yläpalkki. Liiku ja ammu jatkuvasti';
+
+  @override
+  String get tutLowHp => 'Runko heikko! Korjaus tai ComCenter auttaa';
+
+  @override
+  String get tutGenStarved =>
+      'Aseet vaativat enemmän virtaa kuin generaattori antaa: päivitä se';
+
+  @override
+  String get tutCanAfford =>
+      'Sinulla on varaa päivitykseen: käy ComCenterissä kierroksen jälkeen';
+
+  @override
+  String get tutFly => 'Vedä lentääksesi. Aseet ampuvat, kun sormi on ruudulla';
+
+  @override
+  String get introCollect => 'Nappaa vihollisten pudottamat kuvakkeet';
+
+  @override
+  String get introShop => 'Kierrosten välissä käytä krediitit ComCenterissä';
+
+  @override
+  String get objBoss => 'Tavoite: selviä aalloista ja voita pomo';
+
+  @override
+  String get objSurvive => 'Tavoite: selviä aalloista';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits krediittiä · $kills kaatoa';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Paras ase: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Pomon laukaukset satuttavat: vahvempi kilpi antaa aikaa';
+
+  @override
+  String get deathShield =>
+      'Päivitä kilpi ComCenterissä: se ottaa osumat ennen runkoa';
+
+  @override
+  String get deathGuns =>
+      'Vahvemmat aseet raivaavat aallot ennen kuin ne satuttavat';
 }

@@ -1166,4 +1166,65 @@ class AppLocalizationsJa extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount クレジット、ComCenterで使える';
   }
+
+  @override
+  String get tutPickupWeapon => '武器アイテムで武器レベルが上がります：威力と連射速度アップ';
+
+  @override
+  String get tutPickupHealth => '修理アイテムで船体を回復。満タン時は最大HPが上がります';
+
+  @override
+  String get tutPickupShield => 'シールドは船体より先に被弾を受け止め、自動で回復します';
+
+  @override
+  String get tutPickupGenerator => 'ジェネレーターは武器の電源です。出力が高いほど多くの武器を撃てます';
+
+  @override
+  String get tutPickupCredits => 'クレジットでラウンド間にComCenterで武器や強化を購入できます';
+
+  @override
+  String get tutBoss => 'ボス出現！上のバーが体力です。動き続け、撃ち続けましょう';
+
+  @override
+  String get tutLowHp => '船体が危険！修理アイテムかComCenterで回復しましょう';
+
+  @override
+  String get tutGenStarved => '武器の消費電力がジェネレーターを超えています：強化しましょう';
+
+  @override
+  String get tutCanAfford => '強化を購入できます：このラウンド後にComCenterへ';
+
+  @override
+  String get tutFly => 'ドラッグで移動。指を置いている間、武器が発射されます';
+
+  @override
+  String get introCollect => '敵が落とすアイコンを回収しましょう';
+
+  @override
+  String get introShop => 'ラウンドの合間にComCenterでクレジットを使いましょう';
+
+  @override
+  String get objBoss => '目標：敵の波を生き延び、ボスを倒す';
+
+  @override
+  String get objSurvive => '目標：敵の波を生き延びる';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits クレジット · 撃墜 $kills';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return '最優秀武器：$weapon';
+  }
+
+  @override
+  String get deathBoss => 'ボスの攻撃は強力です。シールドを強化すれば時間を稼げます';
+
+  @override
+  String get deathShield => 'ComCenterでシールドを強化：船体より先に被弾を受け止めます';
+
+  @override
+  String get deathGuns => '強い武器なら、敵の波がダメージを与える前に一掃できます';
 }

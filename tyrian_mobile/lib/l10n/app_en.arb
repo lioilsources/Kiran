@@ -878,5 +878,94 @@
         "type": "String"
       }
     }
+  },
+  "tutPickupWeapon": "Weapon pickups raise a gun's level: more damage, faster fire",
+  "@tutPickupWeapon": {
+    "description": "Tutor: First time the player collects a weapon pickup"
+  },
+  "tutPickupHealth": "Repair pickups mend the hull; when healthy they also raise max HP",
+  "@tutPickupHealth": {
+    "description": "Tutor: First repair pickup. HP = hull points, keep 'HP'"
+  },
+  "tutPickupShield": "The shield takes hits before the hull and refills by itself",
+  "@tutPickupShield": {
+    "description": "Tutor: First shield pickup"
+  },
+  "tutPickupGenerator": "The generator powers your guns: more power keeps more guns firing",
+  "@tutPickupGenerator": {
+    "description": "Tutor: First generator pickup"
+  },
+  "tutPickupCredits": "Credits buy guns and upgrades in the ComCenter between rounds",
+  "@tutPickupCredits": {
+    "description": "Tutor: First credit pickup"
+  },
+  "tutBoss": "BOSS! Its health is the bar at the top. Keep moving, keep firing",
+  "@tutBoss": {
+    "description": "Tutor: First boss appearance"
+  },
+  "tutLowHp": "Hull low! Repair pickups or the ComCenter fix it",
+  "@tutLowHp": {
+    "description": "Tutor: Hull below 30%"
+  },
+  "tutGenStarved": "Your guns want more power than the generator gives: upgrade it",
+  "@tutGenStarved": {
+    "description": "Tutor: Generator empty while firing"
+  },
+  "tutCanAfford": "You can afford an upgrade: see the ComCenter after this round",
+  "@tutCanAfford": {
+    "description": "Tutor: Enough credits for an upgrade"
+  },
+  "tutFly": "Drag to fly. Your guns fire while your finger is down",
+  "@tutFly": {
+    "description": "Tutor: First flight, touch screens only"
+  },
+  "introCollect": "Catch the icons that enemies drop",
+  "@introCollect": {
+    "description": "Tutor: Intro lesson step 2"
+  },
+  "introShop": "Between rounds, spend your credits in the ComCenter",
+  "@introShop": {
+    "description": "Tutor: Intro lesson step 3, shown as the first round ends"
+  },
+  "objBoss": "Goal: survive the waves and beat the boss",
+  "@objBoss": {
+    "description": "Tutor: Under the round title when the round ends with a boss"
+  },
+  "objSurvive": "Goal: survive the waves",
+  "@objSurvive": {
+    "description": "Tutor: Under the round title, no boss"
+  },
+  "roundSummary": "+{credits} credits · {kills} kills",
+  "@roundSummary": {
+    "description": "Tutor: Round end. credits is a formatted number string, kills an int",
+    "placeholders": {
+      "credits": {
+        "type": "String"
+      },
+      "kills": {
+        "type": "int"
+      }
+    }
+  },
+  "roundBestWeapon": "Best weapon: {weapon}",
+  "@roundBestWeapon": {
+    "description": "Tutor: Round end. weapon is a proper noun like VULCAN",
+    "placeholders": {
+      "weapon": {
+        "type": "String"
+      }
+    }
+  },
+  "deathBoss": "Boss shots hit hard: a stronger shield buys you time",
+  "@deathBoss": {
+    "description": "Tutor: Game over tip: killed while a boss was on the field"
+  },
+  "deathShield": "Upgrade the shield in the ComCenter: it takes hits before the hull",
+  "@deathShield": {
+    "description": "Tutor: Game over tip: weak shield"
+  },
+  "deathGuns": "Stronger guns clear waves before they can hurt you",
+  "@deathGuns": {
+    "description": "Tutor: Game over tip: otherwise"
   }
 }

@@ -1190,4 +1190,77 @@ class AppLocalizationsNb extends AppLocalizations {
   String pickupCredits(String amount) {
     return '+$amount kreditter til ComCenter';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Våpenoppgraderinger øker nivået: mer skade, raskere skudd';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparasjoner fikser skroget; ved full helse øker de maks HP';
+
+  @override
+  String get tutPickupShield =>
+      'Skjoldet tar treff før skroget og lader seg opp selv';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generatoren driver våpnene: mer kraft holder flere våpen i gang';
+
+  @override
+  String get tutPickupCredits =>
+      'Kreditter kjøper våpen og oppgraderinger i ComCenter mellom rundene';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Helsen er linjen øverst. Hold deg i bevegelse og skyt';
+
+  @override
+  String get tutLowHp =>
+      'Skroget er svakt! Reparasjoner eller ComCenter fikser det';
+
+  @override
+  String get tutGenStarved =>
+      'Våpnene vil ha mer kraft enn generatoren gir: oppgrader den';
+
+  @override
+  String get tutCanAfford =>
+      'Du har råd til en oppgradering: sjekk ComCenter etter runden';
+
+  @override
+  String get tutFly => 'Dra for å fly. Våpnene skyter mens fingeren er nede';
+
+  @override
+  String get introCollect => 'Fang ikonene fiendene slipper';
+
+  @override
+  String get introShop => 'Mellom rundene bruker du kreditter i ComCenter';
+
+  @override
+  String get objBoss => 'Mål: overlev bølgene og slå bossen';
+
+  @override
+  String get objSurvive => 'Mål: overlev bølgene';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditter · $kills nedskutt';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Beste våpen: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Bossens skudd treffer hardt: et sterkere skjold gir deg tid';
+
+  @override
+  String get deathShield =>
+      'Oppgrader skjoldet i ComCenter: det tar treff før skroget';
+
+  @override
+  String get deathGuns =>
+      'Sterkere våpen rydder bølgene før de rekker å skade deg';
 }
