@@ -1141,5 +1141,5 @@ class AppLocalizationsTh extends AppLocalizations {
   String get duelDrillDone => 'สำเร็จ';
 
   @override
-  String get swapHint => 'แตะด้วยนิ้วที่สองเพื่อสลับอาวุธ';
+  String get swapHint => 'แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง';
 }

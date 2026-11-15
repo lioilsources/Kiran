@@ -150,7 +150,20 @@ class TyrianGame extends FlameGame
   final Map<int, Structure> clientStructures = {};
   final List<Projectile> clientPlayerProjectiles = [];
 
-  GameState state = GameState.comCenter;
+  GameState _state = GameState.comCenter;
+
+  GameState get state => _state;
+
+  /// Leaving [GameState.playing] puts the touch's first weapon set back at
+  /// once (plan 34), before anything else sees the loadout: the ComCenter,
+  /// the save written on the way into it, the game over.
+  set state(GameState next) {
+    if (_state == GameState.playing && next != GameState.playing) {
+      vessel.setAlternate(false);
+    }
+    _state = next;
+  }
+
   bool isLoaded = false;
 
   // Active game objects
@@ -884,6 +897,7 @@ class TyrianGame extends FlameGame
 
   void startGame() {
     state = GameState.playing;
+    touchReset();
     vessel.visible = true;
     vessel.resetPosition();
     if (vessel2 != null) {
@@ -1516,6 +1530,7 @@ class TyrianGame extends FlameGame
       vessel2!.position.x += 60;
     }
     state = GameState.playing;
+    touchReset();
     // Notify client that game is starting
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
@@ -1568,11 +1583,14 @@ class TyrianGame extends FlameGame
     return d1 <= d2 ? vessel.position.x : vessel2!.position.x;
   }
 
-  /// A second finger landed while the first is held: swap to the alternate
-  /// weapons.
   @override
-  void touchSwap() {
-    if (!vessel.swapToAlternate()) return;
+  bool get touchAlternate => vessel.alternateActive;
+
+  /// Two fingers fly the second weapon set, one the first (plan 34). The
+  /// message names the front gun and the DPS that flies now.
+  @override
+  void touchSetAlternate(bool on, {required bool announce}) {
+    if (!vessel.setAlternate(on) || !announce) return;
     final front = vessel.getDevice(WeaponSlot.frontGun);
     final dps = fmtNum(Campaign.poweredDps(vessel));
     showMessage('${front?.displayName.toUpperCase() ?? ''}  DPS $dps');
@@ -1586,8 +1604,8 @@ class TyrianGame extends FlameGame
       !_mouseFire &&
       !(duel.controls && coopRole != CoopRole.client);
 
-  /// Solo and host only: a co-op client sends position and fire, nothing
-  /// else, and a duel's touch aims instead.
+  /// The second set: solo and host only — a co-op client sends position and
+  /// fire, nothing else — and never in a duel, whose touch aims instead.
   @override
   bool get touchSwaps =>
       touchFlies && coopRole != CoopRole.client && !duel.controls;

@@ -1163,5 +1163,6 @@ class AppLocalizationsSv extends AppLocalizations {
   String get duelDrillDone => 'KLART';
 
   @override
-  String get swapHint => 'Tryck med ett andra finger för att byta vapen';
+  String get swapHint =>
+      'Med två fingrar skjuter du med din andra vapenuppsättning';
 }

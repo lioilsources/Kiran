@@ -1160,5 +1160,5 @@ class AppLocalizationsDa extends AppLocalizations {
   String get duelDrillDone => 'FÆRDIG';
 
   @override
-  String get swapHint => 'Tryk med en anden finger for at skifte våben';
+  String get swapHint => 'Med to fingre skyder du med dit andet våbensæt';
 }

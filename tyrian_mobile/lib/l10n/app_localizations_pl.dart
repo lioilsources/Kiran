@@ -1171,5 +1171,5 @@ class AppLocalizationsPl extends AppLocalizations {
   String get duelDrillDone => 'GOTOWE';
 
   @override
-  String get swapHint => 'Dotknij drugim palcem, aby zmienić broń';
+  String get swapHint => 'Dwoma palcami strzelasz drugim zestawem broni';
 }

@@ -1170,5 +1170,5 @@ class AppLocalizationsUk extends AppLocalizations {
   String get duelDrillDone => 'ГОТОВО';
 
   @override
-  String get swapHint => 'Торкнись другим пальцем, щоб змінити зброю';
+  String get swapHint => 'Двома пальцями стріляєш другим набором зброї';
 }

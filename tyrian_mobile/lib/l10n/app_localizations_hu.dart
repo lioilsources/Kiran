@@ -1164,5 +1164,5 @@ class AppLocalizationsHu extends AppLocalizations {
   String get duelDrillDone => 'KÉSZ';
 
   @override
-  String get swapHint => 'Koppints egy második ujjal a fegyvercseréhez';
+  String get swapHint => 'Két ujjal a második fegyverkészleteddel lősz';
 }

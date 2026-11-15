@@ -1159,5 +1159,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duelDrillDone => 'DONE';
 
   @override
-  String get swapHint => 'Tap a second finger to swap weapons';
+  String get swapHint => 'Hold two fingers to fire your second weapons';
 }

@@ -274,6 +274,11 @@ const double focusSpeed = 0.45;
 const double swapDelay = 0.5;
 const double swapHoldSides = 0.3;       // s held = swap the side pair instead
 
+// Touch: two fingers fly the second weapon set (plan 34). Back to one finger
+// for this long and the first set returns — two fingers never lift in the
+// same frame, so without it every two-finger lift would blink the set.
+const double touchAltRelease = 0.15;
+
 // Companions (§5.3).
 const int companionMax = 2;
 const double companionLife = 20;        // s

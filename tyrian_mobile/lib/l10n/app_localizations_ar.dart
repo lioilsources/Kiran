@@ -1167,5 +1167,5 @@ class AppLocalizationsAr extends AppLocalizations {
   String get duelDrillDone => 'تم';
 
   @override
-  String get swapHint => 'انقر بإصبع ثانٍ لتبديل الأسلحة';
+  String get swapHint => 'ضع إصبعين لتطلق بمجموعة أسلحتك الثانية';
 }

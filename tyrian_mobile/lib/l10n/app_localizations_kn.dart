@@ -1160,5 +1160,6 @@ class AppLocalizationsKn extends AppLocalizations {
   String get duelDrillDone => 'ಮುಗಿದಿದೆ';
 
   @override
-  String get swapHint => 'ಆಯುಧಗಳನ್ನು ಬದಲಾಯಿಸಲು ಎರಡನೇ ಬೆರಳಿನಿಂದ ಟ್ಯಾಪ್ ಮಾಡಿ';
+  String get swapHint =>
+      'ಎರಡು ಬೆರಳು ಇಟ್ಟರೆ ಎರಡನೇ ಸೆಟ್ ಆಯುಧಗಳಿಂದ ಗುಂಡು ಹಾರಿಸುವಿರಿ';
 }

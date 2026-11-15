@@ -1,96 +1,123 @@
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 
+import '../game/game_config.dart' as config;
 import 'touch_fingers.dart';
 
-/// The touch flight controls (plan 32 Q3), as a mixin so a test can drive
-/// them through Flame's real tap and drag dispatch. The game supplies what a
+/// The touch flight controls (plan 34), as a mixin so a test can drive them
+/// through Flame's real tap and drag dispatch. The game supplies what a
 /// finger does to the ship; the mixin decides which finger does it.
+///
+/// - One finger flies the ship and fires the first weapon set, as ever: a
+///   lone tap toggles the fire, a drag holds it.
+/// - Two or more fingers on the screen fire the second set at once.
+/// - Back to a single finger for [config.touchAltRelease], the first set
+///   returns. No finger at all changes nothing.
+/// - Only the oldest moving finger steers, by its own moves. When it lifts,
+///   the next one takes over from where it is, so the ship does not jump.
 mixin TouchControls on FlameGame, DragCallbacks, TapCallbacks {
-  /// Primary finger vs. swap fingers. Only the primary moves the ship and
-  /// holds the fire.
   final TouchFingers touchFingers = TouchFingers();
 
-  // Delta-based, so finger and vessel move in sync.
-  Vector2? _prevDragPos;
+  /// How long a single finger has been on the screen with the second set
+  /// still fitted.
+  double _oneFinger = 0;
 
   /// The touch flies the ship now.
   bool get touchFlies;
 
-  /// The weapon swap may run now.
+  /// The second set may fly now (solo or host, playing, no duel).
   bool get touchSwaps;
 
-  /// Move the ship by a finger's [canvasDelta], in canvas pixels.
+  /// Move the ship by the steering finger's [canvasDelta], in canvas pixels.
   void touchSteer(Vector2 canvasDelta);
 
-  /// The primary finger tapped: toggle the fire.
+  /// A finger landed on an empty screen: toggle the fire.
   void touchToggleFire();
 
   void touchSetFire(bool on);
 
-  /// A second finger landed while the first is held.
-  void touchSwap();
+  /// Whether the second set is fitted.
+  bool get touchAlternate;
 
-  /// Once a frame.
-  void touchTick(double dt) => touchFingers.flush();
+  /// Fit the second set ([on]) or the first. [announce] says whether to
+  /// show what flies now.
+  void touchSetAlternate(bool on, {required bool announce});
 
-  @override
-  void onDragStart(DragStartEvent event) {
-    super.onDragStart(event);
-    final finger = touchFingers.down(event.pointerId);
-    if (!touchFlies) return;
-    if (!finger.primary) {
-      if (finger.landed && touchSwaps) touchSwap();
+  /// Once a frame, from the game's update: the one place the finger count
+  /// is read.
+  void touchTick(double dt) {
+    if (!touchSwaps) {
+      _oneFinger = 0;
+      if (touchAlternate) touchSetAlternate(false, announce: false);
       return;
     }
-    _prevDragPos = event.canvasPosition.clone();
-    touchSetFire(true);
+    final n = touchFingers.count;
+    if (n >= 2) {
+      _oneFinger = 0;
+      if (!touchAlternate) touchSetAlternate(true, announce: true);
+      return;
+    }
+    if (n == 1 && touchAlternate) {
+      _oneFinger += dt;
+      if (_oneFinger >= config.touchAltRelease) {
+        _oneFinger = 0;
+        touchSetAlternate(false, announce: true);
+      }
+      return;
+    }
+    _oneFinger = 0;
   }
 
-  @override
-  void onDragUpdate(DragUpdateEvent event) {
-    super.onDragUpdate(event);
-    if (!touchFlies || _prevDragPos == null) return;
-    if (!touchFingers.isPrimary(event.pointerId)) return;
-    final pos = event.canvasEndPosition;
-    final delta = pos - _prevDragPos!;
-    _prevDragPos = pos.clone();
-    touchSteer(delta);
-  }
-
-  @override
-  void onDragEnd(DragEndEvent event) {
-    super.onDragEnd(event);
-    final primary = touchFingers.isPrimary(event.pointerId);
-    touchFingers.up(event.pointerId);
-    // A swap finger lifting leaves the ship and its fire alone.
-    if (!primary) return;
-    if (!touchFlies) return;
-    _prevDragPos = null;
-    touchSetFire(false);
+  /// Forget every finger, at the start of a sector.
+  void touchReset() {
+    touchFingers.clear();
+    _oneFinger = 0;
   }
 
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    final finger = touchFingers.down(event.pointerId);
-    if (!touchFlies) return;
-    if (!finger.primary) {
-      if (finger.landed && touchSwaps) touchSwap();
-      return;
-    }
-    touchToggleFire();
+    final first = touchFingers.count == 0;
+    touchFingers.tapDown(event.pointerId);
+    // Only a finger landing on an empty screen toggles the fire: a second
+    // finger's tap is the second set, not a trigger.
+    if (first && touchFlies) touchToggleFire();
   }
 
   @override
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
-    touchFingers.up(event.pointerId);
+    touchFingers.tapUp(event.pointerId);
   }
 
   @override
   void onTapCancel(TapCancelEvent event) {
     super.onTapCancel(event);
-    touchFingers.tapCancelled(event.pointerId);
+    touchFingers.tapUp(event.pointerId);
+  }
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+    touchFingers.dragStart(event.pointerId);
+    if (touchFlies) touchSetFire(true);
+  }
+
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    super.onDragUpdate(event);
+    if (!touchFlies || touchFingers.steering != event.pointerId) return;
+    // The update's own delta, so finger and vessel move in sync. (Not the
+    // difference of end positions: Flame adds the delta to a position that
+    // already includes it, so that difference runs a move ahead.)
+    touchSteer(event.canvasDelta);
+  }
+
+  @override
+  void onDragEnd(DragEndEvent event) {
+    super.onDragEnd(event);
+    touchFingers.dragEnd(event.pointerId);
+    // The fire holds while any finger still moves.
+    if (touchFlies && !touchFingers.dragging) touchSetFire(false);
   }
 }

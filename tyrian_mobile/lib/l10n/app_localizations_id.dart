@@ -1162,5 +1162,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get duelDrillDone => 'SELESAI';
 
   @override
-  String get swapHint => 'Ketuk dengan jari kedua untuk mengganti senjata';
+  String get swapHint =>
+      'Dengan dua jari, kamu menembak dengan set senjata kedua';
 }

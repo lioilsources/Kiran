@@ -1,81 +1,83 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tyrian_mobile/input/touch_fingers.dart';
 
-/// Plan 32 Q3: the first finger flies, a further finger swaps once.
+/// Plan 34: the fingers on the screen, from Flame's two unrelated id series.
+/// A tap carries Flutter's pointer number, a drag Flame's own counter, so
+/// these use different numbers for the tap and the drag of one finger — the
+/// assumption that they match is what broke plan 32's version.
 void main() {
-  test('one finger: a tap is the primary, as it always was', () {
+  test('one finger: tap, then its drag — one finger throughout', () {
     final f = TouchFingers();
-    final a = f.down(1);
-    expect(a.primary, isTrue);
-    expect(a.landed, isTrue);
-    f.up(1);
-    expect(f.hasPrimary, isFalse);
-    expect(f.down(2).primary, isTrue, reason: 'the next finger flies again');
+    f.tapDown(7); // Flutter's pointer number
+    expect(f.count, 1);
+    expect(f.steering, isNull, reason: 'a resting finger steers nothing');
+    f.tapUp(7); // the drag wins: the tap is cancelled …
+    f.dragStart(0); // … and the drag starts, under Flame's own id
+    expect(f.count, 1);
+    expect(f.steering, 0);
+    f.dragEnd(0);
+    expect(f.count, 0);
+    expect(f.dragging, isFalse);
   });
 
-  test('one finger dragging: tap cancel then drag start is one finger', () {
+  test('a lone tap is one finger until it lifts', () {
     final f = TouchFingers();
-    expect(f.down(1).landed, isTrue); // tap down
-    f.tapCancelled(1); // the drag wins the arena
-    final drag = f.down(1); // drag start, same pointer
-    expect(drag.primary, isTrue);
-    expect(drag.landed, isFalse, reason: 'not a second landing');
-    f.flush(); // next frame
-    expect(f.isPrimary(1), isTrue, reason: 'its drag kept it');
+    f.tapDown(3);
+    expect(f.count, 1);
+    f.tapUp(3);
+    expect(f.count, 0);
   });
 
-  test('down A, down B, up B, up A', () {
-    final f = TouchFingers();
-    expect(f.down(1).primary, isTrue);
-    final b = f.down(2);
-    expect(b.primary, isFalse);
-    expect(b.landed, isTrue, reason: 'B swaps, once');
-    // B moves a little: its tap is cancelled and its drag starts.
-    f.tapCancelled(2);
-    expect(f.down(2).landed, isFalse, reason: 'no second swap from one finger');
-    f.flush();
-    f.up(2);
-    expect(f.isPrimary(1), isTrue, reason: 'B lifting leaves A flying');
-    f.up(1);
-    expect(f.hasPrimary, isFalse);
+  test('A drags, B rests: two fingers, A steers', () {
+    final f = TouchFingers()
+      ..tapDown(5)
+      ..tapUp(5)
+      ..dragStart(0)
+      ..tapDown(6);
+    expect(f.count, 2);
+    expect(f.steering, 0);
+    f.tapUp(6);
+    expect(f.count, 1);
   });
 
-  test('down A, down B, up A, drag B: B does not take over', () {
-    final f = TouchFingers();
-    f.down(1);
-    f.down(2);
-    f.up(1);
-    expect(f.hasPrimary, isFalse);
-    final drag = f.down(2); // B's drag start
-    expect(drag.primary, isFalse, reason: 'B stays a swap finger');
-    expect(drag.landed, isFalse, reason: 'and does not swap again');
-    expect(f.isPrimary(2), isFalse);
-    // A new finger is the next primary.
-    expect(f.down(3).primary, isTrue);
+  test('the oldest drag steers; when it lifts the next takes over', () {
+    final f = TouchFingers()
+      ..dragStart(4)
+      ..dragStart(5);
+    expect(f.count, 2);
+    expect(f.steering, 4);
+    f.dragEnd(4);
+    expect(f.steering, 5);
+    expect(f.count, 1);
   });
 
-  test('every further finger swaps once on landing', () {
-    final f = TouchFingers();
-    f.down(1);
-    expect(f.down(2).landed, isTrue);
-    expect(f.down(3).landed, isTrue);
-    expect(f.down(3).landed, isFalse);
+  test('a tap id equal to another finger\'s drag id is a different finger', () {
+    final f = TouchFingers()
+      ..dragStart(2) // finger A, moving, drag id 2
+      ..tapDown(2); // finger B lands, pointer number 2
+    expect(f.count, 2);
+    f.tapUp(2); // B lifts
+    expect(f.count, 1);
+    expect(f.steering, 2, reason: 'A still flies');
   });
 
-  test('a cancelled tap whose drag never starts is released', () {
-    final f = TouchFingers();
-    f.down(1);
-    f.tapCancelled(1); // finger gone (system gesture)
-    f.flush();
-    expect(f.hasPrimary, isFalse, reason: 'no stuck primary');
-    expect(f.down(2).primary, isTrue);
+  test('a drag reported twice counts once', () {
+    final f = TouchFingers()
+      ..dragStart(1)
+      ..dragStart(1);
+    expect(f.count, 1);
   });
 
-  test('lifting an unknown finger is harmless', () {
-    final f = TouchFingers();
-    f.up(7);
-    f.tapCancelled(7);
-    f.flush();
-    expect(f.hasPrimary, isFalse);
+  test('lifting an unknown finger is harmless; clear forgets all', () {
+    final f = TouchFingers()
+      ..tapUp(9)
+      ..dragEnd(9);
+    expect(f.count, 0);
+    f
+      ..tapDown(1)
+      ..dragStart(0)
+      ..clear();
+    expect(f.count, 0);
+    expect(f.steering, isNull);
   });
 }
