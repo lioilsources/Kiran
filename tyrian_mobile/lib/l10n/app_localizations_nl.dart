@@ -1172,5 +1172,5 @@ class AppLocalizationsNl extends AppLocalizations {
   String get duelDrillDone => 'KLAAR';
 
   @override
-  String get swapHint => 'Tik met een tweede vinger om van wapen te wisselen';
+  String get swapHint => 'Met twee vingers vuur je je tweede wapenset af';
 }

@@ -1170,5 +1170,5 @@ class AppLocalizationsHr extends AppLocalizations {
   String get duelDrillDone => 'GOTOVO';
 
   @override
-  String get swapHint => 'Dodirni drugim prstom za promjenu oružja';
+  String get swapHint => 'S dva prsta pucaš drugim kompletom oružja';
 }

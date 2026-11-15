@@ -322,5 +322,5 @@
   "duelDrillTurn": "振り返る",
   "duelDrillTurnHow": "ボスは下にいる：機首を回して当てよう",
   "duelDrillDone": "完了",
-  "swapHint": "2本目の指でタップして武器を切り替えよう"
+  "swapHint": "2本指で触れている間は2つ目の武器セットで撃てる"
 }

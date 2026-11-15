@@ -1170,5 +1170,5 @@ class AppLocalizationsFi extends AppLocalizations {
   String get duelDrillDone => 'VALMIS';
 
   @override
-  String get swapHint => 'Napauta toisella sormella vaihtaaksesi aseet';
+  String get swapHint => 'Kahdella sormella ammut toisella asesarjallasi';
 }

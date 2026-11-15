@@ -1158,5 +1158,5 @@ class AppLocalizationsBn extends AppLocalizations {
   String get duelDrillDone => 'সম্পন্ন';
 
   @override
-  String get swapHint => 'অস্ত্র বদলাতে দ্বিতীয় আঙুল দিয়ে ট্যাপ করো';
+  String get swapHint => 'দুই আঙুল রাখলে দ্বিতীয় সেটের অস্ত্র চলবে';
 }

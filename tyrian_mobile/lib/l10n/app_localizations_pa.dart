@@ -1158,5 +1158,5 @@ class AppLocalizationsPa extends AppLocalizations {
   String get duelDrillDone => 'ਹੋ ਗਿਆ';
 
   @override
-  String get swapHint => 'ਹਥਿਆਰ ਬਦਲਣ ਲਈ ਦੂਜੀ ਉਂਗਲ ਨਾਲ ਟੈਪ ਕਰੋ';
+  String get swapHint => 'ਦੋ ਉਂਗਲਾਂ ਰੱਖੋ ਤਾਂ ਦੂਜੇ ਸੈੱਟ ਦੇ ਹਥਿਆਰ ਚੱਲਣਗੇ';
 }

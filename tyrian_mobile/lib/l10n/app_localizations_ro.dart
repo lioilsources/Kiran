@@ -1180,5 +1180,5 @@ class AppLocalizationsRo extends AppLocalizations {
   String get duelDrillDone => 'GATA';
 
   @override
-  String get swapHint => 'Atinge cu un al doilea deget ca să schimbi armele';
+  String get swapHint => 'Cu două degete tragi cu al doilea set de arme';
 }

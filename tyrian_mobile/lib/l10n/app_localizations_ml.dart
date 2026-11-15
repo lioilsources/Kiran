@@ -1174,5 +1174,5 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get swapHint =>
-      'ആയുധങ്ങൾ മാറ്റാൻ രണ്ടാമത്തെ വിരൽ കൊണ്ട് ടാപ്പ് ചെയ്യൂ';
+      'രണ്ട് വിരൽ വെച്ചാൽ രണ്ടാം സെറ്റ് ആയുധങ്ങൾ കൊണ്ട് വെടിവെക്കും';
 }

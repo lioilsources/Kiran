@@ -803,6 +803,7 @@ class SigilCaster {
     final type = DevType.byName(d.name);
     if (type == null) return;
     final fitted = vessel.swapIn(type, slot);
+    vessel.keepHandFitted(slot);
     TelemetryService.instance.noteWeaponSwitch();
     vessel.game.showMessage(fitted.displayName.toUpperCase());
   }
