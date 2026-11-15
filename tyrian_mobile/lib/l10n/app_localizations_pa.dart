@@ -1149,4 +1149,27 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ਹੋ ਗਿਆ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ਹੋਰ ਤਾਕਤਵਰ ਗੋਲੀਆਂ';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ਜਹਾਜ਼ ਠੀਕ ਹੋਇਆ';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ਢਾਲ, ਜਲਦੀ ਰੀਚਾਰਜ ਹੁੰਦੀ ਹੈ';
+  }
+
+  @override
+  String get pickupGenerator => 'ਜਨਰੇਟਰ ਬਿਹਤਰ: ਹਥਿਆਰਾਂ ਲਈ ਹੋਰ ਊਰਜਾ';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ਕ੍ਰੈਡਿਟ ComCenter ਲਈ';
+  }
 }

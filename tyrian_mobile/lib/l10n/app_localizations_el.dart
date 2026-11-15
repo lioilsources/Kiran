@@ -1169,4 +1169,28 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ΤΕΛΟΣ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: πιο δυνατές βολές';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: η άτρακτος επισκευάστηκε';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ασπίδα, φορτίζει πιο γρήγορα';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Ισχυρότερη γεννήτρια: περισσότερη ενέργεια για τα όπλα';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount μονάδες για το ComCenter';
+  }
 }

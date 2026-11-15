@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "Na postura, desenha um sigilo em direção ao chefe",
   "duelDrillTurn": "DAR A VOLTA",
   "duelDrillTurnHow": "O chefe está abaixo de ti: vira o nariz e acerta-lhe",
-  "duelDrillDone": "FEITO"
+  "duelDrillDone": "FEITO",
+  "pickupWeapon": "{slot} {lv}: disparos mais fortes",
+  "pickupRepair": "+{amount} HP: casco reparado",
+  "pickupShield": "+{amount} de escudo, recarrega mais depressa",
+  "pickupGenerator": "Gerador melhorado: mais energia para as armas",
+  "pickupCredits": "+{amount} créditos para gastar no ComCenter"
 }

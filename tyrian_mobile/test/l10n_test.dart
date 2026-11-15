@@ -35,6 +35,14 @@ void main() {
       expect(l.weaponOff('LASER'), contains('LASER'), reason: '$locale');
       expect(l.unlocksAt('400 000'), contains('400 000'), reason: '$locale');
       expect(l.padControlsHint, contains('[OPTIONS]'), reason: '$locale');
+      // Pickup notes and the sector title keep their numbers.
+      expect(l.pickupWeapon('FRONT', 'Lv.3'), allOf(contains('FRONT'), contains('Lv.3')),
+          reason: '$locale');
+      expect(l.pickupRepair(31), contains('31'), reason: '$locale');
+      expect(l.pickupShield(42), contains('42'), reason: '$locale');
+      expect(l.pickupGenerator, isNotEmpty, reason: '$locale');
+      expect(l.pickupCredits('1 500'), contains('1 500'), reason: '$locale');
+      expect(l.nodeLevel(7), contains('7'), reason: '$locale');
       // Weapon family names are proper nouns: identical in every language.
       expect(
           [l.familyBubble, l.familyVulcan, l.familyBlaster, l.familyStar, l.familyLaser],

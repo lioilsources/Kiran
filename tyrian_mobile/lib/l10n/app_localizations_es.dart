@@ -1169,4 +1169,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'HECHO';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: disparos más fuertes';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: casco reparado';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount de escudo, se recarga más rápido';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generador mejorado: más energía para tus armas';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount créditos para gastar en el ComCenter';
+  }
 }

@@ -1162,4 +1162,28 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'KÉSZ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: erősebb lövések';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: a hajótest megjavítva';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount pajzs, gyorsabban töltődik';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Erősebb generátor: több energia a fegyvereknek';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredit a ComCenterbe';
+  }
 }

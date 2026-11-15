@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "En posture, trace un sigil vers le boss",
   "duelDrillTurn": "DEMI-TOUR",
   "duelDrillTurnHow": "Le boss est sous toi : tourne le nez et touche-le",
-  "duelDrillDone": "RÉUSSI"
+  "duelDrillDone": "RÉUSSI",
+  "pickupWeapon": "{slot} {lv} : tirs plus puissants",
+  "pickupRepair": "+{amount} HP : coque réparée",
+  "pickupShield": "+{amount} de bouclier, recharge plus rapide",
+  "pickupGenerator": "Générateur amélioré : plus d'énergie pour tes armes",
+  "pickupCredits": "+{amount} crédits à dépenser au ComCenter"
 }

@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "Trong thế đấu, vẽ một sigil về phía trùm",
   "duelDrillTurn": "QUAY LẠI",
   "duelDrillTurnHow": "Trùm ở bên dưới: xoay mũi tàu và bắn trúng",
-  "duelDrillDone": "XONG"
+  "duelDrillDone": "XONG",
+  "pickupWeapon": "{slot} {lv}: bắn mạnh hơn",
+  "pickupRepair": "+{amount} HP: thân tàu đã sửa",
+  "pickupShield": "+{amount} khiên, sạc nhanh hơn",
+  "pickupGenerator": "Máy phát mạnh hơn: thêm năng lượng cho vũ khí",
+  "pickupCredits": "+{amount} tín dụng để tiêu ở ComCenter"
 }

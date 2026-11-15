@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "I ställningen, rita ett sigill mot bossen",
   "duelDrillTurn": "VÄND OM",
   "duelDrillTurnHow": "Bossen är under dig: vänd nosen och träffa den",
-  "duelDrillDone": "KLART"
+  "duelDrillDone": "KLART",
+  "pickupWeapon": "{slot} {lv}: kraftigare skott",
+  "pickupRepair": "+{amount} HP: skrovet reparerat",
+  "pickupShield": "+{amount} sköld, laddas snabbare",
+  "pickupGenerator": "Bättre generator: mer kraft till vapnen",
+  "pickupCredits": "+{amount} krediter till ComCenter"
 }

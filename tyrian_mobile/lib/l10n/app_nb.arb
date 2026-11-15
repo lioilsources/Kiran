@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "I stillingen, tegn en sigil mot bossen",
   "duelDrillTurn": "SNU",
   "duelDrillTurnHow": "Bossen er under deg: snu nesen og treff den",
-  "duelDrillDone": "FERDIG"
+  "duelDrillDone": "FERDIG",
+  "pickupWeapon": "{slot} {lv}: kraftigere skudd",
+  "pickupRepair": "+{amount} HP: skroget er reparert",
+  "pickupShield": "+{amount} skjold, lades raskere",
+  "pickupGenerator": "Bedre generator: mer kraft til våpnene",
+  "pickupCredits": "+{amount} kreditter til ComCenter"
 }

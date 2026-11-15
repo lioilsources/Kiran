@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "ਮੁਦਰਾ ਵਿੱਚ ਬੌਸ ਵੱਲ ਸਿਜਿਲ ਬਣਾਓ",
   "duelDrillTurn": "ਪਿੱਛੇ ਮੁੜੋ",
   "duelDrillTurnHow": "ਬੌਸ ਤੁਹਾਡੇ ਹੇਠਾਂ ਹੈ: ਨੱਕ ਮੋੜੋ ਅਤੇ ਮਾਰੋ",
-  "duelDrillDone": "ਹੋ ਗਿਆ"
+  "duelDrillDone": "ਹੋ ਗਿਆ",
+  "pickupWeapon": "{slot} {lv}: ਹੋਰ ਤਾਕਤਵਰ ਗੋਲੀਆਂ",
+  "pickupRepair": "+{amount} HP: ਜਹਾਜ਼ ਠੀਕ ਹੋਇਆ",
+  "pickupShield": "+{amount} ਢਾਲ, ਜਲਦੀ ਰੀਚਾਰਜ ਹੁੰਦੀ ਹੈ",
+  "pickupGenerator": "ਜਨਰੇਟਰ ਬਿਹਤਰ: ਹਥਿਆਰਾਂ ਲਈ ਹੋਰ ਊਰਜਾ",
+  "pickupCredits": "+{amount} ਕ੍ਰੈਡਿਟ ComCenter ਲਈ"
 }

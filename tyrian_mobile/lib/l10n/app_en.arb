@@ -828,5 +828,48 @@
   "duelDrillDrawHow": "In the stance, draw a sigil toward the boss",
   "duelDrillTurn": "TURN ROUND",
   "duelDrillTurnHow": "The boss is below you: turn the nose and hit it",
-  "duelDrillDone": "DONE"
+  "duelDrillDone": "DONE",
+  "pickupWeapon": "{slot} {lv}: stronger shots",
+  "@pickupWeapon": {
+    "description": "Pickup note: a weapon slot went up a level. slot = the slot name (Front/Left/Right), lv = the level (\"Lv.3\")",
+    "placeholders": {
+      "slot": {
+        "type": "String"
+      },
+      "lv": {
+        "type": "String"
+      }
+    }
+  },
+  "pickupRepair": "+{amount} HP: hull repaired",
+  "@pickupRepair": {
+    "description": "Pickup note: hull points repaired",
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "pickupShield": "+{amount} shield, recharges faster",
+  "@pickupShield": {
+    "description": "Pickup note: shield points added; the shield also recharges faster",
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "pickupGenerator": "Generator up: more power for your guns",
+  "@pickupGenerator": {
+    "description": "Pickup note: the generator went up a level"
+  },
+  "pickupCredits": "+{amount} credits to spend in the ComCenter",
+  "@pickupCredits": {
+    "description": "Pickup note: credits gained, spent in the ComCenter. amount is formatted (\"1 500\")",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1163,4 +1163,27 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'KLAAR';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: sterkere schoten';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: romp gerepareerd';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount schild, laadt sneller op';
+  }
+
+  @override
+  String get pickupGenerator => 'Betere generator: meer energie voor je wapens';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount credits voor het ComCenter';
+  }
 }

@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "భంగిమలో, బాస్ వైపు ఒక సిగిల్ గీయండి",
   "duelDrillTurn": "వెనుదిరుగు",
   "duelDrillTurnHow": "బాస్ మీ కింద ఉన్నాడు: ముక్కు తిప్పి కొట్టండి",
-  "duelDrillDone": "పూర్తయింది"
+  "duelDrillDone": "పూర్తయింది",
+  "pickupWeapon": "{slot} {lv}: మరింత బలమైన కాల్పులు",
+  "pickupRepair": "+{amount} HP: నౌక మరమ్మతు అయింది",
+  "pickupShield": "+{amount} కవచం, త్వరగా రీఛార్జ్ అవుతుంది",
+  "pickupGenerator": "జనరేటర్ మెరుగైంది: ఆయుధాలకు మరింత శక్తి",
+  "pickupCredits": "+{amount} క్రెడిట్లు ComCenter కోసం"
 }

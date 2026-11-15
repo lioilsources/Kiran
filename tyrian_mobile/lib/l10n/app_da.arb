@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "I stillingen, tegn en sigil mod bossen",
   "duelDrillTurn": "VEND OM",
   "duelDrillTurnHow": "Bossen er under dig: drej næsen og ram den",
-  "duelDrillDone": "FÆRDIG"
+  "duelDrillDone": "FÆRDIG",
+  "pickupWeapon": "{slot} {lv}: stærkere skud",
+  "pickupRepair": "+{amount} HP: skroget er repareret",
+  "pickupShield": "+{amount} skjold, lader hurtigere op",
+  "pickupGenerator": "Bedre generator: mere kraft til våbnene",
+  "pickupCredits": "+{amount} kreditter til ComCenter"
 }

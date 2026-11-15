@@ -2101,6 +2101,35 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DONE'**
   String get duelDrillDone;
+  /// Pickup note: a weapon slot went up a level. slot = the slot name (Front/Left/Right), lv = the level ("Lv.3")
+  ///
+  /// In en, this message translates to:
+  /// **'{slot} {lv}: stronger shots'**
+  String pickupWeapon(String slot, String lv);
+
+  /// Pickup note: hull points repaired
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} HP: hull repaired'**
+  String pickupRepair(int amount);
+
+  /// Pickup note: shield points added; the shield also recharges faster
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} shield, recharges faster'**
+  String pickupShield(int amount);
+
+  /// Pickup note: the generator went up a level
+  ///
+  /// In en, this message translates to:
+  /// **'Generator up: more power for your guns'**
+  String get pickupGenerator;
+
+  /// Pickup note: credits gained, spent in the ComCenter. amount is formatted ("1 500")
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} credits to spend in the ComCenter'**
+  String pickupCredits(String amount);
 }
 
 class _AppLocalizationsDelegate

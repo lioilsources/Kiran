@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "ভঙ্গিতে বসের দিকে একটি সিজিল আঁকো",
   "duelDrillTurn": "ঘুরে যাও",
   "duelDrillTurnHow": "বস তোমার নিচে: নাক ঘুরিয়ে আঘাত করো",
-  "duelDrillDone": "সম্পন্ন"
+  "duelDrillDone": "সম্পন্ন",
+  "pickupWeapon": "{slot} {lv}: আরও শক্তিশালী গুলি",
+  "pickupRepair": "+{amount} HP: হাল মেরামত হল",
+  "pickupShield": "+{amount} ঢাল, দ্রুত রিচার্জ হয়",
+  "pickupGenerator": "জেনারেটর উন্নত: অস্ত্রে আরও শক্তি",
+  "pickupCredits": "+{amount} ক্রেডিট, ComCenter-এ খরচ করো"
 }

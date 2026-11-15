@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "En la postura, dibuja un sigilo hacia el jefe",
   "duelDrillTurn": "DATE LA VUELTA",
   "duelDrillTurnHow": "El jefe está debajo de ti: gira el morro y dale",
-  "duelDrillDone": "HECHO"
+  "duelDrillDone": "HECHO",
+  "pickupWeapon": "{slot} {lv}: disparos más fuertes",
+  "pickupRepair": "+{amount} HP: casco reparado",
+  "pickupShield": "+{amount} de escudo, se recarga más rápido",
+  "pickupGenerator": "Generador mejorado: más energía para tus armas",
+  "pickupCredits": "+{amount} créditos para gastar en el ComCenter"
 }

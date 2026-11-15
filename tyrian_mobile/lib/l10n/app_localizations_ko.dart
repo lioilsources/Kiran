@@ -1134,4 +1134,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get duelDrillDone => '완료';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: 더 강한 사격';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: 선체 수리';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '보호막 +$amount, 더 빨리 충전';
+  }
+
+  @override
+  String get pickupGenerator => '발전기 강화: 무기에 더 많은 에너지';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount 크레딧, ComCenter에서 사용';
+  }
 }

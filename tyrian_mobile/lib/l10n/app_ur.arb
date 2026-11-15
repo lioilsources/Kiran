@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "انداز میں باس کی طرف ایک سگل بنائیں",
   "duelDrillTurn": "مڑو",
   "duelDrillTurnHow": "باس آپ کے نیچے ہے: ناک موڑ کر اسے ماریں",
-  "duelDrillDone": "مکمل"
+  "duelDrillDone": "مکمل",
+  "pickupWeapon": "{slot} {lv}: زیادہ طاقتور فائر",
+  "pickupRepair": "+{amount} HP: ڈھانچہ مرمت ہو گیا",
+  "pickupShield": "+{amount} ڈھال، جلدی ری چارج ہوتی ہے",
+  "pickupGenerator": "بہتر جنریٹر: ہتھیاروں کو زیادہ توانائی",
+  "pickupCredits": "+{amount} کریڈٹ ComCenter کے لیے"
 }

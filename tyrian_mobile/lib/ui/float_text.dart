@@ -14,6 +14,9 @@ class FloatText extends PositionComponent {
   final double fontSize;
   final double duration; // seconds
   double _elapsed = 0;
+
+  /// Seconds since the text appeared.
+  double get age => _elapsed;
   final bool stationary;
   final double driftSpeed; // pixels per second upward
 

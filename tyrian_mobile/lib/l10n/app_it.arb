@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "In postura, traccia un sigillo verso il boss",
   "duelDrillTurn": "GIRATI",
   "duelDrillTurnHow": "Il boss è sotto di te: gira il muso e colpiscilo",
-  "duelDrillDone": "FATTO"
+  "duelDrillDone": "FATTO",
+  "pickupWeapon": "{slot} {lv}: colpi più potenti",
+  "pickupRepair": "+{amount} HP: scafo riparato",
+  "pickupShield": "+{amount} di scudo, si ricarica più in fretta",
+  "pickupGenerator": "Generatore potenziato: più energia per le armi",
+  "pickupCredits": "+{amount} crediti da spendere nel ComCenter"
 }

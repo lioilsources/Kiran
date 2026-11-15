@@ -1145,4 +1145,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'XONG';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: bắn mạnh hơn';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: thân tàu đã sửa';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount khiên, sạc nhanh hơn';
+  }
+
+  @override
+  String get pickupGenerator => 'Máy phát mạnh hơn: thêm năng lượng cho vũ khí';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount tín dụng để tiêu ở ComCenter';
+  }
 }

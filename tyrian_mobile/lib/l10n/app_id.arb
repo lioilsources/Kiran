@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "Dalam kuda-kuda, gambar sigil ke arah bos",
   "duelDrillTurn": "BERBALIK",
   "duelDrillTurnHow": "Bos ada di bawahmu: putar moncong dan kenai",
-  "duelDrillDone": "SELESAI"
+  "duelDrillDone": "SELESAI",
+  "pickupWeapon": "{slot} {lv}: tembakan lebih kuat",
+  "pickupRepair": "+{amount} HP: lambung diperbaiki",
+  "pickupShield": "+{amount} perisai, isi ulang lebih cepat",
+  "pickupGenerator": "Generator naik: lebih banyak daya untuk senjata",
+  "pickupCredits": "+{amount} kredit untuk ComCenter"
 }

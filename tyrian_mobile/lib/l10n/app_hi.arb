@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "मुद्रा में, बॉस की ओर सिजिल बनाओ",
   "duelDrillTurn": "मुड़ो",
   "duelDrillTurnHow": "बॉस नीचे है: नाक घुमाओ और मारो",
-  "duelDrillDone": "हो गया"
+  "duelDrillDone": "हो गया",
+  "pickupWeapon": "{slot} {lv}: ज़्यादा ताक़तवर गोलियाँ",
+  "pickupRepair": "+{amount} HP: ढाँचा ठीक हुआ",
+  "pickupShield": "+{amount} कवच, जल्दी रिचार्ज होता है",
+  "pickupGenerator": "बेहतर जनरेटर: हथियारों को ज़्यादा ऊर्जा",
+  "pickupCredits": "+{amount} क्रेडिट, ComCenter में ख़र्च करो"
 }

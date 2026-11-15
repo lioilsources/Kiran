@@ -1152,4 +1152,27 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'हो गया';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ज़्यादा ताक़तवर गोलियाँ';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ढाँचा ठीक हुआ';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount कवच, जल्दी रिचार्ज होता है';
+  }
+
+  @override
+  String get pickupGenerator => 'बेहतर जनरेटर: हथियारों को ज़्यादा ऊर्जा';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount क्रेडिट, ComCenter में ख़र्च करो';
+  }
 }

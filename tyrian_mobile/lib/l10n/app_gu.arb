@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "મુદ્રામાં, બોસ તરફ સિજિલ દોરો",
   "duelDrillTurn": "વળો",
   "duelDrillTurnHow": "બોસ નીચે છે: નાક ફેરવો અને મારો",
-  "duelDrillDone": "પૂર્ણ"
+  "duelDrillDone": "પૂર્ણ",
+  "pickupWeapon": "{slot} {lv}: વધુ શક્તિશાળી ગોળીબાર",
+  "pickupRepair": "+{amount} HP: ઢાંચો રિપેર થયો",
+  "pickupShield": "+{amount} કવચ, ઝડપથી રિચાર્જ થાય",
+  "pickupGenerator": "જનરેટર સુધર્યું: હથિયારો માટે વધુ ઊર્જા",
+  "pickupCredits": "+{amount} ક્રેડિટ ComCenter માટે"
 }

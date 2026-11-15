@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "În poziție, desenează un sigiliu spre boss",
   "duelDrillTurn": "ÎNTOARCE-TE",
   "duelDrillTurnHow": "Bossul e sub tine: întoarce botul și lovește-l",
-  "duelDrillDone": "GATA"
+  "duelDrillDone": "GATA",
+  "pickupWeapon": "{slot} {lv}: focuri mai puternice",
+  "pickupRepair": "+{amount} HP: carcasă reparată",
+  "pickupShield": "+{amount} scut, se reîncarcă mai repede",
+  "pickupGenerator": "Generator mai bun: mai multă energie pentru arme",
+  "pickupCredits": "+{amount} credite pentru ComCenter"
 }

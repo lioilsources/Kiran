@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "ನಿಲುವಿನಲ್ಲಿ ಬಾಸ್ ಕಡೆ ಸಿಜಿಲ್ ಬರೆಯಿರಿ",
   "duelDrillTurn": "ಹಿಂತಿರುಗಿ",
   "duelDrillTurnHow": "ಬಾಸ್ ನಿಮ್ಮ ಕೆಳಗಿದೆ: ಮೂಗು ತಿರುಗಿಸಿ ಹೊಡೆಯಿರಿ",
-  "duelDrillDone": "ಮುಗಿದಿದೆ"
+  "duelDrillDone": "ಮುಗಿದಿದೆ",
+  "pickupWeapon": "{slot} {lv}: ಇನ್ನಷ್ಟು ಬಲವಾದ ಗುಂಡುಗಳು",
+  "pickupRepair": "+{amount} HP: ಹಡಗು ದುರಸ್ತಿಯಾಯಿತು",
+  "pickupShield": "+{amount} ಕವಚ, ಬೇಗ ಮರುಪೂರಣ",
+  "pickupGenerator": "ಜನರೇಟರ್ ಉನ್ನತೀಕರಣ: ಆಯುಧಗಳಿಗೆ ಹೆಚ್ಚು ಶಕ್ತಿ",
+  "pickupCredits": "+{amount} ಕ್ರೆಡಿಟ್ ComCenter ಗಾಗಿ"
 }

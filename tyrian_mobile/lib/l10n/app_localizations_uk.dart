@@ -1168,4 +1168,28 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ГОТОВО';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: потужніші постріли';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: корпус полагоджено';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount щита, заряджається швидше';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Потужніший генератор: більше енергії для зброї';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount кредитів на покупки в ComCenter';
+  }
 }

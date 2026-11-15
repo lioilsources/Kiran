@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "Στη στάση, σχεδίασε σφραγίδα προς το boss",
   "duelDrillTurn": "ΓΥΡΝΑ",
   "duelDrillTurnHow": "Το boss είναι από κάτω: γύρνα τη μύτη και χτύπα το",
-  "duelDrillDone": "ΤΕΛΟΣ"
+  "duelDrillDone": "ΤΕΛΟΣ",
+  "pickupWeapon": "{slot} {lv}: πιο δυνατές βολές",
+  "pickupRepair": "+{amount} HP: η άτρακτος επισκευάστηκε",
+  "pickupShield": "+{amount} ασπίδα, φορτίζει πιο γρήγορα",
+  "pickupGenerator": "Ισχυρότερη γεννήτρια: περισσότερη ενέργεια για τα όπλα",
+  "pickupCredits": "+{amount} μονάδες για το ComCenter"
 }

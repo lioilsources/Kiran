@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "В стойке нарисуй сигил в сторону босса",
   "duelDrillTurn": "РАЗВЕРНИСЬ",
   "duelDrillTurnHow": "Босс под тобой: разверни нос и попадай",
-  "duelDrillDone": "ГОТОВО"
+  "duelDrillDone": "ГОТОВО",
+  "pickupWeapon": "{slot} {lv}: выстрелы мощнее",
+  "pickupRepair": "+{amount} HP: корпус починен",
+  "pickupShield": "+{amount} щита, заряжается быстрее",
+  "pickupGenerator": "Генератор мощнее: больше энергии для оружия",
+  "pickupCredits": "+{amount} кредитов на покупки в ComCenter"
 }

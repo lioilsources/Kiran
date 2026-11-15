@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "Asennossa piirrä sigilli bossia kohti",
   "duelDrillTurn": "KÄÄNNY",
   "duelDrillTurnHow": "Bossi on alapuolella: käännä keula ja osu",
-  "duelDrillDone": "VALMIS"
+  "duelDrillDone": "VALMIS",
+  "pickupWeapon": "{slot} {lv}: tehokkaammat laukaukset",
+  "pickupRepair": "+{amount} HP: runko korjattu",
+  "pickupShield": "+{amount} suojaa, latautuu nopeammin",
+  "pickupGenerator": "Parempi generaattori: lisää virtaa aseille",
+  "pickupCredits": "+{amount} krediittiä ComCenteriin"
 }

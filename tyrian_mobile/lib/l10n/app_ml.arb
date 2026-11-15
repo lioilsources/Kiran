@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "നിലയിൽ ബോസിന് നേരെ സിജിൽ വരയ്ക്കൂ",
   "duelDrillTurn": "തിരിയൂ",
   "duelDrillTurnHow": "ബോസ് നിങ്ങളുടെ താഴെയാണ്: മൂക്ക് തിരിച്ച് അടിക്കൂ",
-  "duelDrillDone": "പൂർത്തിയായി"
+  "duelDrillDone": "പൂർത്തിയായി",
+  "pickupWeapon": "{slot} {lv}: കൂടുതൽ ശക്തമായ വെടി",
+  "pickupRepair": "+{amount} HP: കപ്പൽ നന്നാക്കി",
+  "pickupShield": "+{amount} കവചം, വേഗം റീചാർജ് ആകും",
+  "pickupGenerator": "ജനറേറ്റർ മെച്ചപ്പെട്ടു: ആയുധങ്ങൾക്ക് കൂടുതൽ ഊർജം",
+  "pickupCredits": "+{amount} ക്രെഡിറ്റ് ComCenter-ൽ ചെലവാക്കാം"
 }

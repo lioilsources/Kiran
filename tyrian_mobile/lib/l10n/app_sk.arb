@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "V postoji nakresli sigil smerom k bossovi",
   "duelDrillTurn": "OTOČ SA",
   "duelDrillTurnHow": "Boss je pod tebou: otoč nos a zasiahni ho",
-  "duelDrillDone": "HOTOVO"
+  "duelDrillDone": "HOTOVO",
+  "pickupWeapon": "{slot} {lv}: silnejšia streľba",
+  "pickupRepair": "+{amount} HP: trup opravený",
+  "pickupShield": "+{amount} štítu, rýchlejšie sa dobíja",
+  "pickupGenerator": "Silnejší generátor: viac energie pre zbrane",
+  "pickupCredits": "+{amount} kreditov na nákupy v ComCenteri"
 }

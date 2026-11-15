@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "בעמדה, צייר סמל לכיוון הבוס",
   "duelDrillTurn": "הסתובב",
   "duelDrillTurnHow": "הבוס מתחתיך: סובב את החרטום ופגע בו",
-  "duelDrillDone": "הושלם"
+  "duelDrillDone": "הושלם",
+  "pickupWeapon": "{slot} {lv}: יריות חזקות יותר",
+  "pickupRepair": "+{amount} HP: הגוף תוקן",
+  "pickupShield": "+{amount} מגן, נטען מהר יותר",
+  "pickupGenerator": "גנרטור משופר: יותר אנרגיה לנשק",
+  "pickupCredits": "+{amount} קרדיטים ל-ComCenter"
 }

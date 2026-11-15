@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "자세를 잡고 보스 쪽으로 시질을 그려라",
   "duelDrillTurn": "뒤돌기",
   "duelDrillTurnHow": "보스가 아래에 있다: 기수를 돌려 맞혀라",
-  "duelDrillDone": "완료"
+  "duelDrillDone": "완료",
+  "pickupWeapon": "{slot} {lv}: 더 강한 사격",
+  "pickupRepair": "+{amount} HP: 선체 수리",
+  "pickupShield": "보호막 +{amount}, 더 빨리 충전",
+  "pickupGenerator": "발전기 강화: 무기에 더 많은 에너지",
+  "pickupCredits": "+{amount} 크레딧, ComCenter에서 사용"
 }

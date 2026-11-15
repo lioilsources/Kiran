@@ -319,5 +319,10 @@
   "duelDrillDrawHow": "在架勢中朝首領方向繪製符印",
   "duelDrillTurn": "迴轉",
   "duelDrillTurnHow": "首領在你下方：轉動機頭並命中它",
-  "duelDrillDone": "完成"
+  "duelDrillDone": "完成",
+  "pickupWeapon": "{slot} {lv}：火力更強",
+  "pickupRepair": "+{amount} HP：船體已修復",
+  "pickupShield": "護盾 +{amount}，充能更快",
+  "pickupGenerator": "發電機升級：武器能量更多",
+  "pickupCredits": "+{amount} 點數，可在 ComCenter 使用"
 }
