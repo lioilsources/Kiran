@@ -47,6 +47,7 @@ import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
 import '../l10n/l10n.dart';
+import '../systems/tutor.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -209,6 +210,7 @@ class TyrianGame extends FlameGame
     _applyViewportLayout();
 
     await AssetLibrary.instance.loadAll();
+    await TutorMemory.instance.load();
 
     starfield = Starfield();
     world.add(starfield);
@@ -540,6 +542,8 @@ class TyrianGame extends FlameGame
       return;
     }
 
+    tutor.tick(dt);
+
     super.update(dt);
     elapsed += dt;
     AchievementService.instance.addPlayTime(dt);
@@ -587,6 +591,7 @@ class TyrianGame extends FlameGame
         currentSector!.isComplete &&
         !_sectorCompleteFired) {
       _sectorCompleteFired = true;
+      tutor.roundEnd();
       _onSectorComplete();
     }
 
@@ -803,6 +808,7 @@ class TyrianGame extends FlameGame
   }
 
   void triggerGameOver() {
+    deathTip = tutor.deathTip();
     SoundService.instance.play(SfxEvent.gameOver);
     MusicService.instance.stop();
     state = GameState.gameOver;
@@ -1039,7 +1045,14 @@ class TyrianGame extends FlameGame
     if (s == null) return;
     showMessage(s.caption.toUpperCase(), duration: 3);
     showMessage(L10n.current.nodeLevel(s.level), fontSize: 14, duration: 3);
+    if (coopRole != CoopRole.client) tutor.roundStart();
   }
+
+  /// The texts that teach the game as it is played.
+  late final Tutor tutor = Tutor(this);
+
+  /// The tip under the game over title, set as the ship goes down.
+  String? deathTip;
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {
     const cf = 0.7; // collision fraction — shrink vessel hitbox for fairness

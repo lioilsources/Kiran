@@ -640,6 +640,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 credit: _game.vessel.credit,
                 score: _game.vessel.score,
                 credit2: _game.isCoop && _game.vessel2 != null ? _game.vessel2!.credit : null,
+                tip: _game.deathTip,
                 onClose: _game.isCoop ? _returnToCoopComCenter : _respawnAtFirstSector,
               ),
           ],
@@ -741,6 +742,9 @@ class _GameOverOverlay extends StatefulWidget {
   final int score;
   final int? credit2;
 
+  /// The tutor's word on what to change before the next try.
+  final String? tip;
+
   /// Leave the death screen — back to sector 1 via the shop (solo), or the
   /// co-op ComCenter.
   final VoidCallback onClose;
@@ -749,6 +753,7 @@ class _GameOverOverlay extends StatefulWidget {
     required this.credit,
     required this.score,
     this.credit2,
+    this.tip,
     required this.onClose,
   });
 
@@ -841,6 +846,14 @@ class _GameOverOverlayState extends State<_GameOverOverlay> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
+              if (widget.tip != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  widget.tip!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.amberAccent, fontSize: 13),
+                ),
+              ],
               const SizedBox(height: 10),
               Text(
                 context.l10n.scoreValue(fmtNum(widget.score)),

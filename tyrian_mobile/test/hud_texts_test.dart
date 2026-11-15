@@ -5,6 +5,7 @@ import 'package:tyrian_mobile/entities/vessel.dart';
 import 'package:tyrian_mobile/game/tyrian_game.dart';
 import 'package:tyrian_mobile/systems/dev_type.dart';
 import 'package:tyrian_mobile/systems/device.dart';
+import 'package:tyrian_mobile/systems/tutor.dart';
 
 /// The texts at the top of the screen: what each pickup did, and the
 /// perimeter's name and level as a round begins.
@@ -14,8 +15,16 @@ void main() {
   late TyrianGame game;
   late Vessel v;
 
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
+  setUp(() async {
+    // The tutor's first-time lessons are pinned in tutor_test.dart; here a
+    // pilot who has seen them, so each pickup says its one note.
+    SharedPreferences.setMockInitialValues({
+      'tutor_seen': [
+        for (final k in ['Weapon', 'Health', 'Shield', 'Generator', 'Credits'])
+          'pickup$k:1',
+      ],
+    });
+    await TutorMemory.instance.load();
     v = Vessel()
       ..equipWeapon(DevType.generatorBasic, WeaponSlot.generator)
       ..fitWeapon(DevType.bubbleGun, WeaponSlot.frontGun);

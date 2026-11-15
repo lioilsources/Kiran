@@ -160,6 +160,9 @@ class Collectable extends PositionComponent
     // P2's pickups are P2's business: the host's screen names its own.
     if (note != null && identical(vessel, game.vessel)) {
       game.showMessage(note, fontSize: 14);
+      // The first of each kind also says what the kind is for.
+      final lesson = game.tutor.pickupLesson(cType);
+      if (lesson != null) game.showMessage(lesson, fontSize: 14, duration: 3);
     }
     SoundService.instance.play(SfxEvent.pickup);
     game.removeCollectable(this);

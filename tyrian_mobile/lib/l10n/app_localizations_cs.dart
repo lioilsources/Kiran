@@ -288,4 +288,73 @@ class AppLocalizationsCs extends AppLocalizations {
   String nodeLevel(int level) {
     return 'ÚROVEŇ $level';
   }
+
+  @override
+  String get tutPickupWeapon =>
+      'Zbraňové power-upy zvedají úroveň zbraně: víc poškození, rychlejší palba';
+
+  @override
+  String get tutPickupHealth =>
+      'Opravy spraví trup; když jsi v kondici, zvednou i maximum HP';
+
+  @override
+  String get tutPickupShield =>
+      'Štít chytá zásahy dřív než trup a sám se dobíjí';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generátor napájí zbraně: víc energie udrží v palbě víc zbraní';
+
+  @override
+  String get tutPickupCredits =>
+      'Za kredity koupíš zbraně a vylepšení v ComCenteru mezi koly';
+
+  @override
+  String get tutBoss => 'BOSS! Jeho zdraví je lišta nahoře. Hýbej se a střílej';
+
+  @override
+  String get tutLowHp => 'Trup je na dně! Spraví ho oprava nebo ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Zbraně chtějí víc energie, než dá generátor: vylepši ho';
+
+  @override
+  String get tutCanAfford =>
+      'Máš na vylepšení: po tomhle kole zajdi do ComCenteru';
+
+  @override
+  String get tutFly => 'Táhni prstem a leť. Zbraně střílí, dokud držíš prst';
+
+  @override
+  String get introCollect => 'Chytej ikony, které padají z nepřátel';
+
+  @override
+  String get introShop => 'Mezi koly utrať kredity v ComCenteru';
+
+  @override
+  String get objBoss => 'Cíl: přežij vlny a poraz bosse';
+
+  @override
+  String get objSurvive => 'Cíl: přežij vlny';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditů · $kills sestřelů';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Nejlepší zbraň: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Střely bosse bolí: silnější štít ti koupí čas';
+
+  @override
+  String get deathShield =>
+      'Vylepši štít v ComCenteru: chytá zásahy dřív než trup';
+
+  @override
+  String get deathGuns => 'Silnější zbraně smetou vlny dřív, než ti ublíží';
 }
