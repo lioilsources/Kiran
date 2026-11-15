@@ -1172,4 +1172,27 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get swapHint =>
       'Med två fingrar skjuter du med din andra vapenuppsättning';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: kraftigare skott';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: skrovet reparerat';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount sköld, laddas snabbare';
+  }
+
+  @override
+  String get pickupGenerator => 'Bättre generator: mer kraft till vapnen';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount krediter till ComCenter';
+  }
 }

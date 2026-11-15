@@ -322,5 +322,10 @@
   "duelDrillTurn": "OBRNI SE",
   "duelDrillTurnHow": "Boss je pod teboj: obrni nos in ga zadeni",
   "duelDrillDone": "KONČANO",
-  "swapHint": "Z dvema prstoma streljaš z drugim kompletom orožja"
+  "swapHint": "Z dvema prstoma streljaš z drugim kompletom orožja",
+  "pickupWeapon": "{slot} {lv}: močnejši streli",
+  "pickupRepair": "+{amount} HP: trup popravljen",
+  "pickupShield": "+{amount} ščita, hitreje se polni",
+  "pickupGenerator": "Močnejši generator: več energije za orožje",
+  "pickupCredits": "+{amount} kreditov za ComCenter"
 }

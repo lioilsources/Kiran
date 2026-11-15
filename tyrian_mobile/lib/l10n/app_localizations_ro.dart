@@ -1181,4 +1181,28 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get swapHint => 'Cu două degete tragi cu al doilea set de arme';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: focuri mai puternice';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: carcasă reparată';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount scut, se reîncarcă mai repede';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generator mai bun: mai multă energie pentru arme';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount credite pentru ComCenter';
+  }
 }

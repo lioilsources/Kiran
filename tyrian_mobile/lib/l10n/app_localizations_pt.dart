@@ -1180,6 +1180,29 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get swapHint =>
       'Com dois dedos você atira com o segundo conjunto de armas';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tiros mais fortes';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: casco reparado';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount de escudo, recarrega mais rápido';
+  }
+
+  @override
+  String get pickupGenerator => 'Gerador melhorado: mais energia para as armas';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount créditos para gastar no ComCenter';
+  }
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -2353,4 +2376,27 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   @override
   String get swapHint =>
       'Com dois dedos disparas com o segundo conjunto de armas';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: disparos mais fortes';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: casco reparado';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount de escudo, recarrega mais depressa';
+  }
+
+  @override
+  String get pickupGenerator => 'Gerador melhorado: mais energia para as armas';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount créditos para gastar no ComCenter';
+  }
 }

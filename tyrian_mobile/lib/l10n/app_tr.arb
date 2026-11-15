@@ -322,5 +322,10 @@
   "duelDrillTurn": "ARKANI DÖN",
   "duelDrillTurnHow": "Boss altında: burnu çevir ve vur",
   "duelDrillDone": "TAMAM",
-  "swapHint": "İki parmakla ikinci silah setinle ateş edersin"
+  "swapHint": "İki parmakla ikinci silah setinle ateş edersin",
+  "pickupWeapon": "{slot} {lv}: daha güçlü atışlar",
+  "pickupRepair": "+{amount} HP: gövde onarıldı",
+  "pickupShield": "+{amount} kalkan, daha hızlı dolar",
+  "pickupGenerator": "Jeneratör güçlendi: silahlara daha çok enerji",
+  "pickupCredits": "+{amount} kredi, ComCenter'da harca"
 }

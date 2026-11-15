@@ -322,5 +322,10 @@
   "duelDrillTurn": "मागे वळा",
   "duelDrillTurnHow": "बॉस तुमच्या खाली आहे: नाक वळवा आणि मारा",
   "duelDrillDone": "झाले",
-  "swapHint": "दोन बोटे ठेवा, दुसऱ्या संचातील शस्त्रे चालतील"
+  "swapHint": "दोन बोटे ठेवा, दुसऱ्या संचातील शस्त्रे चालतील",
+  "pickupWeapon": "{slot} {lv}: अधिक ताकदवान गोळ्या",
+  "pickupRepair": "+{amount} HP: जहाज दुरुस्त झाले",
+  "pickupShield": "+{amount} ढाल, लवकर रिचार्ज होते",
+  "pickupGenerator": "जनरेटर सुधारला: शस्त्रांना अधिक ऊर्जा",
+  "pickupCredits": "+{amount} क्रेडिट, ComCenter मध्ये खर्च करा"
 }

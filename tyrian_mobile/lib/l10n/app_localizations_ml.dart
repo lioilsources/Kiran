@@ -1175,4 +1175,28 @@ class AppLocalizationsMl extends AppLocalizations {
   @override
   String get swapHint =>
       'രണ്ട് വിരൽ വെച്ചാൽ രണ്ടാം സെറ്റ് ആയുധങ്ങൾ കൊണ്ട് വെടിവെക്കും';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: കൂടുതൽ ശക്തമായ വെടി';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: കപ്പൽ നന്നാക്കി';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount കവചം, വേഗം റീചാർജ് ആകും';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'ജനറേറ്റർ മെച്ചപ്പെട്ടു: ആയുധങ്ങൾക്ക് കൂടുതൽ ഊർജം';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ക്രെഡിറ്റ് ComCenter-ൽ ചെലവാക്കാം';
+  }
 }

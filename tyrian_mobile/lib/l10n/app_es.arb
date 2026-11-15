@@ -322,5 +322,10 @@
   "duelDrillTurn": "DATE LA VUELTA",
   "duelDrillTurnHow": "El jefe está debajo de ti: gira el morro y dale",
   "duelDrillDone": "HECHO",
-  "swapHint": "Con dos dedos disparas tu segundo juego de armas"
+  "swapHint": "Con dos dedos disparas tu segundo juego de armas",
+  "pickupWeapon": "{slot} {lv}: disparos más fuertes",
+  "pickupRepair": "+{amount} HP: casco reparado",
+  "pickupShield": "+{amount} de escudo, se recarga más rápido",
+  "pickupGenerator": "Generador mejorado: más energía para tus armas",
+  "pickupCredits": "+{amount} créditos para gastar en el ComCenter"
 }

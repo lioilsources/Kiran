@@ -322,5 +322,10 @@
   "duelDrillTurn": "ପଛକୁ ବୁଲନ୍ତୁ",
   "duelDrillTurnHow": "ବସ ଆପଣଙ୍କ ତଳେ: ନାକ ବୁଲାଇ ମାରନ୍ତୁ",
   "duelDrillDone": "ସମାପ୍ତ",
-  "swapHint": "ଦୁଇ ଆଙ୍ଗୁଠି ରଖିଲେ ଦ୍ୱିତୀୟ ସେଟ୍ ଅସ୍ତ୍ରରେ ଗୁଳି ଚାଲେ"
+  "swapHint": "ଦୁଇ ଆଙ୍ଗୁଠି ରଖିଲେ ଦ୍ୱିତୀୟ ସେଟ୍ ଅସ୍ତ୍ରରେ ଗୁଳି ଚାଲେ",
+  "pickupWeapon": "{slot} {lv}: ଅଧିକ ଶକ୍ତିଶାଳୀ ଗୁଳି",
+  "pickupRepair": "+{amount} HP: ଜାହାଜ ମରାମତି ହେଲା",
+  "pickupShield": "+{amount} ଢାଲ, ଶୀଘ୍ର ରିଚାର୍ଜ ହୁଏ",
+  "pickupGenerator": "ଜେନେରେଟର ଉନ୍ନତ: ଅସ୍ତ୍ର ପାଇଁ ଅଧିକ ଶକ୍ତି",
+  "pickupCredits": "+{amount} କ୍ରେଡିଟ୍ ComCenter ପାଇଁ"
 }

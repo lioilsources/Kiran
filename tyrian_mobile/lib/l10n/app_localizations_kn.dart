@@ -1169,4 +1169,27 @@ class AppLocalizationsKn extends AppLocalizations {
   @override
   String get swapHint =>
       'ಎರಡು ಬೆರಳು ಇಟ್ಟರೆ ಎರಡನೇ ಸೆಟ್ ಆಯುಧಗಳಿಂದ ಗುಂಡು ಹಾರಿಸುವಿರಿ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ಇನ್ನಷ್ಟು ಬಲವಾದ ಗುಂಡುಗಳು';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ಹಡಗು ದುರಸ್ತಿಯಾಯಿತು';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ಕವಚ, ಬೇಗ ಮರುಪೂರಣ';
+  }
+
+  @override
+  String get pickupGenerator => 'ಜನರೇಟರ್ ಉನ್ನತೀಕರಣ: ಆಯುಧಗಳಿಗೆ ಹೆಚ್ಚು ಶಕ್ತಿ';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ಕ್ರೆಡಿಟ್ ComCenter ಗಾಗಿ';
+  }
 }

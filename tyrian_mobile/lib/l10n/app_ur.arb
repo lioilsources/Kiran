@@ -322,5 +322,10 @@
   "duelDrillTurn": "مڑو",
   "duelDrillTurnHow": "باس آپ کے نیچے ہے: ناک موڑ کر اسے ماریں",
   "duelDrillDone": "مکمل",
-  "swapHint": "دو انگلیاں رکھیں تو دوسرے سیٹ کے ہتھیار چلیں گے"
+  "swapHint": "دو انگلیاں رکھیں تو دوسرے سیٹ کے ہتھیار چلیں گے",
+  "pickupWeapon": "{slot} {lv}: زیادہ طاقتور فائر",
+  "pickupRepair": "+{amount} HP: ڈھانچہ مرمت ہو گیا",
+  "pickupShield": "+{amount} ڈھال، جلدی ری چارج ہوتی ہے",
+  "pickupGenerator": "بہتر جنریٹر: ہتھیاروں کو زیادہ توانائی",
+  "pickupCredits": "+{amount} کریڈٹ ComCenter کے لیے"
 }

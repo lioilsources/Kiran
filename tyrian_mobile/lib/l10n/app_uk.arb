@@ -322,5 +322,10 @@
   "duelDrillTurn": "РОЗВЕРНИСЬ",
   "duelDrillTurnHow": "Бос під тобою: розверни ніс і влуч",
   "duelDrillDone": "ГОТОВО",
-  "swapHint": "Двома пальцями стріляєш другим набором зброї"
+  "swapHint": "Двома пальцями стріляєш другим набором зброї",
+  "pickupWeapon": "{slot} {lv}: потужніші постріли",
+  "pickupRepair": "+{amount} HP: корпус полагоджено",
+  "pickupShield": "+{amount} щита, заряджається швидше",
+  "pickupGenerator": "Потужніший генератор: більше енергії для зброї",
+  "pickupCredits": "+{amount} кредитів на покупки в ComCenter"
 }

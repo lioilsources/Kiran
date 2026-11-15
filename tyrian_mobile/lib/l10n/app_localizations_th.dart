@@ -1149,4 +1149,27 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get swapHint => 'แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ยิงแรงขึ้น';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ซ่อมตัวยานแล้ว';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return 'โล่ +$amount ชาร์จเร็วขึ้น';
+  }
+
+  @override
+  String get pickupGenerator => 'เครื่องปั่นไฟแรงขึ้น: อาวุธได้พลังงานมากขึ้น';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount เครดิตไว้ใช้ใน ComCenter';
+  }
 }

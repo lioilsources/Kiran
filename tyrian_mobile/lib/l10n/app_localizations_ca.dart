@@ -1177,4 +1177,28 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get swapHint => 'Amb dos dits dispares el segon joc d\'armes';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: trets més forts';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: buc reparat';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount d\'escut, es recarrega més ràpid';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generador millorat: més energia per a les armes';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount crèdits per gastar al ComCenter';
+  }
 }

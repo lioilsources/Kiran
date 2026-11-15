@@ -1171,4 +1171,27 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get swapHint => 'Kahdella sormella ammut toisella asesarjallasi';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tehokkaammat laukaukset';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: runko korjattu';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount suojaa, latautuu nopeammin';
+  }
+
+  @override
+  String get pickupGenerator => 'Parempi generaattori: lisää virtaa aseille';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount krediittiä ComCenteriin';
+  }
 }

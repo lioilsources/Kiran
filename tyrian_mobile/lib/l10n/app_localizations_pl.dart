@@ -1179,4 +1179,27 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get swapHint => 'Dwoma palcami strzelasz drugim zestawem broni';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: mocniejsze strzały';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: kadłub naprawiony';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount osłony, szybciej się ładuje';
+  }
+
+  @override
+  String get pickupGenerator => 'Lepszy generator: więcej mocy dla broni';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredytów do wydania w ComCenter';
+  }
 }

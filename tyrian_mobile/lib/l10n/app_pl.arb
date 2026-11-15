@@ -322,5 +322,10 @@
   "duelDrillTurn": "ZAWRÓĆ",
   "duelDrillTurnHow": "Boss jest pod tobą: obróć dziób i traf go",
   "duelDrillDone": "GOTOWE",
-  "swapHint": "Dwoma palcami strzelasz drugim zestawem broni"
+  "swapHint": "Dwoma palcami strzelasz drugim zestawem broni",
+  "pickupWeapon": "{slot} {lv}: mocniejsze strzały",
+  "pickupRepair": "+{amount} HP: kadłub naprawiony",
+  "pickupShield": "+{amount} osłony, szybciej się ładuje",
+  "pickupGenerator": "Lepszy generator: więcej mocy dla broni",
+  "pickupCredits": "+{amount} kredytów do wydania w ComCenter"
 }

@@ -322,5 +322,10 @@
   "duelDrillTurn": "DEMI-TOUR",
   "duelDrillTurnHow": "Le boss est sous toi : tourne le nez et touche-le",
   "duelDrillDone": "RÉUSSI",
-  "swapHint": "À deux doigts, tu tires avec ton second jeu d'armes"
+  "swapHint": "À deux doigts, tu tires avec ton second jeu d'armes",
+  "pickupWeapon": "{slot} {lv} : tirs plus puissants",
+  "pickupRepair": "+{amount} HP : coque réparée",
+  "pickupShield": "+{amount} de bouclier, recharge plus rapide",
+  "pickupGenerator": "Générateur amélioré : plus d'énergie pour tes armes",
+  "pickupCredits": "+{amount} crédits à dépenser au ComCenter"
 }

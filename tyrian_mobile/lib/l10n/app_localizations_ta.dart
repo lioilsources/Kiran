@@ -1179,4 +1179,27 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get swapHint =>
       'இரண்டு விரல்களை வைத்தால் இரண்டாவது ஆயுதத் தொகுப்பால் சுடலாம்';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: வலுவான சுடுதல்';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: கப்பல் சரிசெய்யப்பட்டது';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount கவசம், வேகமாக மீண்டும் நிரம்பும்';
+  }
+
+  @override
+  String get pickupGenerator => 'ஜெனரேட்டர் மேம்பாடு: ஆயுதங்களுக்கு அதிக சக்தி';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount கிரெடிட் ComCenter-க்கு';
+  }
 }

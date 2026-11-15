@@ -322,5 +322,10 @@
   "duelDrillTurn": "استدر",
   "duelDrillTurnHow": "الزعيم تحتك: أدر المقدمة وأصبه",
   "duelDrillDone": "تم",
-  "swapHint": "ضع إصبعين لتطلق بمجموعة أسلحتك الثانية"
+  "swapHint": "ضع إصبعين لتطلق بمجموعة أسلحتك الثانية",
+  "pickupWeapon": "{slot} {lv}: طلقات أقوى",
+  "pickupRepair": "+{amount} HP: تم إصلاح الهيكل",
+  "pickupShield": "+{amount} درع، يُشحن أسرع",
+  "pickupGenerator": "المولّد أقوى: طاقة أكثر لأسلحتك",
+  "pickupCredits": "+{amount} رصيد للإنفاق في ComCenter"
 }

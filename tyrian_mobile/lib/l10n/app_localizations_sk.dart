@@ -1176,4 +1176,27 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get swapHint => 'Dvoma prstami strieľaš druhou sadou zbraní';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: silnejšia streľba';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: trup opravený';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount štítu, rýchlejšie sa dobíja';
+  }
+
+  @override
+  String get pickupGenerator => 'Silnejší generátor: viac energie pre zbrane';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditov na nákupy v ComCenteri';
+  }
 }

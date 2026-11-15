@@ -322,5 +322,10 @@
   "duelDrillTurn": "הסתובב",
   "duelDrillTurnHow": "הבוס מתחתיך: סובב את החרטום ופגע בו",
   "duelDrillDone": "הושלם",
-  "swapHint": "בשתי אצבעות יורים עם ערכת הנשק השנייה"
+  "swapHint": "בשתי אצבעות יורים עם ערכת הנשק השנייה",
+  "pickupWeapon": "{slot} {lv}: יריות חזקות יותר",
+  "pickupRepair": "+{amount} HP: הגוף תוקן",
+  "pickupShield": "+{amount} מגן, נטען מהר יותר",
+  "pickupGenerator": "גנרטור משופר: יותר אנרגיה לנשק",
+  "pickupCredits": "+{amount} קרדיטים ל-ComCenter"
 }

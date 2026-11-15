@@ -322,5 +322,10 @@
   "duelDrillTurn": "FORDULJ MEG",
   "duelDrillTurnHow": "A boss alattad van: fordítsd az orrt és találd el",
   "duelDrillDone": "KÉSZ",
-  "swapHint": "Két ujjal a második fegyverkészleteddel lősz"
+  "swapHint": "Két ujjal a második fegyverkészleteddel lősz",
+  "pickupWeapon": "{slot} {lv}: erősebb lövések",
+  "pickupRepair": "+{amount} HP: a hajótest megjavítva",
+  "pickupShield": "+{amount} pajzs, gyorsabban töltődik",
+  "pickupGenerator": "Erősebb generátor: több energia a fegyvereknek",
+  "pickupCredits": "+{amount} kredit a ComCenterbe"
 }

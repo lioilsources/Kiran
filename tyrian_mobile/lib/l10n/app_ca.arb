@@ -322,5 +322,10 @@
   "duelDrillTurn": "GIRA'T",
   "duelDrillTurnHow": "El boss és a sota: gira el morro i encerta'l",
   "duelDrillDone": "FET",
-  "swapHint": "Amb dos dits dispares el segon joc d'armes"
+  "swapHint": "Amb dos dits dispares el segon joc d'armes",
+  "pickupWeapon": "{slot} {lv}: trets més forts",
+  "pickupRepair": "+{amount} HP: buc reparat",
+  "pickupShield": "+{amount} d'escut, es recarrega més ràpid",
+  "pickupGenerator": "Generador millorat: més energia per a les armes",
+  "pickupCredits": "+{amount} crèdits per gastar al ComCenter"
 }

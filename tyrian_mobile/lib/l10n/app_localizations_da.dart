@@ -1168,4 +1168,27 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get swapHint => 'Med to fingre skyder du med dit andet våbensæt';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: stærkere skud';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: skroget er repareret';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount skjold, lader hurtigere op';
+  }
+
+  @override
+  String get pickupGenerator => 'Bedre generator: mere kraft til våbnene';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditter til ComCenter';
+  }
 }

@@ -1159,4 +1159,27 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get swapHint => 'দুই আঙুল রাখলে দ্বিতীয় সেটের অস্ত্র চলবে';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: আরও শক্তিশালী গুলি';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: হাল মেরামত হল';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ঢাল, দ্রুত রিচার্জ হয়';
+  }
+
+  @override
+  String get pickupGenerator => 'জেনারেটর উন্নত: অস্ত্রে আরও শক্তি';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ক্রেডিট, ComCenter-এ খরচ করো';
+  }
 }

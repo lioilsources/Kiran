@@ -1168,4 +1168,27 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get swapHint => 'రెండు వేళ్లు ఉంచితే రెండో సెట్ ఆయుధాలతో కాలుస్తారు';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: మరింత బలమైన కాల్పులు';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: నౌక మరమ్మతు అయింది';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount కవచం, త్వరగా రీఛార్జ్ అవుతుంది';
+  }
+
+  @override
+  String get pickupGenerator => 'జనరేటర్ మెరుగైంది: ఆయుధాలకు మరింత శక్తి';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount క్రెడిట్లు ComCenter కోసం';
+  }
 }

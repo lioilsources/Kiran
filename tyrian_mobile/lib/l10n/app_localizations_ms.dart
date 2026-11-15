@@ -1168,4 +1168,28 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get swapHint =>
       'Dengan dua jari, anda menembak dengan set senjata kedua';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tembakan lebih kuat';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: badan kapal dibaiki';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount perisai, cas semula lebih cepat';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Penjana dinaik taraf: lebih kuasa untuk senjata';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredit untuk ComCenter';
+  }
 }

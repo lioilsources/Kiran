@@ -322,5 +322,10 @@
   "duelDrillTurn": "KÄÄNNY",
   "duelDrillTurnHow": "Bossi on alapuolella: käännä keula ja osu",
   "duelDrillDone": "VALMIS",
-  "swapHint": "Kahdella sormella ammut toisella asesarjallasi"
+  "swapHint": "Kahdella sormella ammut toisella asesarjallasi",
+  "pickupWeapon": "{slot} {lv}: tehokkaammat laukaukset",
+  "pickupRepair": "+{amount} HP: runko korjattu",
+  "pickupShield": "+{amount} suojaa, latautuu nopeammin",
+  "pickupGenerator": "Parempi generaattori: lisää virtaa aseille",
+  "pickupCredits": "+{amount} krediittiä ComCenteriin"
 }

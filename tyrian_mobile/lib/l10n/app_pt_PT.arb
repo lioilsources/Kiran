@@ -322,5 +322,10 @@
   "duelDrillTurn": "DAR A VOLTA",
   "duelDrillTurnHow": "O chefe está abaixo de ti: vira o nariz e acerta-lhe",
   "duelDrillDone": "FEITO",
-  "swapHint": "Com dois dedos disparas com o segundo conjunto de armas"
+  "swapHint": "Com dois dedos disparas com o segundo conjunto de armas",
+  "pickupWeapon": "{slot} {lv}: disparos mais fortes",
+  "pickupRepair": "+{amount} HP: casco reparado",
+  "pickupShield": "+{amount} de escudo, recarrega mais depressa",
+  "pickupGenerator": "Gerador melhorado: mais energia para as armas",
+  "pickupCredits": "+{amount} créditos para gastar no ComCenter"
 }
