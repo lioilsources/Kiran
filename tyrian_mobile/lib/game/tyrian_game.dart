@@ -67,6 +67,8 @@ import '../rendering/beam_renderer.dart';
 import '../rendering/shader_pipeline.dart';
 import '../services/skin_registry.dart';
 import '../ui/float_text.dart';
+import '../ui/format.dart';
+import '../input/touch_controls.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
@@ -87,7 +89,12 @@ enum CoopRole { none, host, client }
 enum GameMode { endless, campaign, training }
 
 class TyrianGame extends FlameGame
-    with DragCallbacks, TapCallbacks, KeyboardEvents, MouseMovementDetector {
+    with
+        DragCallbacks,
+        TapCallbacks,
+        TouchControls,
+        KeyboardEvents,
+        MouseMovementDetector {
   TyrianGame();
 
   final KeyboardInput keyboardInput = KeyboardInput();
@@ -143,7 +150,20 @@ class TyrianGame extends FlameGame
   final Map<int, Structure> clientStructures = {};
   final List<Projectile> clientPlayerProjectiles = [];
 
-  GameState state = GameState.comCenter;
+  GameState _state = GameState.comCenter;
+
+  GameState get state => _state;
+
+  /// Leaving [GameState.playing] puts the touch's first weapon set back at
+  /// once (plan 34), before anything else sees the loadout: the ComCenter,
+  /// the save written on the way into it, the game over.
+  set state(GameState next) {
+    if (_state == GameState.playing && next != GameState.playing) {
+      vessel.setAlternate(false);
+    }
+    _state = next;
+  }
+
   bool isLoaded = false;
 
   // Active game objects
@@ -877,6 +897,7 @@ class TyrianGame extends FlameGame
 
   void startGame() {
     state = GameState.playing;
+    touchReset();
     vessel.visible = true;
     vessel.resetPosition();
     if (vessel2 != null) {
@@ -1012,6 +1033,7 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
+    touchTick(dt);
     final film = _capture;
     if (film != null && FrameCapture.fixedStep) {
       if (film.busy) return;
@@ -1509,6 +1531,7 @@ class TyrianGame extends FlameGame
       vessel2!.position.x += 60;
     }
     state = GameState.playing;
+    touchReset();
     // Notify client that game is starting
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
@@ -1562,59 +1585,35 @@ class TyrianGame extends FlameGame
     return d1 <= d2 ? vessel.position.x : vessel2!.position.x;
   }
 
-  // Touch input — delta-based so finger and vessel move in sync
-  Vector2? _prevDragPos;
-
-  // Client touch target position (for sending to host)
-  double _clientTargetX = config.gameWidth / 2;
-  double _clientTargetY = config.gameHeight * 0.75;
-  bool _clientFire = false;
-
-  // ── The mouse in a duel (Prompts/30 §6.6): it aims, its button fires ──
-
-  Vector2? _mouseWorld;
-  double _mouseAge = 99;
-  bool _mouseFire = false;
-
   @override
-  void onMouseMove(PointerHoverInfo info) {
-    _mouseWorld = camera.globalToLocal(info.eventPosition.widget);
-    _mouseAge = 0;
+  bool get touchAlternate => vessel.alternateActive;
+
+  /// Two fingers fly the second weapon set, one the first (plan 34). The
+  /// message names the front gun and the DPS that flies now.
+  @override
+  void touchSetAlternate(bool on, {required bool announce}) {
+    if (!vessel.setAlternate(on) || !announce) return;
+    final front = vessel.getDevice(WeaponSlot.frontGun);
+    final dps = fmtNum(Campaign.poweredDps(vessel));
+    showMessage('${front?.displayName.toUpperCase() ?? ''}  DPS $dps');
   }
 
+  /// The touch flies the ship while playing — but not a duel's, which aims
+  /// instead (a co-op client's still flies).
   @override
-  void onDragStart(DragStartEvent event) {
-    super.onDragStart(event);
-    if (state != GameState.playing) return;
-    if (duel.controls && coopRole != CoopRole.client) {
-      // A duel's mouse does not drag the ship about: it aims and fires.
-      _mouseWorld = camera.globalToLocal(event.canvasPosition);
-      _mouseAge = 0;
-      _mouseFire = true;
-      return;
-    }
-    _prevDragPos = event.canvasPosition.clone();
+  bool get touchFlies =>
+      state == GameState.playing &&
+      !_mouseFire &&
+      !(duel.controls && coopRole != CoopRole.client);
 
-    if (coopRole == CoopRole.client) {
-      _clientFire = true;
-    } else {
-      vessel.fire = true;
-    }
-  }
+  /// The second set: solo and host only — a co-op client sends position and
+  /// fire, nothing else — and never in a duel, whose touch aims instead.
+  @override
+  bool get touchSwaps =>
+      touchFlies && coopRole != CoopRole.client && !duel.controls;
 
   @override
-  void onDragUpdate(DragUpdateEvent event) {
-    super.onDragUpdate(event);
-    if (_mouseFire) {
-      _mouseWorld = camera.globalToLocal(event.canvasEndPosition);
-      _mouseAge = 0;
-      return;
-    }
-    if (state != GameState.playing || _prevDragPos == null) return;
-    final pos = event.canvasEndPosition;
-    final delta = pos - _prevDragPos!;
-    _prevDragPos = pos.clone();
-
+  void touchSteer(Vector2 delta) {
     // Divide by camera zoom so a finger drag still moves the vessel 1:1 on screen
     // when the immersive camera is zoomed in (zoom is 1.0 otherwise → no-op).
     final scale = config.gameWidth / size.x / camera.viewfinder.zoom;
@@ -1636,34 +1635,69 @@ class TyrianGame extends FlameGame
   }
 
   @override
-  void onDragEnd(DragEndEvent event) {
-    super.onDragEnd(event);
-    if (_mouseFire) {
-      _mouseFire = false;
-      return;
-    }
-    if (state != GameState.playing) return;
-    _prevDragPos = null;
-
-    if (coopRole == CoopRole.client) {
-      _clientFire = false;
-      coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
-    } else {
-      vessel.fire = false;
-    }
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
-    if (state != GameState.playing) return;
-
+  void touchToggleFire() {
     if (coopRole == CoopRole.client) {
       _clientFire = !_clientFire;
       coopClient?.sendInput(_clientTargetX, _clientTargetY, _clientFire);
     } else {
       vessel.fire = !vessel.fire;
     }
+  }
+
+  @override
+  void touchSetFire(bool on) {
+    if (coopRole == CoopRole.client) {
+      _clientFire = on;
+      if (!on) coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
+    } else {
+      vessel.fire = on;
+    }
+  }
+
+  // Client touch target position (for sending to host)
+  double _clientTargetX = config.gameWidth / 2;
+  double _clientTargetY = config.gameHeight * 0.75;
+  bool _clientFire = false;
+
+  // ── The mouse in a duel (Prompts/30 §6.6): it aims, its button fires ──
+
+  Vector2? _mouseWorld;
+  double _mouseAge = 99;
+  bool _mouseFire = false;
+
+  @override
+  void onMouseMove(PointerHoverInfo info) {
+    _mouseWorld = camera.globalToLocal(info.eventPosition.widget);
+    _mouseAge = 0;
+  }
+
+  // The touch itself is [TouchControls]; these add the duel's mouse.
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+    if (state != GameState.playing) return;
+    if (duel.controls && coopRole != CoopRole.client) {
+      // A duel's mouse does not drag the ship about: it aims and fires.
+      _mouseWorld = camera.globalToLocal(event.canvasPosition);
+      _mouseAge = 0;
+      _mouseFire = true;
+    }
+  }
+
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    super.onDragUpdate(event);
+    if (_mouseFire) {
+      _mouseWorld = camera.globalToLocal(event.canvasEndPosition);
+      _mouseAge = 0;
+    }
+  }
+
+  @override
+  void onDragEnd(DragEndEvent event) {
+    super.onDragEnd(event);
+    _mouseFire = false;
   }
 
   // ── Keyboard input (desktop) ──────────────────────────────

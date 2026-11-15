@@ -320,6 +320,7 @@
   "duelDrillTurn": "SNU",
   "duelDrillTurnHow": "Bossen er under deg: snu nesen og treff den",
   "duelDrillDone": "FERDIG",
+  "swapHint": "Med to fingre skyter du med det andre våpensettet",
   "pickupWeapon": "{slot} {lv}: kraftigere skudd",
   "pickupRepair": "+{amount} HP: skroget er reparert",
   "pickupShield": "+{amount} skjold, lades raskere",

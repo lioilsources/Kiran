@@ -320,6 +320,7 @@
   "duelDrillTurn": "РАЗВЕРНИСЬ",
   "duelDrillTurnHow": "Босс под тобой: разверни нос и попадай",
   "duelDrillDone": "ГОТОВО",
+  "swapHint": "Двумя пальцами стреляешь вторым набором оружия",
   "pickupWeapon": "{slot} {lv}: выстрелы мощнее",
   "pickupRepair": "+{amount} HP: корпус починен",
   "pickupShield": "+{amount} щита, заряжается быстрее",

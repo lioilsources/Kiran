@@ -320,6 +320,7 @@
   "duelDrillTurn": "OTOČ SE",
   "duelDrillTurnHow": "Boss je pod tebou: otoč čumák a zasahuj",
   "duelDrillDone": "HOTOVO",
+  "swapHint": "Dvěma prsty střílíš druhou sadou zbraní",
   "pickupWeapon": "{slot} {lv}: silnější střelba",
   "pickupRepair": "+{amount} HP: trup opraven",
   "pickupShield": "+{amount} štítu, rychleji se dobíjí",

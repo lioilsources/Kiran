@@ -320,6 +320,7 @@
   "duelDrillTurn": "GIRATI",
   "duelDrillTurnHow": "Il boss è sotto di te: gira il muso e colpiscilo",
   "duelDrillDone": "FATTO",
+  "swapHint": "Con due dita spari con il secondo set di armi",
   "pickupWeapon": "{slot} {lv}: colpi più potenti",
   "pickupRepair": "+{amount} HP: scafo riparato",
   "pickupShield": "+{amount} di scudo, si ricarica più in fretta",

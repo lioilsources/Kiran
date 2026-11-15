@@ -1160,6 +1160,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get duelDrillDone => 'ಮುಗಿದಿದೆ';
 
   @override
+  String get swapHint =>
+      'ಎರಡು ಬೆರಳು ಇಟ್ಟರೆ ಎರಡನೇ ಸೆಟ್ ಆಯುಧಗಳಿಂದ ಗುಂಡು ಹಾರಿಸುವಿರಿ';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: ಇನ್ನಷ್ಟು ಬಲವಾದ ಗುಂಡುಗಳು';
   }

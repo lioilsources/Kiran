@@ -320,6 +320,7 @@
   "duelDrillTurn": "VEND OM",
   "duelDrillTurnHow": "Bossen er under dig: drej næsen og ram den",
   "duelDrillDone": "FÆRDIG",
+  "swapHint": "Med to fingre skyder du med dit andet våbensæt",
   "pickupWeapon": "{slot} {lv}: stærkere skud",
   "pickupRepair": "+{amount} HP: skroget er repareret",
   "pickupShield": "+{amount} skjold, lader hurtigere op",

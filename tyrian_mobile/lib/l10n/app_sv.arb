@@ -320,6 +320,7 @@
   "duelDrillTurn": "VÄND OM",
   "duelDrillTurnHow": "Bossen är under dig: vänd nosen och träffa den",
   "duelDrillDone": "KLART",
+  "swapHint": "Med två fingrar skjuter du med din andra vapenuppsättning",
   "pickupWeapon": "{slot} {lv}: kraftigare skott",
   "pickupRepair": "+{amount} HP: skrovet reparerat",
   "pickupShield": "+{amount} sköld, laddas snabbare",

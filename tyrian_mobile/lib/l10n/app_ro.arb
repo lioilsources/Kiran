@@ -320,6 +320,7 @@
   "duelDrillTurn": "ÎNTOARCE-TE",
   "duelDrillTurnHow": "Bossul e sub tine: întoarce botul și lovește-l",
   "duelDrillDone": "GATA",
+  "swapHint": "Cu două degete tragi cu al doilea set de arme",
   "pickupWeapon": "{slot} {lv}: focuri mai puternice",
   "pickupRepair": "+{amount} HP: carcasă reparată",
   "pickupShield": "+{amount} scut, se reîncarcă mai repede",

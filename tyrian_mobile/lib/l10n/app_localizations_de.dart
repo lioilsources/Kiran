@@ -1173,6 +1173,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get duelDrillDone => 'GESCHAFFT';
 
   @override
+  String get swapHint => 'Mit zwei Fingern feuerst du dein zweites Waffenset';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: stärkere Schüsse';
   }

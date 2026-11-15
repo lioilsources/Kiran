@@ -1165,6 +1165,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get duelDrillDone => 'KLAAR';
 
   @override
+  String get swapHint => 'Met twee vingers vuur je je tweede wapenset af';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: sterkere schoten';
   }

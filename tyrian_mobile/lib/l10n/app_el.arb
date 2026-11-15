@@ -320,6 +320,7 @@
   "duelDrillTurn": "ΓΥΡΝΑ",
   "duelDrillTurnHow": "Το boss είναι από κάτω: γύρνα τη μύτη και χτύπα το",
   "duelDrillDone": "ΤΕΛΟΣ",
+  "swapHint": "Με δύο δάχτυλα πυροβολείς με το δεύτερο σετ όπλων",
   "pickupWeapon": "{slot} {lv}: πιο δυνατές βολές",
   "pickupRepair": "+{amount} HP: η άτρακτος επισκευάστηκε",
   "pickupShield": "+{amount} ασπίδα, φορτίζει πιο γρήγορα",

@@ -320,6 +320,7 @@
   "duelDrillTurn": "掉头",
   "duelDrillTurnHow": "首领在你下方：转动机头并命中它",
   "duelDrillDone": "完成",
+  "swapHint": "两根手指按住时使用第二套武器射击",
   "pickupWeapon": "{slot} {lv}：火力更强",
   "pickupRepair": "+{amount} HP：船体已修复",
   "pickupShield": "护盾 +{amount}，充能更快",

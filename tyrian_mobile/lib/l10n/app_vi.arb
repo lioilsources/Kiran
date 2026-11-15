@@ -320,6 +320,7 @@
   "duelDrillTurn": "QUAY LẠI",
   "duelDrillTurnHow": "Trùm ở bên dưới: xoay mũi tàu và bắn trúng",
   "duelDrillDone": "XONG",
+  "swapHint": "Giữ hai ngón tay để bắn bằng bộ vũ khí thứ hai",
   "pickupWeapon": "{slot} {lv}: bắn mạnh hơn",
   "pickupRepair": "+{amount} HP: thân tàu đã sửa",
   "pickupShield": "+{amount} khiên, sạc nhanh hơn",

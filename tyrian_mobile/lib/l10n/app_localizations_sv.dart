@@ -1163,6 +1163,10 @@ class AppLocalizationsSv extends AppLocalizations {
   String get duelDrillDone => 'KLART';
 
   @override
+  String get swapHint =>
+      'Med två fingrar skjuter du med din andra vapenuppsättning';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: kraftigare skott';
   }

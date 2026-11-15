@@ -35,6 +35,7 @@ void main() {
       expect(l.weaponOff('LASER'), contains('LASER'), reason: '$locale');
       expect(l.unlocksAt('400 000'), contains('400 000'), reason: '$locale');
       expect(l.padControlsHint, contains('[OPTIONS]'), reason: '$locale');
+      expect(l.swapHint, isNotEmpty, reason: '$locale');
       // Pickup notes and the sector title keep their numbers.
       expect(l.pickupWeapon('FRONT', 'Lv.3'), allOf(contains('FRONT'), contains('Lv.3')),
           reason: '$locale');

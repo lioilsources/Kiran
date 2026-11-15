@@ -320,6 +320,7 @@
   "duelDrillTurn": "UMDREHEN",
   "duelDrillTurnHow": "Der Boss ist unter dir: Dreh die Nase und triff ihn",
   "duelDrillDone": "GESCHAFFT",
+  "swapHint": "Mit zwei Fingern feuerst du dein zweites Waffenset",
   "pickupWeapon": "{slot} {lv}: stärkere Schüsse",
   "pickupRepair": "+{amount} HP: Rumpf repariert",
   "pickupShield": "+{amount} Schild, lädt schneller",

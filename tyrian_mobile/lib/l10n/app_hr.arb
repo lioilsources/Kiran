@@ -320,6 +320,7 @@
   "duelDrillTurn": "OKRENI SE",
   "duelDrillTurnHow": "Boss je ispod tebe: okreni nos i pogodi ga",
   "duelDrillDone": "GOTOVO",
+  "swapHint": "S dva prsta pucaš drugim kompletom oružja",
   "pickupWeapon": "{slot} {lv}: jači hici",
   "pickupRepair": "+{amount} HP: trup popravljen",
   "pickupShield": "+{amount} štita, brže se puni",

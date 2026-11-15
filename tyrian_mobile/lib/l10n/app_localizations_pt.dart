@@ -1171,6 +1171,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get duelDrillDone => 'FEITO';
 
   @override
+  String get swapHint =>
+      'Com dois dedos você atira com o segundo conjunto de armas';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: tiros mais fortes';
   }
@@ -2355,6 +2359,10 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get duelDrillDone => 'FEITO';
+
+  @override
+  String get swapHint =>
+      'Com dois dedos disparas com o segundo conjunto de armas';
 
   @override
   String pickupWeapon(String slot, String lv) {

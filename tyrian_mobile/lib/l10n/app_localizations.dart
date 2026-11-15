@@ -2101,6 +2101,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DONE'**
   String get duelDrillDone;
+
+  /// ComCenter, touch only: two fingers on the screen fly the second weapon set, one finger the first (plan 34)
+  ///
+  /// In en, this message translates to:
+  /// **'Hold two fingers to fire your second weapons'**
+  String get swapHint;
   /// Pickup note: a weapon slot went up a level. slot = the slot name (Front/Left/Right), lv = the level ("Lv.3")
   ///
   /// In en, this message translates to:

@@ -320,6 +320,7 @@
   "duelDrillTurn": "मुड़ो",
   "duelDrillTurnHow": "बॉस नीचे है: नाक घुमाओ और मारो",
   "duelDrillDone": "हो गया",
+  "swapHint": "दो उँगलियाँ रखो तो दूसरे सेट के हथियार चलेंगे",
   "pickupWeapon": "{slot} {lv}: ज़्यादा ताक़तवर गोलियाँ",
   "pickupRepair": "+{amount} HP: ढाँचा ठीक हुआ",
   "pickupShield": "+{amount} कवच, जल्दी रिचार्ज होता है",

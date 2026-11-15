@@ -320,6 +320,7 @@
   "duelDrillTurn": "استدر",
   "duelDrillTurnHow": "الزعيم تحتك: أدر المقدمة وأصبه",
   "duelDrillDone": "تم",
+  "swapHint": "ضع إصبعين لتطلق بمجموعة أسلحتك الثانية",
   "pickupWeapon": "{slot} {lv}: طلقات أقوى",
   "pickupRepair": "+{amount} HP: تم إصلاح الهيكل",
   "pickupShield": "+{amount} درع، يُشحن أسرع",

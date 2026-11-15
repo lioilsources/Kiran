@@ -320,6 +320,7 @@
   "duelDrillTurn": "OMKEREN",
   "duelDrillTurnHow": "De baas is onder je: draai de neus en raak hem",
   "duelDrillDone": "KLAAR",
+  "swapHint": "Met twee vingers vuur je je tweede wapenset af",
   "pickupWeapon": "{slot} {lv}: sterkere schoten",
   "pickupRepair": "+{amount} HP: romp gerepareerd",
   "pickupShield": "+{amount} schild, laadt sneller op",

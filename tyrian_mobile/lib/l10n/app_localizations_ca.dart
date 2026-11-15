@@ -1169,6 +1169,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get duelDrillDone => 'FET';
 
   @override
+  String get swapHint => 'Amb dos dits dispares el segon joc d\'armes';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: trets més forts';
   }

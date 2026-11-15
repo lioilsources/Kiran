@@ -1160,6 +1160,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get duelDrillDone => 'పూర్తయింది';
 
   @override
+  String get swapHint => 'రెండు వేళ్లు ఉంచితే రెండో సెట్ ఆయుధాలతో కాలుస్తారు';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: మరింత బలమైన కాల్పులు';
   }

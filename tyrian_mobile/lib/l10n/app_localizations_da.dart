@@ -1160,6 +1160,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get duelDrillDone => 'FÆRDIG';
 
   @override
+  String get swapHint => 'Med to fingre skyder du med dit andet våbensæt';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: stærkere skud';
   }

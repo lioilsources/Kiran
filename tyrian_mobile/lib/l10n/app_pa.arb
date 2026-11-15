@@ -320,6 +320,7 @@
   "duelDrillTurn": "ਪਿੱਛੇ ਮੁੜੋ",
   "duelDrillTurnHow": "ਬੌਸ ਤੁਹਾਡੇ ਹੇਠਾਂ ਹੈ: ਨੱਕ ਮੋੜੋ ਅਤੇ ਮਾਰੋ",
   "duelDrillDone": "ਹੋ ਗਿਆ",
+  "swapHint": "ਦੋ ਉਂਗਲਾਂ ਰੱਖੋ ਤਾਂ ਦੂਜੇ ਸੈੱਟ ਦੇ ਹਥਿਆਰ ਚੱਲਣਗੇ",
   "pickupWeapon": "{slot} {lv}: ਹੋਰ ਤਾਕਤਵਰ ਗੋਲੀਆਂ",
   "pickupRepair": "+{amount} HP: ਜਹਾਜ਼ ਠੀਕ ਹੋਇਆ",
   "pickupShield": "+{amount} ਢਾਲ, ਜਲਦੀ ਰੀਚਾਰਜ ਹੁੰਦੀ ਹੈ",

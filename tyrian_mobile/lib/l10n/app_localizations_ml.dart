@@ -1166,6 +1166,10 @@ class AppLocalizationsMl extends AppLocalizations {
   String get duelDrillDone => 'പൂർത്തിയായി';
 
   @override
+  String get swapHint =>
+      'രണ്ട് വിരൽ വെച്ചാൽ രണ്ടാം സെറ്റ് ആയുധങ്ങൾ കൊണ്ട് വെടിവെക്കും';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: കൂടുതൽ ശക്തമായ വെടി';
   }

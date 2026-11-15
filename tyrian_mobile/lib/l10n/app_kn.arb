@@ -320,6 +320,7 @@
   "duelDrillTurn": "ಹಿಂತಿರುಗಿ",
   "duelDrillTurnHow": "ಬಾಸ್ ನಿಮ್ಮ ಕೆಳಗಿದೆ: ಮೂಗು ತಿರುಗಿಸಿ ಹೊಡೆಯಿರಿ",
   "duelDrillDone": "ಮುಗಿದಿದೆ",
+  "swapHint": "ಎರಡು ಬೆರಳು ಇಟ್ಟರೆ ಎರಡನೇ ಸೆಟ್ ಆಯುಧಗಳಿಂದ ಗುಂಡು ಹಾರಿಸುವಿರಿ",
   "pickupWeapon": "{slot} {lv}: ಇನ್ನಷ್ಟು ಬಲವಾದ ಗುಂಡುಗಳು",
   "pickupRepair": "+{amount} HP: ಹಡಗು ದುರಸ್ತಿಯಾಯಿತು",
   "pickupShield": "+{amount} ಕವಚ, ಬೇಗ ಮರುಪೂರಣ",

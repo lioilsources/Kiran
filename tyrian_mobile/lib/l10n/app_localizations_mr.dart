@@ -1147,6 +1147,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get duelDrillDone => 'झाले';
 
   @override
+  String get swapHint => 'दोन बोटे ठेवा, दुसऱ्या संचातील शस्त्रे चालतील';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: अधिक ताकदवान गोळ्या';
   }

@@ -1151,6 +1151,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get duelDrillDone => 'সম্পন্ন';
 
   @override
+  String get swapHint => 'দুই আঙুল রাখলে দ্বিতীয় সেটের অস্ত্র চলবে';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: আরও শক্তিশালী গুলি';
   }

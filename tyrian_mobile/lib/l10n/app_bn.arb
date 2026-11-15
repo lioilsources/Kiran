@@ -320,6 +320,7 @@
   "duelDrillTurn": "ঘুরে যাও",
   "duelDrillTurnHow": "বস তোমার নিচে: নাক ঘুরিয়ে আঘাত করো",
   "duelDrillDone": "সম্পন্ন",
+  "swapHint": "দুই আঙুল রাখলে দ্বিতীয় সেটের অস্ত্র চলবে",
   "pickupWeapon": "{slot} {lv}: আরও শক্তিশালী গুলি",
   "pickupRepair": "+{amount} HP: হাল মেরামত হল",
   "pickupShield": "+{amount} ঢাল, দ্রুত রিচার্জ হয়",

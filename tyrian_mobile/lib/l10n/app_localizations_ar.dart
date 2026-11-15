@@ -1167,6 +1167,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get duelDrillDone => 'تم';
 
   @override
+  String get swapHint => 'ضع إصبعين لتطلق بمجموعة أسلحتك الثانية';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: طلقات أقوى';
   }

@@ -320,6 +320,7 @@
   "duelDrillTurn": "ARKANI DÖN",
   "duelDrillTurnHow": "Boss altında: burnu çevir ve vur",
   "duelDrillDone": "TAMAM",
+  "swapHint": "İki parmakla ikinci silah setinle ateş edersin",
   "pickupWeapon": "{slot} {lv}: daha güçlü atışlar",
   "pickupRepair": "+{amount} HP: gövde onarıldı",
   "pickupShield": "+{amount} kalkan, daha hızlı dolar",

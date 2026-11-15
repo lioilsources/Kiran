@@ -320,6 +320,7 @@
   "duelDrillTurn": "PUSING",
   "duelDrillTurnHow": "Bos di bawah anda: pusing muncung dan kenakan",
   "duelDrillDone": "SELESAI",
+  "swapHint": "Dengan dua jari, anda menembak dengan set senjata kedua",
   "pickupWeapon": "{slot} {lv}: tembakan lebih kuat",
   "pickupRepair": "+{amount} HP: badan kapal dibaiki",
   "pickupShield": "+{amount} perisai, cas semula lebih cepat",

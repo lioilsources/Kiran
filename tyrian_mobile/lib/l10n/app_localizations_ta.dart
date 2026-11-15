@@ -1170,6 +1170,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get duelDrillDone => 'முடிந்தது';
 
   @override
+  String get swapHint =>
+      'இரண்டு விரல்களை வைத்தால் இரண்டாவது ஆயுதத் தொகுப்பால் சுடலாம்';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: வலுவான சுடுதல்';
   }

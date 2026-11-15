@@ -320,6 +320,7 @@
   "duelDrillTurn": "หันกลับ",
   "duelDrillTurnHow": "บอสอยู่ใต้คุณ: หมุนหัวยานแล้วยิงให้โดน",
   "duelDrillDone": "สำเร็จ",
+  "swapHint": "แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง",
   "pickupWeapon": "{slot} {lv}: ยิงแรงขึ้น",
   "pickupRepair": "+{amount} HP: ซ่อมตัวยานแล้ว",
   "pickupShield": "โล่ +{amount} ชาร์จเร็วขึ้น",

@@ -320,6 +320,7 @@
   "duelDrillTurn": "BERBALIK",
   "duelDrillTurnHow": "Bos ada di bawahmu: putar moncong dan kenai",
   "duelDrillDone": "SELESAI",
+  "swapHint": "Dengan dua jari, kamu menembak dengan set senjata kedua",
   "pickupWeapon": "{slot} {lv}: tembakan lebih kuat",
   "pickupRepair": "+{amount} HP: lambung diperbaiki",
   "pickupShield": "+{amount} perisai, isi ulang lebih cepat",

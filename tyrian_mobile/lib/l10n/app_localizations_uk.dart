@@ -1170,6 +1170,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get duelDrillDone => 'ГОТОВО';
 
   @override
+  String get swapHint => 'Двома пальцями стріляєш другим набором зброї';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: потужніші постріли';
   }

@@ -1133,6 +1133,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get duelDrillDone => '完成';
 
   @override
+  String get swapHint => '两根手指按住时使用第二套武器射击';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv：火力更强';
   }
@@ -2283,6 +2286,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get duelDrillDone => '完成';
+
+  @override
+  String get swapHint => '兩根手指按住時使用第二套武器射擊';
 
   @override
   String pickupWeapon(String slot, String lv) {

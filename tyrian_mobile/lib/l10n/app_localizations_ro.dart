@@ -1173,6 +1173,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get duelDrillDone => 'GATA';
 
   @override
+  String get swapHint => 'Cu două degete tragi cu al doilea set de arme';
+
+  @override
   String pickupWeapon(String slot, String lv) {
     return '$slot $lv: focuri mai puternice';
   }
