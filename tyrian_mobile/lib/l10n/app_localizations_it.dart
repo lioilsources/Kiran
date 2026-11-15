@@ -78,6 +78,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get musicOff => 'MUSICA: NO';
 
   @override
+  String get statsOn => 'STATISTICHE: SÌ';
+
+  @override
+  String get statsOff => 'STATISTICHE: NO';
+
+  @override
   String get quitToDesktop => 'ESCI AL DESKTOP';
 
   @override
@@ -258,4 +264,111 @@ class AppLocalizationsIt extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Si sblocca a $points punti';
   }
+
+  @override
+  String get swapHint => 'Con due dita spari con il secondo set di armi';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: colpi più potenti';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: scafo riparato';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount di scudo, si ricarica più in fretta';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generatore potenziato: più energia per le armi';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount crediti da spendere nel ComCenter';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'LIVELLO $level';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'I potenziamenti alzano il livello dell\'arma: più danni, fuoco più rapido';
+
+  @override
+  String get tutPickupHealth =>
+      'Le riparazioni sistemano lo scafo; a scafo integro alzano gli HP massimi';
+
+  @override
+  String get tutPickupShield =>
+      'Lo scudo assorbe i colpi prima dello scafo e si ricarica da solo';
+
+  @override
+  String get tutPickupGenerator =>
+      'Il generatore alimenta le armi: più energia, più armi che sparano';
+
+  @override
+  String get tutPickupCredits =>
+      'Con i crediti compri armi e potenziamenti nel ComCenter tra i round';
+
+  @override
+  String get tutBoss =>
+      'BOSS! La sua salute è la barra in alto. Muoviti e continua a sparare';
+
+  @override
+  String get tutLowHp =>
+      'Scafo a pezzi! Lo ripari con una riparazione o nel ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Le armi chiedono più energia del generatore: potenzialo';
+
+  @override
+  String get tutCanAfford =>
+      'Puoi permetterti un potenziamento: passa al ComCenter dopo il round';
+
+  @override
+  String get tutFly =>
+      'Trascina per volare. Le armi sparano finché tieni giù il dito';
+
+  @override
+  String get introCollect => 'Raccogli le icone lasciate dai nemici';
+
+  @override
+  String get introShop =>
+      'Tra un round e l\'altro, spendi i crediti nel ComCenter';
+
+  @override
+  String get objBoss => 'Obiettivo: sopravvivi alle ondate e sconfiggi il boss';
+
+  @override
+  String get objSurvive => 'Obiettivo: sopravvivi alle ondate';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits crediti · $kills abbattuti';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Arma migliore: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'I colpi del boss fanno male: uno scudo più forte ti fa guadagnare tempo';
+
+  @override
+  String get deathShield =>
+      'Potenzia lo scudo nel ComCenter: assorbe i colpi prima dello scafo';
+
+  @override
+  String get deathGuns =>
+      'Armi più forti spazzano via le ondate prima che ti feriscano';
 }

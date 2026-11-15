@@ -7,6 +7,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'skin_registry.dart';
+import 'telemetry_service.dart';
 
 /// The one place that talks to the platform store (StoreKit / Play Billing)
 /// for per-skin non-consumable purchases. Skins without a
@@ -38,6 +39,22 @@ class SkinStoreService extends ChangeNotifier {
     if (skinById(skinId)?.productId == null) return true;
     return _unlocked.contains(skinId);
   }
+
+  /// The order both skin grids show (plan 32 Q2): skins the player owns —
+  /// free or bought — first, then the locked ones. Within each group the
+  /// order is [kSkins] itself, i.e. by release year. Where everything is
+  /// unlocked (desktop) this is [kSkins] unchanged.
+  List<SkinInfo> get orderedSkins => ownedFirst(kSkins, isUnlocked);
+
+  /// Stable split of [skins] into unlocked, then locked.
+  static List<SkinInfo> ownedFirst(
+          List<SkinInfo> skins, bool Function(String id) unlocked) =>
+      [
+        for (final s in skins)
+          if (unlocked(s.id)) s,
+        for (final s in skins)
+          if (!unlocked(s.id)) s,
+      ];
 
   /// Localized store price for a locked skin, or null when the product query
   /// failed / hasn't finished — the UI then shows the lock without a price.
@@ -109,10 +126,12 @@ class SkinStoreService extends ChangeNotifier {
           purchaseParam: PurchaseParam(productDetails: details));
       if (!launched) {
         _pendingSkinId = null;
+        _trackPurchase(skinId, 'error');
         notifyListeners();
       }
     } catch (_) {
       _pendingSkinId = null;
+      _trackPurchase(skinId, 'error');
       notifyListeners();
     }
   }
@@ -137,11 +156,16 @@ class SkinStoreService extends ChangeNotifier {
           if (skin != null && skin.id == _pendingSkinId) {
             _justPurchasedSkinId = skin.id;
             _pendingSkinId = null;
+            _trackPurchase(skin.id, 'ok');
           }
           break;
         case PurchaseStatus.error:
         case PurchaseStatus.canceled:
-          if (skin != null && skin.id == _pendingSkinId) _pendingSkinId = null;
+          if (skin != null && skin.id == _pendingSkinId) {
+            _pendingSkinId = null;
+            _trackPurchase(skin.id,
+                purchase.status == PurchaseStatus.canceled ? 'cancel' : 'error');
+          }
           break;
         case PurchaseStatus.pending:
           // Store dialog still up (or deferred parental approval) — keep the
@@ -157,6 +181,11 @@ class SkinStoreService extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  /// The end of a purchase the player started (Prompts/33 §6).
+  static void _trackPurchase(String skinId, String result) => TelemetryService
+      .instance
+      .track('purchase', {'target': skinId, 'result': result});
 
   SkinInfo? _skinForProduct(String productId) {
     for (final s in kSkins) {

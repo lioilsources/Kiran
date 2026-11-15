@@ -83,6 +83,15 @@ void main() {
     expect(find.text('JOIN'), findsNothing);
   });
 
+  // Plan 32 Q4: +DPS under the chips, damage × rate under each fitted row.
+  testWidgets('chips show their DPS delta and rows their breakdown',
+      (tester) async {
+    await pump(tester, const Locale('en'));
+    expect(find.textContaining('/s'), findsNWidgets(2),
+        reason: 'FRONT and LEFT have a gun fitted, RIGHT is empty');
+    expect(find.textContaining(RegExp(r'^\+\d')), findsWidgets);
+  });
+
   testWidgets('tapping a hangar chip switches for free', (tester) async {
     final game = await pump(tester, const Locale('en'));
     final credit = game.vessel.credit;

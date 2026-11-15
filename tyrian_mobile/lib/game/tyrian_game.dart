@@ -40,17 +40,22 @@ import '../rendering/beam_renderer.dart';
 import '../rendering/shader_pipeline.dart';
 import '../services/skin_registry.dart';
 import '../ui/float_text.dart';
+import '../ui/format.dart';
+import '../input/touch_controls.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
+import '../services/telemetry_service.dart';
+import 'telemetry_probe.dart';
 import '../l10n/l10n.dart';
+import '../systems/tutor.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
 
 class TyrianGame extends FlameGame
-    with DragCallbacks, TapCallbacks, KeyboardEvents {
+    with DragCallbacks, TapCallbacks, TouchControls, KeyboardEvents {
   TyrianGame();
 
   final KeyboardInput keyboardInput = KeyboardInput();
@@ -102,7 +107,20 @@ class TyrianGame extends FlameGame
   final Map<int, Structure> clientStructures = {};
   final List<Projectile> clientPlayerProjectiles = [];
 
-  GameState state = GameState.comCenter;
+  GameState _state = GameState.comCenter;
+
+  GameState get state => _state;
+
+  /// Leaving [GameState.playing] puts the touch's first weapon set back at
+  /// once (plan 34), before anything else sees the loadout: the ComCenter,
+  /// the save written on the way into it, the game over.
+  set state(GameState next) {
+    if (_state == GameState.playing && next != GameState.playing) {
+      vessel.setAlternate(false);
+    }
+    _state = next;
+  }
+
   bool isLoaded = false;
 
   // Active game objects
@@ -194,6 +212,7 @@ class TyrianGame extends FlameGame
     _applyViewportLayout();
 
     await AssetLibrary.instance.loadAll();
+    await TutorMemory.instance.load();
 
     starfield = Starfield();
     world.add(starfield);
@@ -373,6 +392,7 @@ class TyrianGame extends FlameGame
 
   void startGame() {
     state = GameState.playing;
+    touchReset();
     vessel.visible = true;
     vessel.resetPosition();
     if (vessel2 != null) {
@@ -388,9 +408,11 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     loadSector(currentSectorIndex);
+    announceSector();
     _startSectorMusic();
     AchievementService.instance
         .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
+    TelemetryProbe.sectorStart(this);
   }
 
   /// Kick off the heroic intro + reset the adaptive-music director for a sector.
@@ -493,6 +515,7 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
+    touchTick(dt);
     // Client mode: apply snapshots, then call super.update for component mounting/rendering
     if (coopRole == CoopRole.client) {
       final snap = coopClient?.latestSnapshot;
@@ -521,6 +544,8 @@ class TyrianGame extends FlameGame
       parallaxBg.update(dt);
       return;
     }
+
+    tutor.tick(dt);
 
     super.update(dt);
     elapsed += dt;
@@ -569,6 +594,7 @@ class TyrianGame extends FlameGame
         currentSector!.isComplete &&
         !_sectorCompleteFired) {
       _sectorCompleteFired = true;
+      tutor.roundEnd();
       _onSectorComplete();
     }
 
@@ -629,6 +655,7 @@ class TyrianGame extends FlameGame
   }
 
   void _onSectorComplete() {
+    TelemetryProbe.sectorEnd(this, 'completed');
     AchievementService.instance.onSectorCompleted(
       // Level of the sector the player advances to — with three parts per
       // level, finishing Inner Zone II must not claim "reached sector 3".
@@ -758,11 +785,14 @@ class TyrianGame extends FlameGame
       vessel2!.position.x += 60;
     }
     state = GameState.playing;
+    touchReset();
     // Notify client that game is starting
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
     }
+    announceSector();
     _startSectorMusic();
+    TelemetryProbe.sectorStart(this);
   }
 
   void togglePause() {
@@ -783,6 +813,8 @@ class TyrianGame extends FlameGame
   }
 
   void triggerGameOver() {
+    TelemetryProbe.sectorEnd(this, 'death');
+    deathTip = tutor.deathTip();
     SoundService.instance.play(SfxEvent.gameOver);
     MusicService.instance.stop();
     state = GameState.gameOver;
@@ -807,35 +839,40 @@ class TyrianGame extends FlameGame
     return d1 <= d2 ? vessel.position.x : vessel2!.position.x;
   }
 
-  // Touch input — delta-based so finger and vessel move in sync
-  Vector2? _prevDragPos;
-
   // Client touch target position (for sending to host)
   double _clientTargetX = config.gameWidth / 2;
   double _clientTargetY = config.gameHeight * 0.75;
   bool _clientFire = false;
 
-  @override
-  void onDragStart(DragStartEvent event) {
-    super.onDragStart(event);
-    if (state != GameState.playing) return;
-    _prevDragPos = event.canvasPosition.clone();
+  // ── Touch: [TouchControls] decides which finger does what (plan 34) ──
 
-    if (coopRole == CoopRole.client) {
-      _clientFire = true;
-    } else {
-      vessel.fire = true;
+  @override
+  bool get touchFlies => state == GameState.playing;
+
+  /// The second set: solo and host only — a co-op client sends position and
+  /// fire, nothing else.
+  @override
+  bool get touchSwaps => touchFlies && coopRole != CoopRole.client;
+
+  @override
+  bool get touchAlternate => vessel.alternateActive;
+
+  /// Two fingers fly the second weapon set, one the first (plan 34). The
+  /// message names the front gun and the DPS that flies now.
+  @override
+  void touchSetAlternate(bool on, {required bool announce}) {
+    if (!vessel.setAlternate(on) || !announce) return;
+    final front = vessel.getDevice(WeaponSlot.frontGun);
+    // What the generator can power: a gun with pwrNeed > genMax is off.
+    var powered = 0.0;
+    for (final d in vessel.devices) {
+      if (d.pwrNeed <= vessel.genMax) powered += d.dps;
     }
+    showMessage('${front?.displayName.toUpperCase() ?? ''}  DPS ${fmtNum(powered)}');
   }
 
   @override
-  void onDragUpdate(DragUpdateEvent event) {
-    super.onDragUpdate(event);
-    if (state != GameState.playing || _prevDragPos == null) return;
-    final pos = event.canvasEndPosition;
-    final delta = pos - _prevDragPos!;
-    _prevDragPos = pos.clone();
-
+  void touchSteer(Vector2 delta) {
     // Divide by camera zoom so a finger drag still moves the vessel 1:1 on screen
     // when the immersive camera is zoomed in (zoom is 1.0 otherwise → no-op).
     final scale = config.gameWidth / size.x / camera.viewfinder.zoom;
@@ -857,29 +894,22 @@ class TyrianGame extends FlameGame
   }
 
   @override
-  void onDragEnd(DragEndEvent event) {
-    super.onDragEnd(event);
-    if (state != GameState.playing) return;
-    _prevDragPos = null;
-
-    if (coopRole == CoopRole.client) {
-      _clientFire = false;
-      coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
-    } else {
-      vessel.fire = false;
-    }
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
-    if (state != GameState.playing) return;
-
+  void touchToggleFire() {
     if (coopRole == CoopRole.client) {
       _clientFire = !_clientFire;
       coopClient?.sendInput(_clientTargetX, _clientTargetY, _clientFire);
     } else {
       vessel.fire = !vessel.fire;
+    }
+  }
+
+  @override
+  void touchSetFire(bool on) {
+    if (coopRole == CoopRole.client) {
+      _clientFire = on;
+      if (!on) coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
+    } else {
+      vessel.fire = on;
     }
   }
 
@@ -985,14 +1015,50 @@ class TyrianGame extends FlameGame
     }
   }
 
-  void showMessage(String msg) {
-    world.add(FloatText(
+  /// Messages shown in the last moment, so a new one lines up under them
+  /// instead of on top (a pickup right after the sector title, say).
+  final List<FloatText> _messages = [];
+
+  void showMessage(String msg, {double fontSize = 18, double duration = 2.0}) {
+    _messages.removeWhere((m) => m.isRemoved || m.age > _messageStackAge);
+    final row = _messages.length.clamp(0, _messageRows - 1);
+    final text = FloatText(
       text: msg,
       color: const Color(0xFF00FFFF),
-      fontSize: 18,
-      position: Vector2(config.gameWidth / 2, config.gameHeight * 0.3),
-    ));
+      fontSize: fontSize,
+      duration: duration,
+      position: Vector2(config.gameWidth / 2,
+          config.gameHeight * 0.3 + row * _messageRowHeight),
+    );
+    _messages.add(text);
+    world.add(text);
   }
+
+  /// The texts of the messages still on screen, oldest first.
+  @visibleForTesting
+  List<String> get recentMessages => [
+        for (final m in _messages)
+          if (!m.isRemoved) m.text,
+      ];
+
+  static const _messageStackAge = 0.8; // s a message still holds its row
+  static const _messageRows = 4;
+  static const double _messageRowHeight = 26;
+
+  /// The perimeter's name and its level, as a new round begins.
+  void announceSector() {
+    final s = currentSector;
+    if (s == null) return;
+    showMessage(s.caption.toUpperCase(), duration: 3);
+    showMessage(L10n.current.nodeLevel(s.level), fontSize: 14, duration: 3);
+    if (coopRole != CoopRole.client) tutor.roundStart();
+  }
+
+  /// The texts that teach the game as it is played.
+  late final Tutor tutor = Tutor(this);
+
+  /// The tip under the game over title, set as the ship goes down.
+  String? deathTip;
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {
     const cf = 0.7; // collision fraction — shrink vessel hitbox for fairness
@@ -1022,6 +1088,7 @@ class TyrianGame extends FlameGame
       bool hit = false;
       for (final v in allVessels) {
         if (_projectileHitsVessel(p, v)) {
+          TelemetryService.instance.noteHit('shot');
           v.takeDamage(p.damage.toInt());
           hit = true;
           break;

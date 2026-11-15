@@ -77,6 +77,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get musicOff => 'NHẠC: TẮT';
 
   @override
+  String get statsOn => 'THỐNG KÊ: BẬT';
+
+  @override
+  String get statsOff => 'THỐNG KÊ: TẮT';
+
+  @override
   String get quitToDesktop => 'THOÁT RA DESKTOP';
 
   @override
@@ -256,4 +262,105 @@ class AppLocalizationsVi extends AppLocalizations {
   String unlocksAt(String points) {
     return 'Mở khóa ở $points điểm';
   }
+
+  @override
+  String get swapHint => 'Giữ hai ngón tay để bắn bằng bộ vũ khí thứ hai';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: bắn mạnh hơn';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: thân tàu đã sửa';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount khiên, sạc nhanh hơn';
+  }
+
+  @override
+  String get pickupGenerator => 'Máy phát mạnh hơn: thêm năng lượng cho vũ khí';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount tín dụng để tiêu ở ComCenter';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return 'CẤP $level';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Vật phẩm vũ khí tăng cấp súng: sát thương cao hơn, bắn nhanh hơn';
+
+  @override
+  String get tutPickupHealth =>
+      'Vật phẩm sửa chữa vá thân tàu; khi đầy máu sẽ tăng HP tối đa';
+
+  @override
+  String get tutPickupShield => 'Khiên đỡ đòn trước thân tàu và tự hồi lại';
+
+  @override
+  String get tutPickupGenerator =>
+      'Máy phát cấp năng lượng cho súng: càng nhiều năng lượng, càng nhiều súng bắn';
+
+  @override
+  String get tutPickupCredits =>
+      'Dùng tín dụng mua súng và nâng cấp ở ComCenter giữa các vòng';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Máu của nó là thanh trên cùng. Di chuyển và bắn liên tục';
+
+  @override
+  String get tutLowHp => 'Thân tàu yếu! Sửa bằng vật phẩm hoặc ở ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Súng cần nhiều năng lượng hơn máy phát cấp: nâng cấp nó';
+
+  @override
+  String get tutCanAfford => 'Bạn đủ tiền nâng cấp: ghé ComCenter sau vòng này';
+
+  @override
+  String get tutFly => 'Kéo để bay. Súng bắn khi ngón tay còn chạm màn hình';
+
+  @override
+  String get introCollect => 'Nhặt các biểu tượng kẻ địch rơi ra';
+
+  @override
+  String get introShop => 'Giữa các vòng, tiêu tín dụng ở ComCenter';
+
+  @override
+  String get objBoss => 'Mục tiêu: sống sót qua các đợt và hạ boss';
+
+  @override
+  String get objSurvive => 'Mục tiêu: sống sót qua các đợt';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits tín dụng · $kills hạ gục';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Vũ khí tốt nhất: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Đạn boss rất mạnh: khiên tốt hơn cho bạn thêm thời gian';
+
+  @override
+  String get deathShield =>
+      'Nâng cấp khiên ở ComCenter: nó đỡ đòn trước thân tàu';
+
+  @override
+  String get deathGuns =>
+      'Súng mạnh hơn quét sạch các đợt trước khi chúng làm hại bạn';
 }

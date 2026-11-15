@@ -272,6 +272,7 @@ class Fleet extends Component with HasGameReference<TyrianGame> {
 
   void onHostileKilled(Hostile h, TyrianGame gameInstance, {Vessel? attacker}) {
     kills++;
+    gameInstance.tutor.onKill(h);
     AchievementService.instance.onKill(h.hostType, isBoss: h is Boss);
     lastKillX = h.position.x + h.size.x / 2;
     lastKillY = h.position.y + h.size.y / 2;

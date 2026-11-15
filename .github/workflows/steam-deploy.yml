@@ -58,7 +58,7 @@ jobs:
 
       - name: Build Windows (release)
         working-directory: tyrian_mobile
-        run: flutter build windows --release
+        run: flutter build windows --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
 
@@ -100,7 +100,7 @@ jobs:
 
       - name: Build Linux (release)
         working-directory: tyrian_mobile
-        run: flutter build linux --release
+        run: flutter build linux --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       # Steam launches the raw bundle binary directly (launch option: kirian);
       # the AppImage from release-linux.yml is for direct download only.

@@ -76,6 +76,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get musicOff => '음악: 끔';
 
   @override
+  String get statsOn => '통계: 켬';
+
+  @override
+  String get statsOff => '통계: 끔';
+
+  @override
   String get quitToDesktop => '데스크톱으로 나가기';
 
   @override
@@ -255,4 +261,97 @@ class AppLocalizationsKo extends AppLocalizations {
   String unlocksAt(String points) {
     return '$points점에서 해금';
   }
+
+  @override
+  String get swapHint => '두 손가락을 대고 있으면 두 번째 무기 세트로 발사';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: 더 강한 사격';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: 선체 수리';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '보호막 +$amount, 더 빨리 충전';
+  }
+
+  @override
+  String get pickupGenerator => '발전기 강화: 무기에 더 많은 에너지';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount 크레딧, ComCenter에서 사용';
+  }
+
+  @override
+  String nodeLevel(int level) {
+    return '레벨 $level';
+  }
+
+  @override
+  String get tutPickupWeapon => '무기 아이템은 무기 레벨을 올립니다: 피해 증가, 연사 속도 증가';
+
+  @override
+  String get tutPickupHealth => '수리 아이템은 선체를 고칩니다. 체력이 가득하면 최대 HP가 오릅니다';
+
+  @override
+  String get tutPickupShield => '실드는 선체보다 먼저 공격을 막고 스스로 충전됩니다';
+
+  @override
+  String get tutPickupGenerator =>
+      '발전기는 무기에 전력을 공급합니다. 전력이 많을수록 더 많은 무기가 발사됩니다';
+
+  @override
+  String get tutPickupCredits => '크레딧으로 라운드 사이에 ComCenter에서 무기와 업그레이드를 구매하세요';
+
+  @override
+  String get tutBoss => '보스! 상단 바가 보스의 체력입니다. 계속 움직이며 사격하세요';
+
+  @override
+  String get tutLowHp => '선체 위험! 수리 아이템이나 ComCenter에서 고치세요';
+
+  @override
+  String get tutGenStarved => '무기가 발전기보다 많은 전력을 요구합니다: 업그레이드하세요';
+
+  @override
+  String get tutCanAfford => '업그레이드할 수 있습니다: 이번 라운드 후 ComCenter를 확인하세요';
+
+  @override
+  String get tutFly => '드래그해서 비행하세요. 손가락을 대고 있는 동안 무기가 발사됩니다';
+
+  @override
+  String get introCollect => '적이 떨어뜨리는 아이콘을 잡으세요';
+
+  @override
+  String get introShop => '라운드 사이에 ComCenter에서 크레딧을 사용하세요';
+
+  @override
+  String get objBoss => '목표: 적의 웨이브에서 살아남고 보스를 처치하세요';
+
+  @override
+  String get objSurvive => '목표: 적의 웨이브에서 살아남으세요';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits 크레딧 · $kills 격추';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return '최고의 무기: $weapon';
+  }
+
+  @override
+  String get deathBoss => '보스의 공격은 강력합니다: 더 강한 실드가 시간을 벌어 줍니다';
+
+  @override
+  String get deathShield => 'ComCenter에서 실드를 업그레이드하세요: 선체보다 먼저 공격을 막습니다';
+
+  @override
+  String get deathGuns => '강한 무기는 적이 피해를 주기 전에 웨이브를 쓸어버립니다';
 }
