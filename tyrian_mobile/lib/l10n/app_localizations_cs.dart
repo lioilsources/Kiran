@@ -265,5 +265,5 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get swapHint => 'Druhým prstem přepneš zbraně';
+  String get swapHint => 'Dvěma prsty střílíš druhou sadou zbraní';
 }

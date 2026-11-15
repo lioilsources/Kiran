@@ -77,5 +77,5 @@
   "overload": "SOBRECARGA",
   "weaponOff": "{weapon} DESLIGADO — gerador fraco demais",
   "unlocksAt": "Desbloqueia com {points} pts",
-  "swapHint": "Toque com um segundo dedo para trocar de armas"
+  "swapHint": "Com dois dedos você atira com o segundo conjunto de armas"
 }

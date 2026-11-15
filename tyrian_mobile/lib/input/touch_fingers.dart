@@ -1,72 +1,49 @@
-/// Which finger does what on a touch screen (plan 32 Q3). Pure bookkeeping
-/// over pointer ids, no Flame, so the sequences can be tested.
+/// Which fingers are on the screen (plan 34). Pure bookkeeping over the ids
+/// Flame reports, no Flame, so the sequences can be tested.
 ///
-/// The first finger down is the **primary**: it moves the ship and holds the
-/// fire, as one finger always has. Every further finger placed while the
-/// primary is held is a **swap** finger: it fires the weapon swap once, when
-/// it lands, and nothing else — it must not toggle fire, move the ship, or
-/// stop the fire when it lifts. When the primary lifts there is no primary
-/// until a new finger lands; a swap finger still down does not take over.
+/// Flame reports a finger first as a tap and, once it moves past the touch
+/// slop, as a drag: the tap is cancelled and the drag starts within the same
+/// pointer event. The two ids come from unrelated counters — a tap carries
+/// Flutter's pointer number, a drag Flame's own drag counter — so one finger
+/// has two ids, and a tap's id may equal another finger's drag id. The taps
+/// and the drags are therefore kept apart and never compared.
 ///
-/// Flame reports a finger as a tap first (tap down at once), and as a drag
-/// once it moves; the tap is cancelled just before the drag starts. A
-/// cancelled tap therefore only marks the finger for release, and [flush]
-/// (once a frame) drops it unless its drag picked it up in the meantime.
+/// A finger on the screen is in exactly one of the two: still resting (a
+/// tap) or moving (a drag). Their sum is the number of fingers. Read it once
+/// a frame, not inside an event, where a tap may be gone and its drag not
+/// yet begun.
 class TouchFingers {
-  int? _primary;
-  final Set<int> _swap = {};
-  final Set<int> _pendingRelease = {};
+  final Set<int> _taps = {};
+  final List<int> _drags = [];
 
-  /// A finger was reported down — by its tap down or its drag start, which
-  /// may both arrive for the same finger. [TouchDown.landed] is true only
-  /// the first time.
-  TouchDown down(int id) {
-    _pendingRelease.remove(id);
-    if (id == _primary) return const TouchDown(primary: true, landed: false);
-    if (_swap.contains(id)) {
-      return const TouchDown(primary: false, landed: false);
-    }
-    if (_primary == null) {
-      _primary = id;
-      return const TouchDown(primary: true, landed: true);
-    }
-    _swap.add(id);
-    return const TouchDown(primary: false, landed: true);
+  /// A finger landed (tap down).
+  void tapDown(int id) => _taps.add(id);
+
+  /// A resting finger lifted, or its tap was cancelled — by its own drag
+  /// starting, or by the system.
+  void tapUp(int id) => _taps.remove(id);
+
+  /// A finger began to move (drag start).
+  void dragStart(int id) {
+    if (!_drags.contains(id)) _drags.add(id);
   }
 
-  bool isPrimary(int id) => id == _primary;
+  /// A moving finger lifted, or the system cancelled its drag.
+  void dragEnd(int id) => _drags.remove(id);
 
-  /// Whether a primary finger is down.
-  bool get hasPrimary => _primary != null;
+  /// Fingers on the screen, resting or moving.
+  int get count => _taps.length + _drags.length;
 
-  /// The finger lifted (tap up, drag end or drag cancel).
-  void up(int id) {
-    if (id == _primary) _primary = null;
-    _swap.remove(id);
-    _pendingRelease.remove(id);
+  /// Whether any finger is moving.
+  bool get dragging => _drags.isNotEmpty;
+
+  /// The finger that steers: the oldest drag still going. Null while no
+  /// finger moves — a resting finger steers nothing.
+  int? get steering => _drags.isEmpty ? null : _drags.first;
+
+  /// Forget every finger: a guard against one whose end never came.
+  void clear() {
+    _taps.clear();
+    _drags.clear();
   }
-
-  /// The finger's tap was cancelled: either its drag is about to start, or
-  /// the finger is gone. [flush] tells the two apart.
-  void tapCancelled(int id) {
-    if (id == _primary || _swap.contains(id)) _pendingRelease.add(id);
-  }
-
-  /// Release fingers whose tap was cancelled and whose drag never started.
-  void flush() {
-    if (_pendingRelease.isEmpty) return;
-    for (final id in _pendingRelease.toList()) {
-      up(id);
-    }
-  }
-}
-
-class TouchDown {
-  /// The primary finger (moves and fires) rather than a swap finger.
-  final bool primary;
-
-  /// This is the finger landing, not a second report of the same finger.
-  final bool landed;
-
-  const TouchDown({required this.primary, required this.landed});
 }

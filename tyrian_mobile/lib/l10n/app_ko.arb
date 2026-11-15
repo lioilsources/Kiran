@@ -77,5 +77,5 @@
   "overload": "과부하",
   "weaponOff": "{weapon} 꺼짐 — 발전기 출력 부족",
   "unlocksAt": "{points}점에서 해금",
-  "swapHint": "두 번째 손가락으로 탭하면 무기 교체"
+  "swapHint": "두 손가락을 대고 있으면 두 번째 무기 세트로 발사"
 }

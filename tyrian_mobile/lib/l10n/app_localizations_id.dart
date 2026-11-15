@@ -264,5 +264,6 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get swapHint => 'Ketuk dengan jari kedua untuk mengganti senjata';
+  String get swapHint =>
+      'Dengan dua jari, kamu menembak dengan set senjata kedua';
 }

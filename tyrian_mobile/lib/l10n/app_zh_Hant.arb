@@ -77,5 +77,5 @@
   "overload": "過載",
   "weaponOff": "{weapon} 關閉 — 發電機功率不足",
   "unlocksAt": "{points} 分解鎖",
-  "swapHint": "用第二根手指點擊以切換武器"
+  "swapHint": "兩根手指按住時使用第二套武器射擊"
 }

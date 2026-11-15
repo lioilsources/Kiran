@@ -264,5 +264,5 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get swapHint => 'Silah değiştirmek için ikinci parmakla dokun';
+  String get swapHint => 'İki parmakla ikinci silah setinle ateş edersin';
 }
