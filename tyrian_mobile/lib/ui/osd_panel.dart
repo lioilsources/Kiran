@@ -11,6 +11,7 @@ import '../services/music_service.dart';
 import 'skin_painter.dart';
 import '../l10n/l10n.dart';
 import 'mod_text.dart';
+import 'pass_through.dart';
 
 /// Ported from OSD panel rendering — HUD overlay showing ship stats.
 /// Implemented as a Flutter overlay widget (not Flame).
@@ -104,7 +105,8 @@ class OsdPanel extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      child: SafeArea(
+      // The finger flies through the HUD; only its buttons take taps.
+      child: PassThrough(child: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
@@ -265,7 +267,7 @@ class OsdPanel extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 
@@ -356,7 +358,8 @@ class BossHealthBar extends StatelessWidget {
       left: 0,
       right: 0,
       top: 0,
-      child: SafeArea(
+      // The finger flies through the HUD; only its buttons take taps.
+      child: PassThrough(child: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           decoration: BoxDecoration(
@@ -415,7 +418,7 @@ class BossHealthBar extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 }
