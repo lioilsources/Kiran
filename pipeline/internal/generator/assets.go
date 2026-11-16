@@ -163,7 +163,7 @@ var backgroundLayers = []struct {
 	layerDesc string
 	perZone   bool
 }{
-	{"layer_0", "the sky/void itself — the opaque base plate, fills the entire frame edge to edge with no gaps, furthest away, low detail, soft and unfocused", true},
+	{"layer_0", "the far base plate seen straight down — the opaque ground, cloud deck or void that fills the entire frame edge to edge with no gaps, furthest away, low detail, soft and unfocused, one even tone over the whole frame with its texture spread evenly from top to bottom", true},
 	{"layer_1", "mid-distance atmosphere — luminous gas clouds and glowing haze, self-lit and much brighter than the void behind them, soft feathered edges fading out to pure black. " + isolatedOnBlack, true},
 	{"layer_2", "mid-detail particulate — densely scattered bright motes, dust and glowing specks, each one clearly luminous. " + isolatedOnBlack, false},
 	{"layer_3", "foreground pass — larger near objects, brightly lit debris chunks and fragments catching the light, sparse. " + isolatedOnBlack, false},
@@ -197,15 +197,15 @@ var backgroundZones = []struct {
 		"the base palette barely shifted — still cool, a first faint highlight, density and contrast one notch up",
 	},
 	{
-		"the outer boundary of a huge body — its curved edge entering the frame, a boundary ring or shoreline crossing the scene, a thin haze layer where the open expanse meets the body",
+		"the outer boundary of a huge body — its edge running the full height of the frame along one side, a boundary ring or shoreline running straight top to bottom, a thin haze along that edge where the open expanse meets the body",
 		"cool the base palette toward green-teal, with the first warm accent on the boundary line, moderate contrast, distance softened by haze",
 	},
 	{
-		"a contested patrol corridor above the surface — a defence grid, marker beacons, sweeping searchlight cones from below, geometric perimeter markings on the ground",
+		"a contested patrol corridor above the surface — a defence grid, marker beacons, pools of searchlight scattered over the ground, geometric perimeter markings on the ground",
 		"shift the base palette warmer — alert amber and gold cutting into the cold shadows, hard-edged pools of light, contrast clearly raised",
 	},
 	{
-		"skimming low and fast over the body — the surface fills the frame, defence platforms and the terminator line between lit and unlit ground, upper atmosphere burning past",
+		"skimming low and fast over the body — the surface fills the frame, defence platforms, streaks of burning upper atmosphere running top to bottom along the flight path",
 		"push the base palette hot — strong orange rim light against deep shadow, high saturation, dramatic directional light, a sense of speed",
 	},
 	{

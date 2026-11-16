@@ -87,6 +87,7 @@ func spriteConstraints(assetType string) []string {
 	case "background":
 		return append(base[:1], // background: no solid-color constraint
 			"seamless vertical tiling — top and bottom edges must match",
+			"even brightness and colour from top to bottom — no vertical gradient, no horizon, no vignette",
 			"no ships, no UI, purely atmospheric",
 		)
 	default:

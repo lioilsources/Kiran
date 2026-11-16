@@ -59,6 +59,36 @@ func TestBuildPromptBackground(t *testing.T) {
 	}
 }
 
+// The layers repeat vertically, so a tone that fades across the height shows
+// as a hard step at every repeat. Every skin, in both prompt families, must
+// ban the gradient, and no background text may ask for one.
+func TestBackgroundPromptsKeepAnEvenTone(t *testing.T) {
+	asks := []string{"gradient with", "dark gradient", "fading to", "fading into distance",
+		"horizon bending", "curved planet horizon", "cinematic framing", "sky over", "sky above"}
+	for _, s := range skin.AllSkins() {
+		for _, wf := range []string{"", "pony"} {
+			for _, a := range AssetsForSkin(s) {
+				if a.AssetType != "background" {
+					continue
+				}
+				p, err := BuildPromptForWorkflow("background", s, a.ExtraVars, wf)
+				if err != nil {
+					t.Fatalf("%s/%s: %v", s.ID, a.Name, err)
+				}
+				low := strings.ToLower(p)
+				if !strings.Contains(low, "no vertical gradient") && !strings.Contains(low, "no gradient, no vertical fade") {
+					t.Errorf("%s/%s (%q): background prompt does not ban the vertical gradient", s.ID, a.Name, wf)
+				}
+				for _, bad := range asks {
+					if strings.Contains(low, bad) {
+						t.Errorf("%s/%s (%q): background prompt asks for %q", s.ID, a.Name, wf, bad)
+					}
+				}
+			}
+		}
+	}
+}
+
 func TestBuildPromptHUDIcon(t *testing.T) {
 	s, _ := skin.GetSkin("ikaruga")
 	extra := map[string]string{"IconType": "extra life heart"}

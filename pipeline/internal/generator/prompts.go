@@ -71,6 +71,7 @@ Style: {{.StyleKeywords}}.{{if .BgTechnique}}
 {{.BgTechnique}}{{end}}
 Base palette: {{.BackgroundMood}}.{{if .DangerMood}} Palette shift: {{.DangerMood}}.{{end}}
 Must tile seamlessly top to bottom — the top edge must continue the bottom edge exactly.
+{{.EvenTone}}
 No ships, no vehicles, no characters, no UI, no text. Purely atmospheric.
 Tall portrait format, 1024 pixels wide by 2048 pixels high.`,
 
@@ -179,6 +180,8 @@ tall portrait composition, 1024x2048,
 {{if .ZoneDesc}}{{.ZoneDesc}},
 {{end}}{{.LayerDesc}},
 {{.StyleKeywords}}, {{.BackgroundMood}},{{if .DangerMood}} {{.DangerMood}},{{end}}
+flat plan view looking straight down, evenly lit, uniform brightness top to bottom, same colours at the top and bottom edge,
+no gradient, no vertical fade, no horizon, no sky, no vignette, no light source at the edges,
 atmospheric, no ships, no characters, no UI`,
 
 	"hud_icon": ponyQuality + `, anime style game HUD icon, {{.IconType}}, simple bold readable shape,
@@ -291,6 +294,7 @@ func BuildPromptForWorkflow(assetType string, s skin.SkinDef, extra map[string]s
 		"SceneNoun":          sceneNoun(s),
 		"SceneTechnique":     sceneTechnique(s),
 		"BgTechnique":        bgTechnique(s),
+		"EvenTone":           evenTone,
 		"ExplosionStyle":     s.ExplosionStyle,
 		"BulletDirective":    s.BulletDirective,
 		"BossDirective":      s.BossDirective,
@@ -338,6 +342,22 @@ func sceneTechnique(s skin.SkinDef) string {
 	}
 }
 
+// evenTone keeps a parallax layer the same brightness and colour from its top
+// edge to its bottom edge. The layers repeat vertically (parallax_bg.dart draws
+// two copies stacked), so a layer that darkens toward the top — the model's
+// default for anything it reads as a sky — puts a hard light-to-dark step at
+// every repeat. "Tile seamlessly" alone did not stop it: the model matches the
+// shapes at the edges and still fades the tone across the frame. The ban has
+// to name the gradient, the horizon and the edge lighting outright, and say
+// what the edges must look like instead.
+const evenTone = "Seen straight down as a flat plan view, evenly lit across the whole " +
+	"frame: the same brightness and the same colours at the top edge, in the " +
+	"middle and at the bottom edge. No vertical gradient, no fade from light to " +
+	"dark or from one colour to another along the height, no horizon, no sky, " +
+	"no ground line, no vignette, no light source or glow at the top or " +
+	"bottom edge. Any change of colour comes from scattered elements spread " +
+	"evenly over the frame, never from a sweep across it."
+
 // bgTechnique is sceneTechnique for the parallax layers, minus the cartoon
 // default: modern skins already get their look from StyleKeywords, and forcing
 // cel-shading onto them would restyle backgrounds that shipped fine. Retro
@@ -347,7 +367,9 @@ func bgTechnique(s skin.SkinDef) string {
 	if strings.HasPrefix(t, "Bold cel-shaded") {
 		return ""
 	}
-	return t
+	// "Cinematic framing" asks for a composed shot with a horizon and a light
+	// falling across it, which is the gradient evenTone forbids.
+	return strings.Replace(t, ", cinematic framing.", ".", 1)
 }
 
 // BuildPrompt renders a prompt template for the given asset type and skin using the default (Flux) style.

@@ -347,20 +347,34 @@ func processBackgrounds(cfg Config, asset skin.ManifestAsset, bgDir string) erro
 		return fmt.Errorf("load %s: %w", srcPath, err)
 	}
 
-	resized := ResizeExact(img, 512, 1024)
-
 	// layer_0 is the opaque base plate; layer_1+ are luminous overlays drawn on
 	// black and composited over it. The decision rides on the parsed layer
 	// index, not the literal name, because zone variants are named layer_0_z3 —
 	// testing asset.Name == "layer_0" would key every zone's base plate and let
 	// the starfield bleed through the sky.
+	layerIdx, _, ok := parseLayerName(asset.Name)
+	opaque := ok && layerIdx == 0
+
+	// The seam guard (seam.go). Only the base plate is flattened: on an
+	// overlay the tone is its alpha, and shifting it would lift the black into
+	// a veil. Every layer is folded. Loud, because a skin whose plates keep
+	// needing the flattening has a background prompt worth rewriting.
+	if opaque {
+		if gap := EdgeToneGap(img); gap > toneSweepMax {
+			img = FlattenVerticalTone(img)
+			fmt.Printf("  [seam] %s fades top to bottom (edge gap %.0f) — flattened to %.0f\n",
+				asset.Name, gap, EdgeToneGap(img))
+		}
+	}
+	img = FoldSeam(img)
+
+	resized := ResizeExact(img, 512, 1024)
+
 	//
 	// Overlays get AlphaFromLuminance rather than either chroma key. A key asks
 	// a yes/no question and so deletes the soft falloff that ought to read as
 	// translucent; on real art it left these layers 97% transparent. Luminance
 	// keying turns that same falloff into proportional alpha.
-	layerIdx, _, ok := parseLayerName(asset.Name)
-	opaque := ok && layerIdx == 0
 	var out image.Image
 	if opaque {
 		out = resized
