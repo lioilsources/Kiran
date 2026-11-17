@@ -4,3 +4,20 @@ run/
 .env
 __pycache__/
 *.pyc
+# devconv:start
+.env.*
+!.env.example
+*.p8
+*.p12
+*.jks
+key.properties
+.claude/settings.local.json
+CLAUDE.local.md
+# devconv:end
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+lib/**/secrets.dart
+# Claude local settings in subprojects
+**/.claude/settings.local.json
