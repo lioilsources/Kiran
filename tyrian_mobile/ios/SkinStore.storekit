@@ -316,6 +316,81 @@
       "productID": "com.ol1n.kiran.skin_lords_of_thunder",
       "referenceName": "Metal Knight Skin",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "4.99",
+      "familyShareable": false,
+      "internalID": "52C88D17-DF8D-40AF-B145-A08DE1CC6F54",
+      "localizations": [
+        {
+          "description": "Unlocks every paid skin, including skins added later",
+          "displayName": "All Skins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skins_all",
+      "referenceName": "All Skins",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "3.99",
+      "familyShareable": false,
+      "internalID": "E7542505-175A-4F74-8A36-054F508772C5",
+      "localizations": [
+        {
+          "description": "Unlocks every paid skin, including skins added later",
+          "displayName": "All Skins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skins_all_s1",
+      "referenceName": "All Skins S1",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "2.99",
+      "familyShareable": false,
+      "internalID": "CA9949BA-CD5E-40AA-A2DB-C56282A9DA96",
+      "localizations": [
+        {
+          "description": "Unlocks every paid skin, including skins added later",
+          "displayName": "All Skins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skins_all_s2",
+      "referenceName": "All Skins S2",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "1.99",
+      "familyShareable": false,
+      "internalID": "D02CC734-BFF2-41C3-AFA6-2EF3BFEAE906",
+      "localizations": [
+        {
+          "description": "Unlocks every paid skin, including skins added later",
+          "displayName": "All Skins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skins_all_s3",
+      "referenceName": "All Skins S3",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "AF3710BC-E41B-47A7-8B8F-43FF62CF3D2B",
+      "localizations": [
+        {
+          "description": "Unlocks every paid skin, including skins added later",
+          "displayName": "All Skins",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.ol1n.kiran.skins_all_s4",
+      "referenceName": "All Skins S4",
+      "type": "NonConsumable"
     }
   ],
   "settings": {},
