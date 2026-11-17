@@ -240,7 +240,7 @@ Remove old `- assets/sprites/` and `- assets/ui/` entries.
 
 ```bash
 # 1. Pipeline tests (after falconx1 removal)
-cd /Volumes/YOTTA/Dev/TyrianVB/pipeline && go test ./...
+cd $DEV_ROOT/Kiran/pipeline && go test ./...
 
 # 2. Postprocess dry test with geometry_wars
 go run ./cmd/postprocess -skin geometry_wars -input output/assets/skins -output ../../tyrian_mobile/assets/skins
@@ -250,7 +250,7 @@ ls -la ../../tyrian_mobile/assets/skins/geometry_wars/sprites/
 # Should see: vessel.png, falcon.png, falcon1-6.png, ... explosion1-4.png
 
 # 4. Flutter build (checks asset declarations)
-cd /Volumes/YOTTA/Dev/TyrianVB/tyrian_mobile && flutter build apk --debug
+cd $DEV_ROOT/Kiran/tyrian_mobile && flutter build apk --debug
 
 # 5. Run game — should show skin selector at start
 flutter run
