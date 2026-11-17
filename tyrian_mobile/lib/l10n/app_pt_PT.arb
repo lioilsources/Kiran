@@ -346,5 +346,7 @@
   "roundBestWeapon": "Melhor arma: {weapon}",
   "deathBoss": "Os tiros do boss doem: um escudo mais forte dá-te tempo",
   "deathShield": "Melhora o escudo no ComCenter: leva os tiros antes do casco",
-  "deathGuns": "Armas mais fortes limpam as vagas antes de te ferirem"
+  "deathGuns": "Armas mais fortes limpam as vagas antes de te ferirem",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

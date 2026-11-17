@@ -1225,6 +1225,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deathGuns => '更强的武器能在敌潮伤到你之前将其清除';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2447,4 +2461,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get deathGuns => '更強的武器能在敵潮傷到你之前將其清除';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
 }

@@ -2119,6 +2119,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hold two fingers to fire your second weapons'**
   String get swapHint;
+
   /// Pickup note: a weapon slot went up a level. slot = the slot name (Front/Left/Right), lv = the level ("Lv.3")
   ///
   /// In en, this message translates to:
@@ -2148,10 +2149,11 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+{amount} credits to spend in the ComCenter'**
   String pickupCredits(String amount);
+
   /// Tutor: First time the player collects a weapon pickup
   ///
   /// In en, this message translates to:
-  /// **'Weapon pickups raise a gun's level: more damage, faster fire'**
+  /// **'Weapon pickups raise a gun\'s level: more damage, faster fire'**
   String get tutPickupWeapon;
 
   /// Tutor: First repair pickup. HP = hull points, keep 'HP'
@@ -2261,6 +2263,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stronger guns clear waves before they can hurt you'**
   String get deathGuns;
+
+  /// Skin selector: the All skins bundle offered next to a locked skin's price
+  ///
+  /// In en, this message translates to:
+  /// **'ALL SKINS'**
+  String get allSkins;
+
+  /// Skin selector: under a discounted All skins price — the paid skins already bought were subtracted from it
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{You already own 1 skin, we\'ve credited it} other{You already own {count} skins, we\'ve credited them}}'**
+  String allSkinsCredited(int count);
 }
 
 class _AppLocalizationsDelegate

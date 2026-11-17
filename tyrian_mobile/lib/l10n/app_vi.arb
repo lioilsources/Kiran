@@ -346,5 +346,7 @@
   "roundBestWeapon": "Vũ khí tốt nhất: {weapon}",
   "deathBoss": "Đạn boss rất mạnh: khiên tốt hơn cho bạn thêm thời gian",
   "deathShield": "Nâng cấp khiên ở ComCenter: nó đỡ đòn trước thân tàu",
-  "deathGuns": "Súng mạnh hơn quét sạch các đợt trước khi chúng làm hại bạn"
+  "deathGuns": "Súng mạnh hơn quét sạch các đợt trước khi chúng làm hại bạn",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

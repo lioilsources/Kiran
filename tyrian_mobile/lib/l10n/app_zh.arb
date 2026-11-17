@@ -346,5 +346,7 @@
   "roundBestWeapon": "最佳武器：{weapon}",
   "deathBoss": "Boss 火力凶猛：更强的护盾能为你争取时间",
   "deathShield": "在 ComCenter 升级护盾：它先于船体承受伤害",
-  "deathGuns": "更强的武器能在敌潮伤到你之前将其清除"
+  "deathGuns": "更强的武器能在敌潮伤到你之前将其清除",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

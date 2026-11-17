@@ -346,5 +346,7 @@
   "roundBestWeapon": "Najlepsza broń: {weapon}",
   "deathBoss": "Strzały bossa bolą: mocniejsza tarcza da ci czas",
   "deathShield": "Ulepsz tarczę w ComCenter: przyjmuje trafienia przed kadłubem",
-  "deathGuns": "Mocniejsza broń zmiecie fale, zanim cię zranią"
+  "deathGuns": "Mocniejsza broń zmiecie fale, zanim cię zranią",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

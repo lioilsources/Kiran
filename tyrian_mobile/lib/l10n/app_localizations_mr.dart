@@ -1250,4 +1250,18 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get deathGuns =>
       'मजबूत शस्त्रे लाटा तुम्हाला इजा करण्याआधीच साफ करतात';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
 }

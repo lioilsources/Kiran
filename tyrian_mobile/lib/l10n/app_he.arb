@@ -346,5 +346,7 @@
   "roundBestWeapon": "הנשק הטוב ביותר: {weapon}",
   "deathBoss": "יריות הבוס כואבות: מגן חזק יותר קונה לך זמן",
   "deathShield": "שדרג את המגן ב-ComCenter: הוא סופג לפני הגוף",
-  "deathGuns": "נשקים חזקים מנקים גלים לפני שהם פוגעים בך"
+  "deathGuns": "נשקים חזקים מנקים גלים לפני שהם פוגעים בך",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

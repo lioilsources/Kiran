@@ -346,5 +346,7 @@
   "roundBestWeapon": "Καλύτερο όπλο: {weapon}",
   "deathBoss": "Τα πυρά του boss πονάνε: πιο δυνατή ασπίδα σού δίνει χρόνο",
   "deathShield": "Αναβάθμισε την ασπίδα στο ComCenter: προστατεύει το σκάφος",
-  "deathGuns": "Πιο δυνατά όπλα καθαρίζουν τα κύματα πριν σε πληγώσουν"
+  "deathGuns": "Πιο δυνατά όπλα καθαρίζουν τα κύματα πριν σε πληγώσουν",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

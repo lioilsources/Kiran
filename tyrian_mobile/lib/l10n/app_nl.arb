@@ -346,5 +346,7 @@
   "roundBestWeapon": "Beste wapen: {weapon}",
   "deathBoss": "Bazen schieten hard: een sterker schild geeft je tijd",
   "deathShield": "Upgrade het schild in het ComCenter: het vangt treffers vóór de romp",
-  "deathGuns": "Sterkere wapens ruimen golven op voordat ze je raken"
+  "deathGuns": "Sterkere wapens ruimen golven op voordat ze je raken",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

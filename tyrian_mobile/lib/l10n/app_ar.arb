@@ -346,5 +346,7 @@
   "roundBestWeapon": "أفضل سلاح: {weapon}",
   "deathBoss": "ضربات الزعيم قوية: درع أقوى يمنحك وقتًا",
   "deathShield": "حسّن الدرع في ComCenter: يتلقى الضربات قبل الهيكل",
-  "deathGuns": "الأسلحة الأقوى تمحو الموجات قبل أن تؤذيك"
+  "deathGuns": "الأسلحة الأقوى تمحو الموجات قبل أن تؤذيك",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

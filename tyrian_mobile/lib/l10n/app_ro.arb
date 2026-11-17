@@ -346,5 +346,7 @@
   "roundBestWeapon": "Cea mai bună armă: {weapon}",
   "deathBoss": "Boss-ul lovește tare: un scut mai puternic îți dă timp",
   "deathShield": "Îmbunătățește scutul în ComCenter: preia loviturile înaintea carenei",
-  "deathGuns": "Arme mai puternice curăță valurile înainte să te rănească"
+  "deathGuns": "Arme mai puternice curăță valurile înainte să te rănească",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

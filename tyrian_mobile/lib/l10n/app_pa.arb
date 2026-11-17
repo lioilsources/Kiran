@@ -346,5 +346,7 @@
   "roundBestWeapon": "ਸਭ ਤੋਂ ਵਧੀਆ ਹਥਿਆਰ: {weapon}",
   "deathBoss": "ਬੌਸ ਦੇ ਵਾਰ ਭਾਰੀ ਹਨ: ਮਜ਼ਬੂਤ ਢਾਲ ਸਮਾਂ ਦਿੰਦੀ ਹੈ",
   "deathShield": "ComCenter ਵਿੱਚ ਢਾਲ ਅੱਪਗ੍ਰੇਡ ਕਰੋ: ਇਹ ਹਲ ਤੋਂ ਪਹਿਲਾਂ ਵਾਰ ਝੱਲਦੀ ਹੈ",
-  "deathGuns": "ਮਜ਼ਬੂਤ ਹਥਿਆਰ ਲਹਿਰਾਂ ਨੂੰ ਨੁਕਸਾਨ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਸਾਫ਼ ਕਰ ਦਿੰਦੇ ਹਨ"
+  "deathGuns": "ਮਜ਼ਬੂਤ ਹਥਿਆਰ ਲਹਿਰਾਂ ਨੂੰ ਨੁਕਸਾਨ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਸਾਫ਼ ਕਰ ਦਿੰਦੇ ਹਨ",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

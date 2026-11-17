@@ -1,4 +1,5 @@
 import '../rendering/shader_config.dart';
+import 'set_ladder.dart';
 
 /// Defines available skins and their asset paths.
 class SkinInfo {
@@ -84,6 +85,24 @@ const kSkins = [
       productId: '$_iapPrefix.skin_nex_machina'),
   SkinInfo('default', 'Kiran (2026)', pixelArt: true),
 ];
+
+/// The "All skins" bundle as a complete-the-set ladder (Pass repo,
+/// Prompts/01 §4): five non-consumables that all unlock every paid skin,
+/// including skins added later. Step k is offered to a player who owns k paid
+/// skins (4 and more for the last one). Store prices are the USD price points
+/// 4.99 / 3.99 / 2.99 / 1.99 / 0.99, but the app never computes an amount —
+/// it shows whatever the store returns for the offered step.
+const kSkinsAllLadder = <SetLadderStep>[
+  (threshold: 0, productId: '$_iapPrefix.skins_all'),
+  (threshold: 1, productId: '$_iapPrefix.skins_all_s1'),
+  (threshold: 2, productId: '$_iapPrefix.skins_all_s2'),
+  (threshold: 3, productId: '$_iapPrefix.skins_all_s3'),
+  (threshold: 4, productId: '$_iapPrefix.skins_all_s4'),
+];
+
+/// Whether [productId] is any step of the "All skins" bundle.
+bool isSkinsAllProduct(String productId) =>
+    kSkinsAllLadder.any((s) => s.productId == productId);
 
 SkinInfo? skinById(String id) {
   for (final s in kSkins) {

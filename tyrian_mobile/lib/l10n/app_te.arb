@@ -346,5 +346,7 @@
   "roundBestWeapon": "ఉత్తమ ఆయుధం: {weapon}",
   "deathBoss": "బాస్ దెబ్బలు గట్టివి: బలమైన షీల్డ్ సమయం ఇస్తుంది",
   "deathShield": "ComCenterలో షీల్డ్ అప్‌గ్రేడ్ చేయండి: హల్ కంటే ముందు దెబ్బలు తింటుంది",
-  "deathGuns": "బలమైన ఆయుధాలు అలలను ముందే తుడిచేస్తాయి"
+  "deathGuns": "బలమైన ఆయుధాలు అలలను ముందే తుడిచేస్తాయి",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

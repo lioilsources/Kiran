@@ -346,5 +346,7 @@
   "roundBestWeapon": "Senjata terbaik: {weapon}",
   "deathBoss": "Tembakan bos sangat kuat: perisai lebih kuat memberi anda masa",
   "deathShield": "Naik taraf perisai di ComCenter: ia menahan tembakan sebelum badan kapal",
-  "deathGuns": "Senjata lebih kuat menghapus gelombang sebelum ia mencederakan anda"
+  "deathGuns": "Senjata lebih kuat menghapus gelombang sebelum ia mencederakan anda",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

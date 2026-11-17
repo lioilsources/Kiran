@@ -346,5 +346,7 @@
   "roundBestWeapon": "En iyi silah: {weapon}",
   "deathBoss": "Boss sert vurur: daha güçlü kalkan sana zaman kazandırır",
   "deathShield": "ComCenter'da kalkanı geliştir: darbeleri gövdeden önce alır",
-  "deathGuns": "Güçlü silahlar dalgaları sana zarar vermeden temizler"
+  "deathGuns": "Güçlü silahlar dalgaları sana zarar vermeden temizler",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

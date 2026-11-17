@@ -346,5 +346,7 @@
   "roundBestWeapon": "Beste Waffe: {weapon}",
   "deathBoss": "Boss-Schüsse treffen hart: ein stärkerer Schild verschafft Zeit",
   "deathShield": "Verbessere den Schild im ComCenter: er schützt die Hülle",
-  "deathGuns": "Stärkere Waffen räumen Wellen ab, bevor sie dir schaden"
+  "deathGuns": "Stärkere Waffen räumen Wellen ab, bevor sie dir schaden",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

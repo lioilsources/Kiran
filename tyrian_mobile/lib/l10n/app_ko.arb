@@ -346,5 +346,7 @@
   "roundBestWeapon": "최고의 무기: {weapon}",
   "deathBoss": "보스의 공격은 강력합니다: 더 강한 실드가 시간을 벌어 줍니다",
   "deathShield": "ComCenter에서 실드를 업그레이드하세요: 선체보다 먼저 공격을 막습니다",
-  "deathGuns": "강한 무기는 적이 피해를 주기 전에 웨이브를 쓸어버립니다"
+  "deathGuns": "강한 무기는 적이 피해를 주기 전에 웨이브를 쓸어버립니다",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

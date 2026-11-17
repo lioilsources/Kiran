@@ -346,5 +346,7 @@
   "roundBestWeapon": "最優秀武器：{weapon}",
   "deathBoss": "ボスの攻撃は強力です。シールドを強化すれば時間を稼げます",
   "deathShield": "ComCenterでシールドを強化：船体より先に被弾を受け止めます",
-  "deathGuns": "強い武器なら、敵の波がダメージを与える前に一掃できます"
+  "deathGuns": "強い武器なら、敵の波がダメージを与える前に一掃できます",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

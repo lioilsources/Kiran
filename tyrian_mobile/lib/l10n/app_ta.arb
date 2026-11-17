@@ -346,5 +346,7 @@
   "roundBestWeapon": "சிறந்த ஆயுதம்: {weapon}",
   "deathBoss": "பாஸின் குண்டுகள் கடுமை: வலிய கவசம் நேரம் தரும்",
   "deathShield": "ComCenter-இல் கவசத்தை மேம்படுத்து: உடலுக்கு முன் அடி தாங்கும்",
-  "deathGuns": "வலிய ஆயுதங்கள் அலைகளை முன்பே அழிக்கும்"
+  "deathGuns": "வலிய ஆயுதங்கள் அலைகளை முன்பே அழிக்கும்",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

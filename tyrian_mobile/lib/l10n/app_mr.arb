@@ -346,5 +346,7 @@
   "roundBestWeapon": "सर्वोत्तम शस्त्र: {weapon}",
   "deathBoss": "बॉसचे मारे जोरदार असतात: मजबूत ढाल वेळ मिळवून देते",
   "deathShield": "ComCenter मध्ये ढाल अपग्रेड करा: ती हलच्या आधी मार झेलते",
-  "deathGuns": "मजबूत शस्त्रे लाटा तुम्हाला इजा करण्याआधीच साफ करतात"
+  "deathGuns": "मजबूत शस्त्रे लाटा तुम्हाला इजा करण्याआधीच साफ करतात",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }

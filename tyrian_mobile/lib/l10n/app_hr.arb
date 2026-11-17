@@ -346,5 +346,7 @@
   "roundBestWeapon": "Najbolje oružje: {weapon}",
   "deathBoss": "Bossovi hici bole: jači štit ti kupuje vrijeme",
   "deathShield": "Nadogradi štit u ComCenteru: prima pogotke prije trupa",
-  "deathGuns": "Jača oružja počiste valove prije nego ti naude"
+  "deathGuns": "Jača oružja počiste valove prije nego ti naude",
+  "allSkins": "ALL SKINS",
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
 }
