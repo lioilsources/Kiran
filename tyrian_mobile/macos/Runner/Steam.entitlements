@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!-- Entitlements for the Steam depot, applied by tool/sign_macos_steam.sh after
+     `flutter build macos`. Release.entitlements minus Game Center: that key
+     needs an App Store provisioning profile, and a Developer ID app that claims
+     it without one is killed at launch. Keep the rest in step with
+     Release.entitlements. -->
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+	<key>com.apple.security.device.bluetooth</key>
+	<true/>
+	<key>com.apple.security.device.usb</key>
+	<true/>
+</dict>
+</plist>
