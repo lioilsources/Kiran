@@ -1,76 +1,79 @@
 import 'package:flutter/services.dart';
 
-/// Tracks pressed keys for desktop keyboard input.
+import 'bindings.dart';
+
+/// Tracks pressed keys for desktop keyboard input. Keys are tracked by
+/// their physical place (Prompts/36 G5); [Bindings] says what each does.
 class KeyboardInput {
-  final Set<LogicalKeyboardKey> _pressed = {};
+  final Set<PhysicalKeyboardKey> _pressed = {};
 
   /// Fresh presses (no repeats) since the last [takePresses], in order —
   /// the keyboard's sigil dots are typed, not held.
-  final List<LogicalKeyboardKey> _presses = [];
+  final List<PhysicalKeyboardKey> _presses = [];
+
+  /// What each physical key last typed, for the hints (Prompts/36 §3.2).
+  final Map<PhysicalKeyboardKey, LogicalKeyboardKey> _labels = {};
 
   /// Call from KeyboardHandler.onKeyEvent
   bool handleKeyEvent(KeyEvent event) {
+    final k = event.physicalKey;
     if (event is KeyDownEvent || event is KeyRepeatEvent) {
-      _pressed.add(event.logicalKey);
-      if (event is KeyDownEvent) _presses.add(event.logicalKey);
+      _pressed.add(k);
+      _labels[k] = event.logicalKey;
+      if (event is KeyDownEvent) _presses.add(k);
     } else if (event is KeyUpEvent) {
-      _pressed.remove(event.logicalKey);
+      _pressed.remove(k);
     }
     return false; // don't consume — let Flutter handle too
   }
 
-  bool isPressed(LogicalKeyboardKey k) => _pressed.contains(k);
+  /// Forget every key, as when the window loses focus mid-press and the
+  /// key-up never arrives.
+  void clear() {
+    _pressed.clear();
+    _presses.clear();
+  }
 
-  /// Any of [keys] is down.
-  bool anyPressed(Iterable<LogicalKeyboardKey> keys) => keys.any(_pressed.contains);
+  bool isPressed(PhysicalKeyboardKey k) => _pressed.contains(k);
 
-  List<LogicalKeyboardKey> takePresses() {
+  /// Any key bound to [a] is down.
+  bool action(InputAction a) => Bindings.keysFor(a).any(_pressed.contains);
+
+  /// [a] was freshly pressed in [presses].
+  static bool pressedIn(List<PhysicalKeyboardKey> presses, InputAction a) =>
+      Bindings.keysFor(a).any(presses.contains);
+
+  List<PhysicalKeyboardKey> takePresses() {
     final out = List.of(_presses);
     _presses.clear();
     return out;
   }
 
-  /// Horizontal axis: -1 (left/A) to +1 (right/D)
-  double get dx {
-    double v = 0;
-    if (_pressed.contains(LogicalKeyboardKey.keyA) ||
-        _pressed.contains(LogicalKeyboardKey.arrowLeft)) v -= 1;
-    if (_pressed.contains(LogicalKeyboardKey.keyD) ||
-        _pressed.contains(LogicalKeyboardKey.arrowRight)) v += 1;
-    return v;
-  }
+  /// The label [k] carries on this keyboard, once it has been pressed.
+  LogicalKeyboardKey? labelOf(PhysicalKeyboardKey k) => _labels[k];
 
-  /// Vertical axis: -1 (up/W) to +1 (down/S)
-  double get dy {
-    double v = 0;
-    if (_pressed.contains(LogicalKeyboardKey.keyW) ||
-        _pressed.contains(LogicalKeyboardKey.arrowUp)) v -= 1;
-    if (_pressed.contains(LogicalKeyboardKey.keyS) ||
-        _pressed.contains(LogicalKeyboardKey.arrowDown)) v += 1;
-    return v;
-  }
+  double _axis(InputAction neg, InputAction pos) =>
+      (action(pos) ? 1.0 : 0.0) - (action(neg) ? 1.0 : 0.0);
 
   /// WASD alone: in a duel the arrows aim instead (Prompts/30 §6.6).
-  double get wasdX =>
-      (_pressed.contains(LogicalKeyboardKey.keyD) ? 1.0 : 0.0) -
-      (_pressed.contains(LogicalKeyboardKey.keyA) ? 1.0 : 0.0);
-  double get wasdY =>
-      (_pressed.contains(LogicalKeyboardKey.keyS) ? 1.0 : 0.0) -
-      (_pressed.contains(LogicalKeyboardKey.keyW) ? 1.0 : 0.0);
+  double get wasdX => _axis(InputAction.moveLeft, InputAction.moveRight);
+  double get wasdY => _axis(InputAction.moveUp, InputAction.moveDown);
 
   /// The arrows alone, screen space.
-  double get arrowX =>
-      (_pressed.contains(LogicalKeyboardKey.arrowRight) ? 1.0 : 0.0) -
-      (_pressed.contains(LogicalKeyboardKey.arrowLeft) ? 1.0 : 0.0);
-  double get arrowY =>
-      (_pressed.contains(LogicalKeyboardKey.arrowDown) ? 1.0 : 0.0) -
-      (_pressed.contains(LogicalKeyboardKey.arrowUp) ? 1.0 : 0.0);
+  double get arrowX => _axis(InputAction.aimLeft, InputAction.aimRight);
+  double get arrowY => _axis(InputAction.aimUp, InputAction.aimDown);
+
+  /// Horizontal axis in flight, WASD or the arrows: -1 left to +1 right.
+  double get dx => (wasdX + arrowX).clamp(-1.0, 1.0);
+
+  /// Vertical axis in flight: -1 up to +1 down.
+  double get dy => (wasdY + arrowY).clamp(-1.0, 1.0);
 
   /// Any key at all is down.
   bool get anyKey => _pressed.isNotEmpty;
 
-  bool get fire => _pressed.contains(LogicalKeyboardKey.space);
-  bool get pause => _pressed.contains(LogicalKeyboardKey.escape);
+  bool get fire => action(InputAction.fire);
+  bool get pause => action(InputAction.pause);
 
   /// True if any movement or action key is pressed.
   bool get hasInput => dx != 0 || dy != 0 || fire;

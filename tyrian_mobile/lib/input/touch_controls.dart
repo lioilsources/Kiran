@@ -1,5 +1,6 @@
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 
 import '../game/game_config.dart' as config;
 import 'touch_fingers.dart';
@@ -68,15 +69,41 @@ mixin TouchControls on FlameGame, DragCallbacks, TapCallbacks {
     _oneFinger = 0;
   }
 
+  /// Leave the mouse alone: on desktop it has its own controls
+  /// (Prompts/36 §3.3) and only real touch is a finger here.
+  bool get touchIgnoresMouse => false;
+
+  // Pointers that turned out to be a mouse, by Flame's two id series (taps
+  // and drags count apart, plan 34 §1): their later events are skipped too.
+  final Set<int> _mouseTaps = {};
+  final Set<int> _mouseDrags = {};
+
+  /// A mouse button is down right now. Flame's drag start carries no
+  /// device kind (its `FlameDragAdapter` builds the details without one, so
+  /// it always reads `unknown`); a drag that begins under a held mouse
+  /// button is the mouse's. Raw pointer events reach the game's mouse
+  /// before the gesture arena starts the drag, so this is already true.
+  bool get touchMouseHeld => false;
+
+  bool _isMouse(PointerDeviceKind kind) =>
+      touchIgnoresMouse &&
+      (kind == PointerDeviceKind.mouse || touchMouseHeld);
+
   /// Forget every finger, at the start of a sector.
   void touchReset() {
     touchFingers.clear();
+    _mouseTaps.clear();
+    _mouseDrags.clear();
     _oneFinger = 0;
   }
 
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
+    if (_isMouse(event.deviceKind)) {
+      _mouseTaps.add(event.pointerId);
+      return;
+    }
     final first = touchFingers.count == 0;
     touchFingers.tapDown(event.pointerId);
     // Only a finger landing on an empty screen toggles the fire: a second
@@ -87,18 +114,24 @@ mixin TouchControls on FlameGame, DragCallbacks, TapCallbacks {
   @override
   void onTapUp(TapUpEvent event) {
     super.onTapUp(event);
+    if (_mouseTaps.remove(event.pointerId)) return;
     touchFingers.tapUp(event.pointerId);
   }
 
   @override
   void onTapCancel(TapCancelEvent event) {
     super.onTapCancel(event);
+    if (_mouseTaps.remove(event.pointerId)) return;
     touchFingers.tapUp(event.pointerId);
   }
 
   @override
   void onDragStart(DragStartEvent event) {
     super.onDragStart(event);
+    if (_isMouse(event.deviceKind)) {
+      _mouseDrags.add(event.pointerId);
+      return;
+    }
     touchFingers.dragStart(event.pointerId);
     if (touchFlies) touchSetFire(true);
   }
@@ -106,6 +139,7 @@ mixin TouchControls on FlameGame, DragCallbacks, TapCallbacks {
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
+    if (_mouseDrags.contains(event.pointerId)) return;
     if (!touchFlies || touchFingers.steering != event.pointerId) return;
     // The update's own delta, so finger and vessel move in sync. (Not the
     // difference of end positions: Flame adds the delta to a position that
@@ -116,6 +150,7 @@ mixin TouchControls on FlameGame, DragCallbacks, TapCallbacks {
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
+    if (_mouseDrags.remove(event.pointerId)) return;
     touchFingers.dragEnd(event.pointerId);
     // The fire holds while any finger still moves.
     if (touchFlies && !touchFingers.dragging) touchSetFire(false);
