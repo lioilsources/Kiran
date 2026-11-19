@@ -5,6 +5,7 @@ import '../entities/collectable.dart';
 import '../entities/hostile.dart';
 import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
+import '../input/last_input.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/l10n.dart';
 import '../ui/com_center.dart' show swapHintVisible;
@@ -141,6 +142,11 @@ class Tutor {
     } else {
       _intro = _Intro.off;
       if (_touch) _once('fly', l.tutFly, delay: afterTitle);
+    }
+    // Desktop with the mouse in hand: the ship follows the cursor now
+    // (Prompts/36 §3.3), which nothing on screen says.
+    if (!_touch && LastInput.keyboardMouse) {
+      _once('flyMouse', l.tutFlyMouse, delay: afterTitle);
     }
     // The second set is worth a word once there is one to fly.
     if (_touch && swapHintVisible(game.vessel, touch: true)) {

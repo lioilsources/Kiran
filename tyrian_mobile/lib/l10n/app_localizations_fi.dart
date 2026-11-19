@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1280,4 +1279,31 @@ class AppLocalizationsFi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rivi   [←→] Valitse   [ENTER] Osta/Paranna/Vaihda   [DEL] Myy   [ESC] Jatka';
+
+  @override
+  String get swapHintMouse =>
+      'Pidä hiiren oikeaa painiketta tai Shiftiä pohjassa, niin ammut toisilla aseillasi';
+
+  @override
+  String get tutFlyMouse =>
+      'Liikuta hiirtä lentääksesi. Pidä vasenta painiketta pohjassa ampuaksesi';
+
+  @override
+  String get grimoireHintKeys =>
+      'Kirjoita muodot numeronäppäimistöllä tai näppäimillä U I O / J K L / M , . Pidä Shift ARMSille, Ctrl WINGille, molemmat MEGA BLASTille.';
+
+  @override
+  String get hintHopKeys =>
+      'Napauta yhtä numeronäppäintä: hyppäät siihen suuntaan';
+
+  @override
+  String get hintLoopKeys =>
+      'Kirjoita ympyrä numeronäppäimillä: lennät ammusten yli';
+
+  @override
+  String get hintStreamKeys => 'Paina E: kaksi tai kolme suihkua. Q vähentää';
 }

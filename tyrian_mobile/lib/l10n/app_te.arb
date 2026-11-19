@@ -348,5 +348,12 @@
   "deathShield": "ComCenterలో షీల్డ్ అప్‌గ్రేడ్ చేయండి: హల్ కంటే ముందు దెబ్బలు తింటుంది",
   "deathGuns": "బలమైన ఆయుధాలు అలలను ముందే తుడిచేస్తాయి",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] వరుస   [←→] ఎంపిక   [ENTER] కొను/మెరుగుపరచు/మార్చు   [DEL] అమ్ము   [ESC] కొనసాగించు",
+  "swapHintMouse": "రెండో ఆయుధాలతో కాల్చడానికి మౌస్ కుడి బటన్ లేదా Shift నొక్కి ఉంచండి",
+  "tutFlyMouse": "ఎగరడానికి మౌస్‌ను కదిలించండి. కాల్చడానికి ఎడమ బటన్ నొక్కి ఉంచండి",
+  "grimoireHintKeys": "ఆకారాలను నంప్యాడ్‌పై లేదా U I O / J K L / M , . పై టైప్ చేయండి. ARMS కోసం Shift, WING కోసం Ctrl, MEGA BLAST కోసం రెండూ నొక్కండి.",
+  "hintHopKeys": "నంప్యాడ్‌లో ఒక కీ నొక్కండి: ఆ వైపుకు దూకుతారు",
+  "hintLoopKeys": "నంప్యాడ్‌పై ఒక వృత్తం టైప్ చేయండి: గుళ్ల పైనుంచి ఎగురుతారు",
+  "hintStreamKeys": "E నొక్కండి: రెండు లేదా మూడు ధారలు. Q తగ్గిస్తుంది"
 }

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1277,4 +1276,30 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] صف   [←→] اختيار   [ENTER] شراء/تطوير/تبديل   [DEL] بيع   [ESC] متابعة المهمة';
+
+  @override
+  String get swapHintMouse =>
+      'اضغط مطولًا على زر الفأرة الأيمن أو Shift لتطلق بأسلحتك الثانية';
+
+  @override
+  String get tutFlyMouse =>
+      'حرّك الفأرة لتطير. اضغط مطولًا على الزر الأيسر لتطلق النار';
+
+  @override
+  String get grimoireHintKeys =>
+      'اكتب الأشكال على لوحة الأرقام أو على U I O / J K L / M , . اضغط Shift للأسلحة، Ctrl للجناح، كليهما لـ MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'اضغط مفتاحًا واحدًا من لوحة الأرقام: تقفز في ذلك الاتجاه';
+
+  @override
+  String get hintLoopKeys => 'اكتب دائرة على لوحة الأرقام: تطير فوق الطلقات';
+
+  @override
+  String get hintStreamKeys => 'اضغط E: تياران أو ثلاثة. Q يُنقص';
 }

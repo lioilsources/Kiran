@@ -7,6 +7,7 @@ import '../game/game_config.dart' as config;
 import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
 import '../input/pad_scheme.dart';
+import '../input/last_input.dart';
 import '../l10n/l10n.dart';
 import '../services/asset_library.dart';
 import '../systems/duel_director.dart';
@@ -35,7 +36,8 @@ class DuelHud extends Component with HasGameReference<TyrianGame> {
     final d = game.duel;
     if (d.wantsHint && _hint == null && game.state == GameState.playing) {
       final l = L10n.current;
-      _hint = game.gamepadInput.isConnected
+      // What the player holds, not what is plugged in (Prompts/36 §3.7).
+      _hint = LastInput.pad
           ? (
               l.duelHintPad1,
               !game.sigilsEnabled

@@ -13,6 +13,8 @@ import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
+import '../input/last_input.dart';
+import '../input/pad_scheme.dart';
 import '../services/asset_library.dart';
 import '../services/comcenter_gate.dart';
 import '../systems/dps_preview.dart';
@@ -30,7 +32,17 @@ import '../l10n/l10n.dart';
 /// on touch screens only, and only once some slot has two weapons to swap
 /// between.
 bool swapHintVisible(Vessel v, {bool? touch}) =>
-    (touch ?? !platform.isDesktop) &&
+    (touch ?? !platform.isDesktop) && _hasAlternate(v);
+
+/// The same hint for the mouse and keys (Prompts/36 §3.1): the classic
+/// scheme on desktop holds the second set on the right button or Shift.
+bool swapHintMouseVisible(Vessel v) =>
+    platform.isDesktop &&
+    PadSettings.scheme == PadScheme.classic &&
+    LastInput.keyboardMouse &&
+    _hasAlternate(v);
+
+bool _hasAlternate(Vessel v) =>
     const [WeaponSlot.frontGun, WeaponSlot.leftGun, WeaponSlot.rightGun]
         .any((s) => v.alternateFor(s) != null);
 
@@ -1179,11 +1191,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           _buildWeaponRow(_l.slotLeft, WeaponSlot.leftGun),
           _buildWeaponRow(_l.slotRight, WeaponSlot.rightGun),
           _buildGeneratorRow(),
-          if (swapHintVisible(vessel))
+          if (swapHintVisible(vessel) || swapHintMouseVisible(vessel))
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Text(
-                _l.swapHint,
+                swapHintVisible(vessel) ? _l.swapHint : _l.swapHintMouse,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 style: _theme.styled(
@@ -1800,13 +1812,20 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           if (platform.isDesktop)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                _l.padControlsHint,
-                style: TextStyle(
-                  color: _theme.accentDim.withAlpha(120),
-                  fontSize: 12,
+            // What the player holds now (Prompts/36 §3.7): the pad's
+            // buttons or the keys, switching the moment the other is used.
+            ValueListenableBuilder<InputDevice>(
+              valueListenable: LastInput.device,
+              builder: (context, device, _) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  device == InputDevice.pad
+                      ? _l.padControlsHint
+                      : _l.keysControlsHint,
+                  style: TextStyle(
+                    color: _theme.accentDim.withAlpha(120),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),

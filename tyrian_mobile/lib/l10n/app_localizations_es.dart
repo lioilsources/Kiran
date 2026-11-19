@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1290,4 +1289,31 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Fila   [←→] Elegir   [ENTER] Comprar/Mejorar/Cambiar   [SUPR] Vender   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Mantén el botón derecho del ratón o Mayús para disparar tus segundas armas';
+
+  @override
+  String get tutFlyMouse =>
+      'Mueve el ratón para volar. Mantén el botón izquierdo para disparar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Teclea las formas en el teclado numérico o en U I O / J K L / M , . Mantén Mayús para ARMS, Ctrl para WING, ambas para MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Pulsa una tecla del teclado numérico: saltas hacia ese lado';
+
+  @override
+  String get hintLoopKeys =>
+      'Teclea un círculo en el teclado numérico: vuelas sobre los disparos';
+
+  @override
+  String get hintStreamKeys => 'Pulsa E: dos o tres chorros. Q baja uno';
 }

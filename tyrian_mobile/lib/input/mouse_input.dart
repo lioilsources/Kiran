@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import 'bindings.dart';
+import 'last_input.dart';
 
 /// The desktop mouse (Prompts/36 §3.3), read once a frame like the keyboard.
 ///
@@ -45,7 +46,11 @@ class MouseInput {
   void handle(PointerEvent e, Vector2 local) {
     if (e.kind != PointerDeviceKind.mouse) return;
     final p = position;
-    if (p != null) _moved += p.distanceTo(local);
+    final step = p == null ? 0.0 : p.distanceTo(local);
+    _moved += step;
+    if (step > 2 || e is PointerDownEvent || e is PointerScrollEvent) {
+      LastInput.use(InputDevice.keyboardMouse);
+    }
     position = local;
     if (e is PointerUpEvent || e is PointerCancelEvent) {
       buttons = e.buttons;

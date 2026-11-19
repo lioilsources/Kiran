@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1287,4 +1286,31 @@ class AppLocalizationsPl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rząd   [←→] Wybór   [ENTER] Kup/Ulepsz/Zmień   [DEL] Sprzedaj   [ESC] Dalej';
+
+  @override
+  String get swapHintMouse =>
+      'Przytrzymaj prawy przycisk myszy lub Shift, by strzelać drugim zestawem broni';
+
+  @override
+  String get tutFlyMouse =>
+      'Ruszaj myszą, by lecieć. Przytrzymaj lewy przycisk, by strzelać';
+
+  @override
+  String get grimoireHintKeys =>
+      'Wpisuj kształty na klawiaturze numerycznej lub na U I O / J K L / M , . Trzymaj Shift dla ARMS, Ctrl dla WING, oba dla MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Stuknij jeden klawisz numeryczny: skaczesz w tę stronę';
+
+  @override
+  String get hintLoopKeys =>
+      'Wpisz okrąg na klawiaturze numerycznej: przelatujesz nad pociskami';
+
+  @override
+  String get hintStreamKeys => 'Naciśnij E: dwa lub trzy strumienie. Q cofa';
 }

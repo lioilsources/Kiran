@@ -348,5 +348,12 @@
   "deathShield": "Améliore le bouclier au ComCenter : il encaisse avant la coque",
   "deathGuns": "Des armes plus fortes nettoient les vagues avant qu'elles te blessent",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Ligne   [←→] Choix   [ENTRÉE] Acheter/Améliorer/Changer   [SUPPR] Vendre   [ÉCHAP] Continuer",
+  "swapHintMouse": "Maintiens le bouton droit de la souris ou Maj pour tirer avec tes armes secondaires",
+  "tutFlyMouse": "Bouge la souris pour voler. Maintiens le bouton gauche pour tirer",
+  "grimoireHintKeys": "Tape les formes sur le pavé numérique ou sur U I O / J K L / M , . Maintiens Maj pour ARMS, Ctrl pour WING, les deux pour MEGA BLAST.",
+  "hintHopKeys": "Appuie sur une touche du pavé numérique : tu bondis dans cette direction",
+  "hintLoopKeys": "Tape un cercle sur le pavé numérique : tu passes au-dessus des tirs",
+  "hintStreamKeys": "Appuie sur E : deux ou trois flux. Q pour revenir"
 }

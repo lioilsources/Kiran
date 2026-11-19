@@ -348,5 +348,12 @@
   "deathShield": "Upgrade perisai di ComCenter: ia menahan tembakan sebelum lambung",
   "deathGuns": "Senjata lebih kuat menyapu gelombang sebelum sempat melukaimu",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Baris   [←→] Pilih   [ENTER] Beli/Tingkatkan/Ganti   [DEL] Jual   [ESC] Lanjutkan",
+  "swapHintMouse": "Tahan tombol kanan mouse atau Shift untuk menembak dengan senjata keduamu",
+  "tutFlyMouse": "Gerakkan mouse untuk terbang. Tahan tombol kiri untuk menembak",
+  "grimoireHintKeys": "Ketik bentuknya di numpad atau di U I O / J K L / M , . Tahan Shift untuk ARMS, Ctrl untuk WING, keduanya untuk MEGA BLAST.",
+  "hintHopKeys": "Ketuk satu tombol numpad: kamu melompat ke arah itu",
+  "hintLoopKeys": "Ketik lingkaran di numpad: kamu terbang melewati tembakan",
+  "hintStreamKeys": "Tekan E: dua atau tiga aliran. Q mengurangi"
 }

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1293,4 +1292,30 @@ class AppLocalizationsRo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rând   [←→] Alege   [ENTER] Cumpără/Îmbunătățește/Schimbă   [DEL] Vinde   [ESC] Continuă';
+
+  @override
+  String get swapHintMouse =>
+      'Ține apăsat butonul drept al mouse-ului sau Shift ca să tragi cu armele secundare';
+
+  @override
+  String get tutFlyMouse =>
+      'Mișcă mouse-ul ca să zbori. Ține apăsat butonul stâng ca să tragi';
+
+  @override
+  String get grimoireHintKeys =>
+      'Tastează formele pe tastatura numerică sau pe U I O / J K L / M , . Ține Shift pentru ARMS, Ctrl pentru WING, ambele pentru MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Apasă o tastă numerică: sari în acea direcție';
+
+  @override
+  String get hintLoopKeys =>
+      'Tastează un cerc pe tastatura numerică: zbori peste gloanțe';
+
+  @override
+  String get hintStreamKeys => 'Apasă E: două sau trei fluxuri. Q dă înapoi';
 }

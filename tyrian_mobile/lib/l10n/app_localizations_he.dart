@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1261,4 +1260,29 @@ class AppLocalizationsHe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] שורה   [←→] בחירה   [ENTER] קנייה/שדרוג/החלפה   [DEL] מכירה   [ESC] המשך';
+
+  @override
+  String get swapHintMouse =>
+      'החזק את לחצן העכבר הימני או Shift כדי לירות בכלי הנשק השניים';
+
+  @override
+  String get tutFlyMouse =>
+      'הזז את העכבר כדי לטוס. החזק את הלחצן השמאלי כדי לירות';
+
+  @override
+  String get grimoireHintKeys =>
+      'הקלד את הצורות במקלדת המספרים או על U I O / J K L / M , . החזק Shift ל-ARMS, Ctrl ל-WING, את שניהם ל-MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'הקש מקש אחד במקלדת המספרים: אתה קופץ לכיוון הזה';
+
+  @override
+  String get hintLoopKeys => 'הקלד עיגול במקלדת המספרים: אתה טס מעל היריות';
+
+  @override
+  String get hintStreamKeys => 'לחץ E: שניים או שלושה זרמים. Q מוריד';
 }

@@ -348,5 +348,12 @@
   "deathShield": "Päivitä kilpi ComCenterissä: se ottaa osumat ennen runkoa",
   "deathGuns": "Vahvemmat aseet raivaavat aallot ennen kuin ne satuttavat",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Rivi   [←→] Valitse   [ENTER] Osta/Paranna/Vaihda   [DEL] Myy   [ESC] Jatka",
+  "swapHintMouse": "Pidä hiiren oikeaa painiketta tai Shiftiä pohjassa, niin ammut toisilla aseillasi",
+  "tutFlyMouse": "Liikuta hiirtä lentääksesi. Pidä vasenta painiketta pohjassa ampuaksesi",
+  "grimoireHintKeys": "Kirjoita muodot numeronäppäimistöllä tai näppäimillä U I O / J K L / M , . Pidä Shift ARMSille, Ctrl WINGille, molemmat MEGA BLASTille.",
+  "hintHopKeys": "Napauta yhtä numeronäppäintä: hyppäät siihen suuntaan",
+  "hintLoopKeys": "Kirjoita ympyrä numeronäppäimillä: lennät ammusten yli",
+  "hintStreamKeys": "Paina E: kaksi tai kolme suihkua. Q vähentää"
 }

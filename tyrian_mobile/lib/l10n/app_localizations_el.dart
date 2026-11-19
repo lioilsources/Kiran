@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1290,4 +1289,30 @@ class AppLocalizationsEl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Σειρά   [←→] Επιλογή   [ENTER] Αγορά/Αναβάθμιση/Αλλαγή   [DEL] Πώληση   [ESC] Συνέχεια';
+
+  @override
+  String get swapHintMouse =>
+      'Κράτα το δεξί κουμπί του ποντικιού ή το Shift για να ρίχνεις με τα δεύτερα όπλα σου';
+
+  @override
+  String get tutFlyMouse =>
+      'Κίνησε το ποντίκι για να πετάξεις. Κράτα το αριστερό κουμπί για να ρίχνεις';
+
+  @override
+  String get grimoireHintKeys =>
+      'Πληκτρολόγησε τα σχήματα στο αριθμητικό πληκτρολόγιο ή στα U I O / J K L / M , . Κράτα Shift για ARMS, Ctrl για WING, και τα δύο για MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Πάτα ένα αριθμητικό πλήκτρο: πηδάς προς τα εκεί';
+
+  @override
+  String get hintLoopKeys =>
+      'Πληκτρολόγησε έναν κύκλο στο αριθμητικό πληκτρολόγιο: πετάς πάνω από τις βολές';
+
+  @override
+  String get hintStreamKeys => 'Πάτα E: δύο ή τρεις ροές. Το Q κατεβάζει';
 }

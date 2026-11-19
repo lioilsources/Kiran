@@ -348,5 +348,12 @@
   "deathShield": "ComCenter'da kalkanı geliştir: darbeleri gövdeden önce alır",
   "deathGuns": "Güçlü silahlar dalgaları sana zarar vermeden temizler",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Satır   [←→] Seç   [ENTER] Satın al/Geliştir/Değiştir   [DEL] Sat   [ESC] Devam",
+  "swapHintMouse": "İkinci silahlarınla ateş etmek için sağ fare tuşunu veya Shift'i basılı tut",
+  "tutFlyMouse": "Uçmak için fareyi oynat. Ateş etmek için sol tuşu basılı tut",
+  "grimoireHintKeys": "Şekilleri sayısal tuş takımında ya da U I O / J K L / M , . tuşlarında yaz. ARMS için Shift, WING için Ctrl, MEGA BLAST için ikisini birden tut.",
+  "hintHopKeys": "Sayısal tuşlardan birine dokun: o yöne zıplarsın",
+  "hintLoopKeys": "Sayısal tuşlarda bir daire yaz: mermilerin üstünden uçarsın",
+  "hintStreamKeys": "E'ye bas: iki ya da üç akış. Q geri alır"
 }

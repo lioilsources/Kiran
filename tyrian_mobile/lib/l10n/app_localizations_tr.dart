@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1273,4 +1272,30 @@ class AppLocalizationsTr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Satır   [←→] Seç   [ENTER] Satın al/Geliştir/Değiştir   [DEL] Sat   [ESC] Devam';
+
+  @override
+  String get swapHintMouse =>
+      'İkinci silahlarınla ateş etmek için sağ fare tuşunu veya Shift\'i basılı tut';
+
+  @override
+  String get tutFlyMouse =>
+      'Uçmak için fareyi oynat. Ateş etmek için sol tuşu basılı tut';
+
+  @override
+  String get grimoireHintKeys =>
+      'Şekilleri sayısal tuş takımında ya da U I O / J K L / M , . tuşlarında yaz. ARMS için Shift, WING için Ctrl, MEGA BLAST için ikisini birden tut.';
+
+  @override
+  String get hintHopKeys => 'Sayısal tuşlardan birine dokun: o yöne zıplarsın';
+
+  @override
+  String get hintLoopKeys =>
+      'Sayısal tuşlarda bir daire yaz: mermilerin üstünden uçarsın';
+
+  @override
+  String get hintStreamKeys => 'E\'ye bas: iki ya da üç akış. Q geri alır';
 }

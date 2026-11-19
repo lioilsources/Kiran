@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1251,4 +1250,28 @@ class AppLocalizationsTh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] แถว   [←→] เลือก   [ENTER] ซื้อ/อัปเกรด/สลับ   [DEL] ขาย   [ESC] ไปต่อ';
+
+  @override
+  String get swapHintMouse =>
+      'กดปุ่มเมาส์ขวาหรือ Shift ค้างไว้เพื่อยิงด้วยอาวุธชุดที่สอง';
+
+  @override
+  String get tutFlyMouse => 'ขยับเมาส์เพื่อบิน กดปุ่มซ้ายค้างไว้เพื่อยิง';
+
+  @override
+  String get grimoireHintKeys =>
+      'พิมพ์รูปบนแป้นตัวเลขหรือบน U I O / J K L / M , . กด Shift ค้างสำหรับ ARMS, Ctrl สำหรับ WING, ทั้งสองสำหรับ MEGA BLAST';
+
+  @override
+  String get hintHopKeys => 'แตะแป้นตัวเลขหนึ่งปุ่ม: กระโดดไปทางนั้น';
+
+  @override
+  String get hintLoopKeys => 'พิมพ์วงกลมบนแป้นตัวเลข: บินข้ามกระสุน';
+
+  @override
+  String get hintStreamKeys => 'กด E: สองหรือสามสาย Q ลดลง';
 }

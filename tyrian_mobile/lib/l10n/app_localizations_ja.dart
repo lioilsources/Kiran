@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1241,4 +1240,27 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] 行   [←→] 選択   [ENTER] 購入/強化/切替   [DEL] 売却   [ESC] 続行';
+
+  @override
+  String get swapHintMouse => 'マウスの右ボタンかShiftを押し続けると2つ目の武器で撃てます';
+
+  @override
+  String get tutFlyMouse => 'マウスを動かして飛ぶ。左ボタンを押し続けて撃つ';
+
+  @override
+  String get grimoireHintKeys =>
+      'テンキーか U I O / J K L / M , . で形を入力。ShiftでARMS、CtrlでWING、両方でMEGA BLAST。';
+
+  @override
+  String get hintHopKeys => 'テンキーを1つ押す: その方向へホップ';
+
+  @override
+  String get hintLoopKeys => 'テンキーで円を入力: 弾の上を飛び越える';
+
+  @override
+  String get hintStreamKeys => 'Eを押す: 弾が2本か3本に。Qで戻す';
 }

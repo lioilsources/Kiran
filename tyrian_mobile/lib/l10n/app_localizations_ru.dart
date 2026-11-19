@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1288,4 +1287,31 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Ряд   [←→] Выбор   [ENTER] Купить/Улучшить/Сменить   [DEL] Продать   [ESC] Продолжить';
+
+  @override
+  String get swapHintMouse =>
+      'Держи правую кнопку мыши или Shift, чтобы стрелять вторым набором оружия';
+
+  @override
+  String get tutFlyMouse =>
+      'Двигай мышью, чтобы лететь. Держи левую кнопку, чтобы стрелять';
+
+  @override
+  String get grimoireHintKeys =>
+      'Набирай фигуры на цифровой клавиатуре или на U I O / J K L / M , . Держи Shift для ARMS, Ctrl для WING, оба для MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Нажми одну клавишу цифрового блока: прыжок в ту сторону';
+
+  @override
+  String get hintLoopKeys =>
+      'Набери круг на цифровом блоке: пролетишь над выстрелами';
+
+  @override
+  String get hintStreamKeys => 'Нажми E: два или три потока. Q убавляет';
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../entities/sigil_caster.dart';
 import '../input/duel_stick.dart';
+import '../input/last_input.dart';
 import '../game/game_config.dart' as config;
 import '../game/platform_config.dart' as platform;
 import '../game/tyrian_game.dart';
@@ -225,10 +226,11 @@ class SigilHud extends Component with HasGameReference<TyrianGame> {
       final dots = SigilRecognizer.idealFor(spec, flickDot: 1, drawn: spec.shape ?? const [1]);
       _stroke(canvas, c, SigilAccuracy.idealLine(dots), gold.withValues(alpha: glow), 6);
     }
+    final pad = LastInput.pad;
     final text = switch (h) {
-      SigilHint.hop => l.hintHop,
-      SigilHint.loop => l.hintLoop,
-      SigilHint.stream => l.hintStream,
+      SigilHint.hop => pad ? l.hintHop : l.hintHopKeys,
+      SigilHint.loop => pad ? l.hintLoop : l.hintLoopKeys,
+      SigilHint.stream => pad ? l.hintStream : l.hintStreamKeys,
     };
     final top = c.dy - radius - 52;
     if (spec != null) _label(canvas, spec.name, Offset(c.dx, top), 15, gold, bold: true);

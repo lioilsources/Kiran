@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1290,6 +1289,33 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Linha   [←→] Escolher   [ENTER] Comprar/Melhorar/Trocar   [DEL] Vender   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Segure o botão direito do mouse ou Shift para atirar com suas armas secundárias';
+
+  @override
+  String get tutFlyMouse =>
+      'Mova o mouse para voar. Segure o botão esquerdo para atirar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Digite as formas no teclado numérico ou em U I O / J K L / M , . Segure Shift para ARMS, Ctrl para WING, ambos para MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Toque uma tecla do teclado numérico: você salta nessa direção';
+
+  @override
+  String get hintLoopKeys =>
+      'Digite um círculo no teclado numérico: você voa por cima dos tiros';
+
+  @override
+  String get hintStreamKeys => 'Aperte E: dois ou três fluxos. Q volta um';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -2573,4 +2599,31 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Linha   [←→] Escolher   [ENTER] Comprar/Melhorar/Trocar   [DEL] Vender   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Mantém o botão direito do rato ou Shift para disparar com as armas secundárias';
+
+  @override
+  String get tutFlyMouse =>
+      'Move o rato para voar. Mantém o botão esquerdo para disparar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Escreve as formas no teclado numérico ou em U I O / J K L / M , . Mantém Shift para ARMS, Ctrl para WING, ambos para MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Prime uma tecla do teclado numérico: saltas nessa direção';
+
+  @override
+  String get hintLoopKeys =>
+      'Escreve um círculo no teclado numérico: voas por cima dos tiros';
+
+  @override
+  String get hintStreamKeys => 'Prime E: dois ou três fluxos. Q recua um';
 }

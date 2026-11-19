@@ -348,5 +348,12 @@
   "deathShield": "ComCenter ನಲ್ಲಿ ಶೀಲ್ಡ್ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ: ಅದು ಹಲ್‌ಗಿಂತ ಮೊದಲು ಏಟು ತಡೆಯುತ್ತದೆ",
   "deathGuns": "ಬಲವಾದ ಆಯುಧಗಳು ಅಲೆಗಳು ನೋಯಿಸುವ ಮೊದಲೇ ತೆರವುಗೊಳಿಸುತ್ತವೆ",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] ಸಾಲು   [←→] ಆಯ್ಕೆ   [ENTER] ಖರೀದಿ/ಸುಧಾರಣೆ/ಬದಲಾವಣೆ   [DEL] ಮಾರಾಟ   [ESC] ಮುಂದುವರಿಸಿ",
+  "swapHintMouse": "ಎರಡನೇ ಆಯುಧಗಳಿಂದ ಗುಂಡು ಹಾರಿಸಲು ಮೌಸ್‌ನ ಬಲ ಬಟನ್ ಅಥವಾ Shift ಒತ್ತಿ ಹಿಡಿಯಿರಿ",
+  "tutFlyMouse": "ಹಾರಲು ಮೌಸ್ ಸರಿಸಿ. ಗುಂಡು ಹಾರಿಸಲು ಎಡ ಬಟನ್ ಒತ್ತಿ ಹಿಡಿಯಿರಿ",
+  "grimoireHintKeys": "ಆಕಾರಗಳನ್ನು ನಂಪ್ಯಾಡ್‌ನಲ್ಲಿ ಅಥವಾ U I O / J K L / M , . ನಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ. ARMS ಗೆ Shift, WING ಗೆ Ctrl, MEGA BLAST ಗೆ ಎರಡನ್ನೂ ಒತ್ತಿ.",
+  "hintHopKeys": "ನಂಪ್ಯಾಡ್‌ನ ಒಂದು ಕೀ ಒತ್ತಿ: ಆ ದಿಕ್ಕಿಗೆ ಜಿಗಿಯುತ್ತೀರಿ",
+  "hintLoopKeys": "ನಂಪ್ಯಾಡ್‌ನಲ್ಲಿ ಒಂದು ವೃತ್ತ ಟೈಪ್ ಮಾಡಿ: ಗುಂಡುಗಳ ಮೇಲೆ ಹಾರುತ್ತೀರಿ",
+  "hintStreamKeys": "E ಒತ್ತಿ: ಎರಡು ಅಥವಾ ಮೂರು ಧಾರೆಗಳು. Q ಕಡಿಮೆ ಮಾಡುತ್ತದೆ"
 }

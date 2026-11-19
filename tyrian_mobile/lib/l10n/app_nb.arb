@@ -348,5 +348,12 @@
   "deathShield": "Oppgrader skjoldet i ComCenter: det tar treff før skroget",
   "deathGuns": "Sterkere våpen rydder bølgene før de rekker å skade deg",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Rad   [←→] Velg   [ENTER] Kjøp/Oppgrader/Bytt   [DEL] Selg   [ESC] Fortsett",
+  "swapHintMouse": "Hold høyre museknapp eller Shift for å skyte med de andre våpnene dine",
+  "tutFlyMouse": "Beveg musen for å fly. Hold venstre knapp for å skyte",
+  "grimoireHintKeys": "Skriv formene på talltastaturet eller på U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, begge for MEGA BLAST.",
+  "hintHopKeys": "Trykk én talltast: du hopper den veien",
+  "hintLoopKeys": "Skriv en sirkel på talltastaturet: du flyr over skuddene",
+  "hintStreamKeys": "Trykk E: to eller tre stråler. Q går tilbake"
 }

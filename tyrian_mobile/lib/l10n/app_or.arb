@@ -348,5 +348,12 @@
   "deathShield": "ComCenter ରେ ଢାଲ ଅପଗ୍ରେଡ୍ କର: ଏହା ହଲ୍ ପୂର୍ବରୁ ଆଘାତ ସହେ",
   "deathGuns": "ଶକ୍ତିଶାଳୀ ଅସ୍ତ୍ର ଢେଉକୁ କ୍ଷତି କରିବା ପୂର୍ବରୁ ସଫା କରେ",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] ଧାଡ଼ି   [←→] ବାଛନ୍ତୁ   [ENTER] କିଣନ୍ତୁ/ଉନ୍ନତ/ବଦଳାନ୍ତୁ   [DEL] ବିକ୍ରି   [ESC] ଜାରି ରଖନ୍ତୁ",
+  "swapHintMouse": "ଦ୍ୱିତୀୟ ଅସ୍ତ୍ରରେ ଗୁଳି ଚଳାଇବାକୁ ମାଉସର ଡାହାଣ ବଟନ୍ କିମ୍ବା Shift ଚାପି ରଖନ୍ତୁ",
+  "tutFlyMouse": "ଉଡ଼ିବାକୁ ମାଉସ ହଲାନ୍ତୁ। ଗୁଳି ଚଳାଇବାକୁ ବାମ ବଟନ୍ ଚାପି ରଖନ୍ତୁ",
+  "grimoireHintKeys": "ଆକାରଗୁଡ଼ିକ ନମ୍ପ୍ୟାଡରେ କିମ୍ବା U I O / J K L / M , . ରେ ଟାଇପ୍ କରନ୍ତୁ। ARMS ପାଇଁ Shift, WING ପାଇଁ Ctrl, MEGA BLAST ପାଇଁ ଦୁଇଟି ଚାପନ୍ତୁ।",
+  "hintHopKeys": "ନମ୍ପ୍ୟାଡର ଗୋଟିଏ କି ଦବାନ୍ତୁ: ଆପଣ ସେହି ଦିଗକୁ ଡେଇଁବେ",
+  "hintLoopKeys": "ନମ୍ପ୍ୟାଡରେ ଏକ ବୃତ୍ତ ଟାଇପ୍ କରନ୍ତୁ: ଆପଣ ଗୁଳି ଉପରେ ଉଡ଼ିବେ",
+  "hintStreamKeys": "E ଦବାନ୍ତୁ: ଦୁଇ ବା ତିନି ଧାରା। Q କମାଏ"
 }
