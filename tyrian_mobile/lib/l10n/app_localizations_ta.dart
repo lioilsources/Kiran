@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1287,4 +1286,32 @@ class AppLocalizationsTa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] வரிசை   [←→] தேர்வு   [ENTER] வாங்கு/மேம்படுத்து/மாற்று   [DEL] விற்பனை   [ESC] தொடரவும்';
+
+  @override
+  String get swapHintMouse =>
+      'இரண்டாம் ஆயுதங்களால் சுட மவுஸின் வலது பொத்தானை அல்லது Shift-ஐ அழுத்திப் பிடிக்கவும்';
+
+  @override
+  String get tutFlyMouse =>
+      'பறக்க மவுஸை நகர்த்தவும். சுட இடது பொத்தானை அழுத்திப் பிடிக்கவும்';
+
+  @override
+  String get grimoireHintKeys =>
+      'வடிவங்களை எண் விசைப்பலகையில் அல்லது U I O / J K L / M , . இல் தட்டச்சு செய்யவும். ARMS-க்கு Shift, WING-க்கு Ctrl, MEGA BLAST-க்கு இரண்டையும் பிடிக்கவும்.';
+
+  @override
+  String get hintHopKeys =>
+      'எண் விசைப்பலகையின் ஒரு விசையைத் தட்டவும்: அந்தத் திசையில் தாவுவீர்கள்';
+
+  @override
+  String get hintLoopKeys =>
+      'எண் விசைப்பலகையில் ஒரு வட்டத்தைத் தட்டச்சு செய்யவும்: குண்டுகளின் மேல் பறப்பீர்கள்';
+
+  @override
+  String get hintStreamKeys =>
+      'E-ஐ அழுத்தவும்: இரண்டு அல்லது மூன்று ஓட்டங்கள். Q குறைக்கும்';
 }

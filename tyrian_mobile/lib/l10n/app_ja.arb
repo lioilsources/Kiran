@@ -348,5 +348,12 @@
   "deathShield": "ComCenterでシールドを強化：船体より先に被弾を受け止めます",
   "deathGuns": "強い武器なら、敵の波がダメージを与える前に一掃できます",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] 行   [←→] 選択   [ENTER] 購入/強化/切替   [DEL] 売却   [ESC] 続行",
+  "swapHintMouse": "マウスの右ボタンかShiftを押し続けると2つ目の武器で撃てます",
+  "tutFlyMouse": "マウスを動かして飛ぶ。左ボタンを押し続けて撃つ",
+  "grimoireHintKeys": "テンキーか U I O / J K L / M , . で形を入力。ShiftでARMS、CtrlでWING、両方でMEGA BLAST。",
+  "hintHopKeys": "テンキーを1つ押す: その方向へホップ",
+  "hintLoopKeys": "テンキーで円を入力: 弾の上を飛び越える",
+  "hintStreamKeys": "Eを押す: 弾が2本か3本に。Qで戻す"
 }

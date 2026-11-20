@@ -348,5 +348,12 @@
   "deathShield": "Opgradér skjoldet i ComCenter: det tager træffere før skroget",
   "deathGuns": "Stærkere våben rydder bølger, før de kan skade dig",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Række   [←→] Vælg   [ENTER] Køb/Opgrader/Skift   [DEL] Sælg   [ESC] Fortsæt",
+  "swapHintMouse": "Hold højre museknap eller Shift nede for at skyde med dine andre våben",
+  "tutFlyMouse": "Bevæg musen for at flyve. Hold venstre knap nede for at skyde",
+  "grimoireHintKeys": "Skriv formerne på det numeriske tastatur eller på U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, begge for MEGA BLAST.",
+  "hintHopKeys": "Tryk på én taltast: du hopper den vej",
+  "hintLoopKeys": "Skriv en cirkel på taltastaturet: du flyver over skuddene",
+  "hintStreamKeys": "Tryk E: to eller tre stråler. Q går tilbage"
 }

@@ -348,5 +348,12 @@
   "deathShield": "ComCenter میں شیلڈ اپ گریڈ کریں: یہ ڈھانچے سے پہلے وار سہتی ہے",
   "deathGuns": "مضبوط ہتھیار لہروں کو نقصان سے پہلے صاف کرتے ہیں",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] قطار   [←→] انتخاب   [ENTER] خریدیں/بہتر کریں/بدلیں   [DEL] بیچیں   [ESC] جاری رکھیں",
+  "swapHintMouse": "دوسرے ہتھیاروں سے فائر کرنے کے لیے ماؤس کا دایاں بٹن یا Shift دبائے رکھیں",
+  "tutFlyMouse": "اڑنے کے لیے ماؤس ہلائیں۔ فائر کرنے کے لیے بایاں بٹن دبائے رکھیں",
+  "grimoireHintKeys": "شکلیں نمبر پیڈ پر یا U I O / J K L / M , . پر ٹائپ کریں۔ ARMS کے لیے Shift، WING کے لیے Ctrl، MEGA BLAST کے لیے دونوں دبائیں۔",
+  "hintHopKeys": "نمبر پیڈ کی ایک کلید دبائیں: آپ اسی طرف چھلانگ لگاتے ہیں",
+  "hintLoopKeys": "نمبر پیڈ پر دائرہ ٹائپ کریں: آپ گولیوں کے اوپر سے اڑتے ہیں",
+  "hintStreamKeys": "E دبائیں: دو یا تین دھارے۔ Q کم کرتا ہے"
 }

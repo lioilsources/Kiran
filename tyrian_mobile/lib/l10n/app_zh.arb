@@ -348,5 +348,12 @@
   "deathShield": "在 ComCenter 升级护盾：它先于船体承受伤害",
   "deathGuns": "更强的武器能在敌潮伤到你之前将其清除",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] 行   [←→] 选择   [ENTER] 购买/升级/切换   [DEL] 出售   [ESC] 继续",
+  "swapHintMouse": "按住鼠标右键或 Shift，用第二套武器射击",
+  "tutFlyMouse": "移动鼠标飞行，按住左键射击",
+  "grimoireHintKeys": "在小键盘或 U I O / J K L / M , . 上输入图形。按住 Shift 为 ARMS，Ctrl 为 WING，两者同时为 MEGA BLAST。",
+  "hintHopKeys": "按一个小键盘键：朝那个方向跃迁",
+  "hintLoopKeys": "在小键盘上输入一个圆：飞越弹幕",
+  "hintStreamKeys": "按 E：两道或三道弹流。Q 减少"
 }

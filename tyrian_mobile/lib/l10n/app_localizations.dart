@@ -2275,6 +2275,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{You already own 1 skin, we\'ve credited it} other{You already own {count} skins, we\'ve credited them}}'**
   String allSkinsCredited(int count);
+
+  /// ComCenter footer on desktop when the player last used the keyboard or mouse (Prompts/36 §3.7). Key names in brackets stay as printed on keys
+  ///
+  /// In en, this message translates to:
+  /// **'[↑↓] Row   [←→] Select   [ENTER] Buy/Upgrade/Switch   [DEL] Sell   [ESC] Continue mission'**
+  String get keysControlsHint;
+
+  /// ComCenter, desktop classic scheme: holding the right mouse button or Shift flies the second weapon set (Prompts/36 §3.1)
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the right mouse button or Shift to fire your second weapons'**
+  String get swapHintMouse;
+
+  /// First-flight tip on desktop with keyboard and mouse: the ship follows the cursor, the left button fires (Prompts/36 §3.3)
+  ///
+  /// In en, this message translates to:
+  /// **'Move the mouse to fly. Hold the left button to fire'**
+  String get tutFlyMouse;
+
+  /// Grimoire header for keyboard players: sigils are typed on the numpad or the U I O / J K L / M , . letter block. ARMS, WING, MEGA BLAST are game terms, keep them
+  ///
+  /// In en, this message translates to:
+  /// **'Type the shapes on the numpad or on U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, both for MEGA BLAST.'**
+  String get grimoireHintKeys;
+
+  /// Sigil hint for keyboard: one numpad key flicks the HOP that way
+  ///
+  /// In en, this message translates to:
+  /// **'Tap one numpad key: you hop that way'**
+  String get hintHopKeys;
+
+  /// Sigil hint for keyboard: typing the numpad keys around in a circle casts LOOP, which flies the ship over enemy shots
+  ///
+  /// In en, this message translates to:
+  /// **'Type a circle on the numpad: you fly over the shots'**
+  String get hintLoopKeys;
+
+  /// Sigil hint for keyboard: E raises OVERSTREAM to two or three streams, Q lowers it
+  ///
+  /// In en, this message translates to:
+  /// **'Press E: two or three streams. Q steps back'**
+  String get hintStreamKeys;
 }
 
 class _AppLocalizationsDelegate

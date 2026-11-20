@@ -348,5 +348,12 @@
   "deathShield": "Potenzia lo scudo nel ComCenter: assorbe i colpi prima dello scafo",
   "deathGuns": "Armi più forti spazzano via le ondate prima che ti feriscano",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Riga   [←→] Scelta   [INVIO] Compra/Potenzia/Cambia   [CANC] Vendi   [ESC] Continua",
+  "swapHintMouse": "Tieni premuto il tasto destro del mouse o Maiusc per sparare con le armi secondarie",
+  "tutFlyMouse": "Muovi il mouse per volare. Tieni premuto il tasto sinistro per sparare",
+  "grimoireHintKeys": "Digita le forme sul tastierino numerico o su U I O / J K L / M , . Tieni Maiusc per ARMS, Ctrl per WING, entrambi per MEGA BLAST.",
+  "hintHopKeys": "Premi un tasto del tastierino: salti in quella direzione",
+  "hintLoopKeys": "Digita un cerchio sul tastierino: voli sopra i colpi",
+  "hintStreamKeys": "Premi E: due o tre flussi. Q torna indietro"
 }

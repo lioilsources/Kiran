@@ -348,5 +348,12 @@
   "deathShield": "Mejora el escudo en el ComCenter: recibe golpes antes que el casco",
   "deathGuns": "Armas más fuertes barren oleadas antes de que te dañen",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Fila   [←→] Elegir   [ENTER] Comprar/Mejorar/Cambiar   [SUPR] Vender   [ESC] Continuar",
+  "swapHintMouse": "Mantén el botón derecho del ratón o Mayús para disparar tus segundas armas",
+  "tutFlyMouse": "Mueve el ratón para volar. Mantén el botón izquierdo para disparar",
+  "grimoireHintKeys": "Teclea las formas en el teclado numérico o en U I O / J K L / M , . Mantén Mayús para ARMS, Ctrl para WING, ambas para MEGA BLAST.",
+  "hintHopKeys": "Pulsa una tecla del teclado numérico: saltas hacia ese lado",
+  "hintLoopKeys": "Teclea un círculo en el teclado numérico: vuelas sobre los disparos",
+  "hintStreamKeys": "Pulsa E: dos o tres chorros. Q baja uno"
 }

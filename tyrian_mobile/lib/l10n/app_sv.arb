@@ -348,5 +348,12 @@
   "deathShield": "Uppgradera skölden i ComCenter: den tar träffar före skrovet",
   "deathGuns": "Starkare vapen rensar vågorna innan de hinner skada dig",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Rad   [←→] Välj   [ENTER] Köp/Uppgradera/Byt   [DEL] Sälj   [ESC] Fortsätt",
+  "swapHintMouse": "Håll höger musknapp eller Shift för att skjuta med dina andra vapen",
+  "tutFlyMouse": "Rör musen för att flyga. Håll vänster knapp för att skjuta",
+  "grimoireHintKeys": "Skriv formerna på det numeriska tangentbordet eller på U I O / J K L / M , . Håll Shift för ARMS, Ctrl för WING, båda för MEGA BLAST.",
+  "hintHopKeys": "Tryck på en siffertangent: du hoppar åt det hållet",
+  "hintLoopKeys": "Skriv en cirkel på siffertangenterna: du flyger över skotten",
+  "hintStreamKeys": "Tryck E: två eller tre strålar. Q backar ett steg"
 }

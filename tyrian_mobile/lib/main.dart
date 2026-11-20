@@ -20,6 +20,7 @@ import 'systems/sigils/sigil_catalog.dart';
 import 'ui/grimoire.dart';
 import 'input/pad_scheme.dart';
 import 'input/gamepad_input.dart';
+import 'input/last_input.dart';
 import 'input/mouse_input.dart';
 import 'systems/campaign.dart';
 import 'systems/duel_director.dart';
@@ -418,6 +419,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   /// Registered on HardwareKeyboard so it works regardless of widget focus.
   bool _handleGlobalKey(KeyEvent event) {
     if (event is! KeyDownEvent) return false;
+    LastInput.use(InputDevice.keyboardMouse);
     final isToggle = event.logicalKey == LogicalKeyboardKey.f11 ||
         (HardwareKeyboard.instance.isAltPressed &&
             event.logicalKey == LogicalKeyboardKey.enter &&

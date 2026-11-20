@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1284,4 +1283,31 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rij   [←→] Kiezen   [ENTER] Kopen/Verbeteren/Wisselen   [DEL] Verkopen   [ESC] Doorgaan';
+
+  @override
+  String get swapHintMouse =>
+      'Houd de rechtermuisknop of Shift ingedrukt om met je tweede wapens te vuren';
+
+  @override
+  String get tutFlyMouse =>
+      'Beweeg de muis om te vliegen. Houd de linkerknop ingedrukt om te vuren';
+
+  @override
+  String get grimoireHintKeys =>
+      'Typ de vormen op het numerieke toetsenblok of op U I O / J K L / M , . Houd Shift voor ARMS, Ctrl voor WING, beide voor MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Tik één toets van het numerieke blok: je springt die kant op';
+
+  @override
+  String get hintLoopKeys =>
+      'Typ een cirkel op het numerieke blok: je vliegt over de kogels';
+
+  @override
+  String get hintStreamKeys => 'Druk op E: twee of drie stralen. Q gaat terug';
 }

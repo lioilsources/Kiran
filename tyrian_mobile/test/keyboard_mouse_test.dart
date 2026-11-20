@@ -9,6 +9,7 @@ import 'package:tyrian_mobile/game/platform_config.dart' as platform;
 import 'package:tyrian_mobile/game/tyrian_game.dart';
 import 'package:tyrian_mobile/input/bindings.dart';
 import 'package:tyrian_mobile/input/keyboard_input.dart';
+import 'package:tyrian_mobile/input/last_input.dart';
 import 'package:tyrian_mobile/input/mouse_input.dart';
 import 'package:tyrian_mobile/input/touch_controls.dart';
 
@@ -277,6 +278,44 @@ void main() {
       kb.clear();
       expect(kb.fire, isFalse);
       expect(kb.takePresses(), isEmpty);
+    });
+  });
+
+  group('the device in hand (Prompts/36 §3.7)', () {
+    setUp(() => LastInput.use(InputDevice.pad));
+
+    testWidgets('a mouse move says keyboard and mouse', (tester) async {
+      await _mount(tester);
+      final m = await _mouse(tester, const Offset(100, 100));
+      await m.moveTo(const Offset(100, 100));
+      await m.moveTo(const Offset(160, 100));
+      await tester.pump(_frame);
+      expect(LastInput.device.value, InputDevice.keyboardMouse);
+      await _done(tester, m);
+    });
+
+    testWidgets('a mouse resting under a jitter says nothing', (tester) async {
+      await _mount(tester);
+      final m = await _mouse(tester, const Offset(100, 100));
+      await m.moveTo(const Offset(100, 100));
+      await m.moveTo(const Offset(101, 100));
+      await tester.pump(_frame);
+      expect(LastInput.device.value, InputDevice.pad);
+      await _done(tester, m);
+    });
+
+    testWidgets('a finger says touch, a mouse click does not', (tester) async {
+      await _mount(tester);
+      final m = await _mouse(tester, const Offset(200, 200));
+      await m.down(const Offset(200, 200));
+      await m.up();
+      await tester.pump(_frame);
+      expect(LastInput.device.value, InputDevice.keyboardMouse);
+      final f = await tester.startGesture(const Offset(300, 300));
+      await tester.pump(_frame);
+      expect(LastInput.device.value, InputDevice.touch);
+      await f.up();
+      await _done(tester, m);
     });
   });
 

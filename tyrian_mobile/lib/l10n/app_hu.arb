@@ -348,5 +348,12 @@
   "deathShield": "Fejleszd a pajzsot a ComCenterben: a törzs előtt fogja fel a találatot",
   "deathGuns": "Erősebb fegyverek letarolják a hullámokat, mielőtt ártanának",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Sor   [←→] Választás   [ENTER] Vétel/Fejlesztés/Csere   [DEL] Eladás   [ESC] Tovább",
+  "swapHintMouse": "Tartsd lenyomva a jobb egérgombot vagy a Shiftet, és a második fegyvereiddel lősz",
+  "tutFlyMouse": "Mozgasd az egeret a repüléshez. Tartsd lenyomva a bal gombot a lövéshez",
+  "grimoireHintKeys": "Írd be az alakzatokat a numerikus billentyűzeten vagy az U I O / J K L / M , . gombokon. Shift az ARMS, Ctrl a WING, mindkettő a MEGA BLAST.",
+  "hintHopKeys": "Nyomj meg egy numerikus gombot: arra ugrasz",
+  "hintLoopKeys": "Írj egy kört a numerikus billentyűzeten: átrepülsz a lövések fölött",
+  "hintStreamKeys": "Nyomd meg az E-t: két vagy három sugár. Q visszavesz"
 }

@@ -348,5 +348,12 @@
   "deathShield": "อัปเกรดโล่ที่ ComCenter: รับกระสุนก่อนตัวยาน",
   "deathGuns": "ปืนที่แรงขึ้นกวาดคลื่นศัตรูก่อนมันจะทำร้ายคุณ",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] แถว   [←→] เลือก   [ENTER] ซื้อ/อัปเกรด/สลับ   [DEL] ขาย   [ESC] ไปต่อ",
+  "swapHintMouse": "กดปุ่มเมาส์ขวาหรือ Shift ค้างไว้เพื่อยิงด้วยอาวุธชุดที่สอง",
+  "tutFlyMouse": "ขยับเมาส์เพื่อบิน กดปุ่มซ้ายค้างไว้เพื่อยิง",
+  "grimoireHintKeys": "พิมพ์รูปบนแป้นตัวเลขหรือบน U I O / J K L / M , . กด Shift ค้างสำหรับ ARMS, Ctrl สำหรับ WING, ทั้งสองสำหรับ MEGA BLAST",
+  "hintHopKeys": "แตะแป้นตัวเลขหนึ่งปุ่ม: กระโดดไปทางนั้น",
+  "hintLoopKeys": "พิมพ์วงกลมบนแป้นตัวเลข: บินข้ามกระสุน",
+  "hintStreamKeys": "กด E: สองหรือสามสาย Q ลดลง"
 }

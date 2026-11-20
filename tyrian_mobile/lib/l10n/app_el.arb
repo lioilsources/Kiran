@@ -348,5 +348,12 @@
   "deathShield": "Αναβάθμισε την ασπίδα στο ComCenter: προστατεύει το σκάφος",
   "deathGuns": "Πιο δυνατά όπλα καθαρίζουν τα κύματα πριν σε πληγώσουν",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Σειρά   [←→] Επιλογή   [ENTER] Αγορά/Αναβάθμιση/Αλλαγή   [DEL] Πώληση   [ESC] Συνέχεια",
+  "swapHintMouse": "Κράτα το δεξί κουμπί του ποντικιού ή το Shift για να ρίχνεις με τα δεύτερα όπλα σου",
+  "tutFlyMouse": "Κίνησε το ποντίκι για να πετάξεις. Κράτα το αριστερό κουμπί για να ρίχνεις",
+  "grimoireHintKeys": "Πληκτρολόγησε τα σχήματα στο αριθμητικό πληκτρολόγιο ή στα U I O / J K L / M , . Κράτα Shift για ARMS, Ctrl για WING, και τα δύο για MEGA BLAST.",
+  "hintHopKeys": "Πάτα ένα αριθμητικό πλήκτρο: πηδάς προς τα εκεί",
+  "hintLoopKeys": "Πληκτρολόγησε έναν κύκλο στο αριθμητικό πληκτρολόγιο: πετάς πάνω από τις βολές",
+  "hintStreamKeys": "Πάτα E: δύο ή τρεις ροές. Το Q κατεβάζει"
 }

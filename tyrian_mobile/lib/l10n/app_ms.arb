@@ -348,5 +348,12 @@
   "deathShield": "Naik taraf perisai di ComCenter: ia menahan tembakan sebelum badan kapal",
   "deathGuns": "Senjata lebih kuat menghapus gelombang sebelum ia mencederakan anda",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Baris   [←→] Pilih   [ENTER] Beli/Naik taraf/Tukar   [DEL] Jual   [ESC] Teruskan",
+  "swapHintMouse": "Tahan butang kanan tetikus atau Shift untuk menembak dengan senjata kedua",
+  "tutFlyMouse": "Gerakkan tetikus untuk terbang. Tahan butang kiri untuk menembak",
+  "grimoireHintKeys": "Taip bentuk pada pad nombor atau pada U I O / J K L / M , . Tahan Shift untuk ARMS, Ctrl untuk WING, kedua-duanya untuk MEGA BLAST.",
+  "hintHopKeys": "Ketik satu kekunci pad nombor: anda melompat ke arah itu",
+  "hintLoopKeys": "Taip bulatan pada pad nombor: anda terbang melepasi tembakan",
+  "hintStreamKeys": "Tekan E: dua atau tiga aliran. Q mengurangkan"
 }

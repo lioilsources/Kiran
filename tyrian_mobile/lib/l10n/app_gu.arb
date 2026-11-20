@@ -348,5 +348,12 @@
   "deathShield": "ComCenterમાં શીલ્ડ અપગ્રેડ કરો: તે હલ પહેલાં ફટકા ઝીલે",
   "deathGuns": "મજબૂત હથિયાર નુકસાન પહેલાં લહેરો સાફ કરે છે",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] હરોળ   [←→] પસંદગી   [ENTER] ખરીદો/અપગ્રેડ/બદલો   [DEL] વેચો   [ESC] આગળ વધો",
+  "swapHintMouse": "બીજાં શસ્ત્રોથી ફાયર કરવા માઉસનું જમણું બટન અથવા Shift દબાવી રાખો",
+  "tutFlyMouse": "ઊડવા માટે માઉસ ખસેડો. ફાયર કરવા ડાબું બટન દબાવી રાખો",
+  "grimoireHintKeys": "આકારો ન્યૂમપેડ પર અથવા U I O / J K L / M , . પર ટાઇપ કરો. ARMS માટે Shift, WING માટે Ctrl, MEGA BLAST માટે બંને દબાવો.",
+  "hintHopKeys": "ન્યૂમપેડની એક કી દબાવો: તમે એ દિશામાં કૂદો છો",
+  "hintLoopKeys": "ન્યૂમપેડ પર વર્તુળ ટાઇપ કરો: તમે ગોળીઓ ઉપરથી ઊડો છો",
+  "hintStreamKeys": "E દબાવો: બે કે ત્રણ ધારા. Q ઘટાડે છે"
 }

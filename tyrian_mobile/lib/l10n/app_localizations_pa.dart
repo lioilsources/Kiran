@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1268,4 +1267,31 @@ class AppLocalizationsPa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] ਕਤਾਰ   [←→] ਚੁਣੋ   [ENTER] ਖਰੀਦੋ/ਅੱਪਗ੍ਰੇਡ/ਬਦਲੋ   [DEL] ਵੇਚੋ   [ESC] ਜਾਰੀ ਰੱਖੋ';
+
+  @override
+  String get swapHintMouse =>
+      'ਦੂਜੇ ਹਥਿਆਰਾਂ ਨਾਲ ਫਾਇਰ ਕਰਨ ਲਈ ਮਾਊਸ ਦਾ ਸੱਜਾ ਬਟਨ ਜਾਂ Shift ਦਬਾਈ ਰੱਖੋ';
+
+  @override
+  String get tutFlyMouse =>
+      'ਉੱਡਣ ਲਈ ਮਾਊਸ ਹਿਲਾਓ। ਫਾਇਰ ਕਰਨ ਲਈ ਖੱਬਾ ਬਟਨ ਦਬਾਈ ਰੱਖੋ';
+
+  @override
+  String get grimoireHintKeys =>
+      'ਆਕਾਰ ਨਮਪੈਡ ਉੱਤੇ ਜਾਂ U I O / J K L / M , . ਉੱਤੇ ਟਾਈਪ ਕਰੋ। ARMS ਲਈ Shift, WING ਲਈ Ctrl, MEGA BLAST ਲਈ ਦੋਵੇਂ ਦਬਾਓ।';
+
+  @override
+  String get hintHopKeys =>
+      'ਨਮਪੈਡ ਦੀ ਇੱਕ ਕੁੰਜੀ ਦਬਾਓ: ਤੁਸੀਂ ਉਸ ਪਾਸੇ ਛਾਲ ਮਾਰਦੇ ਹੋ';
+
+  @override
+  String get hintLoopKeys =>
+      'ਨਮਪੈਡ ਉੱਤੇ ਇੱਕ ਗੋਲਾ ਟਾਈਪ ਕਰੋ: ਤੁਸੀਂ ਗੋਲੀਆਂ ਦੇ ਉੱਪਰੋਂ ਉੱਡਦੇ ਹੋ';
+
+  @override
+  String get hintStreamKeys => 'E ਦਬਾਓ: ਦੋ ਜਾਂ ਤਿੰਨ ਧਾਰਾਂ। Q ਘਟਾਉਂਦਾ ਹੈ';
 }

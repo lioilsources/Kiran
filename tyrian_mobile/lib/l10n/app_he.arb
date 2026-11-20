@@ -348,5 +348,12 @@
   "deathShield": "שדרג את המגן ב-ComCenter: הוא סופג לפני הגוף",
   "deathGuns": "נשקים חזקים מנקים גלים לפני שהם פוגעים בך",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] שורה   [←→] בחירה   [ENTER] קנייה/שדרוג/החלפה   [DEL] מכירה   [ESC] המשך",
+  "swapHintMouse": "החזק את לחצן העכבר הימני או Shift כדי לירות בכלי הנשק השניים",
+  "tutFlyMouse": "הזז את העכבר כדי לטוס. החזק את הלחצן השמאלי כדי לירות",
+  "grimoireHintKeys": "הקלד את הצורות במקלדת המספרים או על U I O / J K L / M , . החזק Shift ל-ARMS, Ctrl ל-WING, את שניהם ל-MEGA BLAST.",
+  "hintHopKeys": "הקש מקש אחד במקלדת המספרים: אתה קופץ לכיוון הזה",
+  "hintLoopKeys": "הקלד עיגול במקלדת המספרים: אתה טס מעל היריות",
+  "hintStreamKeys": "לחץ E: שניים או שלושה זרמים. Q מוריד"
 }

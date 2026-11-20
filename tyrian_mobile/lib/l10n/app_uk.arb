@@ -348,5 +348,12 @@
   "deathShield": "Покращ щит у ComCenter: він приймає удари раніше за корпус",
   "deathGuns": "Потужна зброя змете хвилі, перш ніж вони зашкодять",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Ряд   [←→] Вибір   [ENTER] Купити/Покращити/Змінити   [DEL] Продати   [ESC] Продовжити",
+  "swapHintMouse": "Тримай праву кнопку миші або Shift, щоб стріляти другим набором зброї",
+  "tutFlyMouse": "Рухай мишею, щоб летіти. Тримай ліву кнопку, щоб стріляти",
+  "grimoireHintKeys": "Набирай фігури на цифровій клавіатурі або на U I O / J K L / M , . Тримай Shift для ARMS, Ctrl для WING, обидві для MEGA BLAST.",
+  "hintHopKeys": "Натисни одну клавішу цифрового блоку: стрибок у той бік",
+  "hintLoopKeys": "Набери коло на цифровому блоці: пролетиш над пострілами",
+  "hintStreamKeys": "Натисни E: два або три потоки. Q зменшує"
 }

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1239,6 +1238,29 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] 行   [←→] 选择   [ENTER] 购买/升级/切换   [DEL] 出售   [ESC] 继续';
+
+  @override
+  String get swapHintMouse => '按住鼠标右键或 Shift，用第二套武器射击';
+
+  @override
+  String get tutFlyMouse => '移动鼠标飞行，按住左键射击';
+
+  @override
+  String get grimoireHintKeys =>
+      '在小键盘或 U I O / J K L / M , . 上输入图形。按住 Shift 为 ARMS，Ctrl 为 WING，两者同时为 MEGA BLAST。';
+
+  @override
+  String get hintHopKeys => '按一个小键盘键：朝那个方向跃迁';
+
+  @override
+  String get hintLoopKeys => '在小键盘上输入一个圆：飞越弹幕';
+
+  @override
+  String get hintStreamKeys => '按 E：两道或三道弹流。Q 减少';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -2475,4 +2497,27 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] 列   [←→] 選擇   [ENTER] 購買/升級/切換   [DEL] 出售   [ESC] 繼續';
+
+  @override
+  String get swapHintMouse => '按住滑鼠右鍵或 Shift，用第二套武器射擊';
+
+  @override
+  String get tutFlyMouse => '移動滑鼠飛行，按住左鍵射擊';
+
+  @override
+  String get grimoireHintKeys =>
+      '在數字鍵盤或 U I O / J K L / M , . 上輸入圖形。按住 Shift 為 ARMS，Ctrl 為 WING，兩者同時為 MEGA BLAST。';
+
+  @override
+  String get hintHopKeys => '按一個數字鍵：朝那個方向躍遷';
+
+  @override
+  String get hintLoopKeys => '在數字鍵盤上輸入一個圓：飛越彈幕';
+
+  @override
+  String get hintStreamKeys => '按 E：兩道或三道彈流。Q 減少';
 }

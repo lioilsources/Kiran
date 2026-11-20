@@ -980,5 +980,33 @@
         "type": "int"
       }
     }
+  },
+  "keysControlsHint": "[↑↓] Row   [←→] Select   [ENTER] Buy/Upgrade/Switch   [DEL] Sell   [ESC] Continue mission",
+  "@keysControlsHint": {
+    "description": "ComCenter footer on desktop when the player last used the keyboard or mouse (Prompts/36 §3.7). Key names in brackets stay as printed on keys"
+  },
+  "swapHintMouse": "Hold the right mouse button or Shift to fire your second weapons",
+  "@swapHintMouse": {
+    "description": "ComCenter, desktop classic scheme: holding the right mouse button or Shift flies the second weapon set (Prompts/36 §3.1)"
+  },
+  "tutFlyMouse": "Move the mouse to fly. Hold the left button to fire",
+  "@tutFlyMouse": {
+    "description": "First-flight tip on desktop with keyboard and mouse: the ship follows the cursor, the left button fires (Prompts/36 §3.3)"
+  },
+  "grimoireHintKeys": "Type the shapes on the numpad or on U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, both for MEGA BLAST.",
+  "@grimoireHintKeys": {
+    "description": "Grimoire header for keyboard players: sigils are typed on the numpad or the U I O / J K L / M , . letter block. ARMS, WING, MEGA BLAST are game terms, keep them"
+  },
+  "hintHopKeys": "Tap one numpad key: you hop that way",
+  "@hintHopKeys": {
+    "description": "Sigil hint for keyboard: one numpad key flicks the HOP that way"
+  },
+  "hintLoopKeys": "Type a circle on the numpad: you fly over the shots",
+  "@hintLoopKeys": {
+    "description": "Sigil hint for keyboard: typing the numpad keys around in a circle casts LOOP, which flies the ship over enemy shots"
+  },
+  "hintStreamKeys": "Press E: two or three streams. Q steps back",
+  "@hintStreamKeys": {
+    "description": "Sigil hint for keyboard: E raises OVERSTREAM to two or three streams, Q lowers it"
   }
 }

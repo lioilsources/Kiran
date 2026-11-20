@@ -3,6 +3,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
 
 import '../game/game_config.dart' as config;
+import 'last_input.dart';
 import 'touch_fingers.dart';
 
 /// The touch flight controls (plan 34), as a mixin so a test can drive them
@@ -104,6 +105,7 @@ mixin TouchControls on FlameGame, DragCallbacks, TapCallbacks {
       _mouseTaps.add(event.pointerId);
       return;
     }
+    LastInput.use(InputDevice.touch);
     final first = touchFingers.count == 0;
     touchFingers.tapDown(event.pointerId);
     // Only a finger landing on an empty screen toggles the fire: a second

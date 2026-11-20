@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1262,4 +1261,29 @@ class AppLocalizationsVi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Hàng   [←→] Chọn   [ENTER] Mua/Nâng cấp/Đổi   [DEL] Bán   [ESC] Tiếp tục';
+
+  @override
+  String get swapHintMouse =>
+      'Giữ chuột phải hoặc Shift để bắn bằng bộ vũ khí thứ hai';
+
+  @override
+  String get tutFlyMouse => 'Di chuột để bay. Giữ chuột trái để bắn';
+
+  @override
+  String get grimoireHintKeys =>
+      'Gõ các hình trên bàn phím số hoặc trên U I O / J K L / M , . Giữ Shift cho ARMS, Ctrl cho WING, cả hai cho MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Nhấn một phím số: bạn nhảy theo hướng đó';
+
+  @override
+  String get hintLoopKeys =>
+      'Gõ một vòng tròn trên bàn phím số: bạn bay qua làn đạn';
+
+  @override
+  String get hintStreamKeys => 'Nhấn E: hai hoặc ba luồng. Q giảm lại';
 }
