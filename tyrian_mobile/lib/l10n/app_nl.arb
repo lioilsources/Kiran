@@ -348,5 +348,12 @@
   "deathShield": "Upgrade het schild in het ComCenter: het vangt treffers vóór de romp",
   "deathGuns": "Sterkere wapens ruimen golven op voordat ze je raken",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Rij   [←→] Kiezen   [ENTER] Kopen/Verbeteren/Wisselen   [DEL] Verkopen   [ESC] Doorgaan",
+  "swapHintMouse": "Houd de rechtermuisknop of Shift ingedrukt om met je tweede wapens te vuren",
+  "tutFlyMouse": "Beweeg de muis om te vliegen. Houd de linkerknop ingedrukt om te vuren",
+  "grimoireHintKeys": "Typ de vormen op het numerieke toetsenblok of op U I O / J K L / M , . Houd Shift voor ARMS, Ctrl voor WING, beide voor MEGA BLAST.",
+  "hintHopKeys": "Tik één toets van het numerieke blok: je springt die kant op",
+  "hintLoopKeys": "Typ een cirkel op het numerieke blok: je vliegt over de kogels",
+  "hintStreamKeys": "Druk op E: twee of drie stralen. Q gaat terug"
 }

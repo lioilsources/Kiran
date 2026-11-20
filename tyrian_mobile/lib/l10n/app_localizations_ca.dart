@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1287,4 +1286,31 @@ class AppLocalizationsCa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Fila   [←→] Tria   [ENTER] Comprar/Millorar/Canviar   [SUPR] Vendre   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Mantén el botó dret del ratolí o Maj per disparar amb les armes secundàries';
+
+  @override
+  String get tutFlyMouse =>
+      'Mou el ratolí per volar. Mantén el botó esquerre per disparar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Escriu les formes al teclat numèric o a U I O / J K L / M , . Mantén Maj per a ARMS, Ctrl per a WING, totes dues per a MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Prem una tecla del teclat numèric: saltes cap a aquell costat';
+
+  @override
+  String get hintLoopKeys =>
+      'Escriu un cercle al teclat numèric: voles per sobre dels trets';
+
+  @override
+  String get hintStreamKeys => 'Prem E: dos o tres raigs. Q en treu un';
 }

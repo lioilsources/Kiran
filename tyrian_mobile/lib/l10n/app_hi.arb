@@ -348,5 +348,12 @@
   "deathShield": "ComCenter में शील्ड अपग्रेड करें: यह हल से पहले वार झेलती है",
   "deathGuns": "मज़बूत हथियार नुकसान से पहले लहरें साफ़ करते हैं",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] पंक्ति   [←→] चुनें   [ENTER] खरीदें/अपग्रेड/बदलें   [DEL] बेचें   [ESC] जारी रखें",
+  "swapHintMouse": "दूसरे हथियारों से फ़ायर करने के लिए माउस का दायाँ बटन या Shift दबाए रखें",
+  "tutFlyMouse": "उड़ने के लिए माउस हिलाएँ। फ़ायर करने के लिए बायाँ बटन दबाए रखें",
+  "grimoireHintKeys": "आकृतियाँ न्यूमपैड पर या U I O / J K L / M , . पर टाइप करें। ARMS के लिए Shift, WING के लिए Ctrl, MEGA BLAST के लिए दोनों दबाएँ।",
+  "hintHopKeys": "न्यूमपैड की एक कुंजी दबाएँ: आप उसी ओर छलाँग लगाते हैं",
+  "hintLoopKeys": "न्यूमपैड पर एक गोला टाइप करें: आप गोलियों के ऊपर से उड़ते हैं",
+  "hintStreamKeys": "E दबाएँ: दो या तीन धाराएँ। Q घटाता है"
 }

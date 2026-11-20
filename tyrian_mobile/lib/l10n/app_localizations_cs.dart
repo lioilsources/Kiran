@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1275,4 +1274,28 @@ class AppLocalizationsCs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Řádek   [←→] Výběr   [ENTER] Koupit/Vylepšit/Přepnout   [DEL] Prodat   [ESC] Pokračovat';
+
+  @override
+  String get swapHintMouse =>
+      'Drž pravé tlačítko myši nebo Shift a střílíš druhou sadou zbraní';
+
+  @override
+  String get tutFlyMouse => 'Hýbej myší a leť. Drž levé tlačítko a střílíš';
+
+  @override
+  String get grimoireHintKeys =>
+      'Piš tvary na numerické klávesnici nebo na U I O / J K L / M , . Drž Shift pro ARMS, Ctrl pro WING, oba pro MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Ťukni na jednu klávesu numpadu: skočíš tím směrem';
+
+  @override
+  String get hintLoopKeys => 'Napiš na numpadu kruh: přeletíš přes střely';
+
+  @override
+  String get hintStreamKeys => 'Stiskni E: dva nebo tři proudy. Q ubere';
 }

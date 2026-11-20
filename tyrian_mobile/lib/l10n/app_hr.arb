@@ -348,5 +348,12 @@
   "deathShield": "Nadogradi štit u ComCenteru: prima pogotke prije trupa",
   "deathGuns": "Jača oružja počiste valove prije nego ti naude",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Red   [←→] Odabir   [ENTER] Kupi/Poboljšaj/Zamijeni   [DEL] Prodaj   [ESC] Nastavi",
+  "swapHintMouse": "Drži desnu tipku miša ili Shift da pucaš drugim oružjem",
+  "tutFlyMouse": "Pomiči miš da letiš. Drži lijevu tipku da pucaš",
+  "grimoireHintKeys": "Upiši oblike na numeričkoj tipkovnici ili na U I O / J K L / M , . Drži Shift za ARMS, Ctrl za WING, oba za MEGA BLAST.",
+  "hintHopKeys": "Pritisni jednu numeričku tipku: skočiš u tom smjeru",
+  "hintLoopKeys": "Upiši krug na numeričkoj tipkovnici: preletiš preko metaka",
+  "hintStreamKeys": "Pritisni E: dva ili tri mlaza. Q vraća"
 }

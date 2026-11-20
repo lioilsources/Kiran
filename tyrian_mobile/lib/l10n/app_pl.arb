@@ -348,5 +348,12 @@
   "deathShield": "Ulepsz tarczę w ComCenter: przyjmuje trafienia przed kadłubem",
   "deathGuns": "Mocniejsza broń zmiecie fale, zanim cię zranią",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Rząd   [←→] Wybór   [ENTER] Kup/Ulepsz/Zmień   [DEL] Sprzedaj   [ESC] Dalej",
+  "swapHintMouse": "Przytrzymaj prawy przycisk myszy lub Shift, by strzelać drugim zestawem broni",
+  "tutFlyMouse": "Ruszaj myszą, by lecieć. Przytrzymaj lewy przycisk, by strzelać",
+  "grimoireHintKeys": "Wpisuj kształty na klawiaturze numerycznej lub na U I O / J K L / M , . Trzymaj Shift dla ARMS, Ctrl dla WING, oba dla MEGA BLAST.",
+  "hintHopKeys": "Stuknij jeden klawisz numeryczny: skaczesz w tę stronę",
+  "hintLoopKeys": "Wpisz okrąg na klawiaturze numerycznej: przelatujesz nad pociskami",
+  "hintStreamKeys": "Naciśnij E: dwa lub trzy strumienie. Q cofa"
 }

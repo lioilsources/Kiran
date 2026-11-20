@@ -348,5 +348,12 @@
   "deathShield": "Verbessere den Schild im ComCenter: er schützt die Hülle",
   "deathGuns": "Stärkere Waffen räumen Wellen ab, bevor sie dir schaden",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Zeile   [←→] Auswahl   [ENTER] Kaufen/Verbessern/Wechseln   [ENTF] Verkaufen   [ESC] Weiter",
+  "swapHintMouse": "Halte die rechte Maustaste oder Shift, um mit deinen zweiten Waffen zu feuern",
+  "tutFlyMouse": "Bewege die Maus zum Fliegen. Halte die linke Taste zum Feuern",
+  "grimoireHintKeys": "Tippe die Formen auf dem Ziffernblock oder auf U I O / J K L / M , . Halte Shift für ARMS, Strg für WING, beide für MEGA BLAST.",
+  "hintHopKeys": "Tippe eine Ziffernblock-Taste: du springst in diese Richtung",
+  "hintLoopKeys": "Tippe einen Kreis auf dem Ziffernblock: du fliegst über die Schüsse",
+  "hintStreamKeys": "Drücke E: zwei oder drei Strahlen. Q geht zurück"
 }

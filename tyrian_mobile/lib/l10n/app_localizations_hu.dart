@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1282,4 +1281,31 @@ class AppLocalizationsHu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Sor   [←→] Választás   [ENTER] Vétel/Fejlesztés/Csere   [DEL] Eladás   [ESC] Tovább';
+
+  @override
+  String get swapHintMouse =>
+      'Tartsd lenyomva a jobb egérgombot vagy a Shiftet, és a második fegyvereiddel lősz';
+
+  @override
+  String get tutFlyMouse =>
+      'Mozgasd az egeret a repüléshez. Tartsd lenyomva a bal gombot a lövéshez';
+
+  @override
+  String get grimoireHintKeys =>
+      'Írd be az alakzatokat a numerikus billentyűzeten vagy az U I O / J K L / M , . gombokon. Shift az ARMS, Ctrl a WING, mindkettő a MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Nyomj meg egy numerikus gombot: arra ugrasz';
+
+  @override
+  String get hintLoopKeys =>
+      'Írj egy kört a numerikus billentyűzeten: átrepülsz a lövések fölött';
+
+  @override
+  String get hintStreamKeys =>
+      'Nyomd meg az E-t: két vagy három sugár. Q visszavesz';
 }

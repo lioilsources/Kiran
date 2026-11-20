@@ -348,5 +348,12 @@
   "deathShield": "Îmbunătățește scutul în ComCenter: preia loviturile înaintea carenei",
   "deathGuns": "Arme mai puternice curăță valurile înainte să te rănească",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] Rând   [←→] Alege   [ENTER] Cumpără/Îmbunătățește/Schimbă   [DEL] Vinde   [ESC] Continuă",
+  "swapHintMouse": "Ține apăsat butonul drept al mouse-ului sau Shift ca să tragi cu armele secundare",
+  "tutFlyMouse": "Mișcă mouse-ul ca să zbori. Ține apăsat butonul stâng ca să tragi",
+  "grimoireHintKeys": "Tastează formele pe tastatura numerică sau pe U I O / J K L / M , . Ține Shift pentru ARMS, Ctrl pentru WING, ambele pentru MEGA BLAST.",
+  "hintHopKeys": "Apasă o tastă numerică: sari în acea direcție",
+  "hintLoopKeys": "Tastează un cerc pe tastatura numerică: zbori peste gloanțe",
+  "hintStreamKeys": "Apasă E: două sau trei fluxuri. Q dă înapoi"
 }

@@ -348,5 +348,12 @@
   "deathShield": "ComCenter에서 실드를 업그레이드하세요: 선체보다 먼저 공격을 막습니다",
   "deathGuns": "강한 무기는 적이 피해를 주기 전에 웨이브를 쓸어버립니다",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] 줄   [←→] 선택   [ENTER] 구매/강화/교체   [DEL] 판매   [ESC] 계속",
+  "swapHintMouse": "마우스 오른쪽 버튼이나 Shift를 누르고 있으면 두 번째 무기로 쏩니다",
+  "tutFlyMouse": "마우스를 움직여 비행하세요. 왼쪽 버튼을 누르고 있으면 발사합니다",
+  "grimoireHintKeys": "숫자 패드나 U I O / J K L / M , . 에서 모양을 입력하세요. Shift는 ARMS, Ctrl은 WING, 둘 다는 MEGA BLAST.",
+  "hintHopKeys": "숫자 패드 키 하나를 누르세요: 그쪽으로 도약합니다",
+  "hintLoopKeys": "숫자 패드로 원을 입력하세요: 탄환 위로 날아갑니다",
+  "hintStreamKeys": "E를 누르세요: 두세 줄기. Q로 줄입니다"
 }

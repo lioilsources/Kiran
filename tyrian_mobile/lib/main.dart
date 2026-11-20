@@ -20,6 +20,8 @@ import 'systems/sigils/sigil_catalog.dart';
 import 'ui/grimoire.dart';
 import 'input/pad_scheme.dart';
 import 'input/gamepad_input.dart';
+import 'input/last_input.dart';
+import 'input/mouse_input.dart';
 import 'systems/campaign.dart';
 import 'systems/duel_director.dart';
 import 'systems/sector.dart';
@@ -412,13 +414,16 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     };
   }
 
-  /// F11 or Alt+Enter toggles fullscreen anywhere — menu, shop, mid-game.
+  /// F11 toggles fullscreen anywhere — menu, shop, mid-game. Alt+Enter too,
+  /// except in flight, where Alt is FOCUS (Prompts/36 §3.5).
   /// Registered on HardwareKeyboard so it works regardless of widget focus.
   bool _handleGlobalKey(KeyEvent event) {
     if (event is! KeyDownEvent) return false;
+    LastInput.use(InputDevice.keyboardMouse);
     final isToggle = event.logicalKey == LogicalKeyboardKey.f11 ||
         (HardwareKeyboard.instance.isAltPressed &&
-            event.logicalKey == LogicalKeyboardKey.enter);
+            event.logicalKey == LogicalKeyboardKey.enter &&
+            _game.state != GameState.playing);
     if (!isToggle) return false;
     () async {
       final fs = await windowManager.isFullScreen();
@@ -470,6 +475,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     if (_game.capture != null || const bool.fromEnvironment('FRAME_STEP')) return;
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
+      // Keys and buttons held as the window lost focus never report their
+      // release: drop them, or the ship flies on after Alt+Tab.
+      _game.keyboardInput.clear();
+      _game.mouseInput.releaseAll();
       AchievementService.instance.flush();
       if (_game.state == GameState.playing) {
         _game.togglePause(); // co-op events handled inside togglePause()
@@ -907,7 +916,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: MouseFeed(
+        game: _game,
+        mouse: _game.mouseInput,
+        child: Stack(
         children: [
           // Game canvas (always renders — starfield visible behind menus)
           GameWidget(game: _game),
@@ -1085,6 +1097,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               _screen == _ScreenState.game)
             _FpsOverlay(game: _game),
         ],
+      ),
       ),
     );
   }

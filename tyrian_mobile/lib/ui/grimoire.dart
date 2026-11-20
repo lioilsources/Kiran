@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../game/platform_config.dart' as platform;
 import '../input/gamepad_input.dart';
+import '../input/last_input.dart';
 import '../l10n/l10n.dart';
 import '../rendering/sigil_hud.dart';
 import '../systems/sigils/sigil_catalog.dart';
@@ -117,7 +118,7 @@ class _GrimoireOverlayState extends State<GrimoireOverlay> {
                         fontWeight: FontWeight.bold,
                         letterSpacing: 6)),
                 const SizedBox(height: 4),
-                Text(l.grimoireHint,
+                Text(LastInput.pad ? l.grimoireHint : l.grimoireHintKeys,
                     style: const TextStyle(color: Colors.white60, fontSize: 12)),
                 const SizedBox(height: 14),
                 Expanded(

@@ -348,5 +348,12 @@
   "deathShield": "Vylepši štít v ComCenteru: chytá zásahy dřív než trup",
   "deathGuns": "Silnější zbraně smetou vlny dřív, než ti ublíží",
   "allSkins": "VŠECHNY SKINY",
-  "allSkinsCredited": "{count, plural, =1{Už máš 1 skin, odečetli jsme ho} few{Už máš {count} skiny, odečetli jsme je} other{Už máš {count} skinů, odečetli jsme je}}"
+  "allSkinsCredited": "{count, plural, =1{Už máš 1 skin, odečetli jsme ho} few{Už máš {count} skiny, odečetli jsme je} other{Už máš {count} skinů, odečetli jsme je}}",
+  "keysControlsHint": "[↑↓] Řádek   [←→] Výběr   [ENTER] Koupit/Vylepšit/Přepnout   [DEL] Prodat   [ESC] Pokračovat",
+  "swapHintMouse": "Drž pravé tlačítko myši nebo Shift a střílíš druhou sadou zbraní",
+  "tutFlyMouse": "Hýbej myší a leť. Drž levé tlačítko a střílíš",
+  "grimoireHintKeys": "Piš tvary na numerické klávesnici nebo na U I O / J K L / M , . Drž Shift pro ARMS, Ctrl pro WING, oba pro MEGA BLAST.",
+  "hintHopKeys": "Ťukni na jednu klávesu numpadu: skočíš tím směrem",
+  "hintLoopKeys": "Napiš na numpadu kruh: přeletíš přes střely",
+  "hintStreamKeys": "Stiskni E: dva nebo tři proudy. Q ubere"
 }

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1277,4 +1276,30 @@ class AppLocalizationsHr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Red   [←→] Odabir   [ENTER] Kupi/Poboljšaj/Zamijeni   [DEL] Prodaj   [ESC] Nastavi';
+
+  @override
+  String get swapHintMouse =>
+      'Drži desnu tipku miša ili Shift da pucaš drugim oružjem';
+
+  @override
+  String get tutFlyMouse => 'Pomiči miš da letiš. Drži lijevu tipku da pucaš';
+
+  @override
+  String get grimoireHintKeys =>
+      'Upiši oblike na numeričkoj tipkovnici ili na U I O / J K L / M , . Drži Shift za ARMS, Ctrl za WING, oba za MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Pritisni jednu numeričku tipku: skočiš u tom smjeru';
+
+  @override
+  String get hintLoopKeys =>
+      'Upiši krug na numeričkoj tipkovnici: preletiš preko metaka';
+
+  @override
+  String get hintStreamKeys => 'Pritisni E: dva ili tri mlaza. Q vraća';
 }

@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1283,4 +1282,31 @@ class AppLocalizationsId extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Baris   [←→] Pilih   [ENTER] Beli/Tingkatkan/Ganti   [DEL] Jual   [ESC] Lanjutkan';
+
+  @override
+  String get swapHintMouse =>
+      'Tahan tombol kanan mouse atau Shift untuk menembak dengan senjata keduamu';
+
+  @override
+  String get tutFlyMouse =>
+      'Gerakkan mouse untuk terbang. Tahan tombol kiri untuk menembak';
+
+  @override
+  String get grimoireHintKeys =>
+      'Ketik bentuknya di numpad atau di U I O / J K L / M , . Tahan Shift untuk ARMS, Ctrl untuk WING, keduanya untuk MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Ketuk satu tombol numpad: kamu melompat ke arah itu';
+
+  @override
+  String get hintLoopKeys =>
+      'Ketik lingkaran di numpad: kamu terbang melewati tembakan';
+
+  @override
+  String get hintStreamKeys => 'Tekan E: dua atau tiga aliran. Q mengurangi';
 }

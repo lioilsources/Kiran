@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1278,4 +1277,30 @@ class AppLocalizationsDa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Række   [←→] Vælg   [ENTER] Køb/Opgrader/Skift   [DEL] Sælg   [ESC] Fortsæt';
+
+  @override
+  String get swapHintMouse =>
+      'Hold højre museknap eller Shift nede for at skyde med dine andre våben';
+
+  @override
+  String get tutFlyMouse =>
+      'Bevæg musen for at flyve. Hold venstre knap nede for at skyde';
+
+  @override
+  String get grimoireHintKeys =>
+      'Skriv formerne på det numeriske tastatur eller på U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, begge for MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Tryk på én taltast: du hopper den vej';
+
+  @override
+  String get hintLoopKeys =>
+      'Skriv en cirkel på taltastaturet: du flyver over skuddene';
+
+  @override
+  String get hintStreamKeys => 'Tryk E: to eller tre stråler. Q går tilbage';
 }

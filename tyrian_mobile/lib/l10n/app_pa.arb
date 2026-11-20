@@ -348,5 +348,12 @@
   "deathShield": "ComCenter ਵਿੱਚ ਢਾਲ ਅੱਪਗ੍ਰੇਡ ਕਰੋ: ਇਹ ਹਲ ਤੋਂ ਪਹਿਲਾਂ ਵਾਰ ਝੱਲਦੀ ਹੈ",
   "deathGuns": "ਮਜ਼ਬੂਤ ਹਥਿਆਰ ਲਹਿਰਾਂ ਨੂੰ ਨੁਕਸਾਨ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਸਾਫ਼ ਕਰ ਦਿੰਦੇ ਹਨ",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] ਕਤਾਰ   [←→] ਚੁਣੋ   [ENTER] ਖਰੀਦੋ/ਅੱਪਗ੍ਰੇਡ/ਬਦਲੋ   [DEL] ਵੇਚੋ   [ESC] ਜਾਰੀ ਰੱਖੋ",
+  "swapHintMouse": "ਦੂਜੇ ਹਥਿਆਰਾਂ ਨਾਲ ਫਾਇਰ ਕਰਨ ਲਈ ਮਾਊਸ ਦਾ ਸੱਜਾ ਬਟਨ ਜਾਂ Shift ਦਬਾਈ ਰੱਖੋ",
+  "tutFlyMouse": "ਉੱਡਣ ਲਈ ਮਾਊਸ ਹਿਲਾਓ। ਫਾਇਰ ਕਰਨ ਲਈ ਖੱਬਾ ਬਟਨ ਦਬਾਈ ਰੱਖੋ",
+  "grimoireHintKeys": "ਆਕਾਰ ਨਮਪੈਡ ਉੱਤੇ ਜਾਂ U I O / J K L / M , . ਉੱਤੇ ਟਾਈਪ ਕਰੋ। ARMS ਲਈ Shift, WING ਲਈ Ctrl, MEGA BLAST ਲਈ ਦੋਵੇਂ ਦਬਾਓ।",
+  "hintHopKeys": "ਨਮਪੈਡ ਦੀ ਇੱਕ ਕੁੰਜੀ ਦਬਾਓ: ਤੁਸੀਂ ਉਸ ਪਾਸੇ ਛਾਲ ਮਾਰਦੇ ਹੋ",
+  "hintLoopKeys": "ਨਮਪੈਡ ਉੱਤੇ ਇੱਕ ਗੋਲਾ ਟਾਈਪ ਕਰੋ: ਤੁਸੀਂ ਗੋਲੀਆਂ ਦੇ ਉੱਪਰੋਂ ਉੱਡਦੇ ਹੋ",
+  "hintStreamKeys": "E ਦਬਾਓ: ਦੋ ਜਾਂ ਤਿੰਨ ਧਾਰਾਂ। Q ਘਟਾਉਂਦਾ ਹੈ"
 }

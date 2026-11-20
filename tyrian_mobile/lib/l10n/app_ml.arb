@@ -348,5 +348,12 @@
   "deathShield": "ComCenter-ൽ ഷീൽഡ് അപ്ഗ്രേഡ് ചെയ്യൂ: അത് ഹളിനു മുമ്പേ വെടി തടയും",
   "deathGuns": "ശക്തമായ ആയുധങ്ങൾ തിരമാലകളെ നിങ്ങളെ മുറിവേൽപ്പിക്കും മുമ്പേ തുടച്ചുനീക്കും",
   "allSkins": "ALL SKINS",
-  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}"
+  "allSkinsCredited": "{count, plural, =1{You already own 1 skin, we've credited it} other{You already own {count} skins, we've credited them}}",
+  "keysControlsHint": "[↑↓] വരി   [←→] തിരഞ്ഞെടുക്കുക   [ENTER] വാങ്ങുക/മെച്ചപ്പെടുത്തുക/മാറ്റുക   [DEL] വിൽക്കുക   [ESC] തുടരുക",
+  "swapHintMouse": "രണ്ടാം ആയുധങ്ങൾ കൊണ്ട് വെടിവയ്ക്കാൻ മൗസിന്റെ വലത് ബട്ടൺ അല്ലെങ്കിൽ Shift അമർത്തിപ്പിടിക്കുക",
+  "tutFlyMouse": "പറക്കാൻ മൗസ് നീക്കുക. വെടിവയ്ക്കാൻ ഇടത് ബട്ടൺ അമർത്തിപ്പിടിക്കുക",
+  "grimoireHintKeys": "രൂപങ്ങൾ നംപാഡിലോ U I O / J K L / M , . ലോ ടൈപ്പ് ചെയ്യുക. ARMS-ന് Shift, WING-ന് Ctrl, MEGA BLAST-ന് രണ്ടും അമർത്തുക.",
+  "hintHopKeys": "നംപാഡിലെ ഒരു കീ അമർത്തുക: ആ ദിശയിലേക്ക് ചാടും",
+  "hintLoopKeys": "നംപാഡിൽ ഒരു വൃത്തം ടൈപ്പ് ചെയ്യുക: വെടിയുണ്ടകൾക്ക് മുകളിലൂടെ പറക്കും",
+  "hintStreamKeys": "E അമർത്തുക: രണ്ടോ മൂന്നോ ധാരകൾ. Q കുറയ്ക്കും"
 }

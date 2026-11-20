@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1243,4 +1242,27 @@ class AppLocalizationsKo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] 줄   [←→] 선택   [ENTER] 구매/강화/교체   [DEL] 판매   [ESC] 계속';
+
+  @override
+  String get swapHintMouse => '마우스 오른쪽 버튼이나 Shift를 누르고 있으면 두 번째 무기로 쏩니다';
+
+  @override
+  String get tutFlyMouse => '마우스를 움직여 비행하세요. 왼쪽 버튼을 누르고 있으면 발사합니다';
+
+  @override
+  String get grimoireHintKeys =>
+      '숫자 패드나 U I O / J K L / M , . 에서 모양을 입력하세요. Shift는 ARMS, Ctrl은 WING, 둘 다는 MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => '숫자 패드 키 하나를 누르세요: 그쪽으로 도약합니다';
+
+  @override
+  String get hintLoopKeys => '숫자 패드로 원을 입력하세요: 탄환 위로 날아갑니다';
+
+  @override
+  String get hintStreamKeys => 'E를 누르세요: 두세 줄기. Q로 줄입니다';
 }

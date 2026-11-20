@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 import '../services/telemetry_service.dart';
+import 'last_input.dart';
 
 /// Cross-platform gamepad abstraction using native MethodChannel.
 /// Polls controller state each frame via [poll()].
@@ -39,6 +40,7 @@ class GamepadInput {
       }
       if (controllers.any((c) => c.touched)) {
         TelemetryService.instance.noteInput('pad');
+        LastInput.use(InputDevice.pad);
       }
     } on MissingPluginException {
       // Native side not available — ignore
