@@ -5,6 +5,11 @@ import 'dart:math' show pi;
 final bool isDesktop =
     Platform.isMacOS || Platform.isWindows || Platform.isLinux;
 
+/// Set by the Steam workflow (`--dart-define=STEAM_BUILD=true`). The Steam
+/// macOS build is signed with Developer ID, which cannot carry the Game Center
+/// entitlement, so anything that needs an App Store identity stays off there.
+const bool steamBuild = bool.fromEnvironment('STEAM_BUILD');
+
 /// Desktop always runs landscape; mobile always portrait.
 final bool isLandscape = isDesktop;
 

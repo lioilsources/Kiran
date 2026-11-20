@@ -2,6 +2,8 @@ import 'dart:io' show Platform;
 
 import 'package:games_services/games_services.dart';
 
+import '../game/platform_config.dart' show steamBuild;
+
 /// The one place that talks to `games_services` (Apple Game Center on
 /// iOS/macOS, Google Play Games on Android). There is no local fallback — the
 /// old on-device high-score table was removed — so on platforms without a
@@ -31,9 +33,10 @@ class LeaderboardService {
 
   /// Platforms that ship a native leaderboard SDK. Deliberately checks
   /// [Platform] directly rather than `platform_config.isDesktop`: that helper
-  /// lumps macOS in with desktop, but macOS *has* Game Center.
+  /// lumps macOS in with desktop, but macOS *has* Game Center — except in the
+  /// Steam build, which is signed outside the App Store and has none.
   bool get supported =>
-      Platform.isIOS || Platform.isMacOS || Platform.isAndroid;
+      Platform.isIOS || (Platform.isMacOS && !steamBuild) || Platform.isAndroid;
 
   /// True only when a native leaderboard is actually usable — a supported
   /// platform with a signed-in player. UI keys its "Leaderboard" button off
