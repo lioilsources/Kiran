@@ -23,7 +23,8 @@
 #                             iOS release for `notarytool`
 # Steam launch option for the macOS depot: executable `Kirian.app`, OS macOS.
 #
-# A tag push uploads the build without promoting it. Setting it live on
+# A tag push uploads the build and sets it live on `beta` (password-protected
+# branch for testing), never on `default`. Setting it live on
 # `default` from here fails: v3.9.3 uploaded both depots and then died on
 # "Failed to commit build" twice, while the same tag run upload-only went
 # through. Promote `default` by hand (below).
@@ -301,6 +302,8 @@ jobs:
           depot2Path: linux
           # Empty when macOS is off: game-ci skips depots with an empty path.
           depot3Path: ${{ needs.build-macos.result == 'success' && 'macos' || '' }}
-          # Tag push: no inputs, so upload only. Manual run: whatever was typed,
-          # empty = upload only. See the header.
-          releaseBranch: ${{ inputs.releaseBranch }}
+          # Tag push: straight live on `beta` — no manual step to test a release.
+          # `default` stays a click in Steamworks (Valve refuses it from
+          # steamcmd, see the header). Manual run: whatever was typed, empty =
+          # upload only.
+          releaseBranch: ${{ github.event_name == 'push' && 'beta' || inputs.releaseBranch }}
