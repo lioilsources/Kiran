@@ -17,6 +17,13 @@ library;
 const int _detailCap = 40;
 int _details = 0;
 
+/// False once the platform audio backend failed to come up (desktop media_kit
+/// without a loadable libmpv). just_audio is still routed to media_kit then,
+/// and every `AudioPlayer()` throws "MediaKit.ensureInitialized must be
+/// called" — unhandled, in the middle of skin loading. Music and SFX check
+/// this before creating a single player, so the game runs silent instead.
+bool audioBackendAvailable = true;
+
 void audioLog(String message) => print('[audio] $message');
 
 /// Log one asset-level failure with the real exception behind it.

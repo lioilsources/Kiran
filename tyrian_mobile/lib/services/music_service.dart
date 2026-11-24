@@ -119,6 +119,12 @@ class MusicService {
 
     await _disposePlayers();
 
+    if (!audioBackendAvailable) {
+      _disabled = true;
+      audioLog('music skin=$skinId — no audio backend, DISABLED');
+      return;
+    }
+
     _intro = _newPlayer();
     // A fresh AudioPlayer starts at volume 1.0. Every gain this class writes
     // goes through _applyTheme or startSector, and both are allowed to
