@@ -93,6 +93,12 @@ class AppLocalizationsMr extends AppLocalizations {
   String get musicOff => 'संगीत: बंद';
 
   @override
+  String get statsOn => 'आकडेवारी: सुरू';
+
+  @override
+  String get statsOff => 'आकडेवारी: बंद';
+
+  @override
   String get mainMenu => 'मुख्य मेनू';
 
   @override
@@ -1145,4 +1151,143 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'झाले';
+
+  @override
+  String get swapHint => 'दोन बोटे ठेवा, दुसऱ्या संचातील शस्त्रे चालतील';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: अधिक ताकदवान गोळ्या';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: जहाज दुरुस्त झाले';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ढाल, लवकर रिचार्ज होते';
+  }
+
+  @override
+  String get pickupGenerator => 'जनरेटर सुधारला: शस्त्रांना अधिक ऊर्जा';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount क्रेडिट, ComCenter मध्ये खर्च करा';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'शस्त्र पिकअप पातळी वाढवतात: जास्त नुकसान, वेगवान मारा';
+
+  @override
+  String get tutPickupHealth =>
+      'दुरुस्ती पिकअप हल दुरुस्त करतात; पूर्ण असताना कमाल HP वाढवतात';
+
+  @override
+  String get tutPickupShield => 'ढाल हलच्या आधी मार झेलते आणि आपोआप भरते';
+
+  @override
+  String get tutPickupGenerator =>
+      'जनरेटर शस्त्रांना ऊर्जा देतो: जास्त ऊर्जा, जास्त शस्त्रे चालू';
+
+  @override
+  String get tutPickupCredits =>
+      'फेऱ्यांदरम्यान ComCenter मध्ये क्रेडिटने शस्त्रे व अपग्रेड घ्या';
+
+  @override
+  String get tutBoss =>
+      'बॉस! वरची पट्टी त्याचे आरोग्य आहे. हलत राहा, मारा करत राहा';
+
+  @override
+  String get tutLowHp =>
+      'हल कमी! दुरुस्ती पिकअप किंवा ComCenter ते दुरुस्त करेल';
+
+  @override
+  String get tutGenStarved =>
+      'शस्त्रांना जनरेटरपेक्षा जास्त ऊर्जा हवी: तो अपग्रेड करा';
+
+  @override
+  String get tutCanAfford =>
+      'अपग्रेडसाठी क्रेडिट आहेत: या फेरीनंतर ComCenter पाहा';
+
+  @override
+  String get tutFly =>
+      'उडण्यासाठी ओढा. बोट टेकवलेले असेपर्यंत शस्त्रे मारा करतात';
+
+  @override
+  String get introCollect => 'शत्रू टाकतात ते आयकॉन पकडा';
+
+  @override
+  String get introShop => 'फेऱ्यांदरम्यान ComCenter मध्ये क्रेडिट खर्च करा';
+
+  @override
+  String get objBoss => 'ध्येय: लाटांतून वाचा आणि बॉसला हरवा';
+
+  @override
+  String get objSurvive => 'ध्येय: लाटांतून वाचा';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits क्रेडिट · $kills पाडले';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'सर्वोत्तम शस्त्र: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'बॉसचे मारे जोरदार असतात: मजबूत ढाल वेळ मिळवून देते';
+
+  @override
+  String get deathShield =>
+      'ComCenter मध्ये ढाल अपग्रेड करा: ती हलच्या आधी मार झेलते';
+
+  @override
+  String get deathGuns =>
+      'मजबूत शस्त्रे लाटा तुम्हाला इजा करण्याआधीच साफ करतात';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] ओळ   [←→] निवड   [ENTER] खरेदी/सुधारणा/बदल   [DEL] विक्री   [ESC] पुढे चला';
+
+  @override
+  String get swapHintMouse =>
+      'दुसऱ्या शस्त्रांनी मारा करण्यासाठी माउसचे उजवे बटण किंवा Shift दाबून ठेवा';
+
+  @override
+  String get tutFlyMouse =>
+      'उडण्यासाठी माउस हलवा. मारा करण्यासाठी डावे बटण दाबून ठेवा';
+
+  @override
+  String get grimoireHintKeys =>
+      'आकार न्यूमपॅडवर किंवा U I O / J K L / M , . वर टाइप करा. ARMS साठी Shift, WING साठी Ctrl, MEGA BLAST साठी दोन्ही दाबा.';
+
+  @override
+  String get hintHopKeys =>
+      'न्यूमपॅडची एक कळ दाबा: तुम्ही त्या दिशेला उडी मारता';
+
+  @override
+  String get hintLoopKeys =>
+      'न्यूमपॅडवर वर्तुळ टाइप करा: तुम्ही गोळ्यांवरून उडता';
+
+  @override
+  String get hintStreamKeys => 'E दाबा: दोन किंवा तीन धारा. Q कमी करते';
 }

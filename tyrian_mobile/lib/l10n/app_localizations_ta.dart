@@ -93,6 +93,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get musicOff => 'இசை: நிறுத்தம்';
 
   @override
+  String get statsOn => 'புள்ளிவிவரம்: இயக்கம்';
+
+  @override
+  String get statsOff => 'புள்ளிவிவரம்: நிறுத்தம்';
+
+  @override
   String get mainMenu => 'முதன்மை மெனு';
 
   @override
@@ -1168,4 +1174,144 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'முடிந்தது';
+
+  @override
+  String get swapHint =>
+      'இரண்டு விரல்களை வைத்தால் இரண்டாவது ஆயுதத் தொகுப்பால் சுடலாம்';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: வலுவான சுடுதல்';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: கப்பல் சரிசெய்யப்பட்டது';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount கவசம், வேகமாக மீண்டும் நிரம்பும்';
+  }
+
+  @override
+  String get pickupGenerator => 'ஜெனரேட்டர் மேம்பாடு: ஆயுதங்களுக்கு அதிக சக்தி';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount கிரெடிட் ComCenter-க்கு';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'ஆயுதப் பொருட்கள் நிலையை உயர்த்தும்: அதிக சேதம், வேகமான சுடுதல்';
+
+  @override
+  String get tutPickupHealth =>
+      'பழுதுபார்ப்பு உடலைச் சரிசெய்யும்; நலமாக இருந்தால் அதிகபட்ச HP உயரும்';
+
+  @override
+  String get tutPickupShield =>
+      'கவசம் உடலுக்கு முன் அடிகளைத் தாங்கி, தானே நிரம்பும்';
+
+  @override
+  String get tutPickupGenerator =>
+      'ஜெனரேட்டர் ஆயுதங்களுக்கு சக்தி தரும்: அதிக சக்தி, அதிக ஆயுதங்கள்';
+
+  @override
+  String get tutPickupCredits =>
+      'சுற்றுகளுக்கு இடையே ComCenter-இல் கிரெடிட்களால் ஆயுதங்கள் வாங்கு';
+
+  @override
+  String get tutBoss => 'BOSS! மேலே உள்ள பட்டை அதன் உயிர். நகர்ந்துகொண்டே சுடு';
+
+  @override
+  String get tutLowHp =>
+      'உடல் பலவீனம்! பழுதுபார்ப்பு அல்லது ComCenter சரிசெய்யும்';
+
+  @override
+  String get tutGenStarved =>
+      'ஜெனரேட்டர் தருவதைவிட ஆயுதங்களுக்கு அதிக சக்தி தேவை: மேம்படுத்து';
+
+  @override
+  String get tutCanAfford =>
+      'மேம்படுத்த பணம் உள்ளது: இந்தச் சுற்றுக்குப் பின் ComCenter செல்';
+
+  @override
+  String get tutFly => 'பறக்க இழு. விரல் வைத்திருக்கும்வரை ஆயுதங்கள் சுடும்';
+
+  @override
+  String get introCollect => 'எதிரிகள் விடும் ஐகான்களைப் பிடி';
+
+  @override
+  String get introShop =>
+      'சுற்றுகளுக்கு இடையே ComCenter-இல் கிரெடிட்களைச் செலவிடு';
+
+  @override
+  String get objBoss => 'இலக்கு: அலைகளைத் தாண்டி பாஸை வெல்';
+
+  @override
+  String get objSurvive => 'இலக்கு: அலைகளைத் தாண்டு';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits கிரெடிட் · $kills வீழ்த்தல்';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'சிறந்த ஆயுதம்: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'பாஸின் குண்டுகள் கடுமை: வலிய கவசம் நேரம் தரும்';
+
+  @override
+  String get deathShield =>
+      'ComCenter-இல் கவசத்தை மேம்படுத்து: உடலுக்கு முன் அடி தாங்கும்';
+
+  @override
+  String get deathGuns => 'வலிய ஆயுதங்கள் அலைகளை முன்பே அழிக்கும்';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] வரிசை   [←→] தேர்வு   [ENTER] வாங்கு/மேம்படுத்து/மாற்று   [DEL] விற்பனை   [ESC] தொடரவும்';
+
+  @override
+  String get swapHintMouse =>
+      'இரண்டாம் ஆயுதங்களால் சுட மவுஸின் வலது பொத்தானை அல்லது Shift-ஐ அழுத்திப் பிடிக்கவும்';
+
+  @override
+  String get tutFlyMouse =>
+      'பறக்க மவுஸை நகர்த்தவும். சுட இடது பொத்தானை அழுத்திப் பிடிக்கவும்';
+
+  @override
+  String get grimoireHintKeys =>
+      'வடிவங்களை எண் விசைப்பலகையில் அல்லது U I O / J K L / M , . இல் தட்டச்சு செய்யவும். ARMS-க்கு Shift, WING-க்கு Ctrl, MEGA BLAST-க்கு இரண்டையும் பிடிக்கவும்.';
+
+  @override
+  String get hintHopKeys =>
+      'எண் விசைப்பலகையின் ஒரு விசையைத் தட்டவும்: அந்தத் திசையில் தாவுவீர்கள்';
+
+  @override
+  String get hintLoopKeys =>
+      'எண் விசைப்பலகையில் ஒரு வட்டத்தைத் தட்டச்சு செய்யவும்: குண்டுகளின் மேல் பறப்பீர்கள்';
+
+  @override
+  String get hintStreamKeys =>
+      'E-ஐ அழுத்தவும்: இரண்டு அல்லது மூன்று ஓட்டங்கள். Q குறைக்கும்';
 }

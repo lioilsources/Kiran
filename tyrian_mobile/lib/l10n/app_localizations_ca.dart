@@ -94,6 +94,12 @@ class AppLocalizationsCa extends AppLocalizations {
   String get musicOff => 'MÚSICA: DESACTIVADA';
 
   @override
+  String get statsOn => 'ESTADÍSTIQUES: ACTIVADES';
+
+  @override
+  String get statsOff => 'ESTADÍSTIQUES: DESACTIVADES';
+
+  @override
   String get mainMenu => 'MENÚ PRINCIPAL';
 
   @override
@@ -1167,4 +1173,144 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FET';
+
+  @override
+  String get swapHint => 'Amb dos dits dispares el segon joc d\'armes';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: trets més forts';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: buc reparat';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount d\'escut, es recarrega més ràpid';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generador millorat: més energia per a les armes';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount crèdits per gastar al ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Els power-ups d\'arma pugen el nivell: més dany, tret més ràpid';
+
+  @override
+  String get tutPickupHealth =>
+      'Les reparacions arreglen el buc; si estàs bé, pugen l\'HP màxim';
+
+  @override
+  String get tutPickupShield =>
+      'L\'escut rep els cops abans que el buc i es recarrega sol';
+
+  @override
+  String get tutPickupGenerator =>
+      'El generador alimenta les armes: més energia, més armes disparant';
+
+  @override
+  String get tutPickupCredits =>
+      'Amb crèdits compres armes i millores al ComCenter entre rondes';
+
+  @override
+  String get tutBoss =>
+      'BOSS! La seva vida és la barra de dalt. Mou-te i dispara';
+
+  @override
+  String get tutLowHp => 'Buc baix! Una reparació o el ComCenter l\'arreglen';
+
+  @override
+  String get tutGenStarved =>
+      'Les armes volen més energia que el generador: millora\'l';
+
+  @override
+  String get tutCanAfford =>
+      'Et pots permetre una millora: passa pel ComCenter després';
+
+  @override
+  String get tutFly => 'Arrossega per volar. Les armes disparen mentre toques';
+
+  @override
+  String get introCollect => 'Atrapa les icones que deixen els enemics';
+
+  @override
+  String get introShop => 'Entre rondes, gasta els crèdits al ComCenter';
+
+  @override
+  String get objBoss => 'Objectiu: sobreviu a les onades i vènç el boss';
+
+  @override
+  String get objSurvive => 'Objectiu: sobreviu a les onades';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits crèdits · $kills baixes';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Millor arma: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Els trets del boss fan mal: un escut millor et dona temps';
+
+  @override
+  String get deathShield =>
+      'Millora l\'escut al ComCenter: rep els cops abans que el buc';
+
+  @override
+  String get deathGuns =>
+      'Armes més fortes netegen onades abans que et facin mal';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Fila   [←→] Tria   [ENTER] Comprar/Millorar/Canviar   [SUPR] Vendre   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Mantén el botó dret del ratolí o Maj per disparar amb les armes secundàries';
+
+  @override
+  String get tutFlyMouse =>
+      'Mou el ratolí per volar. Mantén el botó esquerre per disparar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Escriu les formes al teclat numèric o a U I O / J K L / M , . Mantén Maj per a ARMS, Ctrl per a WING, totes dues per a MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Prem una tecla del teclat numèric: saltes cap a aquell costat';
+
+  @override
+  String get hintLoopKeys =>
+      'Escriu un cercle al teclat numèric: voles per sobre dels trets';
+
+  @override
+  String get hintStreamKeys => 'Prem E: dos o tres raigs. Q en treu un';
 }

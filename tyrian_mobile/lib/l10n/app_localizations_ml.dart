@@ -93,6 +93,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get musicOff => 'സംഗീതം: ഓഫ്';
 
   @override
+  String get statsOn => 'സ്ഥിതിവിവരം: ഓൺ';
+
+  @override
+  String get statsOff => 'സ്ഥിതിവിവരം: ഓഫ്';
+
+  @override
   String get mainMenu => 'പ്രധാന മെനു';
 
   @override
@@ -1164,4 +1170,143 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'പൂർത്തിയായി';
+
+  @override
+  String get swapHint =>
+      'രണ്ട് വിരൽ വെച്ചാൽ രണ്ടാം സെറ്റ് ആയുധങ്ങൾ കൊണ്ട് വെടിവെക്കും';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: കൂടുതൽ ശക്തമായ വെടി';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: കപ്പൽ നന്നാക്കി';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount കവചം, വേഗം റീചാർജ് ആകും';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'ജനറേറ്റർ മെച്ചപ്പെട്ടു: ആയുധങ്ങൾക്ക് കൂടുതൽ ഊർജം';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ക്രെഡിറ്റ് ComCenter-ൽ ചെലവാക്കാം';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'ആയുധ പിക്കപ്പുകൾ ലെവൽ കൂട്ടും: കൂടുതൽ നാശം, വേഗത്തിൽ വെടി';
+
+  @override
+  String get tutPickupHealth =>
+      'റിപ്പയർ പിക്കപ്പ് ഹൾ നന്നാക്കും; പൂർണമെങ്കിൽ പരമാവധി HP കൂട്ടും';
+
+  @override
+  String get tutPickupShield => 'ഷീൽഡ് ഹളിനു മുമ്പേ വെടി തടയും, തനിയെ നിറയും';
+
+  @override
+  String get tutPickupGenerator =>
+      'ജനറേറ്റർ ആയുധങ്ങൾക്ക് ഊർജം നൽകും: കൂടുതൽ ഊർജം, കൂടുതൽ ആയുധം';
+
+  @override
+  String get tutPickupCredits =>
+      'റൗണ്ടുകൾക്കിടയിൽ ComCenter-ൽ ക്രെഡിറ്റിന് ആയുധവും അപ്ഗ്രേഡും വാങ്ങാം';
+
+  @override
+  String get tutBoss =>
+      'ബോസ്! മുകളിലെ ബാർ അതിന്റെ ആരോഗ്യം. നീങ്ങിക്കൊണ്ടിരിക്കൂ, വെടിവെക്കൂ';
+
+  @override
+  String get tutLowHp => 'ഹൾ കുറവ്! റിപ്പയർ പിക്കപ്പോ ComCenter-ഓ നന്നാക്കും';
+
+  @override
+  String get tutGenStarved =>
+      'ആയുധങ്ങൾക്ക് ജനറേറ്ററിനേക്കാൾ ഊർജം വേണം: അത് അപ്ഗ്രേഡ് ചെയ്യൂ';
+
+  @override
+  String get tutCanAfford =>
+      'അപ്ഗ്രേഡിന് ക്രെഡിറ്റുണ്ട്: ഈ റൗണ്ടിനു ശേഷം ComCenter നോക്കൂ';
+
+  @override
+  String get tutFly =>
+      'പറക്കാൻ വലിക്കൂ. വിരൽ അമർത്തിയിരിക്കുമ്പോൾ ആയുധങ്ങൾ വെടിവെക്കും';
+
+  @override
+  String get introCollect => 'ശത്രുക്കൾ ഇടുന്ന ഐക്കണുകൾ പിടിക്കൂ';
+
+  @override
+  String get introShop => 'റൗണ്ടുകൾക്കിടയിൽ ComCenter-ൽ ക്രെഡിറ്റ് ചെലവാക്കൂ';
+
+  @override
+  String get objBoss => 'ലക്ഷ്യം: തിരമാലകൾ അതിജീവിച്ച് ബോസിനെ തോൽപ്പിക്കൂ';
+
+  @override
+  String get objSurvive => 'ലക്ഷ്യം: തിരമാലകൾ അതിജീവിക്കൂ';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits ക്രെഡിറ്റ് · $kills വധം';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'മികച്ച ആയുധം: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'ബോസിന്റെ വെടി ശക്തമാണ്: ശക്തമായ ഷീൽഡ് സമയം നൽകും';
+
+  @override
+  String get deathShield =>
+      'ComCenter-ൽ ഷീൽഡ് അപ്ഗ്രേഡ് ചെയ്യൂ: അത് ഹളിനു മുമ്പേ വെടി തടയും';
+
+  @override
+  String get deathGuns =>
+      'ശക്തമായ ആയുധങ്ങൾ തിരമാലകളെ നിങ്ങളെ മുറിവേൽപ്പിക്കും മുമ്പേ തുടച്ചുനീക്കും';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] വരി   [←→] തിരഞ്ഞെടുക്കുക   [ENTER] വാങ്ങുക/മെച്ചപ്പെടുത്തുക/മാറ്റുക   [DEL] വിൽക്കുക   [ESC] തുടരുക';
+
+  @override
+  String get swapHintMouse =>
+      'രണ്ടാം ആയുധങ്ങൾ കൊണ്ട് വെടിവയ്ക്കാൻ മൗസിന്റെ വലത് ബട്ടൺ അല്ലെങ്കിൽ Shift അമർത്തിപ്പിടിക്കുക';
+
+  @override
+  String get tutFlyMouse =>
+      'പറക്കാൻ മൗസ് നീക്കുക. വെടിവയ്ക്കാൻ ഇടത് ബട്ടൺ അമർത്തിപ്പിടിക്കുക';
+
+  @override
+  String get grimoireHintKeys =>
+      'രൂപങ്ങൾ നംപാഡിലോ U I O / J K L / M , . ലോ ടൈപ്പ് ചെയ്യുക. ARMS-ന് Shift, WING-ന് Ctrl, MEGA BLAST-ന് രണ്ടും അമർത്തുക.';
+
+  @override
+  String get hintHopKeys => 'നംപാഡിലെ ഒരു കീ അമർത്തുക: ആ ദിശയിലേക്ക് ചാടും';
+
+  @override
+  String get hintLoopKeys =>
+      'നംപാഡിൽ ഒരു വൃത്തം ടൈപ്പ് ചെയ്യുക: വെടിയുണ്ടകൾക്ക് മുകളിലൂടെ പറക്കും';
+
+  @override
+  String get hintStreamKeys => 'E അമർത്തുക: രണ്ടോ മൂന്നോ ധാരകൾ. Q കുറയ്ക്കും';
 }

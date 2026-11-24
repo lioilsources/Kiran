@@ -16,7 +16,9 @@ import 'duel_space.dart';
 import 'frame_capture.dart';
 import 'game_config.dart' as config;
 import 'platform_config.dart' as platform;
+import '../input/bindings.dart';
 import '../input/keyboard_input.dart';
+import '../input/mouse_input.dart';
 import '../input/gamepad_input.dart';
 import '../input/pad_scheme.dart';
 import '../input/keyboard_sigils.dart';
@@ -35,6 +37,7 @@ import '../systems/training/kata.dart';
 import '../systems/training/gauntlet.dart';
 import '../rendering/starfield.dart';
 import '../rendering/parallax_bg.dart';
+import '../rendering/mouse_reticle.dart';
 import '../rendering/offscreen_markers.dart';
 import '../rendering/bg_zones.dart';
 import '../entities/vessel.dart';
@@ -67,14 +70,19 @@ import '../rendering/beam_renderer.dart';
 import '../rendering/shader_pipeline.dart';
 import '../services/skin_registry.dart';
 import '../ui/float_text.dart';
+import '../ui/format.dart';
+import '../input/touch_controls.dart';
 import '../net/protocol.dart';
 import '../net/coop_host.dart';
 import '../net/coop_client.dart';
 import '../services/save_service.dart';
+import '../services/telemetry_service.dart';
 import '../l10n/l10n.dart';
 import '../systems/mods/mod_rewards.dart';
 import '../systems/mods/mods_state.dart';
 import '../systems/mods/hull_spec.dart';
+import 'telemetry_probe.dart';
+import '../systems/tutor.dart';
 
 enum GameState { comCenter, playing, paused, gameOver }
 enum CoopRole { none, host, client }
@@ -87,10 +95,15 @@ enum CoopRole { none, host, client }
 enum GameMode { endless, campaign, training }
 
 class TyrianGame extends FlameGame
-    with DragCallbacks, TapCallbacks, KeyboardEvents, MouseMovementDetector {
+    with
+        DragCallbacks,
+        TapCallbacks,
+        TouchControls,
+        KeyboardEvents {
   TyrianGame();
 
   final KeyboardInput keyboardInput = KeyboardInput();
+  final MouseInput mouseInput = MouseInput();
   final GamepadInput gamepadInput = GamepadInput();
   double _gamepadPollTimer = 0;
 
@@ -143,7 +156,20 @@ class TyrianGame extends FlameGame
   final Map<int, Structure> clientStructures = {};
   final List<Projectile> clientPlayerProjectiles = [];
 
-  GameState state = GameState.comCenter;
+  GameState _state = GameState.comCenter;
+
+  GameState get state => _state;
+
+  /// Leaving [GameState.playing] puts the touch's first weapon set back at
+  /// once (plan 34), before anything else sees the loadout: the ComCenter,
+  /// the save written on the way into it, the game over.
+  set state(GameState next) {
+    if (_state == GameState.playing && next != GameState.playing) {
+      vessel.setAlternate(false);
+    }
+    _state = next;
+  }
+
   bool isLoaded = false;
 
   // Active game objects
@@ -480,6 +506,7 @@ class TyrianGame extends FlameGame
     if (sigilDemo) arena.infiniteCharge = true;
     _startArenaRound();
     _startSectorMusic();
+    TelemetryProbe.sectorStart(this);
   }
 
   /// Apply changed dials: a fresh boss, the ship patched up.
@@ -536,6 +563,7 @@ class TyrianGame extends FlameGame
   /// Back to the endless ship, exactly as it went in.
   void leaveArena() {
     if (mode != GameMode.training) return;
+    TelemetryProbe.sectorEnd(this, 'menu');
     duel.reset();
     _leaveMission();
     vessel.caster.onReading = _onFieldReading;
@@ -660,6 +688,7 @@ class TyrianGame extends FlameGame
     _applyViewportLayout();
 
     await AssetLibrary.instance.loadAll();
+    await TutorMemory.instance.load();
 
     starfield = Starfield();
     world.add(starfield);
@@ -687,6 +716,7 @@ class TyrianGame extends FlameGame
     vessel = Vessel();
     await vessel.init();
     world.add(vessel);
+    world.add(MouseReticle());
     vessel.caster.onGrimoire = openGrimoire;
     vessel.caster.onReading = _onFieldReading;
 
@@ -877,6 +907,7 @@ class TyrianGame extends FlameGame
 
   void startGame() {
     state = GameState.playing;
+    touchReset();
     vessel.visible = true;
     vessel.resetPosition();
     if (vessel2 != null) {
@@ -892,11 +923,13 @@ class TyrianGame extends FlameGame
       coopHost!.sendEvent(EventType.gameStart);
     }
     loadSector(currentSectorIndex);
+    announceSector();
     _startSectorMusic();
     // After loadSector, which resets the node's counters.
     campaignTracker?.onLaunch(vessel);
     AchievementService.instance
         .onMissionStarted(AssetLibrary.instance.skinId, isCoop: isCoop);
+    TelemetryProbe.sectorStart(this);
   }
 
   /// Kick off the heroic intro + reset the adaptive-music director for a sector.
@@ -1011,6 +1044,7 @@ class TyrianGame extends FlameGame
   @override
   void update(double dt) {
     frameCount++;
+    touchTick(dt);
     final film = _capture;
     if (film != null && FrameCapture.fixedStep) {
       if (film.busy) return;
@@ -1057,6 +1091,7 @@ class TyrianGame extends FlameGame
         } catch (_) {}
         coopClient!.latestSnapshot = null;
       }
+      _processClientInput(inputDt);
       super.update(dt);
       shardPool.update(dt);
       _updateWorldShift(dt);
@@ -1076,6 +1111,8 @@ class TyrianGame extends FlameGame
       parallaxBg.update(dt);
       return;
     }
+
+    if (mode != GameMode.training) tutor.tick(dt);
 
     // The duel's doors run on the step's clock; the close-up stops the world.
     duel.update(dt);
@@ -1132,6 +1169,7 @@ class TyrianGame extends FlameGame
         currentSector!.isComplete &&
         !_sectorCompleteFired) {
       _sectorCompleteFired = true;
+      if (mode != GameMode.training) tutor.roundEnd();
       _onSectorComplete();
     }
 
@@ -1195,6 +1233,7 @@ class TyrianGame extends FlameGame
 
   void _onSectorComplete() {
     if (mode == GameMode.training) return _arenaBossDown();
+    TelemetryProbe.sectorEnd(this, 'completed');
     SoundService.instance.play(SfxEvent.sectorComplete);
     MusicService.instance.stop(); // duck soundtrack for the victory fanfare + ComCenter
 
@@ -1480,6 +1519,7 @@ class TyrianGame extends FlameGame
   /// Leave whatever is on the field, for the main menu or a mode switch.
   /// Progress since the last save is dropped, exactly as a death drops it.
   void abandonMission() {
+    TelemetryProbe.sectorEnd(this, 'menu');
     _leaveMission();
     vessel.resetVessel();
     MusicService.instance.setPaused(false);
@@ -1508,14 +1548,17 @@ class TyrianGame extends FlameGame
       vessel2!.position.x += 60;
     }
     state = GameState.playing;
+    touchReset();
     // Notify client that game is starting
     if (coopRole == CoopRole.host && coopHost != null && coopHost!.hasClient) {
       coopHost!.sendEvent(EventType.gameStart);
     }
+    announceSector();
     _startSectorMusic();
     // The shop has just closed, so this is the loadout the node is flown with
     // — what every loadout task is graded against.
     campaignTracker?.onLaunch(vessel);
+    TelemetryProbe.sectorStart(this);
   }
 
   void togglePause() {
@@ -1536,6 +1579,8 @@ class TyrianGame extends FlameGame
   }
 
   void triggerGameOver() {
+    TelemetryProbe.sectorEnd(this, 'death');
+    deathTip = mode == GameMode.training ? null : tutor.deathTip();
     SoundService.instance.play(SfxEvent.gameOver);
     MusicService.instance.stop();
     state = GameState.gameOver;
@@ -1560,59 +1605,41 @@ class TyrianGame extends FlameGame
     return d1 <= d2 ? vessel.position.x : vessel2!.position.x;
   }
 
-  // Touch input — delta-based so finger and vessel move in sync
-  Vector2? _prevDragPos;
-
-  // Client touch target position (for sending to host)
-  double _clientTargetX = config.gameWidth / 2;
-  double _clientTargetY = config.gameHeight * 0.75;
-  bool _clientFire = false;
-
-  // ── The mouse in a duel (Prompts/30 §6.6): it aims, its button fires ──
-
-  Vector2? _mouseWorld;
-  double _mouseAge = 99;
-  bool _mouseFire = false;
-
   @override
-  void onMouseMove(PointerHoverInfo info) {
-    _mouseWorld = camera.globalToLocal(info.eventPosition.widget);
-    _mouseAge = 0;
+  bool get touchAlternate => vessel.alternateActive;
+
+  /// Two fingers fly the second weapon set, one the first (plan 34). The
+  /// message names the front gun and the DPS that flies now.
+  @override
+  void touchSetAlternate(bool on, {required bool announce}) {
+    if (!vessel.setAlternate(on) || !announce) return;
+    final front = vessel.getDevice(WeaponSlot.frontGun);
+    final dps = fmtNum(Campaign.poweredDps(vessel));
+    showMessage('${front?.displayName.toUpperCase() ?? ''}  DPS $dps');
   }
 
+  /// The touch flies the ship while playing — but not a duel's, which aims
+  /// instead (a co-op client's still flies).
   @override
-  void onDragStart(DragStartEvent event) {
-    super.onDragStart(event);
-    if (state != GameState.playing) return;
-    if (duel.controls && coopRole != CoopRole.client) {
-      // A duel's mouse does not drag the ship about: it aims and fires.
-      _mouseWorld = camera.globalToLocal(event.canvasPosition);
-      _mouseAge = 0;
-      _mouseFire = true;
-      return;
-    }
-    _prevDragPos = event.canvasPosition.clone();
+  bool get touchFlies =>
+      state == GameState.playing &&
+      !(duel.controls && coopRole != CoopRole.client);
 
-    if (coopRole == CoopRole.client) {
-      _clientFire = true;
-    } else {
-      vessel.fire = true;
-    }
-  }
+  /// The second set: solo and host only — a co-op client sends position and
+  /// fire, nothing else — and never in a duel, whose touch aims instead.
+  @override
+  bool get touchSwaps =>
+      touchFlies && coopRole != CoopRole.client && !duel.controls;
+
+  /// On desktop the mouse is not a finger (Prompts/36 §3.3).
+  @override
+  bool get touchIgnoresMouse => platform.isDesktop;
 
   @override
-  void onDragUpdate(DragUpdateEvent event) {
-    super.onDragUpdate(event);
-    if (_mouseFire) {
-      _mouseWorld = camera.globalToLocal(event.canvasEndPosition);
-      _mouseAge = 0;
-      return;
-    }
-    if (state != GameState.playing || _prevDragPos == null) return;
-    final pos = event.canvasEndPosition;
-    final delta = pos - _prevDragPos!;
-    _prevDragPos = pos.clone();
+  bool get touchMouseHeld => mouseInput.buttons != 0;
 
+  @override
+  void touchSteer(Vector2 delta) {
     // Divide by camera zoom so a finger drag still moves the vessel 1:1 on screen
     // when the immersive camera is zoomed in (zoom is 1.0 otherwise → no-op).
     final scale = config.gameWidth / size.x / camera.viewfinder.zoom;
@@ -1634,34 +1661,159 @@ class TyrianGame extends FlameGame
   }
 
   @override
-  void onDragEnd(DragEndEvent event) {
-    super.onDragEnd(event);
-    if (_mouseFire) {
-      _mouseFire = false;
-      return;
-    }
-    if (state != GameState.playing) return;
-    _prevDragPos = null;
-
-    if (coopRole == CoopRole.client) {
-      _clientFire = false;
-      coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
-    } else {
-      vessel.fire = false;
-    }
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
-    if (state != GameState.playing) return;
-
+  void touchToggleFire() {
     if (coopRole == CoopRole.client) {
       _clientFire = !_clientFire;
       coopClient?.sendInput(_clientTargetX, _clientTargetY, _clientFire);
     } else {
       vessel.fire = !vessel.fire;
     }
+  }
+
+  @override
+  void touchSetFire(bool on) {
+    if (coopRole == CoopRole.client) {
+      _clientFire = on;
+      if (!on) coopClient?.sendInput(_clientTargetX, _clientTargetY, false);
+    } else {
+      vessel.fire = on;
+    }
+  }
+
+  /// A co-op client on desktop flies with the keys, the stick or the mouse
+  /// (Prompts/36 §3.6): they move the same target the touch moves and send
+  /// it the same way. Position and fire only, as ever.
+  void _processClientInput(double dt) {
+    if (!platform.isDesktop) return;
+    final gp = gamepadInput.primary;
+    var dx = GamepadInput.deadzone(gp.leftStickX);
+    var dy = GamepadInput.deadzone(gp.leftStickY);
+    final padMoves = dx != 0 || dy != 0;
+    if (!padMoves) {
+      dx = keyboardInput.dx;
+      dy = keyboardInput.dy;
+    }
+    _readMouse(dt, keysMove: !padMoves && (dx != 0 || dy != 0), padMoves: padMoves);
+    _updateMouseLook();
+    if (state != GameState.playing) {
+      _clientHeld = false;
+      return;
+    }
+    var tx = _clientTargetX, ty = _clientTargetY;
+    if (dx != 0 || dy != 0) {
+      final (gx, gy) = platform.screenToGame(dx, dy);
+      tx += gx * _kbSpeed * dt;
+      ty += gy * _kbSpeed * dt;
+    } else if (_mouseSteers) {
+      final t = _mouseWorld;
+      if (t != null) {
+        (tx, ty) = followStep(tx, ty, t.x, t.y, config.mouseFollowSpeed * dt,
+            SteerFreedom.full);
+      }
+    }
+    tx = tx.clamp(0, config.gameWidth);
+    ty = ty.clamp(0, config.gameHeight);
+    // A held trigger fires while held; letting go hands the fire back to
+    // whatever the touch had it at.
+    final held = gp.fire || keyboardInput.fire || _mouseFire;
+    var fire = _clientFire;
+    if (held) {
+      fire = true;
+    } else if (_clientHeld) {
+      fire = false;
+    }
+    _clientHeld = held;
+    if (tx == _clientTargetX && ty == _clientTargetY && fire == _clientFire) return;
+    _clientTargetX = tx;
+    _clientTargetY = ty;
+    _clientFire = fire;
+    coopClient?.sendInput(_clientTargetX, _clientTargetY, _clientFire);
+  }
+
+  bool _clientHeld = false;
+
+  // Client touch target position (for sending to host)
+  double _clientTargetX = config.gameWidth / 2;
+  double _clientTargetY = config.gameHeight * 0.75;
+  bool _clientFire = false;
+
+  // ── The mouse (Prompts/36 §3.3; in a duel Prompts/30 §6.6) ──
+
+  /// The mouse flies the ship: it moved last, not the keys or the stick.
+  bool _mouseSteers = false;
+  double _mouseTravel = 0;
+  double _mouseAge = 99;
+
+  /// The second set held from the keyboard or the mouse (classic scheme).
+  bool _kbmAlternate = false;
+
+  /// Where the ship is flying under the mouse, while it has not caught up.
+  Vector2? mouseReticle;
+
+  /// The cursor in world space.
+  Vector2? get _mouseWorld {
+    final p = mouseInput.position;
+    return p == null ? null : camera.globalToLocal(p);
+  }
+
+  bool get _mouseFire => mouseInput.action(InputAction.fire);
+
+  /// Once a frame, before anything reads the mouse: who flies the ship.
+  void _readMouse(double dt, {required bool keysMove, required bool padMoves}) {
+    final moved = mouseInput.takeMoved();
+    mouseInput.takeWheel(); // the wheel's OVERSTREAM is a later phase
+    _mouseAge = moved > 0 ? 0 : _mouseAge + dt;
+    if (keysMove || padMoves) {
+      _mouseSteers = false;
+      _mouseTravel = 0;
+    } else if (!_mouseSteers) {
+      _mouseTravel += moved;
+      if (_mouseTravel >= config.mouseTakeover) _mouseSteers = true;
+    }
+  }
+
+  /// Fly toward the cursor, at most [config.mouseFollowSpeed].
+  void _followMouse(double dt, SteerFreedom freedom, {double mult = 1.0}) {
+    final t = _mouseWorld;
+    if (t == null) return;
+    final step = config.mouseFollowSpeed * vessel.agility * mult * dt;
+    final (nx, ny) = followStep(
+        vessel.position.x, vessel.position.y, t.x, t.y, step, freedom);
+    vessel.adjustPosition(nx, ny);
+  }
+
+  static SteerFreedom _freedom(SigilControl c) => switch (c) {
+        SigilControl.none => SteerFreedom.none,
+        SigilControl.verticalOnly => SteerFreedom.verticalOnly,
+        SigilControl.full => SteerFreedom.full,
+      };
+
+  /// The reticle, and the system cursor: hidden in flight, a crosshair in a
+  /// duel (the mouse aims there), the usual arrow everywhere else.
+  void _updateMouseLook() {
+    final t = _mouseWorld;
+    final flying = state == GameState.playing && !duel.controls;
+    mouseReticle = flying &&
+            _mouseSteers &&
+            t != null &&
+            coopRole != CoopRole.client &&
+            t.distanceTo(vessel.position) > config.mouseReticleGap
+        ? t
+        : null;
+    final MouseCursor want = state != GameState.playing
+        ? MouseCursor.defer
+        : (duel.controls ? SystemMouseCursors.precise : SystemMouseCursors.none);
+    if (mouseCursor != want) mouseCursor = want;
+  }
+
+  /// The classic scheme's second weapon set, held on a key or the right
+  /// button (Prompts/36 §3.1). Solo and host only, never in a duel — the
+  /// same gate as two fingers ([touchSwaps]).
+  void _holdAlternate(bool held) {
+    final want = held && touchSwaps;
+    if (want == _kbmAlternate) return;
+    _kbmAlternate = want;
+    touchSetAlternate(want, announce: true);
   }
 
   // ── Keyboard input (desktop) ──────────────────────────────
@@ -1709,6 +1861,11 @@ class TyrianGame extends FlameGame
   void _processDesktopInput(double dt) {
     if (!platform.isDesktop) return;
 
+    final gpNow = gamepadInput.primary;
+    _readMouse(dt,
+        keysMove: keyboardInput.dx != 0 || keyboardInput.dy != 0,
+        padMoves: GamepadInput.deadzone(gpNow.leftStickX) != 0 ||
+            GamepadInput.deadzone(gpNow.leftStickY) != 0);
 
     // ── Keyboard pause (Escape) ──
     final pauseKb = keyboardInput.pause;
@@ -1727,10 +1884,17 @@ class TyrianGame extends FlameGame
     }
     _prevSkinGp = skinGp;
 
-    if (state == GameState.paused) return;
+    if (state != GameState.playing) {
+      _kbmAlternate = false;
+      _updateMouseLook();
+      return;
+    }
 
-    if (state != GameState.playing) return;
+    _processFlightInput(dt);
+    _updateMouseLook();
+  }
 
+  void _processFlightInput(double dt) {
     // ── Gamepad P1 (takes priority over keyboard) ──
     final gp = gamepadInput.primary;
     final sigils = sigilsEnabled;
@@ -1753,6 +1917,10 @@ class TyrianGame extends FlameGame
     final gpDy = GamepadInput.deadzone(gp.leftStickY);
     final gpActive = gpDx != 0 || gpDy != 0 || gp.fire;
 
+    _holdAlternate(!sigils &&
+        (keyboardInput.action(InputAction.alternate) ||
+            mouseInput.action(InputAction.alternate)));
+
     if (sigils) {
       _processSigilPad(gp, dt);
     } else if (gpActive) {
@@ -1761,13 +1929,15 @@ class TyrianGame extends FlameGame
       vessel.fireRateMult = gp.fireRate;
     } else {
       vessel.fireRateMult = 1.0;
-      // ── Keyboard fallback ──
+      // ── Keyboard, else the mouse ──
       final kbDx = keyboardInput.dx;
       final kbDy = keyboardInput.dy;
       if (kbDx != 0 || kbDy != 0) {
         _applyMovement(vessel, kbDx, kbDy, _kbSpeed, dt);
+      } else if (_mouseSteers) {
+        _followMouse(dt, SteerFreedom.full);
       }
-      vessel.fire = keyboardInput.fire;
+      vessel.fire = keyboardInput.fire || _mouseFire;
     }
 
     // ── Gamepad P2 (local co-op) ──
@@ -1868,7 +2038,6 @@ class TyrianGame extends FlameGame
       aimFire = aimFire || PadSettings.duelAimFires;
     }
     // And the mouse, while it is being moved: the nose follows the cursor.
-    _mouseAge += dt;
     final m = _mouseWorld;
     if (aimX == null && m != null && (_mouseAge < 2.0 || _mouseFire)) {
       final (sx, sy) = platform.gameToScreen(
@@ -1972,30 +2141,73 @@ class TyrianGame extends FlameGame
     final padMoves = f.moveX != 0 || f.moveY != 0;
     final mx = padMoves ? f.moveX : keyboardInput.dx;
     final my = padMoves ? f.moveY : keyboardInput.dy;
-    final speed = _kbSpeed * (caster.focus ? config.focusSpeed : 1.0);
-    switch (caster.control) {
-      case SigilControl.none:
-        break;
-      case SigilControl.verticalOnly:
-        final (_, gy) = platform.screenToGame(mx, my);
-        vessel.adjustPosition(vessel.position.x,
-            vessel.position.y + gy * speed * vessel.agility * dt);
-      case SigilControl.full:
-        if (mx != 0 || my != 0) _applyMovement(vessel, mx, my, speed, dt);
+    final focusMult = caster.focus ? config.focusSpeed : 1.0;
+    final speed = _kbSpeed * focusMult;
+    if (!padMoves && mx == 0 && my == 0 && _mouseSteers) {
+      _followMouse(dt, _freedom(caster.control), mult: focusMult);
+    } else {
+      switch (caster.control) {
+        case SigilControl.none:
+          break;
+        case SigilControl.verticalOnly:
+          final (_, gy) = platform.screenToGame(mx, my);
+          vessel.adjustPosition(vessel.position.x,
+              vessel.position.y + gy * speed * vessel.agility * dt);
+        case SigilControl.full:
+          if (mx != 0 || my != 0) _applyMovement(vessel, mx, my, speed, dt);
+      }
     }
-    vessel.fire = f.fire || keyboardInput.fire;
+    vessel.fire = f.fire || keyboardInput.fire || _mouseFire;
     vessel.fireRateMult = f.fire ? f.fireRate : 1.0;
   }
 
-  void showMessage(String msg) {
-    world.add(FloatText(
+  /// Messages shown in the last moment, so a new one lines up under them
+  /// instead of on top (a pickup right after the sector title, say).
+  final List<FloatText> _messages = [];
+
+  void showMessage(String msg, {double fontSize = 18, double duration = 2.0}) {
+    _messages.removeWhere((m) => m.isRemoved || m.age > _messageStackAge);
+    final row = _messages.length.clamp(0, _messageRows - 1);
+    final text = FloatText(
       text: msg,
       color: const Color(0xFF00FFFF),
       palette: KidPalette.sky,
-      fontSize: 18,
-      position: Vector2(config.gameWidth / 2, config.gameHeight * 0.3),
-    ));
+      fontSize: fontSize,
+      duration: duration,
+      position: Vector2(config.gameWidth / 2,
+          config.gameHeight * 0.3 + row * _messageRowHeight),
+    );
+    _messages.add(text);
+    world.add(text);
   }
+
+  /// The texts of the messages still on screen, oldest first.
+  @visibleForTesting
+  List<String> get recentMessages => [
+        for (final m in _messages)
+          if (!m.isRemoved) m.text,
+      ];
+
+  static const _messageStackAge = 0.8; // s a message still holds its row
+  static const _messageRows = 4;
+  static const double _messageRowHeight = 26;
+
+  /// The perimeter's name and its level, as a new round begins — then the
+  /// tutor: the round's goal and whatever lesson is due.
+  void announceSector() {
+    if (mode == GameMode.training) return;
+    final s = currentSector;
+    if (s == null) return;
+    showMessage(s.caption.toUpperCase(), duration: 3);
+    showMessage(L10n.current.nodeLevel(s.level), fontSize: 14, duration: 3);
+    if (coopRole != CoopRole.client) tutor.roundStart();
+  }
+
+  /// The texts that teach the game as it is played.
+  late final Tutor tutor = Tutor(this);
+
+  /// The tip under the game over title, set as the ship goes down.
+  String? deathTip;
 
   bool _projectileHitsVessel(Projectile p, Vessel v) {
     // 70 % of the ship (fairness), and a square in a duel.
@@ -2037,7 +2249,10 @@ class TyrianGame extends FlameGame
             }
             continue;
           }
-          if (!v.tryReflect(p)) v.takeDamage(p.damage.toInt());
+          if (!v.tryReflect(p)) {
+            TelemetryService.instance.noteHit('shot');
+            v.takeDamage(p.damage.toInt());
+          }
           hit = true;
           break;
         }

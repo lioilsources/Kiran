@@ -92,6 +92,12 @@ class AppLocalizationsHr extends AppLocalizations {
   String get musicOff => 'GLAZBA: ISKLJ.';
 
   @override
+  String get statsOn => 'STATISTIKA: UKLJ.';
+
+  @override
+  String get statsOff => 'STATISTIKA: ISKLJ.';
+
+  @override
   String get mainMenu => 'GLAVNI IZBORNIK';
 
   @override
@@ -1161,4 +1167,139 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'GOTOVO';
+
+  @override
+  String get swapHint => 'S dva prsta pucaš drugim kompletom oružja';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: jači hici';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: trup popravljen';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount štita, brže se puni';
+  }
+
+  @override
+  String get pickupGenerator => 'Jači generator: više energije za oružje';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredita za ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Pojačanja oružja dižu mu razinu: više štete, brža paljba';
+
+  @override
+  String get tutPickupHealth =>
+      'Popravci krpaju trup; kad si u formi, dižu i maksimalni HP';
+
+  @override
+  String get tutPickupShield => 'Štit prima pogotke prije trupa i sam se puni';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generator napaja oružja: više energije drži više oružja u paljbi';
+
+  @override
+  String get tutPickupCredits =>
+      'Kreditima kupuješ oružja i nadogradnje u ComCenteru između rundi';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Njegovo zdravlje je traka gore. Kreći se i pucaj';
+
+  @override
+  String get tutLowHp => 'Trup je slab! Popravak ili ComCenter ga sređuju';
+
+  @override
+  String get tutGenStarved =>
+      'Oružja traže više energije nego što generator daje: nadogradi ga';
+
+  @override
+  String get tutCanAfford =>
+      'Imaš za nadogradnju: svrati u ComCenter nakon ove runde';
+
+  @override
+  String get tutFly => 'Povuci za let. Oružja pucaju dok držiš prst';
+
+  @override
+  String get introCollect => 'Hvataj ikone koje ispuštaju neprijatelji';
+
+  @override
+  String get introShop => 'Između rundi potroši kredite u ComCenteru';
+
+  @override
+  String get objBoss => 'Cilj: preživi valove i pobijedi bossa';
+
+  @override
+  String get objSurvive => 'Cilj: preživi valove';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredita · $kills obaranja';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Najbolje oružje: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Bossovi hici bole: jači štit ti kupuje vrijeme';
+
+  @override
+  String get deathShield =>
+      'Nadogradi štit u ComCenteru: prima pogotke prije trupa';
+
+  @override
+  String get deathGuns => 'Jača oružja počiste valove prije nego ti naude';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Red   [←→] Odabir   [ENTER] Kupi/Poboljšaj/Zamijeni   [DEL] Prodaj   [ESC] Nastavi';
+
+  @override
+  String get swapHintMouse =>
+      'Drži desnu tipku miša ili Shift da pucaš drugim oružjem';
+
+  @override
+  String get tutFlyMouse => 'Pomiči miš da letiš. Drži lijevu tipku da pucaš';
+
+  @override
+  String get grimoireHintKeys =>
+      'Upiši oblike na numeričkoj tipkovnici ili na U I O / J K L / M , . Drži Shift za ARMS, Ctrl za WING, oba za MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Pritisni jednu numeričku tipku: skočiš u tom smjeru';
+
+  @override
+  String get hintLoopKeys =>
+      'Upiši krug na numeričkoj tipkovnici: preletiš preko metaka';
+
+  @override
+  String get hintStreamKeys => 'Pritisni E: dva ili tri mlaza. Q vraća';
 }

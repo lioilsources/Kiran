@@ -94,6 +94,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get musicOff => 'MUSIQUE : NON';
 
   @override
+  String get statsOn => 'STATS : OUI';
+
+  @override
+  String get statsOff => 'STATS : NON';
+
+  @override
   String get mainMenu => 'MENU PRINCIPAL';
 
   @override
@@ -1175,4 +1181,147 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'RÉUSSI';
+
+  @override
+  String get swapHint => 'À deux doigts, tu tires avec ton second jeu d\'armes';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv : tirs plus puissants';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP : coque réparée';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount de bouclier, recharge plus rapide';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Générateur amélioré : plus d\'énergie pour tes armes';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount crédits à dépenser au ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Les bonus d\'arme montent son niveau : plus de dégâts, tir plus rapide';
+
+  @override
+  String get tutPickupHealth =>
+      'Les réparations soignent la coque ; en forme, elles montent les HP max';
+
+  @override
+  String get tutPickupShield =>
+      'Le bouclier encaisse avant la coque et se recharge tout seul';
+
+  @override
+  String get tutPickupGenerator =>
+      'Le générateur alimente tes armes : plus d\'énergie, plus de tirs';
+
+  @override
+  String get tutPickupCredits =>
+      'Les crédits achètent armes et améliorations au ComCenter';
+
+  @override
+  String get tutBoss =>
+      'BOSS ! Sa vie est la barre en haut. Bouge et tire sans arrêt';
+
+  @override
+  String get tutLowHp =>
+      'Coque faible ! Une réparation ou le ComCenter la soigne';
+
+  @override
+  String get tutGenStarved =>
+      'Tes armes veulent plus d\'énergie que le générateur : améliore-le';
+
+  @override
+  String get tutCanAfford =>
+      'Tu peux t\'offrir une amélioration : file au ComCenter après';
+
+  @override
+  String get tutFly =>
+      'Glisse pour voler. Tes armes tirent tant que ton doigt touche';
+
+  @override
+  String get introCollect => 'Attrape les icônes lâchées par les ennemis';
+
+  @override
+  String get introShop => 'Entre les manches, dépense tes crédits au ComCenter';
+
+  @override
+  String get objBoss => 'Objectif : survis aux vagues et bats le boss';
+
+  @override
+  String get objSurvive => 'Objectif : survis aux vagues';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits crédits · $kills abattus';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Meilleure arme : $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Les tirs du boss font mal : un meilleur bouclier te fait gagner du temps';
+
+  @override
+  String get deathShield =>
+      'Améliore le bouclier au ComCenter : il encaisse avant la coque';
+
+  @override
+  String get deathGuns =>
+      'Des armes plus fortes nettoient les vagues avant qu\'elles te blessent';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Ligne   [←→] Choix   [ENTRÉE] Acheter/Améliorer/Changer   [SUPPR] Vendre   [ÉCHAP] Continuer';
+
+  @override
+  String get swapHintMouse =>
+      'Maintiens le bouton droit de la souris ou Maj pour tirer avec tes armes secondaires';
+
+  @override
+  String get tutFlyMouse =>
+      'Bouge la souris pour voler. Maintiens le bouton gauche pour tirer';
+
+  @override
+  String get grimoireHintKeys =>
+      'Tape les formes sur le pavé numérique ou sur U I O / J K L / M , . Maintiens Maj pour ARMS, Ctrl pour WING, les deux pour MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Appuie sur une touche du pavé numérique : tu bondis dans cette direction';
+
+  @override
+  String get hintLoopKeys =>
+      'Tape un cercle sur le pavé numérique : tu passes au-dessus des tirs';
+
+  @override
+  String get hintStreamKeys =>
+      'Appuie sur E : deux ou trois flux. Q pour revenir';
 }

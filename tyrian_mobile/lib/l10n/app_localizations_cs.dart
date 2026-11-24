@@ -93,6 +93,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get musicOff => 'HUDBA: VYP';
 
   @override
+  String get statsOn => 'STATISTIKY: ZAP';
+
+  @override
+  String get statsOff => 'STATISTIKY: VYP';
+
+  @override
   String get mainMenu => 'HLAVNÍ MENU';
 
   @override
@@ -1158,4 +1164,138 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'HOTOVO';
+
+  @override
+  String get swapHint => 'Dvěma prsty střílíš druhou sadou zbraní';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: silnější střelba';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: trup opraven';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount štítu, rychleji se dobíjí';
+  }
+
+  @override
+  String get pickupGenerator => 'Silnější generátor: víc energie pro zbraně';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditů na nákupy v ComCenteru';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Zbraňové power-upy zvedají úroveň zbraně: víc poškození, rychlejší palba';
+
+  @override
+  String get tutPickupHealth =>
+      'Opravy spraví trup; když jsi v kondici, zvednou i maximum HP';
+
+  @override
+  String get tutPickupShield =>
+      'Štít chytá zásahy dřív než trup a sám se dobíjí';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generátor napájí zbraně: víc energie udrží v palbě víc zbraní';
+
+  @override
+  String get tutPickupCredits =>
+      'Za kredity koupíš zbraně a vylepšení v ComCenteru mezi koly';
+
+  @override
+  String get tutBoss => 'BOSS! Jeho zdraví je lišta nahoře. Hýbej se a střílej';
+
+  @override
+  String get tutLowHp => 'Trup je na dně! Spraví ho oprava nebo ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Zbraně chtějí víc energie, než dá generátor: vylepši ho';
+
+  @override
+  String get tutCanAfford =>
+      'Máš na vylepšení: po tomhle kole zajdi do ComCenteru';
+
+  @override
+  String get tutFly => 'Táhni prstem a leť. Zbraně střílí, dokud držíš prst';
+
+  @override
+  String get introCollect => 'Chytej ikony, které padají z nepřátel';
+
+  @override
+  String get introShop => 'Mezi koly utrať kredity v ComCenteru';
+
+  @override
+  String get objBoss => 'Cíl: přežij vlny a poraz bosse';
+
+  @override
+  String get objSurvive => 'Cíl: přežij vlny';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditů · $kills sestřelů';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Nejlepší zbraň: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Střely bosse bolí: silnější štít ti koupí čas';
+
+  @override
+  String get deathShield =>
+      'Vylepši štít v ComCenteru: chytá zásahy dřív než trup';
+
+  @override
+  String get deathGuns => 'Silnější zbraně smetou vlny dřív, než ti ublíží';
+
+  @override
+  String get allSkins => 'VŠECHNY SKINY';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Už máš $count skinů, odečetli jsme je',
+      few: 'Už máš $count skiny, odečetli jsme je',
+      one: 'Už máš 1 skin, odečetli jsme ho',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Řádek   [←→] Výběr   [ENTER] Koupit/Vylepšit/Přepnout   [DEL] Prodat   [ESC] Pokračovat';
+
+  @override
+  String get swapHintMouse =>
+      'Drž pravé tlačítko myši nebo Shift a střílíš druhou sadou zbraní';
+
+  @override
+  String get tutFlyMouse => 'Hýbej myší a leť. Drž levé tlačítko a střílíš';
+
+  @override
+  String get grimoireHintKeys =>
+      'Piš tvary na numerické klávesnici nebo na U I O / J K L / M , . Drž Shift pro ARMS, Ctrl pro WING, oba pro MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Ťukni na jednu klávesu numpadu: skočíš tím směrem';
+
+  @override
+  String get hintLoopKeys => 'Napiš na numpadu kruh: přeletíš přes střely';
+
+  @override
+  String get hintStreamKeys => 'Stiskni E: dva nebo tři proudy. Q ubere';
 }

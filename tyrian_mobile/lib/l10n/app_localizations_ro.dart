@@ -93,6 +93,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get musicOff => 'MUZICĂ: OPRITĂ';
 
   @override
+  String get statsOn => 'STATISTICI: PORNITE';
+
+  @override
+  String get statsOff => 'STATISTICI: OPRITE';
+
+  @override
   String get mainMenu => 'MENIU PRINCIPAL';
 
   @override
@@ -1171,4 +1177,145 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'GATA';
+
+  @override
+  String get swapHint => 'Cu două degete tragi cu al doilea set de arme';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: focuri mai puternice';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: carcasă reparată';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount scut, se reîncarcă mai repede';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generator mai bun: mai multă energie pentru arme';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount credite pentru ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Bonusurile de armă cresc nivelul: mai mult damage, foc mai rapid';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparațiile refac carena; la viață plină cresc HP maxim';
+
+  @override
+  String get tutPickupShield =>
+      'Scutul preia loviturile înaintea carenei și se reîncarcă singur';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generatorul alimentează armele: mai multă energie, mai multe arme';
+
+  @override
+  String get tutPickupCredits =>
+      'Cu credite cumperi arme și upgrade-uri în ComCenter între runde';
+
+  @override
+  String get tutBoss => 'BOSS! Viața lui e bara de sus. Mișcă-te și trage';
+
+  @override
+  String get tutLowHp =>
+      'Carena e slabă! O reparii cu bonusuri sau în ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Armele cer mai multă energie decât dă generatorul: îmbunătățește-l';
+
+  @override
+  String get tutCanAfford =>
+      'Îți permiți un upgrade: intră în ComCenter după runda asta';
+
+  @override
+  String get tutFly =>
+      'Trage cu degetul ca să zbori. Armele trag cât ții degetul';
+
+  @override
+  String get introCollect => 'Prinde iconițele lăsate de inamici';
+
+  @override
+  String get introShop => 'Între runde, cheltuie creditele în ComCenter';
+
+  @override
+  String get objBoss =>
+      'Obiectiv: supraviețuiește valurilor și învinge boss-ul';
+
+  @override
+  String get objSurvive => 'Obiectiv: supraviețuiește valurilor';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits credite · $kills doborâți';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Cea mai bună armă: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Boss-ul lovește tare: un scut mai puternic îți dă timp';
+
+  @override
+  String get deathShield =>
+      'Îmbunătățește scutul în ComCenter: preia loviturile înaintea carenei';
+
+  @override
+  String get deathGuns =>
+      'Arme mai puternice curăță valurile înainte să te rănească';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rând   [←→] Alege   [ENTER] Cumpără/Îmbunătățește/Schimbă   [DEL] Vinde   [ESC] Continuă';
+
+  @override
+  String get swapHintMouse =>
+      'Ține apăsat butonul drept al mouse-ului sau Shift ca să tragi cu armele secundare';
+
+  @override
+  String get tutFlyMouse =>
+      'Mișcă mouse-ul ca să zbori. Ține apăsat butonul stâng ca să tragi';
+
+  @override
+  String get grimoireHintKeys =>
+      'Tastează formele pe tastatura numerică sau pe U I O / J K L / M , . Ține Shift pentru ARMS, Ctrl pentru WING, ambele pentru MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Apasă o tastă numerică: sari în acea direcție';
+
+  @override
+  String get hintLoopKeys =>
+      'Tastează un cerc pe tastatura numerică: zbori peste gloanțe';
+
+  @override
+  String get hintStreamKeys => 'Apasă E: două sau trei fluxuri. Q dă înapoi';
 }

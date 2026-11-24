@@ -93,6 +93,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get musicOff => 'MUSIK: MATI';
 
   @override
+  String get statsOn => 'STATISTIK: NYALA';
+
+  @override
+  String get statsOff => 'STATISTIK: MATI';
+
+  @override
   String get mainMenu => 'MENU UTAMA';
 
   @override
@@ -1160,4 +1166,147 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'SELESAI';
+
+  @override
+  String get swapHint =>
+      'Dengan dua jari, kamu menembak dengan set senjata kedua';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tembakan lebih kuat';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: lambung diperbaiki';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount perisai, isi ulang lebih cepat';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generator naik: lebih banyak daya untuk senjata';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kredit untuk ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Power-up senjata menaikkan level: damage lebih besar, tembakan lebih cepat';
+
+  @override
+  String get tutPickupHealth =>
+      'Perbaikan menambal lambung; saat sehat juga menaikkan HP maksimum';
+
+  @override
+  String get tutPickupShield =>
+      'Perisai menahan tembakan sebelum lambung dan terisi sendiri';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generator memberi daya senjata: makin besar, makin banyak yang menembak';
+
+  @override
+  String get tutPickupCredits =>
+      'Kredit untuk membeli senjata dan upgrade di ComCenter antar ronde';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Nyawanya ada di bar atas. Terus bergerak, terus menembak';
+
+  @override
+  String get tutLowHp =>
+      'Lambung kritis! Perbaiki dengan pickup atau di ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Senjatamu butuh daya lebih dari generator: upgrade generatornya';
+
+  @override
+  String get tutCanAfford =>
+      'Kreditmu cukup untuk upgrade: mampir ke ComCenter setelah ronde ini';
+
+  @override
+  String get tutFly =>
+      'Geser untuk terbang. Senjata menembak selama jarimu menempel';
+
+  @override
+  String get introCollect => 'Tangkap ikon yang dijatuhkan musuh';
+
+  @override
+  String get introShop => 'Di antara ronde, belanjakan kredit di ComCenter';
+
+  @override
+  String get objBoss => 'Misi: bertahan dari gelombang dan kalahkan boss';
+
+  @override
+  String get objSurvive => 'Misi: bertahan dari gelombang';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kredit · $kills musuh hancur';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Senjata terbaik: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Tembakan boss sangat kuat: perisai lebih kuat memberimu waktu';
+
+  @override
+  String get deathShield =>
+      'Upgrade perisai di ComCenter: ia menahan tembakan sebelum lambung';
+
+  @override
+  String get deathGuns =>
+      'Senjata lebih kuat menyapu gelombang sebelum sempat melukaimu';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Baris   [←→] Pilih   [ENTER] Beli/Tingkatkan/Ganti   [DEL] Jual   [ESC] Lanjutkan';
+
+  @override
+  String get swapHintMouse =>
+      'Tahan tombol kanan mouse atau Shift untuk menembak dengan senjata keduamu';
+
+  @override
+  String get tutFlyMouse =>
+      'Gerakkan mouse untuk terbang. Tahan tombol kiri untuk menembak';
+
+  @override
+  String get grimoireHintKeys =>
+      'Ketik bentuknya di numpad atau di U I O / J K L / M , . Tahan Shift untuk ARMS, Ctrl untuk WING, keduanya untuk MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Ketuk satu tombol numpad: kamu melompat ke arah itu';
+
+  @override
+  String get hintLoopKeys =>
+      'Ketik lingkaran di numpad: kamu terbang melewati tembakan';
+
+  @override
+  String get hintStreamKeys => 'Tekan E: dua atau tiga aliran. Q mengurangi';
 }

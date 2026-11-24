@@ -93,6 +93,12 @@ class AppLocalizationsOr extends AppLocalizations {
   String get musicOff => 'ସଙ୍ଗୀତ: ବନ୍ଦ';
 
   @override
+  String get statsOn => 'ପରିସଂଖ୍ୟାନ: ଚାଲୁ';
+
+  @override
+  String get statsOff => 'ପରିସଂଖ୍ୟାନ: ବନ୍ଦ';
+
+  @override
   String get mainMenu => 'ମୁଖ୍ୟ ମେନୁ';
 
   @override
@@ -1143,4 +1149,138 @@ class AppLocalizationsOr extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ସମାପ୍ତ';
+
+  @override
+  String get swapHint => 'ଦୁଇ ଆଙ୍ଗୁଠି ରଖିଲେ ଦ୍ୱିତୀୟ ସେଟ୍ ଅସ୍ତ୍ରରେ ଗୁଳି ଚାଲେ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ଅଧିକ ଶକ୍ତିଶାଳୀ ଗୁଳି';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ଜାହାଜ ମରାମତି ହେଲା';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ଢାଲ, ଶୀଘ୍ର ରିଚାର୍ଜ ହୁଏ';
+  }
+
+  @override
+  String get pickupGenerator => 'ଜେନେରେଟର ଉନ୍ନତ: ଅସ୍ତ୍ର ପାଇଁ ଅଧିକ ଶକ୍ତି';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount କ୍ରେଡିଟ୍ ComCenter ପାଇଁ';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'ଅସ୍ତ୍ର ପିକଅପ୍ ସ୍ତର ବଢ଼ାଏ: ଅଧିକ କ୍ଷତି, ଦ୍ରୁତ ଗୁଳି';
+
+  @override
+  String get tutPickupHealth =>
+      'ମରାମତି ପିକଅପ୍ ହଲ୍ ଠିକ୍ କରେ; ପୂର୍ଣ୍ଣ ଥିଲେ ସର୍ବାଧିକ HP ବଢ଼ାଏ';
+
+  @override
+  String get tutPickupShield => 'ଢାଲ ହଲ୍ ପୂର୍ବରୁ ଆଘାତ ସହେ ଓ ନିଜେ ଭରିଯାଏ';
+
+  @override
+  String get tutPickupGenerator =>
+      'ଜେନେରେଟର ଅସ୍ତ୍ରକୁ ଶକ୍ତି ଦିଏ: ଅଧିକ ଶକ୍ତି, ଅଧିକ ଅସ୍ତ୍ର ଚାଲେ';
+
+  @override
+  String get tutPickupCredits =>
+      'ରାଉଣ୍ଡ ମଧ୍ୟରେ ComCenter ରେ କ୍ରେଡିଟ୍‌ରେ ଅସ୍ତ୍ର ଓ ଅପଗ୍ରେଡ୍ କିଣ';
+
+  @override
+  String get tutBoss => 'ବସ୍! ଉପର ବାର୍ ତାର ସ୍ୱାସ୍ଥ୍ୟ। ଘୁଞ୍ଚୁଥାଅ, ଗୁଳି କରୁଥାଅ';
+
+  @override
+  String get tutLowHp => 'ହଲ୍ କମ୍! ମରାମତି ପିକଅପ୍ କିମ୍ବା ComCenter ଠିକ୍ କରିବ';
+
+  @override
+  String get tutGenStarved =>
+      'ଅସ୍ତ୍ରଗୁଡ଼ିକୁ ଜେନେରେଟରଠାରୁ ଅଧିକ ଶକ୍ତି ଦରକାର: ଏହାକୁ ଅପଗ୍ରେଡ୍ କର';
+
+  @override
+  String get tutCanAfford =>
+      'ଅପଗ୍ରେଡ୍ ପାଇଁ କ୍ରେଡିଟ୍ ଅଛି: ଏହି ରାଉଣ୍ଡ ପରେ ComCenter ଦେଖ';
+
+  @override
+  String get tutFly => 'ଉଡ଼ିବାକୁ ଟାଣ। ଆଙ୍ଗୁଠି ଲାଗିଥିବା ଯାଏ ଅସ୍ତ୍ର ଗୁଳି ଚଳାଏ';
+
+  @override
+  String get introCollect => 'ଶତ୍ରୁ ପକାଉଥିବା ଆଇକନ୍ ଧର';
+
+  @override
+  String get introShop => 'ରାଉଣ୍ଡ ମଧ୍ୟରେ ComCenter ରେ କ୍ରେଡିଟ୍ ଖର୍ଚ୍ଚ କର';
+
+  @override
+  String get objBoss => 'ଲକ୍ଷ୍ୟ: ଢେଉରୁ ବଞ୍ଚ ଓ ବସ୍‌କୁ ହରାଅ';
+
+  @override
+  String get objSurvive => 'ଲକ୍ଷ୍ୟ: ଢେଉରୁ ବଞ୍ଚ';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits କ୍ରେଡିଟ୍ · $kills ଧ୍ୱଂସ';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'ସର୍ବୋତ୍ତମ ଅସ୍ତ୍ର: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'ବସ୍‌ର ଗୁଳି ଜୋରଦାର: ଶକ୍ତିଶାଳୀ ଢାଲ ସମୟ ଦିଏ';
+
+  @override
+  String get deathShield =>
+      'ComCenter ରେ ଢାଲ ଅପଗ୍ରେଡ୍ କର: ଏହା ହଲ୍ ପୂର୍ବରୁ ଆଘାତ ସହେ';
+
+  @override
+  String get deathGuns => 'ଶକ୍ତିଶାଳୀ ଅସ୍ତ୍ର ଢେଉକୁ କ୍ଷତି କରିବା ପୂର୍ବରୁ ସଫା କରେ';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] ଧାଡ଼ି   [←→] ବାଛନ୍ତୁ   [ENTER] କିଣନ୍ତୁ/ଉନ୍ନତ/ବଦଳାନ୍ତୁ   [DEL] ବିକ୍ରି   [ESC] ଜାରି ରଖନ୍ତୁ';
+
+  @override
+  String get swapHintMouse =>
+      'ଦ୍ୱିତୀୟ ଅସ୍ତ୍ରରେ ଗୁଳି ଚଳାଇବାକୁ ମାଉସର ଡାହାଣ ବଟନ୍ କିମ୍ବା Shift ଚାପି ରଖନ୍ତୁ';
+
+  @override
+  String get tutFlyMouse =>
+      'ଉଡ଼ିବାକୁ ମାଉସ ହଲାନ୍ତୁ। ଗୁଳି ଚଳାଇବାକୁ ବାମ ବଟନ୍ ଚାପି ରଖନ୍ତୁ';
+
+  @override
+  String get grimoireHintKeys =>
+      'ଆକାରଗୁଡ଼ିକ ନମ୍ପ୍ୟାଡରେ କିମ୍ବା U I O / J K L / M , . ରେ ଟାଇପ୍ କରନ୍ତୁ। ARMS ପାଇଁ Shift, WING ପାଇଁ Ctrl, MEGA BLAST ପାଇଁ ଦୁଇଟି ଚାପନ୍ତୁ।';
+
+  @override
+  String get hintHopKeys => 'ନମ୍ପ୍ୟାଡର ଗୋଟିଏ କି ଦବାନ୍ତୁ: ଆପଣ ସେହି ଦିଗକୁ ଡେଇଁବେ';
+
+  @override
+  String get hintLoopKeys =>
+      'ନମ୍ପ୍ୟାଡରେ ଏକ ବୃତ୍ତ ଟାଇପ୍ କରନ୍ତୁ: ଆପଣ ଗୁଳି ଉପରେ ଉଡ଼ିବେ';
+
+  @override
+  String get hintStreamKeys => 'E ଦବାନ୍ତୁ: ଦୁଇ ବା ତିନି ଧାରା। Q କମାଏ';
 }

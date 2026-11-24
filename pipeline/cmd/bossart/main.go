@@ -40,6 +40,7 @@ func main() {
 	anim := flag.String("anim", "", "directory written by cmd/animate (optional)")
 	out := flag.String("out", "", "skin sprites directory")
 	pick := flag.Int("variant", 1, "which blink_N/twitch_*_N edit to use")
+	keyMode := flag.String("key", "magenta", "background key: magenta (cmd/animate frames) or flood (a source whose model ignored the magenta prompt and painted a scene, a frame or a disc behind the creature)")
 	flag.Parse()
 	if *anim == "" || *out == "" {
 		fmt.Fprintln(os.Stderr, "usage: bossart -skin id -anim dir -out spritesdir")
@@ -58,7 +59,12 @@ func main() {
 			fmt.Fprintln(os.Stderr, "load:", err)
 			os.Exit(1)
 		}
-		frames = append(frames, frame{name, keyMagenta(im)})
+		keyed := keyMagenta(im)
+		if *keyMode == "flood" {
+			// Same key the variant sheets show, so the curated pick is what ships.
+			keyed = postprocess.KeySprite(im, 60, 20, "rododendron")
+		}
+		frames = append(frames, frame{name, keyed})
 	}
 	{
 		add("rododendron", filepath.Join(*anim, replaceVariant("open_1.png", *pick)))

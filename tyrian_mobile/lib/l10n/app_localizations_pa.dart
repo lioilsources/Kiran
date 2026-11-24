@@ -93,6 +93,12 @@ class AppLocalizationsPa extends AppLocalizations {
   String get musicOff => 'ਸੰਗੀਤ: ਬੰਦ';
 
   @override
+  String get statsOn => 'ਅੰਕੜੇ: ਚਾਲੂ';
+
+  @override
+  String get statsOff => 'ਅੰਕੜੇ: ਬੰਦ';
+
+  @override
   String get mainMenu => 'ਮੁੱਖ ਮੀਨੂ';
 
   @override
@@ -1149,4 +1155,143 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'ਹੋ ਗਿਆ';
+
+  @override
+  String get swapHint => 'ਦੋ ਉਂਗਲਾਂ ਰੱਖੋ ਤਾਂ ਦੂਜੇ ਸੈੱਟ ਦੇ ਹਥਿਆਰ ਚੱਲਣਗੇ';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ਹੋਰ ਤਾਕਤਵਰ ਗੋਲੀਆਂ';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ਜਹਾਜ਼ ਠੀਕ ਹੋਇਆ';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ਢਾਲ, ਜਲਦੀ ਰੀਚਾਰਜ ਹੁੰਦੀ ਹੈ';
+  }
+
+  @override
+  String get pickupGenerator => 'ਜਨਰੇਟਰ ਬਿਹਤਰ: ਹਥਿਆਰਾਂ ਲਈ ਹੋਰ ਊਰਜਾ';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount ਕ੍ਰੈਡਿਟ ComCenter ਲਈ';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'ਹਥਿਆਰ ਪਿਕਅੱਪ ਪੱਧਰ ਵਧਾਉਂਦੇ ਹਨ: ਵੱਧ ਨੁਕਸਾਨ, ਤੇਜ਼ ਫ਼ਾਇਰ';
+
+  @override
+  String get tutPickupHealth =>
+      'ਮੁਰੰਮਤ ਪਿਕਅੱਪ ਹਲ ਠੀਕ ਕਰਦੇ ਹਨ; ਪੂਰਾ ਹੋਣ \'ਤੇ ਵੱਧ ਤੋਂ ਵੱਧ HP ਵਧਾਉਂਦੇ ਹਨ';
+
+  @override
+  String get tutPickupShield =>
+      'ਢਾਲ ਹਲ ਤੋਂ ਪਹਿਲਾਂ ਵਾਰ ਝੱਲਦੀ ਹੈ ਅਤੇ ਆਪੇ ਭਰ ਜਾਂਦੀ ਹੈ';
+
+  @override
+  String get tutPickupGenerator =>
+      'ਜਨਰੇਟਰ ਹਥਿਆਰਾਂ ਨੂੰ ਊਰਜਾ ਦਿੰਦਾ ਹੈ: ਵੱਧ ਊਰਜਾ, ਵੱਧ ਹਥਿਆਰ ਚੱਲਦੇ';
+
+  @override
+  String get tutPickupCredits =>
+      'ਰਾਊਂਡਾਂ ਵਿਚਕਾਰ ComCenter ਵਿੱਚ ਕ੍ਰੈਡਿਟ ਨਾਲ ਹਥਿਆਰ ਤੇ ਅੱਪਗ੍ਰੇਡ ਖਰੀਦੋ';
+
+  @override
+  String get tutBoss =>
+      'ਬੌਸ! ਉੱਪਰਲੀ ਪੱਟੀ ਉਸਦੀ ਸਿਹਤ ਹੈ। ਹਿੱਲਦੇ ਰਹੋ, ਫ਼ਾਇਰ ਕਰਦੇ ਰਹੋ';
+
+  @override
+  String get tutLowHp =>
+      'ਹਲ ਕਮਜ਼ੋਰ! ਮੁਰੰਮਤ ਪਿਕਅੱਪ ਜਾਂ ComCenter ਇਸਨੂੰ ਠੀਕ ਕਰਦੇ ਹਨ';
+
+  @override
+  String get tutGenStarved =>
+      'ਹਥਿਆਰਾਂ ਨੂੰ ਜਨਰੇਟਰ ਤੋਂ ਵੱਧ ਊਰਜਾ ਚਾਹੀਦੀ ਹੈ: ਇਸਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ';
+
+  @override
+  String get tutCanAfford =>
+      'ਅੱਪਗ੍ਰੇਡ ਲਈ ਕ੍ਰੈਡਿਟ ਹਨ: ਇਸ ਰਾਊਂਡ ਤੋਂ ਬਾਅਦ ComCenter ਦੇਖੋ';
+
+  @override
+  String get tutFly => 'ਉੱਡਣ ਲਈ ਖਿੱਚੋ। ਉਂਗਲ ਟਿਕੀ ਰਹਿਣ ਤੱਕ ਹਥਿਆਰ ਫ਼ਾਇਰ ਕਰਦੇ ਹਨ';
+
+  @override
+  String get introCollect => 'ਦੁਸ਼ਮਣਾਂ ਵੱਲੋਂ ਸੁੱਟੇ ਆਈਕਨ ਫੜੋ';
+
+  @override
+  String get introShop => 'ਰਾਊਂਡਾਂ ਵਿਚਕਾਰ ComCenter ਵਿੱਚ ਕ੍ਰੈਡਿਟ ਖਰਚੋ';
+
+  @override
+  String get objBoss => 'ਟੀਚਾ: ਲਹਿਰਾਂ ਤੋਂ ਬਚੋ ਅਤੇ ਬੌਸ ਨੂੰ ਹਰਾਓ';
+
+  @override
+  String get objSurvive => 'ਟੀਚਾ: ਲਹਿਰਾਂ ਤੋਂ ਬਚੋ';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits ਕ੍ਰੈਡਿਟ · $kills ਤਬਾਹ';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'ਸਭ ਤੋਂ ਵਧੀਆ ਹਥਿਆਰ: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'ਬੌਸ ਦੇ ਵਾਰ ਭਾਰੀ ਹਨ: ਮਜ਼ਬੂਤ ਢਾਲ ਸਮਾਂ ਦਿੰਦੀ ਹੈ';
+
+  @override
+  String get deathShield =>
+      'ComCenter ਵਿੱਚ ਢਾਲ ਅੱਪਗ੍ਰੇਡ ਕਰੋ: ਇਹ ਹਲ ਤੋਂ ਪਹਿਲਾਂ ਵਾਰ ਝੱਲਦੀ ਹੈ';
+
+  @override
+  String get deathGuns =>
+      'ਮਜ਼ਬੂਤ ਹਥਿਆਰ ਲਹਿਰਾਂ ਨੂੰ ਨੁਕਸਾਨ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਸਾਫ਼ ਕਰ ਦਿੰਦੇ ਹਨ';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] ਕਤਾਰ   [←→] ਚੁਣੋ   [ENTER] ਖਰੀਦੋ/ਅੱਪਗ੍ਰੇਡ/ਬਦਲੋ   [DEL] ਵੇਚੋ   [ESC] ਜਾਰੀ ਰੱਖੋ';
+
+  @override
+  String get swapHintMouse =>
+      'ਦੂਜੇ ਹਥਿਆਰਾਂ ਨਾਲ ਫਾਇਰ ਕਰਨ ਲਈ ਮਾਊਸ ਦਾ ਸੱਜਾ ਬਟਨ ਜਾਂ Shift ਦਬਾਈ ਰੱਖੋ';
+
+  @override
+  String get tutFlyMouse =>
+      'ਉੱਡਣ ਲਈ ਮਾਊਸ ਹਿਲਾਓ। ਫਾਇਰ ਕਰਨ ਲਈ ਖੱਬਾ ਬਟਨ ਦਬਾਈ ਰੱਖੋ';
+
+  @override
+  String get grimoireHintKeys =>
+      'ਆਕਾਰ ਨਮਪੈਡ ਉੱਤੇ ਜਾਂ U I O / J K L / M , . ਉੱਤੇ ਟਾਈਪ ਕਰੋ। ARMS ਲਈ Shift, WING ਲਈ Ctrl, MEGA BLAST ਲਈ ਦੋਵੇਂ ਦਬਾਓ।';
+
+  @override
+  String get hintHopKeys =>
+      'ਨਮਪੈਡ ਦੀ ਇੱਕ ਕੁੰਜੀ ਦਬਾਓ: ਤੁਸੀਂ ਉਸ ਪਾਸੇ ਛਾਲ ਮਾਰਦੇ ਹੋ';
+
+  @override
+  String get hintLoopKeys =>
+      'ਨਮਪੈਡ ਉੱਤੇ ਇੱਕ ਗੋਲਾ ਟਾਈਪ ਕਰੋ: ਤੁਸੀਂ ਗੋਲੀਆਂ ਦੇ ਉੱਪਰੋਂ ਉੱਡਦੇ ਹੋ';
+
+  @override
+  String get hintStreamKeys => 'E ਦਬਾਓ: ਦੋ ਜਾਂ ਤਿੰਨ ਧਾਰਾਂ। Q ਘਟਾਉਂਦਾ ਹੈ';
 }

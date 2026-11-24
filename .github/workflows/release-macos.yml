@@ -20,7 +20,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.x'
+          flutter-version: '3.50.x'
           channel: stable
           cache: true
 
@@ -30,7 +30,7 @@ jobs:
 
       - name: Build macOS (release)
         working-directory: tyrian_mobile
-        run: flutter build macos --release
+        run: flutter build macos --release --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       - name: Package as ZIP
         run: |

@@ -93,6 +93,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get musicOff => 'సంగీతం: ఆఫ్';
 
   @override
+  String get statsOn => 'గణాంకాలు: ఆన్';
+
+  @override
+  String get statsOff => 'గణాంకాలు: ఆఫ్';
+
+  @override
   String get mainMenu => 'ప్రధాన మెనూ';
 
   @override
@@ -1158,4 +1164,140 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'పూర్తయింది';
+
+  @override
+  String get swapHint => 'రెండు వేళ్లు ఉంచితే రెండో సెట్ ఆయుధాలతో కాలుస్తారు';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: మరింత బలమైన కాల్పులు';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: నౌక మరమ్మతు అయింది';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount కవచం, త్వరగా రీఛార్జ్ అవుతుంది';
+  }
+
+  @override
+  String get pickupGenerator => 'జనరేటర్ మెరుగైంది: ఆయుధాలకు మరింత శక్తి';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount క్రెడిట్లు ComCenter కోసం';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'ఆయుధ పికప్‌లు స్థాయిని పెంచుతాయి: ఎక్కువ నష్టం, వేగంగా కాల్పులు';
+
+  @override
+  String get tutPickupHealth =>
+      'రిపేర్లు హల్‌ను బాగుచేస్తాయి; ఆరోగ్యంగా ఉంటే గరిష్ఠ HP పెరుగుతుంది';
+
+  @override
+  String get tutPickupShield =>
+      'షీల్డ్ హల్ కంటే ముందు దెబ్బలు తింటుంది, తనంతట తానే నిండుతుంది';
+
+  @override
+  String get tutPickupGenerator =>
+      'జనరేటర్ ఆయుధాలకు శక్తి ఇస్తుంది: ఎక్కువ శక్తి, ఎక్కువ ఆయుధాలు';
+
+  @override
+  String get tutPickupCredits =>
+      'రౌండ్ల మధ్య ComCenterలో క్రెడిట్లతో ఆయుధాలు కొనండి';
+
+  @override
+  String get tutBoss => 'BOSS! పైన ఉన్న బార్ దాని ఆరోగ్యం. కదులుతూ కాల్చండి';
+
+  @override
+  String get tutLowHp => 'హల్ బలహీనం! రిపేర్ లేదా ComCenter సరిచేస్తుంది';
+
+  @override
+  String get tutGenStarved =>
+      'జనరేటర్ ఇచ్చేదానికంటే ఆయుధాలకు ఎక్కువ శక్తి కావాలి: అప్‌గ్రేడ్ చేయండి';
+
+  @override
+  String get tutCanAfford =>
+      'అప్‌గ్రేడ్‌కు డబ్బు ఉంది: ఈ రౌండ్ తర్వాత ComCenter చూడండి';
+
+  @override
+  String get tutFly => 'ఎగరడానికి లాగండి. వేలు ఉన్నంతసేపు ఆయుధాలు కాలుస్తాయి';
+
+  @override
+  String get introCollect => 'శత్రువులు వదిలే ఐకాన్‌లను పట్టుకోండి';
+
+  @override
+  String get introShop => 'రౌండ్ల మధ్య ComCenterలో క్రెడిట్లు ఖర్చు చేయండి';
+
+  @override
+  String get objBoss => 'లక్ష్యం: అలలను తట్టుకుని బాస్‌ను ఓడించండి';
+
+  @override
+  String get objSurvive => 'లక్ష్యం: అలలను తట్టుకోండి';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits క్రెడిట్లు · $kills కూల్చివేతలు';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'ఉత్తమ ఆయుధం: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'బాస్ దెబ్బలు గట్టివి: బలమైన షీల్డ్ సమయం ఇస్తుంది';
+
+  @override
+  String get deathShield =>
+      'ComCenterలో షీల్డ్ అప్‌గ్రేడ్ చేయండి: హల్ కంటే ముందు దెబ్బలు తింటుంది';
+
+  @override
+  String get deathGuns => 'బలమైన ఆయుధాలు అలలను ముందే తుడిచేస్తాయి';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] వరుస   [←→] ఎంపిక   [ENTER] కొను/మెరుగుపరచు/మార్చు   [DEL] అమ్ము   [ESC] కొనసాగించు';
+
+  @override
+  String get swapHintMouse =>
+      'రెండో ఆయుధాలతో కాల్చడానికి మౌస్ కుడి బటన్ లేదా Shift నొక్కి ఉంచండి';
+
+  @override
+  String get tutFlyMouse =>
+      'ఎగరడానికి మౌస్‌ను కదిలించండి. కాల్చడానికి ఎడమ బటన్ నొక్కి ఉంచండి';
+
+  @override
+  String get grimoireHintKeys =>
+      'ఆకారాలను నంప్యాడ్‌పై లేదా U I O / J K L / M , . పై టైప్ చేయండి. ARMS కోసం Shift, WING కోసం Ctrl, MEGA BLAST కోసం రెండూ నొక్కండి.';
+
+  @override
+  String get hintHopKeys => 'నంప్యాడ్‌లో ఒక కీ నొక్కండి: ఆ వైపుకు దూకుతారు';
+
+  @override
+  String get hintLoopKeys =>
+      'నంప్యాడ్‌పై ఒక వృత్తం టైప్ చేయండి: గుళ్ల పైనుంచి ఎగురుతారు';
+
+  @override
+  String get hintStreamKeys =>
+      'E నొక్కండి: రెండు లేదా మూడు ధారలు. Q తగ్గిస్తుంది';
 }

@@ -93,6 +93,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get musicOff => 'เพลง: ปิด';
 
   @override
+  String get statsOn => 'สถิติ: เปิด';
+
+  @override
+  String get statsOff => 'สถิติ: ปิด';
+
+  @override
   String get mainMenu => 'เมนูหลัก';
 
   @override
@@ -1139,4 +1145,133 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'สำเร็จ';
+
+  @override
+  String get swapHint => 'แตะค้างสองนิ้วเพื่อยิงด้วยอาวุธชุดที่สอง';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: ยิงแรงขึ้น';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: ซ่อมตัวยานแล้ว';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return 'โล่ +$amount ชาร์จเร็วขึ้น';
+  }
+
+  @override
+  String get pickupGenerator => 'เครื่องปั่นไฟแรงขึ้น: อาวุธได้พลังงานมากขึ้น';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount เครดิตไว้ใช้ใน ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon => 'ไอเทมอาวุธเพิ่มเลเวลปืน: แรงขึ้น ยิงเร็วขึ้น';
+
+  @override
+  String get tutPickupHealth =>
+      'ไอเทมซ่อมฟื้นตัวยาน ถ้าเลือดเต็มจะเพิ่ม HP สูงสุด';
+
+  @override
+  String get tutPickupShield => 'โล่รับกระสุนก่อนตัวยานและฟื้นฟูเอง';
+
+  @override
+  String get tutPickupGenerator =>
+      'เครื่องปั่นไฟจ่ายพลังให้ปืน: พลังมากขึ้น ยิงได้หลายกระบอกขึ้น';
+
+  @override
+  String get tutPickupCredits =>
+      'ใช้เครดิตซื้อปืนและอัปเกรดที่ ComCenter ระหว่างรอบ';
+
+  @override
+  String get tutBoss => 'บอส! แถบด้านบนคือพลังชีวิตของมัน ขยับและยิงต่อไป';
+
+  @override
+  String get tutLowHp => 'ตัวยานใกล้พัง! ซ่อมด้วยไอเทมหรือที่ ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'ปืนต้องการพลังมากกว่าที่เครื่องปั่นไฟให้: อัปเกรดเลย';
+
+  @override
+  String get tutCanAfford => 'เงินพออัปเกรดแล้ว: ไป ComCenter หลังจบรอบนี้';
+
+  @override
+  String get tutFly => 'ลากนิ้วเพื่อบิน ปืนยิงตลอดที่นิ้วแตะจอ';
+
+  @override
+  String get introCollect => 'เก็บไอคอนที่ศัตรูทิ้งไว้';
+
+  @override
+  String get introShop => 'ระหว่างรอบ ใช้เครดิตที่ ComCenter';
+
+  @override
+  String get objBoss => 'เป้าหมาย: รอดจากคลื่นศัตรูและชนะบอส';
+
+  @override
+  String get objSurvive => 'เป้าหมาย: รอดจากคลื่นศัตรู';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits เครดิต · ยิงตก $kills';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'อาวุธยอดเยี่ยม: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'กระสุนบอสแรงมาก: โล่ที่แข็งขึ้นช่วยซื้อเวลา';
+
+  @override
+  String get deathShield => 'อัปเกรดโล่ที่ ComCenter: รับกระสุนก่อนตัวยาน';
+
+  @override
+  String get deathGuns => 'ปืนที่แรงขึ้นกวาดคลื่นศัตรูก่อนมันจะทำร้ายคุณ';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] แถว   [←→] เลือก   [ENTER] ซื้อ/อัปเกรด/สลับ   [DEL] ขาย   [ESC] ไปต่อ';
+
+  @override
+  String get swapHintMouse =>
+      'กดปุ่มเมาส์ขวาหรือ Shift ค้างไว้เพื่อยิงด้วยอาวุธชุดที่สอง';
+
+  @override
+  String get tutFlyMouse => 'ขยับเมาส์เพื่อบิน กดปุ่มซ้ายค้างไว้เพื่อยิง';
+
+  @override
+  String get grimoireHintKeys =>
+      'พิมพ์รูปบนแป้นตัวเลขหรือบน U I O / J K L / M , . กด Shift ค้างสำหรับ ARMS, Ctrl สำหรับ WING, ทั้งสองสำหรับ MEGA BLAST';
+
+  @override
+  String get hintHopKeys => 'แตะแป้นตัวเลขหนึ่งปุ่ม: กระโดดไปทางนั้น';
+
+  @override
+  String get hintLoopKeys => 'พิมพ์วงกลมบนแป้นตัวเลข: บินข้ามกระสุน';
+
+  @override
+  String get hintStreamKeys => 'กด E: สองหรือสามสาย Q ลดลง';
 }

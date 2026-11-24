@@ -12,8 +12,10 @@ import '../services/sound_service.dart';
 import '../services/music_service.dart';
 import '../services/skin_registry.dart';
 import '../services/skin_store_service.dart';
+import '../services/telemetry_service.dart';
 import '../game/challenge.dart';
 import '../game/platform_config.dart' as platform;
+import '../game/telemetry_probe.dart';
 import '../input/gamepad_input.dart';
 import '../l10n/l10n.dart';
 
@@ -65,7 +67,26 @@ class _SkinSelectorState extends State<SkinSelector> {
   bool _prevDiscard = true;
 
   final FocusNode _focusNode = FocusNode();
-  final List<GlobalKey> _cardKeys = List.generate(kSkins.length, (_) => GlobalKey());
+  final Map<String, GlobalKey> _cardKeys = {
+    for (final s in kSkins) s.id: GlobalKey(),
+  };
+
+  /// The grid's order: owned skins first (plan 32 Q2). [_focusIndex] points
+  /// into this list, and [_reorder] keeps it on the same skin when a
+  /// purchase moves cards around.
+  List<SkinInfo> _skins = SkinStoreService.instance.orderedSkins;
+
+  void _reorder() {
+    final focused =
+        _focusIndex < _skins.length ? _skins[_focusIndex].id : null;
+    _skins = SkinStoreService.instance.orderedSkins;
+    if (focused == null) return;
+    final i = _skins.indexWhere((s) => s.id == focused);
+    if (i >= 0 && i != _focusIndex) {
+      _focusIndex = i;
+      _scrollToFocus();
+    }
+  }
 
   @override
   void initState() {
@@ -93,6 +114,7 @@ class _SkinSelectorState extends State<SkinSelector> {
     // A purchase started from this selector just completed — jump straight
     // into the freshly bought skin.
     final purchased = SkinStoreService.instance.takeJustPurchased();
+    _reorder(); // a skin may have just become owned
     if (purchased != null) {
       _selectAndPlay(purchased);
       return;
@@ -105,7 +127,8 @@ class _SkinSelectorState extends State<SkinSelector> {
     final saved = prefs.getString('selected_skin') ?? 'default';
     final previews = await AssetLibrary.instance.loadPreviews();
     if (mounted) {
-      final idx = kSkins.indexWhere((s) => s.id == saved);
+      _skins = SkinStoreService.instance.orderedSkins;
+      final idx = _skins.indexWhere((s) => s.id == saved);
       setState(() {
         _focusIndex = idx >= 0 ? idx : 0;
         _previews = previews;
@@ -119,9 +142,11 @@ class _SkinSelectorState extends State<SkinSelector> {
     // Locked skin: every input path (tap, keyboard, gamepad) converges here,
     // so this one gate turns "select" into "buy" for skins not yet owned.
     if (!SkinStoreService.instance.isUnlocked(id)) {
+      _trackTap(id, owned: false, loadMs: 0);
       SkinStoreService.instance.buy(id);
       return;
     }
+    final loadTime = Stopwatch()..start();
     setState(() => _loading = true);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('selected_skin', id);
@@ -131,8 +156,18 @@ class _SkinSelectorState extends State<SkinSelector> {
     await AssetLibrary.instance.loadSkin(id);
     await SoundService.instance.loadSkin(id);
     await MusicService.instance.loadSkin(id);
+    _trackTap(id, owned: true, loadMs: loadTime.elapsedMilliseconds);
     widget.onPlay();
   }
+
+  void _trackTap(String id, {required bool owned, required int loadMs}) =>
+      TelemetryService.instance.track('skin_tap', {
+        'target': id,
+        'owned': owned,
+        'result': owned ? 'play' : 'purchase',
+        'load_ms': loadMs.clamp(0, 3600000),
+        'where': widget.onDiscard == null ? 'menu' : 'pause',
+      });
 
   bool get _hasQuit => widget.showQuit && platform.isDesktop;
   bool get _hasCampaign => widget.onCampaign != null;
@@ -140,11 +175,11 @@ class _SkinSelectorState extends State<SkinSelector> {
 
   /// Pseudo focus indices for the entries under the grid: DIFFICULTY first,
   /// then CAMPAIGN, then QUIT, each one past the last.
-  int get _challengeIndex => kSkins.length;
-  int get _campaignIndex => kSkins.length + 1;
-  int get _arenaIndex => kSkins.length + 1 + (_hasCampaign ? 1 : 0);
+  int get _challengeIndex => _skins.length;
+  int get _campaignIndex => _skins.length + 1;
+  int get _arenaIndex => _skins.length + 1 + (_hasCampaign ? 1 : 0);
   int get _quitIndex =>
-      kSkins.length + 1 + (_hasCampaign ? 1 : 0) + (_hasArena ? 1 : 0);
+      _skins.length + 1 + (_hasCampaign ? 1 : 0) + (_hasArena ? 1 : 0);
 
   /// The entries below the grid, top to bottom.
   List<int> get _footer => [
@@ -173,6 +208,7 @@ class _SkinSelectorState extends State<SkinSelector> {
   }
 
   Future<void> _quit() async {
+    await TelemetryProbe.quit('menu');
     await windowManager.destroy();
     exit(0);
   }
@@ -189,14 +225,14 @@ class _SkinSelectorState extends State<SkinSelector> {
     } else if (_hasArena && _focusIndex == _arenaIndex) {
       widget.onArena!();
     } else {
-      _selectAndPlay(kSkins[_focusIndex].id);
+      _selectAndPlay(_skins[_focusIndex].id);
     }
   }
 
   void _moveFocus(int dx, int dy) {
     if (_loading) return;
     final cols = platform.isLandscape ? 4 : 2;
-    final count = kSkins.length;
+    final count = _skins.length;
     final footer = _footer;
 
     // The footer is a vertical list below the grid: down from the last row
@@ -238,8 +274,8 @@ class _SkinSelectorState extends State<SkinSelector> {
   void _scrollToFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (_focusIndex >= _cardKeys.length) return; // QUIT entry has no card
-      final ctx = _cardKeys[_focusIndex].currentContext;
+      if (_focusIndex >= _skins.length) return; // QUIT entry has no card
+      final ctx = _cardKeys[_skins[_focusIndex].id]?.currentContext;
       if (ctx == null) return;
       Scrollable.ensureVisible(ctx,
           duration: const Duration(milliseconds: 150),
@@ -349,10 +385,11 @@ class _SkinSelectorState extends State<SkinSelector> {
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                           childAspectRatio: platform.isLandscape ? 1.0 : 0.85,
-                          children: List.generate(kSkins.length, (i) => _buildSkinCard(i)),
+                          children: List.generate(_skins.length, (i) => _buildSkinCard(i)),
                         ),
                       ),
               ),
+              SkinsAllCredit(offer: SkinStoreService.instance.skinsAllOffer),
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: InkWell(
@@ -515,16 +552,19 @@ class _SkinSelectorState extends State<SkinSelector> {
   }
 
   Widget _buildSkinCard(int index) {
-    final skin = kSkins[index];
+    final skin = _skins[index];
     final store = SkinStoreService.instance;
     return SkinCard(
-      key: _cardKeys[index],
+      key: _cardKeys[skin.id],
       skin: skin,
       preview: _previews[skin.id],
       highlighted: index == _focusIndex,
       unlocked: store.isUnlocked(skin.id),
       buying: store.pendingSkinId == skin.id,
       price: store.priceFor(skin.id),
+      allOffer: store.skinsAllOffer,
+      allBuying: store.bundlePending,
+      onBuyAll: store.buyAllSkins,
       onTap: () {
         setState(() {
           _focusIndex = index;
@@ -553,6 +593,12 @@ class SkinCard extends StatelessWidget {
   final String? price;
   final VoidCallback onTap;
 
+  /// The "All skins" step on offer, shown on locked cards beside the skin's
+  /// own price. Null hides it.
+  final SkinsAllOffer? allOffer;
+  final bool allBuying;
+  final VoidCallback? onBuyAll;
+
   const SkinCard({
     super.key,
     required this.skin,
@@ -563,6 +609,9 @@ class SkinCard extends StatelessWidget {
     required this.buying,
     required this.price,
     required this.onTap,
+    this.allOffer,
+    this.allBuying = false,
+    this.onBuyAll,
   });
 
   @override
@@ -655,10 +704,100 @@ class SkinCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                  if (!unlocked && allOffer != null)
+                    SkinsAllChip(
+                      offer: allOffer!,
+                      buying: allBuying,
+                      onTap: onBuyAll,
+                    ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The "All skins" offer on a locked card: the offered step's store price
+/// and, on a credited step, step 0's store price struck through. Its own tap
+/// target, so it buys the bundle instead of the card's skin.
+class SkinsAllChip extends StatelessWidget {
+  final SkinsAllOffer offer;
+  final bool buying;
+  final VoidCallback? onTap;
+
+  const SkinsAllChip(
+      {super.key, required this.offer, required this.buying, this.onTap});
+
+  static const _color = Colors.cyanAccent;
+
+  @override
+  Widget build(BuildContext context) {
+    final full = offer.fullPrice;
+    return GestureDetector(
+      onTap: buying ? null : onTap,
+      child: Container(
+        margin: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          border: Border.all(color: _color.withAlpha(140)),
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: buying
+            ? const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(strokeWidth: 2, color: _color),
+              )
+            : Text.rich(
+                TextSpan(children: [
+                  TextSpan(text: '${context.l10n.allSkins} ${offer.price}'),
+                  if (full != null)
+                    TextSpan(
+                      text: ' $full',
+                      style: TextStyle(
+                        color: _color.withAlpha(120),
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: _color.withAlpha(160),
+                      ),
+                    ),
+                ]),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _color,
+                  fontSize: 10,
+                  letterSpacing: 1,
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+/// One line under the grid when the "All skins" offer credits skins already
+/// bought. Nothing on step 0 or without an offer.
+class SkinsAllCredit extends StatelessWidget {
+  final SkinsAllOffer? offer;
+
+  const SkinsAllCredit({super.key, required this.offer});
+
+  @override
+  Widget build(BuildContext context) {
+    final o = offer;
+    if (o == null || o.step == 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, left: 16, right: 16),
+      child: Text(
+        context.l10n.allSkinsCredited(o.owned),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.cyanAccent.withAlpha(180),
+          fontSize: 11,
+          letterSpacing: 1,
         ),
       ),
     );
@@ -695,18 +834,22 @@ class SkinShopSectionState extends State<SkinShopSection> {
     for (final s in kSkins) s.id: GlobalKey(),
   };
 
-  /// Index of the pad cursor, or null while the pad is in another region.
+  /// The grid's order: owned skins first (plan 32 Q2).
+  List<SkinInfo> _skins = SkinStoreService.instance.orderedSkins;
+
+  /// Index into [_skins] of the pad cursor, or null while the pad is in
+  /// another region.
   int? _padFocus;
 
   /// Where the cursor sits (or would sit), regardless of whether it is shown.
   int get padFocusIndex => _padFocus ?? 0;
 
-  int get cardCount => kSkins.length;
+  int get cardCount => _skins.length;
 
   /// Show the cursor at [index], or hide it with null.
   void setPadFocus(int? index) {
     if (!mounted) return;
-    setState(() => _padFocus = index?.clamp(0, kSkins.length - 1));
+    setState(() => _padFocus = index?.clamp(0, _skins.length - 1));
     if (index != null) _scrollPadFocusIntoView();
   }
 
@@ -715,7 +858,7 @@ class SkinShopSectionState extends State<SkinShopSection> {
   bool movePadFocus(int delta) {
     if (!mounted) return false;
     final next = padFocusIndex + delta;
-    if (next < 0 || next >= kSkins.length) return false;
+    if (next < 0 || next >= _skins.length) return false;
     setState(() => _padFocus = next);
     _scrollPadFocusIntoView();
     return true;
@@ -725,7 +868,7 @@ class SkinShopSectionState extends State<SkinShopSection> {
   void activatePadFocus() {
     final i = _padFocus;
     if (i == null) return;
-    _select(kSkins[i].id);
+    _select(_skins[i].id);
   }
 
   void _scrollPadFocusIntoView() {
@@ -733,7 +876,7 @@ class SkinShopSectionState extends State<SkinShopSection> {
       if (!mounted) return;
       final i = _padFocus;
       if (i == null) return;
-      final ctx = _cardKeys[kSkins[i].id]?.currentContext;
+      final ctx = _cardKeys[_skins[i].id]?.currentContext;
       if (ctx == null) return;
       Scrollable.ensureVisible(ctx,
           duration: const Duration(milliseconds: 150),
@@ -762,6 +905,13 @@ class SkinShopSectionState extends State<SkinShopSection> {
     // A purchase started from this section just completed — switch straight
     // into the freshly bought skin.
     final purchased = SkinStoreService.instance.takeJustPurchased();
+    // A skin may have just become owned: re-sort, cursor stays on its card.
+    final focused = _padFocus == null ? null : _skins[_padFocus!].id;
+    _skins = SkinStoreService.instance.orderedSkins;
+    if (focused != null) {
+      _padFocus = _skins.indexWhere((s) => s.id == focused);
+      _scrollPadFocusIntoView();
+    }
     if (purchased != null) {
       _select(purchased);
       return;
@@ -817,7 +967,7 @@ class SkinShopSectionState extends State<SkinShopSection> {
           crossAxisSpacing: 12,
           childAspectRatio: widget.crossAxisCount >= 4 ? 1.0 : 0.85,
           children: [
-            for (final (i, skin) in kSkins.indexed)
+            for (final (i, skin) in _skins.indexed)
               SkinCard(
                 key: _cardKeys[skin.id],
                 skin: skin,
@@ -827,10 +977,14 @@ class SkinShopSectionState extends State<SkinShopSection> {
                 unlocked: store.isUnlocked(skin.id),
                 buying: store.pendingSkinId == skin.id,
                 price: store.priceFor(skin.id),
+                allOffer: store.skinsAllOffer,
+                allBuying: store.bundlePending,
+                onBuyAll: store.buyAllSkins,
                 onTap: () => _select(skin.id),
               ),
           ],
         ),
+        SkinsAllCredit(offer: store.skinsAllOffer),
         if (store.supported)
           TextButton(
             onPressed: store.restore,

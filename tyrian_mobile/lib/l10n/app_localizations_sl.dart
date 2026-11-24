@@ -93,6 +93,12 @@ class AppLocalizationsSl extends AppLocalizations {
   String get musicOff => 'GLASBA: IZKL.';
 
   @override
+  String get statsOn => 'STATISTIKA: VKL.';
+
+  @override
+  String get statsOff => 'STATISTIKA: IZKL.';
+
+  @override
   String get mainMenu => 'GLAVNI MENI';
 
   @override
@@ -1170,4 +1176,140 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'KONČANO';
+
+  @override
+  String get swapHint => 'Z dvema prstoma streljaš z drugim kompletom orožja';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: močnejši streli';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: trup popravljen';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount ščita, hitreje se polni';
+  }
+
+  @override
+  String get pickupGenerator => 'Močnejši generator: več energije za orožje';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditov za ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Orožni bonusi dvignejo raven orožja: več škode, hitrejši ogenj';
+
+  @override
+  String get tutPickupHealth =>
+      'Popravila zakrpajo trup; pri polnem zdravju dvignejo največ HP';
+
+  @override
+  String get tutPickupShield =>
+      'Ščit prestreže zadetke pred trupom in se sam polni';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generator napaja orožja: več energije, več orožij strelja';
+
+  @override
+  String get tutPickupCredits =>
+      'S krediti kupiš orožja in nadgradnje v ComCentru med krogi';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Njegovo zdravje je vrstica zgoraj. Premikaj se in streljaj';
+
+  @override
+  String get tutLowHp => 'Trup je šibek! Pomagajo popravila ali ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Orožja hočejo več energije, kot je da generator: nadgradi ga';
+
+  @override
+  String get tutCanAfford =>
+      'Imaš za nadgradnjo: po tem krogu pojdi v ComCenter';
+
+  @override
+  String get tutFly => 'Vleci za letenje. Orožja streljajo, dokler držiš prst';
+
+  @override
+  String get introCollect => 'Lovi ikone, ki jih spustijo sovražniki';
+
+  @override
+  String get introShop => 'Med krogi zapravi kredite v ComCentru';
+
+  @override
+  String get objBoss => 'Cilj: preživi valove in premagaj bossa';
+
+  @override
+  String get objSurvive => 'Cilj: preživi valove';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditov · $kills sestrelov';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Najboljše orožje: $weapon';
+  }
+
+  @override
+  String get deathBoss => 'Bossovi streli bolijo: močnejši ščit ti kupi čas';
+
+  @override
+  String get deathShield =>
+      'Nadgradi ščit v ComCentru: zadetke prestreže pred trupom';
+
+  @override
+  String get deathGuns => 'Močnejša orožja počistijo valove, preden te ranijo';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Vrstica   [←→] Izbira   [ENTER] Kupi/Izboljšaj/Zamenjaj   [DEL] Prodaj   [ESC] Nadaljuj';
+
+  @override
+  String get swapHintMouse =>
+      'Drži desni gumb miške ali Shift, da streljaš z drugim orožjem';
+
+  @override
+  String get tutFlyMouse =>
+      'Premikaj miško, da letiš. Drži levi gumb, da streljaš';
+
+  @override
+  String get grimoireHintKeys =>
+      'Vtipkaj oblike na številčni tipkovnici ali na U I O / J K L / M , . Drži Shift za ARMS, Ctrl za WING, oba za MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Pritisni eno številčno tipko: skočiš v tisto smer';
+
+  @override
+  String get hintLoopKeys =>
+      'Vtipkaj krog na številčni tipkovnici: preletiš izstrelke';
+
+  @override
+  String get hintStreamKeys => 'Pritisni E: dva ali trije curki. Q vrne nazaj';
 }

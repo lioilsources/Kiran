@@ -94,6 +94,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get musicOff => 'MÚSICA: DESLIGADA';
 
   @override
+  String get statsOn => 'ESTATÍSTICAS: LIGADAS';
+
+  @override
+  String get statsOff => 'ESTATÍSTICAS: DESLIGADAS';
+
+  @override
   String get mainMenu => 'MENU PRINCIPAL';
 
   @override
@@ -1169,6 +1175,147 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FEITO';
+
+  @override
+  String get swapHint =>
+      'Com dois dedos você atira com o segundo conjunto de armas';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tiros mais fortes';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: casco reparado';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount de escudo, recarrega mais rápido';
+  }
+
+  @override
+  String get pickupGenerator => 'Gerador melhorado: mais energia para as armas';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount créditos para gastar no ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Power-ups de arma sobem o nível: mais dano, tiro mais rápido';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparos consertam o casco; com o casco cheio, aumentam o HP máximo';
+
+  @override
+  String get tutPickupShield =>
+      'O escudo aguenta os tiros antes do casco e recarrega sozinho';
+
+  @override
+  String get tutPickupGenerator =>
+      'O gerador alimenta as armas: mais energia mantém mais armas atirando';
+
+  @override
+  String get tutPickupCredits =>
+      'Créditos compram armas e melhorias no ComCenter entre as rodadas';
+
+  @override
+  String get tutBoss =>
+      'CHEFE! A vida dele é a barra no topo. Continue se mexendo e atirando';
+
+  @override
+  String get tutLowHp => 'Casco no limite! Um reparo ou o ComCenter resolve';
+
+  @override
+  String get tutGenStarved =>
+      'Suas armas pedem mais energia do que o gerador dá: melhore-o';
+
+  @override
+  String get tutCanAfford =>
+      'Você pode comprar uma melhoria: passe no ComCenter após a rodada';
+
+  @override
+  String get tutFly =>
+      'Arraste para voar. As armas atiram enquanto seu dedo estiver na tela';
+
+  @override
+  String get introCollect => 'Pegue os ícones que os inimigos soltam';
+
+  @override
+  String get introShop => 'Entre as rodadas, gaste seus créditos no ComCenter';
+
+  @override
+  String get objBoss => 'Objetivo: sobreviva às ondas e derrote o chefe';
+
+  @override
+  String get objSurvive => 'Objetivo: sobreviva às ondas';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits créditos · $kills abates';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Melhor arma: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Os tiros do chefe são fortes: um escudo melhor te dá tempo';
+
+  @override
+  String get deathShield =>
+      'Melhore o escudo no ComCenter: ele aguenta os tiros antes do casco';
+
+  @override
+  String get deathGuns =>
+      'Armas mais fortes limpam as ondas antes que te machuquem';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Linha   [←→] Escolher   [ENTER] Comprar/Melhorar/Trocar   [DEL] Vender   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Segure o botão direito do mouse ou Shift para atirar com suas armas secundárias';
+
+  @override
+  String get tutFlyMouse =>
+      'Mova o mouse para voar. Segure o botão esquerdo para atirar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Digite as formas no teclado numérico ou em U I O / J K L / M , . Segure Shift para ARMS, Ctrl para WING, ambos para MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Toque uma tecla do teclado numérico: você salta nessa direção';
+
+  @override
+  String get hintLoopKeys =>
+      'Digite um círculo no teclado numérico: você voa por cima dos tiros';
+
+  @override
+  String get hintStreamKeys => 'Aperte E: dois ou três fluxos. Q volta um';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).
@@ -1259,6 +1406,12 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get musicOff => 'MÚSICA: DESLIGADA';
+
+  @override
+  String get statsOn => 'ESTATÍSTICAS: LIGADAS';
+
+  @override
+  String get statsOff => 'ESTATÍSTICAS: DESLIGADAS';
 
   @override
   String get mainMenu => 'MENU PRINCIPAL';
@@ -2332,4 +2485,145 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get duelDrillDone => 'FEITO';
+
+  @override
+  String get swapHint =>
+      'Com dois dedos disparas com o segundo conjunto de armas';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: disparos mais fortes';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: casco reparado';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount de escudo, recarrega mais depressa';
+  }
+
+  @override
+  String get pickupGenerator => 'Gerador melhorado: mais energia para as armas';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount créditos para gastar no ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Itens de arma sobem o nível: mais dano, disparo mais rápido';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparações curam o casco; com saúde total sobem o HP máximo';
+
+  @override
+  String get tutPickupShield =>
+      'O escudo leva os tiros antes do casco e recarrega sozinho';
+
+  @override
+  String get tutPickupGenerator =>
+      'O gerador alimenta as armas: mais energia, mais armas a disparar';
+
+  @override
+  String get tutPickupCredits =>
+      'Créditos compram armas e melhorias no ComCenter entre rondas';
+
+  @override
+  String get tutBoss =>
+      'BOSS! A vida dele é a barra no topo. Mexe-te e dispara';
+
+  @override
+  String get tutLowHp => 'Casco fraco! Repara com itens ou no ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'As armas pedem mais energia do que o gerador dá: melhora-o';
+
+  @override
+  String get tutCanAfford =>
+      'Já tens para uma melhoria: vai ao ComCenter após esta ronda';
+
+  @override
+  String get tutFly =>
+      'Arrasta para voar. As armas disparam enquanto tocas no ecrã';
+
+  @override
+  String get introCollect => 'Apanha os ícones que os inimigos largam';
+
+  @override
+  String get introShop => 'Entre rondas, gasta os créditos no ComCenter';
+
+  @override
+  String get objBoss => 'Objetivo: sobrevive às vagas e derrota o boss';
+
+  @override
+  String get objSurvive => 'Objetivo: sobrevive às vagas';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits créditos · $kills abates';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Melhor arma: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Os tiros do boss doem: um escudo mais forte dá-te tempo';
+
+  @override
+  String get deathShield =>
+      'Melhora o escudo no ComCenter: leva os tiros antes do casco';
+
+  @override
+  String get deathGuns =>
+      'Armas mais fortes limpam as vagas antes de te ferirem';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Linha   [←→] Escolher   [ENTER] Comprar/Melhorar/Trocar   [DEL] Vender   [ESC] Continuar';
+
+  @override
+  String get swapHintMouse =>
+      'Mantém o botão direito do rato ou Shift para disparar com as armas secundárias';
+
+  @override
+  String get tutFlyMouse =>
+      'Move o rato para voar. Mantém o botão esquerdo para disparar';
+
+  @override
+  String get grimoireHintKeys =>
+      'Escreve as formas no teclado numérico ou em U I O / J K L / M , . Mantém Shift para ARMS, Ctrl para WING, ambos para MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Prime uma tecla do teclado numérico: saltas nessa direção';
+
+  @override
+  String get hintLoopKeys =>
+      'Escreve um círculo no teclado numérico: voas por cima dos tiros';
+
+  @override
+  String get hintStreamKeys => 'Prime E: dois ou três fluxos. Q recua um';
 }

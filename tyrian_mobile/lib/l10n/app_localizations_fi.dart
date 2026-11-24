@@ -93,6 +93,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get musicOff => 'MUSIIKKI: POIS';
 
   @override
+  String get statsOn => 'TILASTOT: PÄÄLLÄ';
+
+  @override
+  String get statsOff => 'TILASTOT: POIS';
+
+  @override
   String get mainMenu => 'PÄÄVALIKKO';
 
   @override
@@ -1161,4 +1167,143 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'VALMIS';
+
+  @override
+  String get swapHint => 'Kahdella sormella ammut toisella asesarjallasi';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: tehokkaammat laukaukset';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: runko korjattu';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount suojaa, latautuu nopeammin';
+  }
+
+  @override
+  String get pickupGenerator => 'Parempi generaattori: lisää virtaa aseille';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount krediittiä ComCenteriin';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Asepoimiat nostavat aseen tasoa: lisää vahinkoa, nopeampi tuli';
+
+  @override
+  String get tutPickupHealth =>
+      'Korjaukset paikkaavat rungon; ehjänä ne nostavat max-HP:ta';
+
+  @override
+  String get tutPickupShield =>
+      'Kilpi ottaa osumat ennen runkoa ja latautuu itsestään';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generaattori syöttää aseita: enemmän virtaa, enemmän tulta';
+
+  @override
+  String get tutPickupCredits =>
+      'Krediiteillä ostat aseita ja päivityksiä ComCenteristä';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Sen elämä on yläpalkki. Liiku ja ammu jatkuvasti';
+
+  @override
+  String get tutLowHp => 'Runko heikko! Korjaus tai ComCenter auttaa';
+
+  @override
+  String get tutGenStarved =>
+      'Aseet vaativat enemmän virtaa kuin generaattori antaa: päivitä se';
+
+  @override
+  String get tutCanAfford =>
+      'Sinulla on varaa päivitykseen: käy ComCenterissä kierroksen jälkeen';
+
+  @override
+  String get tutFly => 'Vedä lentääksesi. Aseet ampuvat, kun sormi on ruudulla';
+
+  @override
+  String get introCollect => 'Nappaa vihollisten pudottamat kuvakkeet';
+
+  @override
+  String get introShop => 'Kierrosten välissä käytä krediitit ComCenterissä';
+
+  @override
+  String get objBoss => 'Tavoite: selviä aalloista ja voita pomo';
+
+  @override
+  String get objSurvive => 'Tavoite: selviä aalloista';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits krediittiä · $kills kaatoa';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Paras ase: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Pomon laukaukset satuttavat: vahvempi kilpi antaa aikaa';
+
+  @override
+  String get deathShield =>
+      'Päivitä kilpi ComCenterissä: se ottaa osumat ennen runkoa';
+
+  @override
+  String get deathGuns =>
+      'Vahvemmat aseet raivaavat aallot ennen kuin ne satuttavat';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rivi   [←→] Valitse   [ENTER] Osta/Paranna/Vaihda   [DEL] Myy   [ESC] Jatka';
+
+  @override
+  String get swapHintMouse =>
+      'Pidä hiiren oikeaa painiketta tai Shiftiä pohjassa, niin ammut toisilla aseillasi';
+
+  @override
+  String get tutFlyMouse =>
+      'Liikuta hiirtä lentääksesi. Pidä vasenta painiketta pohjassa ampuaksesi';
+
+  @override
+  String get grimoireHintKeys =>
+      'Kirjoita muodot numeronäppäimistöllä tai näppäimillä U I O / J K L / M , . Pidä Shift ARMSille, Ctrl WINGille, molemmat MEGA BLASTille.';
+
+  @override
+  String get hintHopKeys =>
+      'Napauta yhtä numeronäppäintä: hyppäät siihen suuntaan';
+
+  @override
+  String get hintLoopKeys =>
+      'Kirjoita ympyrä numeronäppäimillä: lennät ammusten yli';
+
+  @override
+  String get hintStreamKeys => 'Paina E: kaksi tai kolme suihkua. Q vähentää';
 }

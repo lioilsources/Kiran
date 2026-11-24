@@ -274,6 +274,21 @@ const double focusSpeed = 0.45;
 const double swapDelay = 0.5;
 const double swapHoldSides = 0.3;       // s held = swap the side pair instead
 
+// Touch: two fingers fly the second weapon set (plan 34). Back to one finger
+// for this long and the first set returns — two fingers never lift in the
+// same frame, so without it every two-finger lift would blink the set.
+const double touchAltRelease = 0.15;
+
+// Desktop mouse (Prompts/36 §3.3). The ship flies after the cursor at most
+// this fast (game units/s, times agility): quick, so the mouse feels like a
+// finger on a phone, but capped, so a sigil that carried the ship off does
+// not snap it back in one frame. The keyboard flies at 300.
+const double mouseFollowSpeed = 1200;
+// Pixels the cursor must travel before it takes the ship back from the keys.
+const double mouseTakeover = 8;
+// The aim mark shows while the ship is further than this from the cursor.
+const double mouseReticleGap = 6;
+
 // Companions (§5.3).
 const int companionMax = 2;
 const double companionLife = 20;        // s

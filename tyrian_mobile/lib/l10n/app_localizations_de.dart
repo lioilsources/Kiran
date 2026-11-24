@@ -94,6 +94,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get musicOff => 'MUSIK: AUS';
 
   @override
+  String get statsOn => 'STATISTIK: AN';
+
+  @override
+  String get statsOff => 'STATISTIK: AUS';
+
+  @override
   String get mainMenu => 'HAUPTMENÜ';
 
   @override
@@ -1171,4 +1177,148 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'GESCHAFFT';
+
+  @override
+  String get swapHint => 'Mit zwei Fingern feuerst du dein zweites Waffenset';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: stärkere Schüsse';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: Rumpf repariert';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount Schild, lädt schneller';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Stärkerer Generator: mehr Energie für die Waffen';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount Credits für das ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Waffen-Pickups erhöhen die Stufe: mehr Schaden, schnelleres Feuer';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparaturen flicken die Hülle; bei voller Hülle steigt max. HP';
+
+  @override
+  String get tutPickupShield =>
+      'Der Schild fängt Treffer vor der Hülle ab und lädt sich selbst auf';
+
+  @override
+  String get tutPickupGenerator =>
+      'Der Generator speist deine Waffen: mehr Energie, mehr Feuer';
+
+  @override
+  String get tutPickupCredits =>
+      'Mit Credits kaufst du Waffen und Upgrades im ComCenter';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Seine Energie ist der Balken oben. Bleib in Bewegung, feuer!';
+
+  @override
+  String get tutLowHp => 'Hülle schwach! Reparaturen oder das ComCenter helfen';
+
+  @override
+  String get tutGenStarved =>
+      'Deine Waffen brauchen mehr Energie als der Generator: upgrade ihn';
+
+  @override
+  String get tutCanAfford =>
+      'Du kannst dir ein Upgrade leisten: ab ins ComCenter nach der Runde';
+
+  @override
+  String get tutFly =>
+      'Ziehen zum Fliegen. Deine Waffen feuern, solange du berührst';
+
+  @override
+  String get introCollect =>
+      'Schnapp dir die Symbole, die Gegner fallen lassen';
+
+  @override
+  String get introShop =>
+      'Zwischen den Runden gibst du Credits im ComCenter aus';
+
+  @override
+  String get objBoss => 'Ziel: Überlebe die Wellen und besiege den Boss';
+
+  @override
+  String get objSurvive => 'Ziel: Überlebe die Wellen';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits Credits · $kills Abschüsse';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Beste Waffe: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Boss-Schüsse treffen hart: ein stärkerer Schild verschafft Zeit';
+
+  @override
+  String get deathShield =>
+      'Verbessere den Schild im ComCenter: er schützt die Hülle';
+
+  @override
+  String get deathGuns =>
+      'Stärkere Waffen räumen Wellen ab, bevor sie dir schaden';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Zeile   [←→] Auswahl   [ENTER] Kaufen/Verbessern/Wechseln   [ENTF] Verkaufen   [ESC] Weiter';
+
+  @override
+  String get swapHintMouse =>
+      'Halte die rechte Maustaste oder Shift, um mit deinen zweiten Waffen zu feuern';
+
+  @override
+  String get tutFlyMouse =>
+      'Bewege die Maus zum Fliegen. Halte die linke Taste zum Feuern';
+
+  @override
+  String get grimoireHintKeys =>
+      'Tippe die Formen auf dem Ziffernblock oder auf U I O / J K L / M , . Halte Shift für ARMS, Strg für WING, beide für MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Tippe eine Ziffernblock-Taste: du springst in diese Richtung';
+
+  @override
+  String get hintLoopKeys =>
+      'Tippe einen Kreis auf dem Ziffernblock: du fliegst über die Schüsse';
+
+  @override
+  String get hintStreamKeys =>
+      'Drücke E: zwei oder drei Strahlen. Q geht zurück';
 }

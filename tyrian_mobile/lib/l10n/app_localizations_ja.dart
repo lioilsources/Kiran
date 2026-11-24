@@ -91,6 +91,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get musicOff => '音楽: オフ';
 
   @override
+  String get statsOn => '統計: オン';
+
+  @override
+  String get statsOff => '統計: オフ';
+
+  @override
   String get mainMenu => 'メインメニュー';
 
   @override
@@ -1133,4 +1139,128 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get duelDrillDone => '完了';
+
+  @override
+  String get swapHint => '2本指で触れている間は2つ目の武器セットで撃てる';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv：攻撃力アップ';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP：船体を修理';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return 'シールド +$amount、回復が速くなる';
+  }
+
+  @override
+  String get pickupGenerator => 'ジェネレーター強化：武器のエネルギーが増える';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount クレジット、ComCenterで使える';
+  }
+
+  @override
+  String get tutPickupWeapon => '武器アイテムで武器レベルが上がります：威力と連射速度アップ';
+
+  @override
+  String get tutPickupHealth => '修理アイテムで船体を回復。満タン時は最大HPが上がります';
+
+  @override
+  String get tutPickupShield => 'シールドは船体より先に被弾を受け止め、自動で回復します';
+
+  @override
+  String get tutPickupGenerator => 'ジェネレーターは武器の電源です。出力が高いほど多くの武器を撃てます';
+
+  @override
+  String get tutPickupCredits => 'クレジットでラウンド間にComCenterで武器や強化を購入できます';
+
+  @override
+  String get tutBoss => 'ボス出現！上のバーが体力です。動き続け、撃ち続けましょう';
+
+  @override
+  String get tutLowHp => '船体が危険！修理アイテムかComCenterで回復しましょう';
+
+  @override
+  String get tutGenStarved => '武器の消費電力がジェネレーターを超えています：強化しましょう';
+
+  @override
+  String get tutCanAfford => '強化を購入できます：このラウンド後にComCenterへ';
+
+  @override
+  String get tutFly => 'ドラッグで移動。指を置いている間、武器が発射されます';
+
+  @override
+  String get introCollect => '敵が落とすアイコンを回収しましょう';
+
+  @override
+  String get introShop => 'ラウンドの合間にComCenterでクレジットを使いましょう';
+
+  @override
+  String get objBoss => '目標：敵の波を生き延び、ボスを倒す';
+
+  @override
+  String get objSurvive => '目標：敵の波を生き延びる';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits クレジット · 撃墜 $kills';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return '最優秀武器：$weapon';
+  }
+
+  @override
+  String get deathBoss => 'ボスの攻撃は強力です。シールドを強化すれば時間を稼げます';
+
+  @override
+  String get deathShield => 'ComCenterでシールドを強化：船体より先に被弾を受け止めます';
+
+  @override
+  String get deathGuns => '強い武器なら、敵の波がダメージを与える前に一掃できます';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] 行   [←→] 選択   [ENTER] 購入/強化/切替   [DEL] 売却   [ESC] 続行';
+
+  @override
+  String get swapHintMouse => 'マウスの右ボタンかShiftを押し続けると2つ目の武器で撃てます';
+
+  @override
+  String get tutFlyMouse => 'マウスを動かして飛ぶ。左ボタンを押し続けて撃つ';
+
+  @override
+  String get grimoireHintKeys =>
+      'テンキーか U I O / J K L / M , . で形を入力。ShiftでARMS、CtrlでWING、両方でMEGA BLAST。';
+
+  @override
+  String get hintHopKeys => 'テンキーを1つ押す: その方向へホップ';
+
+  @override
+  String get hintLoopKeys => 'テンキーで円を入力: 弾の上を飛び越える';
+
+  @override
+  String get hintStreamKeys => 'Eを押す: 弾が2本か3本に。Qで戻す';
 }

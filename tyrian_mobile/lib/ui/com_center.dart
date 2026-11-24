@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../rendering/health_bar.dart';
 import '../game/tyrian_game.dart';
+import '../game/telemetry_probe.dart';
+import '../services/telemetry_service.dart' show ComCenterAction;
 import 'credits_wave.dart';
 import 'format.dart';
 import '../game/platform_config.dart' as platform;
@@ -11,7 +13,11 @@ import '../systems/dev_type.dart';
 import '../systems/device.dart';
 import '../entities/vessel.dart';
 import '../input/gamepad_input.dart';
+import '../input/last_input.dart';
+import '../input/pad_scheme.dart';
 import '../services/asset_library.dart';
+import '../services/comcenter_gate.dart';
+import '../systems/dps_preview.dart';
 import '../systems/mods/hull_spec.dart';
 import '../systems/mods/mod_spec.dart';
 import '../systems/mods/mods_state.dart';
@@ -21,6 +27,24 @@ import 'ui_theme.dart';
 import 'skin_painter.dart';
 import 'skin_selector.dart' show SkinShopSection, SkinShopSectionState;
 import '../l10n/l10n.dart';
+
+/// Plan 32 Q3: the second-finger swap is explained here and nowhere else —
+/// on touch screens only, and only once some slot has two weapons to swap
+/// between.
+bool swapHintVisible(Vessel v, {bool? touch}) =>
+    (touch ?? !platform.isDesktop) && _hasAlternate(v);
+
+/// The same hint for the mouse and keys (Prompts/36 §3.1): the classic
+/// scheme on desktop holds the second set on the right button or Shift.
+bool swapHintMouseVisible(Vessel v) =>
+    platform.isDesktop &&
+    PadSettings.scheme == PadScheme.classic &&
+    LastInput.keyboardMouse &&
+    _hasAlternate(v);
+
+bool _hasAlternate(Vessel v) =>
+    const [WeaponSlot.frontGun, WeaponSlot.leftGun, WeaponSlot.rightGun]
+        .any((s) => v.alternateFor(s) != null);
 
 /// Ported from ComCenter.cls — the between-sector equipment screen.
 ///
@@ -154,6 +178,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   @override
   void initState() {
     super.initState();
+    ComCenterGate.markSeen(); // plan 32 Q1: from now on PLAY shows the shop
     _pilotController = TextEditingController(text: vessel.pilotName);
     _theme = UiTheme.forSkin(AssetLibrary.instance.skinId);
     _bgAnim = AnimationController(
@@ -172,10 +197,12 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         (_) => _pollGamepad(),
       );
     }
+    TelemetryProbe.comCenterOpened(game);
   }
 
   @override
   void dispose() {
+    TelemetryProbe.comCenterClosed();
     _bgAnim.dispose();
     _pollTimer?.cancel();
     _focusNode.dispose();
@@ -264,6 +291,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   void _tapChip(WeaponSlot slot, int index) {
     final type = _catalogue(slot)[index];
     if (!_unlocked(index)) {
+      TelemetryProbe.comCenterAction(ComCenterAction.unavailable);
       final now = DateTime.now();
       if (now.difference(_lastLockedToast) > const Duration(seconds: 2)) {
         _lastLockedToast = now;
@@ -278,6 +306,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
       } else if (vessel.hangarEntry(type.name, slot) != null) {
         // Owned: switching is free and keeps the level.
         vessel.fitWeapon(type, slot);
+        TelemetryProbe.comCenterAction(ComCenterAction.switchWeapon);
         _pending[slot] = null;
         game.saveProgress();
       } else {
@@ -296,7 +325,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   }
 
   void _buy(DevType type, WeaponSlot slot) {
-    if (vessel.credit < type.price) return;
+    if (vessel.credit < type.price) {
+      return TelemetryProbe.comCenterAction(ComCenterAction.unavailable);
+    }
+    TelemetryProbe.comCenterAction(ComCenterAction.buy);
     vessel.credit -= type.price;
     vessel.fitWeapon(type, slot);
     _pending[slot] = null;
@@ -308,7 +340,10 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final device = vessel.getDevice(slot);
     if (device == null || device.level >= Device.maxLevel) return;
     final cost = device.price;
-    if (vessel.credit < cost) return;
+    if (vessel.credit < cost) {
+      return TelemetryProbe.comCenterAction(ComCenterAction.unavailable);
+    }
+    TelemetryProbe.comCenterAction(ComCenterAction.upgrade);
     vessel.credit -= cost;
     device.upgrade();
     _animateCreditChange(-cost);
@@ -320,6 +355,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   void _sellSlot(WeaponSlot slot) {
     final gained = vessel.sellFitted(slot);
     if (gained == 0) return;
+    TelemetryProbe.comCenterAction(ComCenterAction.sell);
     _pending[slot] = null;
     _animateCreditChange(gained);
     game.saveProgress();
@@ -682,6 +718,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
   /// assets are already loaded; restyle this screen (chip icons come from the
   /// new atlas on the next build) and the game behind it.
   void _onSkinChanged(String id) {
+    TelemetryProbe.comCenterAction(ComCenterAction.skin);
     game.refreshSprites();
     setState(() => _theme = UiTheme.forSkin(AssetLibrary.instance.skinId));
   }
@@ -972,7 +1009,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           children: [
             Text('${_l.dps} ', style: _labelStyle(_theme.accent)),
             Text(
-              vessel.totalDps.toStringAsFixed(1),
+              fmtNum(DpsPreview.powered(vessel)),
               style: _theme.styled(
                 TextStyle(color: Colors.white70, fontSize: _fs(10)),
               ),
@@ -1154,6 +1191,18 @@ class _ComCenterScreenState extends State<ComCenterScreen>
           _buildWeaponRow(_l.slotLeft, WeaponSlot.leftGun),
           _buildWeaponRow(_l.slotRight, WeaponSlot.rightGun),
           _buildGeneratorRow(),
+          if (swapHintVisible(vessel) || swapHintMouseVisible(vessel))
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                swapHintVisible(vessel) ? _l.swapHint : _l.swapHintMouse,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: _theme.styled(
+                  TextStyle(color: Colors.white60, fontSize: _fs(8)),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -1187,26 +1236,33 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final starved = _starved;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _rowLabel(label),
-          for (var i = 0; i < cat.length; i++)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(end: 3),
-                child: _buildChip(
-                  slot: slot,
-                  index: i,
-                  fitted: fitted?.name == cat[i].name ? fitted : null,
-                  hangar: vessel.hangarEntry(cat[i].name, slot),
-                  pending: pending?.name == cat[i].name,
-                  starved:
-                      fitted?.name == cat[i].name && starved.contains(fitted),
+          Row(
+            children: [
+              _rowLabel(label),
+              for (var i = 0; i < cat.length; i++)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 3),
+                    child: _buildChip(
+                      slot: slot,
+                      index: i,
+                      fitted: fitted?.name == cat[i].name ? fitted : null,
+                      hangar: vessel.hangarEntry(cat[i].name, slot),
+                      pending: pending?.name == cat[i].name,
+                      starved:
+                          fitted?.name == cat[i].name && starved.contains(fitted),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          const SizedBox(width: 3),
-          _buildRowButtons(slot, fitted, pending),
+              const SizedBox(width: 3),
+              _buildRowButtons(slot, fitted, pending),
+            ],
+          ),
+          _buildRateLine(slot, fitted, pending),
         ],
       ),
     );
@@ -1227,6 +1283,11 @@ class _ComCenterScreenState extends State<ComCenterScreen>
     final owned = fitted ?? hangar;
     final affordable = vessel.credit >= type.price;
     final focused = _cellFocused(slot, _ChipCell(type));
+
+    // Plan 32 Q4: what fitting / upgrading this chip does to STATS' DPS.
+    final delta = unlocked
+        ? _preview.chip(slot, type, fitted: fitted, hangar: hangar)
+        : null;
 
     final String sub;
     Color subColor = Colors.white60;
@@ -1316,6 +1377,7 @@ class _ComCenterScreenState extends State<ComCenterScreen>
                   ),
                 ),
               ),
+              if (delta != null) _deltaText(delta),
               // Fitted marker — the line under the weapon that flies.
               Container(
                 margin: const EdgeInsets.only(top: 2),
@@ -1325,6 +1387,44 @@ class _ComCenterScreenState extends State<ComCenterScreen>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  DpsPreview get _preview => DpsPreview(vessel);
+
+  /// `+48` green, `-12` red, `0` grey; red whatever the sign when the
+  /// generator could not power the gun.
+  Widget _deltaText(ChipDelta d) {
+    final v = d.value;
+    final text = v > 0 ? '+${fmtNum(v)}' : fmtNum(v);
+    final color = !d.powered
+        ? _theme.danger
+        : (v > 0 ? _theme.success : (v < 0 ? _theme.danger : Colors.white38));
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        text,
+        maxLines: 1,
+        style: _theme.styled(TextStyle(color: color, fontSize: _fs(7))),
+      ),
+    );
+  }
+
+  /// Under a weapon row: the selected gun (pending purchase, else fitted)
+  /// as damage × rate, e.g. `12 × 4.0/s`.
+  Widget _buildRateLine(WeaponSlot slot, Device? fitted, DevType? pending) {
+    final d = pending != null ? Device.fromType(pending, slot) : fitted;
+    if (d == null) return const SizedBox.shrink();
+    final b = _preview.breakdown(d);
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 56),
+      child: Text(
+        '${fmtNum(b.damage)} × ${b.rate.toStringAsFixed(1)}/s',
+        maxLines: 1,
+        style: _theme.styled(
+          TextStyle(color: Colors.white54, fontSize: _fs(7)),
         ),
       ),
     );
@@ -1712,13 +1812,20 @@ class _ComCenterScreenState extends State<ComCenterScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           if (platform.isDesktop)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                _l.padControlsHint,
-                style: TextStyle(
-                  color: _theme.accentDim.withAlpha(120),
-                  fontSize: 12,
+            // What the player holds now (Prompts/36 §3.7): the pad's
+            // buttons or the keys, switching the moment the other is used.
+            ValueListenableBuilder<InputDevice>(
+              valueListenable: LastInput.device,
+              builder: (context, device, _) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  device == InputDevice.pad
+                      ? _l.padControlsHint
+                      : _l.keysControlsHint,
+                  style: TextStyle(
+                    color: _theme.accentDim.withAlpha(120),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),

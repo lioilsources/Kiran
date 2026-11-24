@@ -93,6 +93,12 @@ class AppLocalizationsNb extends AppLocalizations {
   String get musicOff => 'MUSIKK: AV';
 
   @override
+  String get statsOn => 'STATISTIKK: PÅ';
+
+  @override
+  String get statsOff => 'STATISTIKK: AV';
+
+  @override
   String get mainMenu => 'HOVEDMENY';
 
   @override
@@ -1157,4 +1163,143 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FERDIG';
+
+  @override
+  String get swapHint => 'Med to fingre skyter du med det andre våpensettet';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: kraftigere skudd';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: skroget er reparert';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount skjold, lades raskere';
+  }
+
+  @override
+  String get pickupGenerator => 'Bedre generator: mer kraft til våpnene';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount kreditter til ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'Våpenoppgraderinger øker nivået: mer skade, raskere skudd';
+
+  @override
+  String get tutPickupHealth =>
+      'Reparasjoner fikser skroget; ved full helse øker de maks HP';
+
+  @override
+  String get tutPickupShield =>
+      'Skjoldet tar treff før skroget og lader seg opp selv';
+
+  @override
+  String get tutPickupGenerator =>
+      'Generatoren driver våpnene: mer kraft holder flere våpen i gang';
+
+  @override
+  String get tutPickupCredits =>
+      'Kreditter kjøper våpen og oppgraderinger i ComCenter mellom rundene';
+
+  @override
+  String get tutBoss =>
+      'BOSS! Helsen er linjen øverst. Hold deg i bevegelse og skyt';
+
+  @override
+  String get tutLowHp =>
+      'Skroget er svakt! Reparasjoner eller ComCenter fikser det';
+
+  @override
+  String get tutGenStarved =>
+      'Våpnene vil ha mer kraft enn generatoren gir: oppgrader den';
+
+  @override
+  String get tutCanAfford =>
+      'Du har råd til en oppgradering: sjekk ComCenter etter runden';
+
+  @override
+  String get tutFly => 'Dra for å fly. Våpnene skyter mens fingeren er nede';
+
+  @override
+  String get introCollect => 'Fang ikonene fiendene slipper';
+
+  @override
+  String get introShop => 'Mellom rundene bruker du kreditter i ComCenter';
+
+  @override
+  String get objBoss => 'Mål: overlev bølgene og slå bossen';
+
+  @override
+  String get objSurvive => 'Mål: overlev bølgene';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits kreditter · $kills nedskutt';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Beste våpen: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'Bossens skudd treffer hardt: et sterkere skjold gir deg tid';
+
+  @override
+  String get deathShield =>
+      'Oppgrader skjoldet i ComCenter: det tar treff før skroget';
+
+  @override
+  String get deathGuns =>
+      'Sterkere våpen rydder bølgene før de rekker å skade deg';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Rad   [←→] Velg   [ENTER] Kjøp/Oppgrader/Bytt   [DEL] Selg   [ESC] Fortsett';
+
+  @override
+  String get swapHintMouse =>
+      'Hold høyre museknapp eller Shift for å skyte med de andre våpnene dine';
+
+  @override
+  String get tutFlyMouse =>
+      'Beveg musen for å fly. Hold venstre knapp for å skyte';
+
+  @override
+  String get grimoireHintKeys =>
+      'Skriv formene på talltastaturet eller på U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, begge for MEGA BLAST.';
+
+  @override
+  String get hintHopKeys => 'Trykk én talltast: du hopper den veien';
+
+  @override
+  String get hintLoopKeys =>
+      'Skriv en sirkel på talltastaturet: du flyr over skuddene';
+
+  @override
+  String get hintStreamKeys => 'Trykk E: to eller tre stråler. Q går tilbake';
 }

@@ -12,17 +12,34 @@ permissions:
 jobs:
   build-ios:
     name: Build & Release iOS
-    runs-on: macos-26
+    # From April 2027 App Store Connect only accepts builds made with the
+    # iOS 27 SDK (ITMS-90725). The macos-26 image tops out at Xcode 26.x, so
+    # build on GitHub's dedicated Xcode 27 image instead.
+    runs-on: xcode-27
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
+      # App Store Connect rejects anything built with a beta Xcode, so stop
+      # here rather than after a full archive. Release builds are digits plus
+      # one letter (17F113); betas carry a trailing letter (27A5218g).
+      - name: Check Xcode
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks | grep -i iphoneos
+          BUILD=$(xcodebuild -version | awk '/Build version/ {print $3}')
+          if echo "$BUILD" | grep -qE '[a-z]$'; then
+            echo "::error::Xcode build $BUILD is a beta; App Store Connect will reject the upload."
+            exit 1
+          fi
+          xcodebuild -showsdks | grep -qE 'iphoneos(2[7-9]|[3-9][0-9])' || { echo "::error::No iOS 27+ SDK on this runner."; exit 1; }
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           # Pinned like ci.yml and the desktop releases.
-          flutter-version: '3.41.x'
+          flutter-version: '3.50.x'
           channel: stable
           cache: true
 
@@ -92,7 +109,7 @@ jobs:
 
       - name: Build Flutter iOS (no codesign)
         working-directory: tyrian_mobile
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --dart-define=TELEMETRY_KEY=${{ secrets.TELEMETRY_KEY }} --dart-define=TELEMETRY_HOST=${{ secrets.TELEMETRY_HOST }}
 
       - name: Archive with manual signing
         env:

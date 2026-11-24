@@ -8,6 +8,9 @@ import '../services/asset_library.dart';
 import '../services/sound_service.dart';
 import '../systems/path_system.dart';
 import '../systems/dev_type.dart';
+import '../systems/device.dart';
+import '../l10n/l10n.dart';
+import '../ui/format.dart';
 import 'vessel.dart';
 
 /// Collectable types from VBA CollType enum
@@ -91,22 +94,36 @@ class Collectable extends PositionComponent
 
   /// Apply the collectable's effect to the vessel
   void applyEffect(Vessel vessel, TyrianGame game) {
+    final l = L10n.current;
+    final hpBefore = vessel.hp;
+    final shieldBefore = vessel.shield;
+    // What the pickup did, in a line under the top of the screen.
+    String? note;
+    String? weapon(Device d, String slot) {
+      final before = d.level;
+      d.upgrade();
+      // At max level the upgrade sells instead and says so itself.
+      return d.level > before
+          ? l.pickupWeapon(slot.toUpperCase(), l.levelShort(d.level))
+          : null;
+    }
+
     switch (cType) {
       case CollType.frontWepUpgrade:
         // VB6: creates Bubble Gun if slot empty
         var d = vessel.devices.where((d) => d.slot == WeaponSlot.frontGun).firstOrNull;
         d ??= vessel.equipWeapon(DevType.bubbleGun, WeaponSlot.frontGun);
-        d.upgrade();
+        note = weapon(d, l.slotFront);
       case CollType.leftWepUpgrade:
         // VB6: creates Small Bubble if slot empty
         var d = vessel.devices.where((d) => d.slot == WeaponSlot.leftGun).firstOrNull;
         d ??= vessel.equipWeapon(DevType.smallBubble, WeaponSlot.leftGun);
-        d.upgrade();
+        note = weapon(d, l.slotLeft);
       case CollType.rightWepUpgrade:
         // VB6: creates Small Bubble if slot empty
         var d = vessel.devices.where((d) => d.slot == WeaponSlot.rightGun).firstOrNull;
         d ??= vessel.equipWeapon(DevType.smallBubble, WeaponSlot.rightGun);
-        d.upgrade();
+        note = weapon(d, l.slotRight);
       case CollType.healthUpgrade:
         // VB6: if HP > 50% max: +25% HP, hpMax +5% (linear +50 above 2000)
         if (vessel.hp > vessel.hpMax * 0.5) {
@@ -119,6 +136,7 @@ class Collectable extends PositionComponent
         } else {
           vessel.hp = (vessel.hp + (vessel.hpMax * 0.50).round()).clamp(0, vessel.hpMax);
         }
+        note = l.pickupRepair(vessel.hp - hpBefore);
       case CollType.shieldUpgrade:
         // VB6: <1500: +30% shield, shieldMax ×1.10, regen ×1.1
         // VB6: >=1500: +35% shield, shieldMax rounded to nearest 25, regen ×1.025
@@ -131,6 +149,7 @@ class Collectable extends PositionComponent
           vessel.shieldMax = ((vessel.shieldMax + 25) / 25).roundToDouble() * 25;
           vessel.shieldRegen *= 1.025;
         }
+        note = l.pickupShield((vessel.shield - shieldBefore).round());
       case CollType.generatorUpgrade:
         // Must go through the device (VB6 Collectable.cls:292 calls d.Upgrade).
         // Raising vessel.genPower directly leaves device.pwrGen behind, and
@@ -145,12 +164,21 @@ class Collectable extends PositionComponent
           vessel.genPower *= config.upgPwrGenMultiplier;
           vessel.genMax *= config.upgGenMaxMultiplier;
         }
+        note = l.pickupGenerator;
       case CollType.bonusCredit:
         vessel.credit += value;
+        note = l.pickupCredits(fmtNum(value));
       case CollType.none:
         break;
     }
 
+    // P2's pickups are P2's business: the host's screen names its own.
+    if (note != null && identical(vessel, game.vessel)) {
+      game.showMessage(note, fontSize: 14);
+      // The first of each kind also says what the kind is for.
+      final lesson = game.tutor.pickupLesson(cType);
+      if (lesson != null) game.showMessage(lesson, fontSize: 14, duration: 3);
+    }
     SoundService.instance.play(SfxEvent.pickup);
     game.removeCollectable(this);
   }

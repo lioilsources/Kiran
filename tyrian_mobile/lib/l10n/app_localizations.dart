@@ -332,6 +332,18 @@ abstract class AppLocalizations {
   /// **'MUSIC: OFF'**
   String get musicOff;
 
+  /// Pause-menu toggle for the anonymous gameplay statistics (docs/telemetry.md). Same ON/OFF wording as SOUND and MUSIC.
+  ///
+  /// In en, this message translates to:
+  /// **'USAGE STATS: ON'**
+  String get statsOn;
+
+  /// No description provided for @statsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'USAGE STATS: OFF'**
+  String get statsOff;
+
   /// No description provided for @mainMenu.
   ///
   /// In en, this message translates to:
@@ -2101,6 +2113,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DONE'**
   String get duelDrillDone;
+
+  /// ComCenter, touch only: two fingers on the screen fly the second weapon set, one finger the first (plan 34)
+  ///
+  /// In en, this message translates to:
+  /// **'Hold two fingers to fire your second weapons'**
+  String get swapHint;
+
+  /// Pickup note: a weapon slot went up a level. slot = the slot name (Front/Left/Right), lv = the level ("Lv.3")
+  ///
+  /// In en, this message translates to:
+  /// **'{slot} {lv}: stronger shots'**
+  String pickupWeapon(String slot, String lv);
+
+  /// Pickup note: hull points repaired
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} HP: hull repaired'**
+  String pickupRepair(int amount);
+
+  /// Pickup note: shield points added; the shield also recharges faster
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} shield, recharges faster'**
+  String pickupShield(int amount);
+
+  /// Pickup note: the generator went up a level
+  ///
+  /// In en, this message translates to:
+  /// **'Generator up: more power for your guns'**
+  String get pickupGenerator;
+
+  /// Pickup note: credits gained, spent in the ComCenter. amount is formatted ("1 500")
+  ///
+  /// In en, this message translates to:
+  /// **'+{amount} credits to spend in the ComCenter'**
+  String pickupCredits(String amount);
+
+  /// Tutor: First time the player collects a weapon pickup
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon pickups raise a gun\'s level: more damage, faster fire'**
+  String get tutPickupWeapon;
+
+  /// Tutor: First repair pickup. HP = hull points, keep 'HP'
+  ///
+  /// In en, this message translates to:
+  /// **'Repair pickups mend the hull; when healthy they also raise max HP'**
+  String get tutPickupHealth;
+
+  /// Tutor: First shield pickup
+  ///
+  /// In en, this message translates to:
+  /// **'The shield takes hits before the hull and refills by itself'**
+  String get tutPickupShield;
+
+  /// Tutor: First generator pickup
+  ///
+  /// In en, this message translates to:
+  /// **'The generator powers your guns: more power keeps more guns firing'**
+  String get tutPickupGenerator;
+
+  /// Tutor: First credit pickup
+  ///
+  /// In en, this message translates to:
+  /// **'Credits buy guns and upgrades in the ComCenter between rounds'**
+  String get tutPickupCredits;
+
+  /// Tutor: First boss appearance
+  ///
+  /// In en, this message translates to:
+  /// **'BOSS! Its health is the bar at the top. Keep moving, keep firing'**
+  String get tutBoss;
+
+  /// Tutor: Hull below 30%
+  ///
+  /// In en, this message translates to:
+  /// **'Hull low! Repair pickups or the ComCenter fix it'**
+  String get tutLowHp;
+
+  /// Tutor: Generator empty while firing
+  ///
+  /// In en, this message translates to:
+  /// **'Your guns want more power than the generator gives: upgrade it'**
+  String get tutGenStarved;
+
+  /// Tutor: Enough credits for an upgrade
+  ///
+  /// In en, this message translates to:
+  /// **'You can afford an upgrade: see the ComCenter after this round'**
+  String get tutCanAfford;
+
+  /// Tutor: First flight, touch screens only
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to fly. Your guns fire while your finger is down'**
+  String get tutFly;
+
+  /// Tutor: Intro lesson step 2
+  ///
+  /// In en, this message translates to:
+  /// **'Catch the icons that enemies drop'**
+  String get introCollect;
+
+  /// Tutor: Intro lesson step 3, shown as the first round ends
+  ///
+  /// In en, this message translates to:
+  /// **'Between rounds, spend your credits in the ComCenter'**
+  String get introShop;
+
+  /// Tutor: Under the round title when the round ends with a boss
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: survive the waves and beat the boss'**
+  String get objBoss;
+
+  /// Tutor: Under the round title, no boss
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: survive the waves'**
+  String get objSurvive;
+
+  /// Tutor: Round end. credits is a formatted number string, kills an int
+  ///
+  /// In en, this message translates to:
+  /// **'+{credits} credits · {kills} kills'**
+  String roundSummary(String credits, int kills);
+
+  /// Tutor: Round end. weapon is a proper noun like VULCAN
+  ///
+  /// In en, this message translates to:
+  /// **'Best weapon: {weapon}'**
+  String roundBestWeapon(String weapon);
+
+  /// Tutor: Game over tip: killed while a boss was on the field
+  ///
+  /// In en, this message translates to:
+  /// **'Boss shots hit hard: a stronger shield buys you time'**
+  String get deathBoss;
+
+  /// Tutor: Game over tip: weak shield
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade the shield in the ComCenter: it takes hits before the hull'**
+  String get deathShield;
+
+  /// Tutor: Game over tip: otherwise
+  ///
+  /// In en, this message translates to:
+  /// **'Stronger guns clear waves before they can hurt you'**
+  String get deathGuns;
+
+  /// Skin selector: the All skins bundle offered next to a locked skin's price
+  ///
+  /// In en, this message translates to:
+  /// **'ALL SKINS'**
+  String get allSkins;
+
+  /// Skin selector: under a discounted All skins price — the paid skins already bought were subtracted from it
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{You already own 1 skin, we\'ve credited it} other{You already own {count} skins, we\'ve credited them}}'**
+  String allSkinsCredited(int count);
+
+  /// ComCenter footer on desktop when the player last used the keyboard or mouse (Prompts/36 §3.7). Key names in brackets stay as printed on keys
+  ///
+  /// In en, this message translates to:
+  /// **'[↑↓] Row   [←→] Select   [ENTER] Buy/Upgrade/Switch   [DEL] Sell   [ESC] Continue mission'**
+  String get keysControlsHint;
+
+  /// ComCenter, desktop classic scheme: holding the right mouse button or Shift flies the second weapon set (Prompts/36 §3.1)
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the right mouse button or Shift to fire your second weapons'**
+  String get swapHintMouse;
+
+  /// First-flight tip on desktop with keyboard and mouse: the ship follows the cursor, the left button fires (Prompts/36 §3.3)
+  ///
+  /// In en, this message translates to:
+  /// **'Move the mouse to fly. Hold the left button to fire'**
+  String get tutFlyMouse;
+
+  /// Grimoire header for keyboard players: sigils are typed on the numpad or the U I O / J K L / M , . letter block. ARMS, WING, MEGA BLAST are game terms, keep them
+  ///
+  /// In en, this message translates to:
+  /// **'Type the shapes on the numpad or on U I O / J K L / M , . Hold Shift for ARMS, Ctrl for WING, both for MEGA BLAST.'**
+  String get grimoireHintKeys;
+
+  /// Sigil hint for keyboard: one numpad key flicks the HOP that way
+  ///
+  /// In en, this message translates to:
+  /// **'Tap one numpad key: you hop that way'**
+  String get hintHopKeys;
+
+  /// Sigil hint for keyboard: typing the numpad keys around in a circle casts LOOP, which flies the ship over enemy shots
+  ///
+  /// In en, this message translates to:
+  /// **'Type a circle on the numpad: you fly over the shots'**
+  String get hintLoopKeys;
+
+  /// Sigil hint for keyboard: E raises OVERSTREAM to two or three streams, Q lowers it
+  ///
+  /// In en, this message translates to:
+  /// **'Press E: two or three streams. Q steps back'**
+  String get hintStreamKeys;
 }
 
 class _AppLocalizationsDelegate

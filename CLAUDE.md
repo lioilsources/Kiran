@@ -21,7 +21,7 @@ tyrian_mobile/
 ├── shaders/            # GLSL fragment shaders (.frag)
 └── tool/               # pack_atlas.dart — texture atlas builder
 
-pipeline/               # Go asset generation pipeline (ComfyUI images, ElevenLabs SFX) — see pipeline/SKILL.md
+pipeline/               # Go asset generation pipeline (ComfyUI images, AiStack audio) — see pipeline/SKILL.md
 tyrian_vba_64bit/       # Original VB6 source (reference only)
 ```
 
@@ -45,7 +45,7 @@ dart run tool/pack_atlas.dart
 # Asset pipeline — full pipeline for one skin (see pipeline/SKILL.md for all flags)
 cd ../pipeline
 go run ./cmd/generate -skin <id>         # generate images via ComfyUI
-go run ./cmd/generate -sfx -skin <id>   # generate SFX via ElevenLabs
+go run ./cmd/audiogen -skin <id>        # generate SFX + music via AiStack (root docs/AUDIO.md)
 go run ./cmd/postprocess -skin <id>     # bg removal, resize, glow frames, MP3→OGG
 cd ../tyrian_mobile
 dart run tool/pack_atlas.dart           # pack sprites → atlas.png + atlas.json
@@ -63,7 +63,7 @@ dart run tool/pack_atlas.dart           # pack sprites → atlas.png + atlas.jso
 ## Conventions
 
 - Flame `PositionComponent` hierarchy — do not use Flutter widgets inside the game canvas.
-- All gameplay numeric constants (HP, damage, credit thresholds, weapon stats) must match VB6 source values. See `game_config.dart` and `Prompts/00-GAMEPLAY-original.md`.
+- All gameplay numeric constants (HP, damage, credit thresholds, weapon stats) must match VB6 source values. See `game_config.dart` and `tyrian_mobile/Prompts/00-GAMEPLAY-original.md`.
 - Per-skin asset keys follow the pattern `skins/<name>/sprites/<asset>.png`.
 - Shader uniforms are set per-frame in the corresponding `*Pass` class under `lib/rendering/passes/`.
 - Portrait-first layout. Landscape mode is desktop-only (macOS/Windows) and handled via camera rotation, not separate layout.

@@ -94,6 +94,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get musicOff => 'MUSICA: NO';
 
   @override
+  String get statsOn => 'STATISTICHE: SÌ';
+
+  @override
+  String get statsOff => 'STATISTICHE: NO';
+
+  @override
   String get mainMenu => 'MENU PRINCIPALE';
 
   @override
@@ -1174,4 +1180,147 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get duelDrillDone => 'FATTO';
+
+  @override
+  String get swapHint => 'Con due dita spari con il secondo set di armi';
+
+  @override
+  String pickupWeapon(String slot, String lv) {
+    return '$slot $lv: colpi più potenti';
+  }
+
+  @override
+  String pickupRepair(int amount) {
+    return '+$amount HP: scafo riparato';
+  }
+
+  @override
+  String pickupShield(int amount) {
+    return '+$amount di scudo, si ricarica più in fretta';
+  }
+
+  @override
+  String get pickupGenerator =>
+      'Generatore potenziato: più energia per le armi';
+
+  @override
+  String pickupCredits(String amount) {
+    return '+$amount crediti da spendere nel ComCenter';
+  }
+
+  @override
+  String get tutPickupWeapon =>
+      'I potenziamenti alzano il livello dell\'arma: più danni, fuoco più rapido';
+
+  @override
+  String get tutPickupHealth =>
+      'Le riparazioni sistemano lo scafo; a scafo integro alzano gli HP massimi';
+
+  @override
+  String get tutPickupShield =>
+      'Lo scudo assorbe i colpi prima dello scafo e si ricarica da solo';
+
+  @override
+  String get tutPickupGenerator =>
+      'Il generatore alimenta le armi: più energia, più armi che sparano';
+
+  @override
+  String get tutPickupCredits =>
+      'Con i crediti compri armi e potenziamenti nel ComCenter tra i round';
+
+  @override
+  String get tutBoss =>
+      'BOSS! La sua salute è la barra in alto. Muoviti e continua a sparare';
+
+  @override
+  String get tutLowHp =>
+      'Scafo a pezzi! Lo ripari con una riparazione o nel ComCenter';
+
+  @override
+  String get tutGenStarved =>
+      'Le armi chiedono più energia del generatore: potenzialo';
+
+  @override
+  String get tutCanAfford =>
+      'Puoi permetterti un potenziamento: passa al ComCenter dopo il round';
+
+  @override
+  String get tutFly =>
+      'Trascina per volare. Le armi sparano finché tieni giù il dito';
+
+  @override
+  String get introCollect => 'Raccogli le icone lasciate dai nemici';
+
+  @override
+  String get introShop =>
+      'Tra un round e l\'altro, spendi i crediti nel ComCenter';
+
+  @override
+  String get objBoss => 'Obiettivo: sopravvivi alle ondate e sconfiggi il boss';
+
+  @override
+  String get objSurvive => 'Obiettivo: sopravvivi alle ondate';
+
+  @override
+  String roundSummary(String credits, int kills) {
+    return '+$credits crediti · $kills abbattuti';
+  }
+
+  @override
+  String roundBestWeapon(String weapon) {
+    return 'Arma migliore: $weapon';
+  }
+
+  @override
+  String get deathBoss =>
+      'I colpi del boss fanno male: uno scudo più forte ti fa guadagnare tempo';
+
+  @override
+  String get deathShield =>
+      'Potenzia lo scudo nel ComCenter: assorbe i colpi prima dello scafo';
+
+  @override
+  String get deathGuns =>
+      'Armi più forti spazzano via le ondate prima che ti feriscano';
+
+  @override
+  String get allSkins => 'ALL SKINS';
+
+  @override
+  String allSkinsCredited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You already own $count skins, we\'ve credited them',
+      one: 'You already own 1 skin, we\'ve credited it',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get keysControlsHint =>
+      '[↑↓] Riga   [←→] Scelta   [INVIO] Compra/Potenzia/Cambia   [CANC] Vendi   [ESC] Continua';
+
+  @override
+  String get swapHintMouse =>
+      'Tieni premuto il tasto destro del mouse o Maiusc per sparare con le armi secondarie';
+
+  @override
+  String get tutFlyMouse =>
+      'Muovi il mouse per volare. Tieni premuto il tasto sinistro per sparare';
+
+  @override
+  String get grimoireHintKeys =>
+      'Digita le forme sul tastierino numerico o su U I O / J K L / M , . Tieni Maiusc per ARMS, Ctrl per WING, entrambi per MEGA BLAST.';
+
+  @override
+  String get hintHopKeys =>
+      'Premi un tasto del tastierino: salti in quella direzione';
+
+  @override
+  String get hintLoopKeys =>
+      'Digita un cerchio sul tastierino: voli sopra i colpi';
+
+  @override
+  String get hintStreamKeys => 'Premi E: due o tre flussi. Q torna indietro';
 }

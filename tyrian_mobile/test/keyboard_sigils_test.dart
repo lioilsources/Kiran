@@ -10,37 +10,37 @@ import 'package:tyrian_mobile/systems/sigils/sigil_spec.dart';
 void main() {
   group('keyboard sigils (Prompts/28 §12)', () {
     test('portrait: the numpad is the circle as drawn, 8 forward', () {
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad8, landscape: false), 1);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad6, landscape: false), 5);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad1, landscape: false), 6);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad5, landscape: false), 4);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad8, landscape: false), 1);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad6, landscape: false), 5);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad1, landscape: false), 6);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad5, landscape: false), 4);
     });
 
     test('landscape: the ship flies left, so 4 is forward', () {
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad4, landscape: true), 1);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad6, landscape: true), 7);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad8, landscape: true), 5,
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad4, landscape: true), 1);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad6, landscape: true), 7);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad8, landscape: true), 5,
           reason: 'screen up is the ship\'s right');
     });
 
     test('a duel with the nose up: 8 is forward again (Prompts/30 §6.6)', () {
       final up = ShipFrame(uprightAngle);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad8, landscape: true, frame: up), 1);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad6, landscape: true, frame: up), 5);
-      expect(KeyboardSigils.dotFor(LogicalKeyboardKey.numpad5, landscape: true, frame: up), 4);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad8, landscape: true, frame: up), 1);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad6, landscape: true, frame: up), 5);
+      expect(KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad5, landscape: true, frame: up), 4);
       // The flight's frame changes nothing.
       expect(
-          KeyboardSigils.dotFor(LogicalKeyboardKey.numpad4,
+          KeyboardSigils.dotFor(PhysicalKeyboardKey.numpad4,
               landscape: true, frame: ShipFrame.flight),
           1);
     });
 
     test('the letter block mirrors the numpad', () {
       for (final (a, b) in [
-        (LogicalKeyboardKey.keyU, LogicalKeyboardKey.numpad7),
-        (LogicalKeyboardKey.keyI, LogicalKeyboardKey.numpad8),
-        (LogicalKeyboardKey.period, LogicalKeyboardKey.numpad3),
-        (LogicalKeyboardKey.keyK, LogicalKeyboardKey.numpad5),
+        (PhysicalKeyboardKey.keyU, PhysicalKeyboardKey.numpad7),
+        (PhysicalKeyboardKey.keyI, PhysicalKeyboardKey.numpad8),
+        (PhysicalKeyboardKey.period, PhysicalKeyboardKey.numpad3),
+        (PhysicalKeyboardKey.keyK, PhysicalKeyboardKey.numpad5),
       ]) {
         expect(KeyboardSigils.dotFor(a, landscape: true),
             KeyboardSigils.dotFor(b, landscape: true));

@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 
+import '../services/telemetry_service.dart';
+import 'last_input.dart';
+
 /// Cross-platform gamepad abstraction using native MethodChannel.
 /// Polls controller state each frame via [poll()].
 class GamepadInput {
@@ -34,6 +37,10 @@ class GamepadInput {
         if (raw is Map) {
           controllers.add(GamepadState.fromMap(Map<String, dynamic>.from(raw)));
         }
+      }
+      if (controllers.any((c) => c.touched)) {
+        TelemetryService.instance.noteInput('pad');
+        LastInput.use(InputDevice.pad);
       }
     } on MissingPluginException {
       // Native side not available — ignore
@@ -101,6 +108,14 @@ class GamepadState {
 
   /// Pause = Start/Options button
   bool get pause => start;
+
+  /// Any button down or a stick clearly off centre (last-input statistics).
+  bool get touched =>
+      buttonA || buttonB || buttonX || buttonY || leftShoulder ||
+      rightShoulder || dpadUp || dpadDown || dpadLeft || dpadRight ||
+      start || back || leftTrigger > 0.3 || rightTrigger > 0.3 ||
+      leftStickX.abs() > 0.5 || leftStickY.abs() > 0.5 ||
+      rightStickX.abs() > 0.5 || rightStickY.abs() > 0.5;
 
   factory GamepadState.fromMap(Map<String, dynamic> m) {
     return GamepadState(

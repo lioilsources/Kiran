@@ -6,7 +6,7 @@ TyrianVB Mobile potřebuje systém skinů — vizuálních témat inspirovaných
 
 Sprint 0 = skeleton pipeline + Grok client + 1 test skin (space_invaders, ship only).
 
-**Umístění:** `/Volumes/YOTTA/Dev/TyrianVB/pipeline/` (sibling k `tyrian_mobile/`)
+**Umístění:** `$DEV_ROOT/Kiran/pipeline/` (sibling k `tyrian_mobile/`)
 
 ---
 
