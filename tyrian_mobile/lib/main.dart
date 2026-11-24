@@ -149,6 +149,9 @@ void main() async {
       // recovery. Windows keeps just_audio_windows in pubspec as a manual
       // rollback, but media_kit already registered itself as the just_audio
       // platform by the time this throws, so we do not switch here.
+      // Which is also why no player may be created from here on: each one
+      // would throw. The services read this flag and stay silent.
+      audioBackendAvailable = false;
       audioLog('${Platform.operatingSystem} '
           '${Platform.operatingSystemVersion} — media_kit init FAILED '
           '(${e.runtimeType}: $e), continuing without audio');

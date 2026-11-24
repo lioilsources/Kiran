@@ -145,6 +145,12 @@ class SoundService {
     _pools.clear();
     _poolIndex.clear();
 
+    if (!audioBackendAvailable) {
+      _disabled = true;
+      audioLog('sfx skin=$skinId — no audio backend, DISABLED');
+      return;
+    }
+
     for (final entry in _eventFileNames.entries) {
       final skinPath = 'assets/skins/$skinId/sfx/${entry.value}.ogg';
       final defaultPath = 'assets/skins/default/sfx/${entry.value}.ogg';
