@@ -335,12 +335,29 @@ class HangarPanelState extends State<HangarPanel> {
             ),
             borderRadius: BorderRadius.circular(t.cornerRadius),
           ),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(spec.name, maxLines: 1, style: _text(c, 9, bold: true)),
-          ),
+          child: _chipFace(spec, c),
         ),
       ),
+    );
+  }
+
+  /// The skin's icon for the mod beside its name; the name alone when the
+  /// skin (and default) has no icon sheet.
+  Widget _chipFace(ModSpec spec, Color c) {
+    final name = FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(spec.name, maxLines: 1, style: _text(c, 9, bold: true)),
+    );
+    if (AssetLibrary.instance.modIcon(spec.id) == null) return name;
+    return Row(
+      children: [
+        SizedBox.square(
+          dimension: 32,
+          child: CustomPaint(painter: _ModIconPainter(spec.id)),
+        ),
+        const SizedBox(width: 2),
+        Expanded(child: name),
+      ],
     );
   }
 
@@ -572,4 +589,36 @@ class _HullPainter extends CustomPainter {
   @override
   bool shouldRepaint(_HullPainter old) =>
       old.hull != hull || old.generation != generation;
+}
+
+/// One mod icon from the skin's sheet, fitted into its box.
+class _ModIconPainter extends CustomPainter {
+  final String id;
+  final int generation;
+
+  _ModIconPainter(this.id) : generation = AssetLibrary.instance.generation;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // A skin switch disposes the sheet; the next build brings the new one.
+    if (AssetLibrary.instance.generation != generation) return;
+    final sprite = AssetLibrary.instance.modIcon(id);
+    if (sprite == null) return;
+    final src = Rect.fromLTWH(
+      sprite.srcPosition.x,
+      sprite.srcPosition.y,
+      sprite.srcSize.x,
+      sprite.srcSize.y,
+    );
+    canvas.drawImageRect(
+      sprite.image,
+      src,
+      Offset.zero & size,
+      Paint()..filterQuality = FilterQuality.medium,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_ModIconPainter old) =>
+      old.id != id || old.generation != generation;
 }

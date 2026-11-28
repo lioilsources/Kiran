@@ -64,6 +64,11 @@ class AssetLibrary {
 
   final Map<String, Sprite> _icons = {};
 
+  /// Mod icons, one sheet per skin (`ui/mod_icons.webp` + `.json`, built by
+  /// pipeline/cmd/modicons). Keyed by ModSpec.id. A skin without its own
+  /// sheet borrows default's, so the hangar never mixes icons and text.
+  final Map<String, Sprite> _modIcons = {};
+
   /// Voronoi fragment metadata per sprite name.
   /// Key = sprite name (e.g. "falcon1"), Value = list of FragmentInfo.
   final Map<String, List<FragmentInfo>> _fragments = {};
@@ -133,8 +138,7 @@ class AssetLibrary {
       if (_previewCache.containsKey(skin.id)) continue;
       try {
         final data = await rootBundle.load('assets/${skin.previewPath}');
-        final codec =
-            await ui.instantiateImageCodec(data.buffer.asUint8List());
+        final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
         _previewCache[skin.id] = (await codec.getNextFrame()).image;
       } catch (e) {
         print('Preview load failed for ${skin.id}: $e');
@@ -155,8 +159,8 @@ class AssetLibrary {
     );
     config.spriteFilterQuality =
         (!skin.pixelArt && config.spriteSupersample > 1.0)
-            ? FilterQuality.medium
-            : FilterQuality.none;
+        ? FilterQuality.medium
+        : FilterQuality.none;
 
     // Flame expects images under assets/images/ by default.
     // We override the prefix so it loads from assets/ directly.
@@ -233,7 +237,10 @@ class AssetLibrary {
     // inside a synchronous block, so the swap is atomic from the renderer's
     // point of view. Breaking this yields an intermittent "Cannot use a
     // disposed Image" under sector-jump spam.
-    final stale = [for (final k in _bgKeys) if (!keys.contains(k)) k];
+    final stale = [
+      for (final k in _bgKeys)
+        if (!keys.contains(k)) k,
+    ];
     _bgLayers
       ..clear()
       ..addAll(next);
@@ -249,8 +256,13 @@ class AssetLibrary {
   Future<void> _loadIcons() async {
     _icons.clear();
     for (final name in [
-      'icon_life', 'icon_bomb', 'icon_shield', 'icon_credit', 'icon_gen',
-      'comcenter_bg', 'ui_button',
+      'icon_life',
+      'icon_bomb',
+      'icon_shield',
+      'icon_credit',
+      'icon_gen',
+      'comcenter_bg',
+      'ui_button',
     ]) {
       final path = 'skins/$_skinId/ui/$name.png';
       if (!await _assetExists(path)) continue;
@@ -263,7 +275,43 @@ class AssetLibrary {
         print('Icon load failed [$name]: $e');
       }
     }
+    await _loadModIcons();
   }
+
+  Future<void> _loadModIcons() async {
+    _modIcons.clear();
+    for (final skin in {_skinId, 'default'}) {
+      final base = 'skins/$skin/ui/mod_icons';
+      if (!await _assetExists('$base.json') ||
+          !await _assetExists('$base.webp')) {
+        continue;
+      }
+      try {
+        final meta =
+            jsonDecode(await rootBundle.loadString('assets/$base.json'))
+                as Map<String, dynamic>;
+        final cell = (meta['cell'] as num).toDouble();
+        final cols = meta['cols'] as int;
+        final image = await Flame.images.load('$base.webp');
+        final icons = meta['icons'] as Map<String, dynamic>;
+        for (final e in icons.entries) {
+          final i = e.value as int;
+          _modIcons[e.key] = Sprite(
+            image,
+            srcPosition: Vector2((i % cols) * cell, (i ~/ cols) * cell),
+            srcSize: Vector2.all(cell),
+          )..paint.filterQuality = FilterQuality.medium;
+        }
+        return;
+      } catch (e) {
+        print('Mod icon sheet failed [$skin]: $e');
+        _modIcons.clear();
+      }
+    }
+  }
+
+  /// The icon of mod [id] in this skin, or null to fall back to its name.
+  Sprite? modIcon(String id) => _modIcons[id];
 
   /// Try to load a pre-built texture atlas for the current skin.
   ///
@@ -285,15 +333,19 @@ class AssetLibrary {
       // already use. It lets a single skin sit on PNG — a rollback if one
       // atlas ever compresses badly — without touching this code.
       ui.Image? img;
-      for (final key in ['skins/$skinId/atlas.webp', 'skins/$skinId/atlas.png']) {
+      for (final key in [
+        'skins/$skinId/atlas.webp',
+        'skins/$skinId/atlas.png',
+      ]) {
         img = await _tryLoadImage(key);
         if (img != null) break;
       }
       if (img == null) return false;
 
       // Load atlas JSON
-      final jsonStr =
-          await rootBundle.loadString('assets/skins/$skinId/atlas.json');
+      final jsonStr = await rootBundle.loadString(
+        'assets/skins/$skinId/atlas.json',
+      );
       final json = jsonDecode(jsonStr) as Map<String, dynamic>;
       final frames = json['frames'] as Map<String, dynamic>;
 
@@ -331,11 +383,13 @@ class AssetLibrary {
           final data = entry.value as Map<String, dynamic>;
           final pieces = (data['pieces'] as List).cast<Map<String, dynamic>>();
           _fragments[name] = pieces
-              .map((p) => FragmentInfo(
-                    p['name'] as String,
-                    (p['seedX'] as num).toDouble(),
-                    (p['seedY'] as num).toDouble(),
-                  ))
+              .map(
+                (p) => FragmentInfo(
+                  p['name'] as String,
+                  (p['seedX'] as num).toDouble(),
+                  (p['seedY'] as num).toDouble(),
+                ),
+              )
               .toList();
         }
       }
@@ -374,7 +428,8 @@ class AssetLibrary {
     if (hull == 'falcon') return _vesselFrames;
     final frames = <Sprite>[
       for (int i = 0; i < 6; i++)
-        if (_sprites['vessel_${hull}_$i'] != null) _sprites['vessel_${hull}_$i']!,
+        if (_sprites['vessel_${hull}_$i'] != null)
+          _sprites['vessel_${hull}_$i']!,
     ];
     return frames.isEmpty ? _vesselFrames : frames;
   }
@@ -388,5 +443,4 @@ class AssetLibrary {
   List<Sprite> get vesselFrames => _vesselFrames;
 
   ui.Image? getImage(String name) => _images[name];
-
 }
